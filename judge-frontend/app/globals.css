@@ -6,6 +6,7 @@
   /* gray-50 */
   --foreground: #111827;
   /* gray-900 */
+  font-size: 80%;
 }
 
 @theme inline {

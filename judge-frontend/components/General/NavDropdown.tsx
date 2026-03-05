@@ -31,15 +31,17 @@ export default function NavDropdown() {
     }, []);
 
     useEffect(() => {
-        if (isOpen && menuRef.current) {
-            anime({
-                targets: menuRef.current,
-                opacity: [0, 1],
-                translateY: [20, 0],
-                scale: [0.95, 1],
-                duration: 300,
-                easing: 'easeOutExpo'
-            });
+        if (isOpen) {
+            if (menuRef.current) {
+                anime({
+                    targets: menuRef.current,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    scale: [0.95, 1],
+                    duration: 300,
+                    easing: 'easeOutExpo'
+                });
+            }
             if (arrowRef.current) {
                 anime({
                     targets: arrowRef.current,
@@ -48,7 +50,7 @@ export default function NavDropdown() {
                     easing: 'easeOutQuad'
                 });
             }
-        } else if (!isOpen && menuRef.current) {
+        } else { // When dropdown is closed
             if (arrowRef.current) {
                 anime({
                     targets: arrowRef.current,
@@ -71,7 +73,7 @@ export default function NavDropdown() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 group active:scale-95"
+                className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-[0_0_12px_--theme(--color-indigo-500/0.3)] transition-all duration-300 group active:scale-95"
             >
                 <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
                     {currentRoute.icon}
