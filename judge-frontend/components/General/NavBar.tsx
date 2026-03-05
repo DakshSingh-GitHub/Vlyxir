@@ -59,8 +59,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                     <NavDropdown />
                 </div>
                 <div className="flex items-center gap-3 md:gap-6">
-                    {!isCodeIDE && (
-                        <>
+                    <>
+                        {!isCodeIDE && (
                             <button
                                 onClick={() => setIsSubmissionsModalOpen(true)}
                                 className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 group shadow-sm hover:shadow-md"
@@ -68,17 +68,24 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                             >
                                 <History className="w-5 h-5 group-hover:rotate-[-20deg] transition-transform" />
                             </button>
-                            {isCodeJudge && (
-                                <button
-                                    onClick={() => window.dispatchEvent(new CustomEvent("open-ui-grid-modal"))}
-                                    className="hidden lg:flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
-                                    title="Select UI Grid"
-                                >
-                                    <LayoutGrid className="w-4 h-4" />
-                                    <span className="text-xs font-medium">UI Grid</span>
-                                </button>
-                            )}
+                        )}
+                        {(isCodeJudge || isCodeIDE) && (
+                            <button
+                                onClick={() => {
+                                    const eventName = isCodeJudge
+                                        ? "open-code-judge-ui-grid-modal"
+                                        : "open-code-ide-ui-grid-modal";
+                                    window.dispatchEvent(new CustomEvent(eventName));
+                                }}
+                                className="hidden lg:flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
+                                title="Select UI Grid"
+                            >
+                                <LayoutGrid className="w-4 h-4" />
+                                <span className="text-xs font-medium">UI Grid</span>
+                            </button>
+                        )}
 
+                        {!isCodeIDE && (
                             <button
                                 onClick={() =>
                                     setIsSidebarOpen(!isSidebarOpen)
@@ -100,8 +107,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                                     </svg>
                                 )}
                             </button>
-                        </>
-                    )}
+                        )}
+                    </>
 
                     <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
 

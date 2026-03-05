@@ -8,10 +8,10 @@ import { Problem } from "../lib/types";
 import { useAppContext } from "../lib/context";
 import { FileText, Code, History, Check, X, PanelTop } from "lucide-react";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
+
 import ClassicLayout from "./layouts/ClassicLayout";
 import StackedLayout from "./layouts/StackedLayout";
 import GroupedSwitchLayout from "./layouts/GroupedSwitchLayout";
-
 import ProblemList from "../../components/ProblemList";
 import ProblemViewer from "../../components/ProblemViewer";
 import CodeEditor from "../../components/Editor/CodeEditor";
@@ -319,9 +319,9 @@ export default function Home() {
             }
         };
 
-        window.addEventListener("open-ui-grid-modal", handleOpenLayoutModal);
+        window.addEventListener("open-code-judge-ui-grid-modal", handleOpenLayoutModal);
         return () => {
-            window.removeEventListener("open-ui-grid-modal", handleOpenLayoutModal);
+            window.removeEventListener("open-code-judge-ui-grid-modal", handleOpenLayoutModal);
         };
     }, [isMobile]);
 
