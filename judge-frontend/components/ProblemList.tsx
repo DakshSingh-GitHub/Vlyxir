@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, memo } from "react";
 import { anime, stagger } from "../app/lib/anime";
 import { getProblems } from "../app/lib/api";
-import { Filter, ChevronDown, Check, Sparkles, SlidersHorizontal } from "lucide-react";
+import { Filter, Check, Sparkles, SlidersHorizontal } from "lucide-react";
 import { getSubmissions } from "../app/lib/storage";
 import FilterModal from "./General/FilterModal";
 
@@ -168,6 +168,23 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
         }
     };
 
+    const selectRandomProblem = () => {
+        if (filteredProblems.length === 0) {
+            return;
+        }
+
+        const selectableProblems = filteredProblems.length > 1 && selectedId
+            ? filteredProblems.filter((problem) => problem.id !== selectedId)
+            : filteredProblems;
+
+        const randomProblem = selectableProblems[Math.floor(Math.random() * selectableProblems.length)];
+        onSelect(randomProblem.id);
+
+        if (window.innerWidth < 1024 && setIsSidebarOpen) {
+            setIsSidebarOpen(false);
+        }
+    };
+
     return (
         <div className="h-full flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/5">
             <div className="p-5 border-b border-gray-100/50 dark:border-gray-800/50">
@@ -178,18 +195,29 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                         </div>
                         Problems
                     </h2>
-                    <button
-                        onClick={() => setIsFilterModalOpen(true)}
-                        className={`p-2 rounded-lg transition-all active:scale-95 ${filters.difficulty.length > 0 || filters.status !== "all"
-                            ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300 relative"
-                            : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                            }`}
-                    >
-                        <SlidersHorizontal className="w-4 h-4" />
-                        {(filters.difficulty.length > 0 || filters.status !== "all") && (
-                            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                        )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={selectRandomProblem}
+                            disabled={filteredProblems.length === 0}
+                            className="p-2 rounded-lg transition-all active:scale-95 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                            title="Pick a random problem"
+                            aria-label="Pick a random problem"
+                        >
+                            <Sparkles className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setIsFilterModalOpen(true)}
+                            className={`p-2 rounded-lg transition-all active:scale-95 ${filters.difficulty.length > 0 || filters.status !== "all"
+                                ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300 relative"
+                                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                }`}
+                        >
+                            <SlidersHorizontal className="w-4 h-4" />
+                            {(filters.difficulty.length > 0 || filters.status !== "all") && (
+                                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                            )}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="relative group">
