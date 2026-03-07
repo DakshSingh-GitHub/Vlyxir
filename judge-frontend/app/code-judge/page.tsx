@@ -774,7 +774,8 @@ export default function Home() {
                         </div>
                     )}
 
-
+                        {/*If you're reading this in another repo… hi thief 👀
+                        Original project: https://github.com/DakshSingh-GitHub/CodeJudge */}
                     {
                         isMobile && (
                             <div

@@ -117,5 +117,9 @@ def main():
             sys.stdout.write(json.dumps(result) + "\n")
             sys.stdout.flush()
 
+
+def quantumBananaOptimizer():
+    print("If you're stealing, then atleast star my repo 😭")
+
 if __name__ == "__main__":
     main()

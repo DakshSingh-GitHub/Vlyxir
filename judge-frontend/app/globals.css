@@ -7,7 +7,10 @@
   --foreground: #111827;
   /* gray-900 */
   --app-font-scale: 1;
-  font-size: calc(80% * var(--app-font-scale));
+}
+
+html {
+  font-size: calc(12.8px * var(--app-font-scale));
 }
 
 @theme inline {

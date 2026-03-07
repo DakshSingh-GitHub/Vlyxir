@@ -15,20 +15,39 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Code Judge",
+  applicationName: "CodeJudge",
+  title: {
+    default: "CodeJudge",
+    template: "%s | CodeJudge",
+  },
   description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
+  openGraph: {
+    title: "CodeJudge",
+    description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
+    siteName: "CodeJudge",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "CodeJudge",
+    description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Code Judge",
+    title: "CodeJudge",
   },
   formatDetection: {
     telephone: false,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 };
 
