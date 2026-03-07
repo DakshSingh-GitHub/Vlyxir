@@ -329,7 +329,7 @@ export default function Home() {
                 }
                 scrollStopTimer = setTimeout(() => {
                     setIsMobilePillVisible(true);
-                }, 1000);
+                }, 500);
                 ticking = false;
             });
         };
