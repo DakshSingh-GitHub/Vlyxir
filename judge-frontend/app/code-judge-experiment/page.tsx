@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { anime } from "../lib/anime";
 import { getProblemById, submitCode, runCode } from "../lib/api";
-import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../lib/storage";
-import { Problem } from "../lib/types";
+import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission, getUsers } from "../lib/storage";
+import { Problem, User } from "../lib/types";
 import { useAppContext } from "../lib/context";
-import { FileText, Code, History, Check, X, PanelTop, List, Info } from "lucide-react";
+import { FileText, Code, History, Check, X, PanelTop, List, Info, Key, UserCheck } from "lucide-react";
 
 // Client-side JS execution for experiment
 async function executeJSLocally(code: string, input: string): Promise<any> {
@@ -49,6 +49,9 @@ import ProblemViewer from "../../components/ProblemViewer";
 import CodeEditor from "../../components/Editor/CodeEditor";
 import PastSubmissions from "../../components/Editor/PastSubmissions";
 
+import { motion } from "framer-motion";
+import {Lock, Search} from "lucide-react";
+
 const DEFAULT_CODE = "#Write your code here";
 const LAYOUT_STORAGE_KEY = "codejudge_ui_grid_layout";
 
@@ -65,6 +68,7 @@ interface SubmissionResult {
 
 export default function Home() {
     // State Variable Declarations
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const { isSidebarOpen, setIsSidebarOpen, TITLE, isDark, autoHideMobilePills } = useAppContext();
     const [problem, setProblem] = useState<Problem | null>(null);
     const [selectedProblemId, setSelectedProblemId] = useState<string>("");
@@ -99,6 +103,11 @@ export default function Home() {
     const mobileDescriptionRef = useRef<HTMLDivElement>(null);
     const mobileCodeRef = useRef<HTMLDivElement>(null);
     const mobileSubmissionsRef = useRef<HTMLDivElement>(null);
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [err, setErr] = useState("");
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
 
     useEffect(() => {
         if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {
@@ -787,6 +796,24 @@ export default function Home() {
         </div>
     );
 
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        const allUsers = getUsers();
+        const user = allUsers.find(u => u.username === username && u.password === password);
+
+        if (user) {
+            if (user.permissions.includes('ADMIN_VIEW')) {
+                setIsAuthenticated(true);
+                setCurrentUser(user);
+                setErr("");
+            } else {
+                setErr("You don't have administrative access.");
+            }
+        } else {
+            setErr("You aren't a insider..sorry :(");
+        }
+    };
+
     const desktopLayoutProps = {
         mainContentRef,
         selectedProblemId,
@@ -809,67 +836,67 @@ export default function Home() {
         editorPanel: editorAndSubmissionsPanel
     };
 
-    // if (!isAuthenticated) {
-    //     return (
-    //         <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
-    //             <motion.div
-    //                 initial={{ opacity: 0, scale: 0.9 }}
-    //                 animate={{ opacity: 1, scale: 1 }}
-    //                 className="w-full max-w-md p-8 rounded-[2.5rem] bg-white dark:bg-gray-900 shadow-2xl border border-gray-100 dark:border-gray-800"
-    //             >
-    //                 <div className="text-center mb-10">
-    //                     <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-indigo-600/20">
-    //                         <Lock className="w-8 h-8 text-white" />
-    //                     </div>
-    //                     <h1 className="text-2xl md:text-3xl font-black mb-2">Admin Panel</h1>
-    //                     <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 font-medium">Authentication required</p>
-    //                 </div>
+    if (!isAuthenticated) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="w-full max-w-md p-8 rounded-[2.5rem] bg-white dark:bg-gray-900 shadow-2xl border border-gray-100 dark:border-gray-800"
+                >
+                    <div className="text-center mb-10">
+                        <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg shadow-indigo-600/20">
+                            <Lock className="w-8 h-8 text-white" />
+                        </div>
+                        <h1 className="text-2xl md:text-3xl font-black mb-2">Admin Panel</h1>
+                        <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 font-medium">Authentication required</p>
+                    </div>
 
-    //                 <form onSubmit={handleLogin} className="space-y-6">
-    //                     <div className="space-y-2">
-    //                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-4">Username</label>
-    //                         <div className="relative">
-    //                             <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-    //                             <input
-    //                                 type="text"
-    //                                 value={username}
-    //                                 onChange={(e) => setUsername(e.target.value)}
-    //                                 className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-950 rounded-2xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none font-medium"
-    //                                 placeholder="Admin username"
-    //                             />
-    //                         </div>
-    //                     </div>
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-4">Username</label>
+                            <div className="relative">
+                                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-950 rounded-2xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none font-medium"
+                                    placeholder="Admin username"
+                                />
+                            </div>
+                        </div>
 
-    //                     <div className="space-y-2">
-    //                         <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-4">Password</label>
-    //                         <div className="relative">
-    //                             <Key className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-    //                             <input
-    //                                 type="password"
-    //                                 value={password}
-    //                                 onChange={(e) => setPassword(e.target.value)}
-    //                                 className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-950 rounded-2xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none font-medium"
-    //                                 placeholder="••••••••"
-    //                             />
-    //                         </div>
-    //                     </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-4">Password</label>
+                            <div className="relative">
+                                <Key className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full pl-14 pr-6 py-4 bg-gray-50 dark:bg-gray-950 rounded-2xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 transition-all outline-none font-medium"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
 
-    //                     {error && (
-    //                         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-sm font-bold text-center">{error}</motion.p>
-    //                     )}
+                        {err && (
+                            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-sm font-bold text-center">{err}</motion.p>
+                        )}
 
-    //                     <button
-    //                         type="submit"
-    //                         className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2"
-    //                     >
-    //                         <UserCheck className="w-5 h-5" />
-    //                         Access Dashboard
-    //                     </button>
-    //                 </form>
-    //             </motion.div>
-    //         </div>
-    //     );
-    // }
+                        <button
+                            type="submit"
+                            className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+                        >
+                            <UserCheck className="w-5 h-5" />
+                            Access Dashboard
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className={`flex-1 flex flex-col min-h-0 bg-[#FAFAFA] dark:bg-[#0B0C15] text-gray-900 dark:text-gray-50 relative overflow-hidden font-sans selection:bg-indigo-500/30`}>

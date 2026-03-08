@@ -1,5 +1,5 @@
 export interface Problem {
-    [x: string]: never[];
+    hidden_test_cases: never[];
     id: string;
     title: string;
     description: string;

@@ -102,7 +102,7 @@ const LanguageSelector = memo(({ language = "python", setLanguage }: LanguageSel
                 <div className="px-3 py-2.5 mt-1 border-t border-gray-800/80 bg-black/20">
                   <p className="text-[9px] text-gray-500 leading-tight">
                     JavaScript is available in <br />
-                    <span className="text-indigo-400/80 font-bold">Experiment Mode</span> only.
+                    <Link href="/code-judge-experiment" className="text-indigo-400/80 font-bold">Experiment Mode</Link> only.
                   </p>
                 </div>
               )}
