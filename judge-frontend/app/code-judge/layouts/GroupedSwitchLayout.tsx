@@ -66,11 +66,13 @@ export default function GroupedSwitchLayout({
             anime({
                 targets: problemListRef.current,
                 translateX: leftPanelTab === 'selector' ? '0%' : '-100%',
+                translateZ: 0,
                 duration: 0
             });
             anime({
                 targets: descriptionRef.current,
                 translateX: leftPanelTab === 'description' ? '0%' : '100%',
+                translateZ: 0,
                 duration: 0
             });
             hasSetInitialPositions.current = true;
@@ -85,6 +87,7 @@ export default function GroupedSwitchLayout({
             anime({
                 targets: problemListRef.current,
                 translateX: '-100%',
+                translateZ: 0,
                 duration,
                 easing
             });
@@ -92,6 +95,7 @@ export default function GroupedSwitchLayout({
             anime({
                 targets: descriptionRef.current,
                 translateX: '0%',
+                translateZ: 0,
                 duration,
                 easing
             });
@@ -100,6 +104,7 @@ export default function GroupedSwitchLayout({
             anime({
                 targets: problemListRef.current,
                 translateX: '0%',
+                translateZ: 0,
                 duration,
                 easing
             });
@@ -107,6 +112,7 @@ export default function GroupedSwitchLayout({
             anime({
                 targets: descriptionRef.current,
                 translateX: '100%',
+                translateZ: 0,
                 duration,
                 easing
             });
@@ -160,14 +166,20 @@ export default function GroupedSwitchLayout({
                         <div 
                             ref={problemListRef} 
                             className="absolute inset-0 w-full h-full"
-                            style={{ transform: 'translateX(0%)' }} // Default initial state
+                            style={{ 
+                                transform: 'translateX(0%) translateZ(0)',
+                                willChange: 'transform' 
+                            }}
                         >
                             {problemList}
                         </div>
                         <div 
                             ref={descriptionRef} 
                             className="absolute inset-0 w-full h-full"
-                            style={{ transform: 'translateX(100%)' }} // Default initial state
+                            style={{ 
+                                transform: 'translateX(100%) translateZ(0)',
+                                willChange: 'transform'
+                            }}
                         >
                             {problemDescription}
                         </div>
