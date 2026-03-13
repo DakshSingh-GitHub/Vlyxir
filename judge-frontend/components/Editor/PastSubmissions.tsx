@@ -108,7 +108,7 @@ const PastSubmissions = memo(function PastSubmissions({ submissions, onLoadCode,
                                 </button>
                                 <button
                                     onClick={(e) => handleDeleteClick(e, sub.id)}
-                                    className="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/20 transition-all opacity-0 group-hover:opacity-100"
+                                    className="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/20 transition-all"
                                     title="Delete Submission"
                                 >
                                     <Trash2 className="w-4 h-4" />
