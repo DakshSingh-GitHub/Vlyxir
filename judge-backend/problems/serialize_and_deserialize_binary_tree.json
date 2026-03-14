@@ -22,304 +22,236 @@
             "output": "1"
         },
         {
-            "input": "38 17 92",
-            "output": "38 17 92"
+            "input": "23 60",
+            "output": "23 60"
+        },
+        {
+            "input": "77 74 59 1 68 7 83",
+            "output": "77 74 59 1 68 7 83"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "45 37 null 17",
-            "output": "45 37 null 17"
+            "input": "5 null 30 null null null 45",
+            "output": "5 null 30 null null null 45"
         },
         {
-            "input": "99 null 89 null null 10 6 null null null null null 53 8",
-            "output": "99 null 89 null null 10 6 null null null null null 53 8"
+            "input": "34 null 13 null null 86 92",
+            "output": "34 null 13 null null 86 92"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "7 33 36 60 14 91 null 68 null 61 48 62 97",
+            "output": "7 33 36 60 14 91 null 68 null 61 48 62 97"
         },
         {
-            "input": "55 8 97 29",
-            "output": "55 8 97 29"
-        },
-        {
-            "input": "1",
-            "output": "1"
-        },
-        {
-            "input": "58 null 33",
-            "output": "58 null 33"
-        },
-        {
-            "input": "65",
-            "output": "65"
-        },
-        {
-            "input": "56 95 86 null 14 null 53 null null 40 98",
-            "output": "56 95 86 null 14 null 53 null null 40 98"
-        },
-        {
-            "input": "88 37 21 59 null null 96 39 7",
-            "output": "88 37 21 59 null null 96 39 7"
-        },
-        {
-            "input": "60 21 88 39 39 23 12 null 6 75 73 null 100 99 60",
-            "output": "60 21 88 39 39 23 12 null 6 75 73 null 100 99 60"
-        },
-        {
-            "input": "36 null 82",
-            "output": "36 null 82"
+            "input": "99 39 63 23 null 75 31 63 83",
+            "output": "99 39 63 23 null 75 31 63 83"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "97 null 37 null null null 68",
+            "output": "97 null 37 null null null 68"
         },
         {
-            "input": "5 26 null 56 41 null null 60 74",
-            "output": "5 26 null 56 41 null null 60 74"
+            "input": "2 18 37 55 27 45 54 70 4 60 65 62 95",
+            "output": "2 18 37 55 27 45 54 70 4 60 65 62 95"
         },
         {
-            "input": "75 null 97",
-            "output": "75 null 97"
+            "input": "39 60 84 32 84",
+            "output": "39 60 84 32 84"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "73 null 18 null null 31 46",
+            "output": "73 null 18 null null 31 46"
         },
         {
-            "input": "67 85 44 86 54 41 66 3 3 67 null null 17 null 85",
-            "output": "67 85 44 86 54 41 66 3 3 67 null null 17 null 85"
+            "input": "31 62 16",
+            "output": "31 62 16"
         },
         {
-            "input": "1",
-            "output": "1"
-        },
-        {
-            "input": "27 99 84 62 4 null 2 61 71 null 92 null null 78",
-            "output": "27 99 84 62 4 null 2 61 71 null 92 null null 78"
-        },
-        {
-            "input": "79 8 67",
-            "output": "79 8 67"
-        },
-        {
-            "input": "52 42 44",
-            "output": "52 42 44"
+            "input": "22 86 98 null 51 43 40 null null 33 51 94 null 49 41",
+            "output": "22 86 98 null 51 43 40 null null 33 51 94 null 49 41"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "8 13 80",
-            "output": "8 13 80"
+            "input": "55 4",
+            "output": "55 4"
         },
         {
-            "input": "29 35 87 9 41 43 94 65 22",
-            "output": "29 35 87 9 41 43 94 65 22"
+            "input": "71 13",
+            "output": "71 13"
         },
         {
-            "input": "9 30 11 100",
-            "output": "9 30 11 100"
+            "input": "24 36 null 13 53 null null 31 90 88",
+            "output": "24 36 null 13 53 null null 31 90 88"
         },
         {
-            "input": "89 22 null null 29",
-            "output": "89 22 null null 29"
+            "input": "77 54 82 85 null 58 95 27 86 null null 64",
+            "output": "77 54 82 85 null 58 95 27 86 null null 64"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "6 88 93 55 92",
+            "output": "6 88 93 55 92"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "58 60 6 29 22 27 69 13 82 44 41 75",
+            "output": "58 60 6 29 22 27 69 13 82 44 41 75"
         },
         {
-            "input": "78 82 83 null 41 61 31 null null 10 2 67",
-            "output": "78 82 83 null 41 61 31 null null 10 2 67"
+            "input": "66 null 68 null null null 83",
+            "output": "66 null 68 null null null 83"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "87 39 3 36 38 25 82 null 3 69 62 44 17 71 93",
+            "output": "87 39 3 36 38 25 82 null 3 69 62 44 17 71 93"
         },
         {
-            "input": "54 null 52 null null null 96",
-            "output": "54 null 52 null null null 96"
+            "input": "86",
+            "output": "86"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "10 94 38 null 18 73 29 null null 4",
+            "output": "10 94 38 null 18 73 29 null null 4"
         },
         {
-            "input": "79 7 20 29",
-            "output": "79 7 20 29"
+            "input": "75 69 27 21",
+            "output": "75 69 27 21"
         },
         {
-            "input": "73 12 25 100",
-            "output": "73 12 25 100"
+            "input": "67 16 null 81 33 null null 40 95 62",
+            "output": "67 16 null 81 33 null null 40 95 62"
         },
         {
-            "input": "89 87 37 null 79 71 60 null null 86 null null null 24",
-            "output": "89 87 37 null 79 71 60 null null 86 null null null 24"
-        },
-        {
-            "input": "1",
-            "output": "1"
+            "input": "21 24 68 61 48 17 82 36 48 15 65 45 91",
+            "output": "21 24 68 61 48 17 82 36 48 15 65 45 91"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "28 55 49 null null 30 13 null null null null 38",
-            "output": "28 55 49 null null 30 13 null null null null 38"
+            "input": "51 66 null 63 15",
+            "output": "51 66 null 63 15"
         },
         {
-            "input": "56 null 18",
-            "output": "56 null 18"
+            "input": "11 69 85 57",
+            "output": "11 69 85 57"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "76 2 57 39",
+            "output": "76 2 57 39"
         },
         {
-            "input": "49 2 null 31 8 null null 45 78",
-            "output": "49 2 null 31 8 null null 45 78"
-        },
-        {
-            "input": "9",
-            "output": "9"
-        },
-        {
-            "input": "47 99 null 72 null null null 88",
-            "output": "47 99 null 72 null null null 88"
+            "input": "75 null 6",
+            "output": "75 null 6"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "68 1",
-            "output": "68 1"
+            "input": "27 97 4 82 null 42 70 86",
+            "output": "27 97 4 82 null 42 70 86"
         },
         {
-            "input": "22 null 34 null null 2 79 null null null null 27 51",
-            "output": "22 null 34 null null 2 79 null null null null 27 51"
+            "input": "66 54 35 23 34 62 null null 77 16 79 68 36",
+            "output": "66 54 35 23 34 62 null null 77 16 79 68 36"
         },
         {
-            "input": "1",
-            "output": "1"
+            "input": "36 59 38 15 23 16 45 84 80 null 80",
+            "output": "36 59 38 15 23 16 45 84 80 null 80"
         },
         {
-            "input": "63 95 57 92 32 72 null 61 null 36 59 7 19",
-            "output": "63 95 57 92 32 72 null 61 null 36 59 7 19"
+            "input": "28 37 17 79 45 77 10 69 37 20",
+            "output": "28 37 17 79 45 77 10 69 37 20"
         },
         {
-            "input": "61 79 41 64 19 20 80",
-            "output": "61 79 41 64 19 20 80"
+            "input": "17 93 88 10 8 13 36 null 78 49 92",
+            "output": "17 93 88 10 8 13 36 null 78 49 92"
         },
         {
-            "input": "68 92 null 98",
-            "output": "68 92 null 98"
+            "input": "21 null 72 null null 100 61",
+            "output": "21 null 72 null null 100 61"
         },
         {
-            "input": "25 null 95 null null 34 17",
-            "output": "25 null 95 null null 34 17"
+            "input": "68 2 81 null null 84",
+            "output": "68 2 81 null null 84"
         },
         {
-            "input": "6",
-            "output": "6"
+            "input": "64 74 91 84 24 null 22",
+            "output": "64 74 91 84 24 null 22"
         },
         {
-            "input": "96",
-            "output": "96"
+            "input": "9 21 null 8 92 null null 69 null 8 68",
+            "output": "9 21 null 8 92 null null 69 null 8 68"
         },
         {
-            "input": "38 64 94 30 86 45 53 null 38 null null 33 55",
-            "output": "38 64 94 30 86 45 53 null 38 null null 33 55"
+            "input": "23 null 72 null null null 9",
+            "output": "23 null 72 null null null 9"
         },
         {
-            "input": "56 35 null 50 49 null null null 54 null 11",
-            "output": "56 35 null 50 49 null null null 54 null 11"
-        },
-        {
-            "input": "84 68 null 98 44 null null 98 null 97",
-            "output": "84 68 null 98 44 null null 98 null 97"
+            "input": "76 75",
+            "output": "76 75"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "41 null 78",
-            "output": "41 null 78"
+            "input": "19 null 76 null null 78 34",
+            "output": "19 null 76 null null 78 34"
         },
         {
-            "input": "81 39 71 97 93 35 37 73 null 69 15 16 null 16 36",
-            "output": "81 39 71 97 93 35 37 73 null 69 15 16 null 16 36"
+            "input": "34 38 45 19 7 72 99 50 null 85",
+            "output": "34 38 45 19 7 72 99 50 null 85"
         },
         {
-            "input": "15 99",
-            "output": "15 99"
+            "input": "48 54 null 14 79 null null 18 91 65",
+            "output": "48 54 null 14 79 null null 18 91 65"
         },
         {
-            "input": "62 90 17 44 98 27 5 57 43 79 null 35",
-            "output": "62 90 17 44 98 27 5 57 43 79 null 35"
-        },
-        {
-            "input": "1",
-            "output": "1"
-        },
-        {
-            "input": "6 90 null null 82",
-            "output": "6 90 null null 82"
-        },
-        {
-            "input": "56 26 98 7 89 null 96 null 97 22 43",
-            "output": "56 26 98 7 89 null 96 null 97 22 43"
-        },
-        {
-            "input": "91 88 null 53",
-            "output": "91 88 null 53"
+            "input": "76 75 64 null 71",
+            "output": "76 75 64 null 71"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "95",
-            "output": "95"
+            "input": "34 43 null 15",
+            "output": "34 43 null 15"
         },
         {
-            "input": "24 35 6 61 19",
-            "output": "24 35 6 61 19"
+            "input": "68 27 66 33 70 33 3",
+            "output": "68 27 66 33 70 33 3"
         },
         {
-            "input": "13 63 82 16 96 82 null 87",
-            "output": "13 63 82 16 96 82 null 87"
-        },
-        {
-            "input": "23 67 null 26 17 null null 25 29 82",
-            "output": "23 67 null 26 17 null null 25 29 82"
-        },
-        {
-            "input": "8 38 76 36 null 86 8 null 71",
-            "output": "8 38 76 36 null 86 8 null 71"
+            "input": "47",
+            "output": "47"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "66 67 29 73 3 3 null 100 39",
-            "output": "66 67 29 73 3 3 null 100 39"
+            "input": "17 5 92 73",
+            "output": "17 5 92 73"
+        },
+        {
+            "input": "31 86 48 60 3 13 87 19 75 44 3 69 13",
+            "output": "31 86 48 60 3 13 87 19 75 44 3 69 13"
+        },
+        {
+            "input": "81 82 null 73 52 null null 10",
+            "output": "81 82 null 73 52 null null 10"
         },
         {
             "input": "1",
@@ -330,124 +262,180 @@
             "output": "1"
         },
         {
-            "input": "19 80 47 7",
-            "output": "19 80 47 7"
+            "input": "33 25 47 62 76 75 54 null 61 25",
+            "output": "33 25 47 62 76 75 54 null 61 25"
+        },
+        {
+            "input": "26 null 86 null null 80",
+            "output": "26 null 86 null null 80"
+        },
+        {
+            "input": "31 84 30 51 1 90 37 21 18 63 50",
+            "output": "31 84 30 51 1 90 37 21 18 63 50"
+        },
+        {
+            "input": "38 null 55 null null 30 78 null null null null null 24 80 58",
+            "output": "38 null 55 null null 30 78 null null null null null 24 80 58"
+        },
+        {
+            "input": "34 58 50 72 54 null 72 56 77 56 56 null null 5",
+            "output": "34 58 50 72 54 null 72 56 77 56 56 null null 5"
+        },
+        {
+            "input": "92 13 55 20 47",
+            "output": "92 13 55 20 47"
+        },
+        {
+            "input": "15 77 87 59 null 88 53",
+            "output": "15 77 87 59 null 88 53"
+        },
+        {
+            "input": "19 60 33 67 24",
+            "output": "19 60 33 67 24"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "99 47 15 60 3 49 52 null 27 72 26 63",
-            "output": "99 47 15 60 3 49 52 null 27 72 26 63"
+            "input": "1",
+            "output": "1"
         },
         {
-            "input": "88 5 2 9 20",
-            "output": "88 5 2 9 20"
+            "input": "72 15 null 88 82 null null 2 90 63 9",
+            "output": "72 15 null 88 82 null null 2 90 63 9"
         },
         {
-            "input": "55",
-            "output": "55"
+            "input": "11 83 96 53 40 null null 99 null 35",
+            "output": "11 83 96 53 40 null null 99 null 35"
         },
         {
-            "input": "32 25 24 null 19 61 65 null null 5 23 68",
-            "output": "32 25 24 null 19 61 65 null null 5 23 68"
-        },
-        {
-            "input": "81 29 43 null 33 21 8",
-            "output": "81 29 43 null 33 21 8"
-        },
-        {
-            "input": "51 7 62 null 30 27",
-            "output": "51 7 62 null 30 27"
+            "input": "52 null 77",
+            "output": "52 null 77"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "97 46 86 18 39 null 93 null 30",
-            "output": "97 46 86 18 39 null 93 null 30"
+            "input": "57",
+            "output": "57"
         },
         {
-            "input": "70 25 80 68 92 36 null 79 null 35",
-            "output": "70 25 80 68 92 36 null 79 null 35"
+            "input": "86 23 26 90 40 60 null null 6 42 73",
+            "output": "86 23 26 90 40 60 null null 6 42 73"
         },
         {
-            "input": "16 67 null 56 64 null null 42 90 67 95",
-            "output": "16 67 null 56 64 null null 42 90 67 95"
+            "input": "86 14 59 84 20 71 81 82 67",
+            "output": "86 14 59 84 20 71 81 82 67"
         },
         {
-            "input": "84 42 20",
-            "output": "84 42 20"
+            "input": "23 68 98 null 24 26 null null null null 3 55 100",
+            "output": "23 68 98 null 24 26 null null null null 3 55 100"
+        },
+        {
+            "input": "94 null 2 null null 36 82 null null null null 79 95 84",
+            "output": "94 null 2 null null 36 82 null null null null 79 95 84"
+        },
+        {
+            "input": "32 62 11 68 96 100 73 73 50 19",
+            "output": "32 62 11 68 96 100 73 73 50 19"
         },
         {
             "input": "1",
             "output": "1"
         },
         {
-            "input": "21 null 86 null null 90 59",
-            "output": "21 null 86 null null 90 59"
+            "input": "1",
+            "output": "1"
         },
         {
-            "input": "79 33 30 94 61 76 null 4 46",
-            "output": "79 33 30 94 61 76 null 4 46"
+            "input": "10 null 65 null null 73 60 null null null null 72",
+            "output": "10 null 65 null null 73 60 null null null null 72"
         },
         {
-            "input": "66",
-            "output": "66"
+            "input": "61 96 43 41 null 24 null 22 39 null null null 91",
+            "output": "61 96 43 41 null 24 null 22 39 null null null 91"
         },
         {
-            "input": "50 71 17 2 91 67 56 44 52 93 17 61 23 12",
-            "output": "50 71 17 2 91 67 56 44 52 93 17 61 23 12"
+            "input": "20 50",
+            "output": "20 50"
         },
         {
-            "input": "85 83 88 95 13 12 null null 35",
-            "output": "85 83 88 95 13 12 null null 35"
+            "input": "68",
+            "output": "68"
         },
         {
-            "input": "67 33 21 null null 83 43 null null null null null 22 2",
-            "output": "67 33 21 null null 83 43 null null null null null 22 2"
+            "input": "22 25 13",
+            "output": "22 25 13"
         },
         {
-            "input": "91 10 78 6 62 4 null 21 69 71 63 48",
-            "output": "91 10 78 6 62 4 null 21 69 71 63 48"
+            "input": "81 74",
+            "output": "81 74"
         },
         {
-            "input": "47 35 5 47 59",
-            "output": "47 35 5 47 59"
+            "input": "79 27 85 94 33 null 61 75",
+            "output": "79 27 85 94 33 null 61 75"
         },
         {
-            "input": "12 53 56 73",
-            "output": "12 53 56 73"
+            "input": "13 22 69",
+            "output": "13 22 69"
         },
         {
-            "input": "7",
-            "output": "7"
+            "input": "26 41 34 47 null 80 55 69 7",
+            "output": "26 41 34 47 null 80 55 69 7"
         },
         {
-            "input": "9 47 null 62 88 null null 11 null 79 79",
-            "output": "9 47 null 62 88 null null 11 null 79 79"
+            "input": "83 48 35 74 26 82 60 null 88 79 100 68 67",
+            "output": "83 48 35 74 26 82 60 null 88 79 100 68 67"
         },
         {
-            "input": "95 13 61 52",
-            "output": "95 13 61 52"
+            "input": "27 6 67 73 null 71 45 null 69",
+            "output": "27 6 67 73 null 71 45 null 69"
         },
         {
-            "input": "88 37 null 12 58 null null 75 70",
-            "output": "88 37 null 12 58 null null 75 70"
+            "input": "53 30 80 90 58",
+            "output": "53 30 80 90 58"
         },
         {
-            "input": "76 59 null 94",
-            "output": "76 59 null 94"
+            "input": "1",
+            "output": "1"
         },
         {
-            "input": "30 78 9 null 99 84 57",
-            "output": "30 78 9 null 99 84 57"
+            "input": "68 27 100 30 98 29 65",
+            "output": "68 27 100 30 98 29 65"
         },
         {
-            "input": "53 36 44 92 null 38 null 21 74",
-            "output": "53 36 44 92 null 38 null 21 74"
+            "input": "63 56 74 16 53 null 42 71 58 4 92 null null 60",
+            "output": "63 56 74 16 53 null 42 71 58 4 92 null null 60"
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "53 11 5 67 null 90 4 81 92",
+            "output": "53 11 5 67 null 90 4 81 92"
+        },
+        {
+            "input": "83",
+            "output": "83"
+        },
+        {
+            "input": "52 92 null 7",
+            "output": "52 92 null 7"
+        },
+        {
+            "input": "68 null 8 null null 45 25 null null null null 43",
+            "output": "68 null 8 null null 45 25 null null null null 43"
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "47 74 null 99 83 null null 69 null 3",
+            "output": "47 74 null 99 83 null null 69 null 3"
         }
     ]
 }

@@ -18,460 +18,464 @@
     ],
     "hidden_test_cases": [
         {
-            "input": "MedianFinder\naddNum 31\naddNum 28\naddNum 96\nfindMedian\nfindMedian\naddNum 85\naddNum 90\naddNum 28\naddNum 95\naddNum 79\naddNum 10\naddNum 2\naddNum 79\naddNum 70\naddNum 75\naddNum 20\naddNum 24\nfindMedian\naddNum 37\naddNum 69\naddNum 44\naddNum 18\naddNum 14\naddNum 1\naddNum 40\naddNum 14",
-            "output": "null\nnull\nnull\nnull\n31.0\n31.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n70.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 49\naddNum 68\nfindMedian\nfindMedian\naddNum 90\naddNum 62\nfindMedian\naddNum 71\nfindMedian\naddNum 82\naddNum 51\naddNum 55\nfindMedian\naddNum 46\naddNum 61\naddNum 62\naddNum 3\naddNum 57\naddNum 14\nfindMedian\nfindMedian\naddNum 2",
+            "output": "null\nnull\nnull\n58.5\n58.5\nnull\nnull\n65.0\nnull\n68.0\nnull\nnull\nnull\n65.0\nnull\nnull\nnull\nnull\nnull\nnull\n59.0\n59.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 66\naddNum 38\naddNum 42\naddNum 9\naddNum 95\nfindMedian\naddNum 50\nfindMedian\naddNum 83\naddNum 49\naddNum 31\nfindMedian\nfindMedian\naddNum 77\naddNum 65\naddNum 36\naddNum 29\naddNum 46",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\n42.0\nnull\n46.0\nnull\nnull\nnull\n49.0\n49.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 56\naddNum 32\naddNum 1\nfindMedian\naddNum 68\naddNum 53\nfindMedian\naddNum 84\nfindMedian\naddNum 34\nfindMedian\naddNum 87\nfindMedian\naddNum 4",
+            "output": "null\nnull\nnull\nnull\n32.0\nnull\nnull\n53.0\nnull\n54.5\nnull\n53.0\nnull\n54.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 72\naddNum 26\naddNum 5\nfindMedian\naddNum 48\nfindMedian\nfindMedian\naddNum 50\naddNum 22\nfindMedian\naddNum 9\naddNum 89\naddNum 29",
-            "output": "null\nnull\nnull\nnull\n26.0\nnull\n37.0\n37.0\nnull\nnull\n37.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 49\naddNum 2\naddNum 33\nfindMedian\nfindMedian\naddNum 29\naddNum 89\naddNum 69\naddNum 5\naddNum 91\naddNum 55\naddNum 51\naddNum 52",
+            "output": "null\nnull\nnull\nnull\n33.0\n33.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 81\naddNum 21\naddNum 64\naddNum 88\nfindMedian\nfindMedian\naddNum 31\naddNum 69\naddNum 63\naddNum 12\naddNum 49\naddNum 70",
-            "output": "null\nnull\nnull\nnull\nnull\n72.5\n72.5\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 20\naddNum 24\naddNum 73\naddNum 97\naddNum 16\naddNum 96\naddNum 14\naddNum 9\naddNum 50\nfindMedian\nfindMedian\naddNum 10\naddNum 51\naddNum 59\naddNum 14\naddNum 8\naddNum 67\naddNum 29",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n24.0\n24.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 51\naddNum 21\nfindMedian\naddNum 99\naddNum 28\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 79\nfindMedian\naddNum 39\naddNum 70\nfindMedian\naddNum 77\naddNum 23\naddNum 48\naddNum 41\nfindMedian\naddNum 71\nfindMedian\naddNum 100\naddNum 84\naddNum 31\naddNum 57\naddNum 64\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\n36.0\nnull\nnull\n39.5\n39.5\n39.5\n39.5\nnull\n51.0\nnull\nnull\n51.0\nnull\nnull\nnull\nnull\n48.0\nnull\n49.5\nnull\nnull\nnull\nnull\nnull\n57.0\n57.0\n57.0"
+            "input": "MedianFinder\naddNum 49\naddNum 33\nfindMedian\naddNum 25\nfindMedian\nfindMedian\nfindMedian\naddNum 74\naddNum 16\nfindMedian\nfindMedian\naddNum 62\naddNum 19\nfindMedian\naddNum 9\naddNum 93\naddNum 66\naddNum 61\naddNum 15\naddNum 79\naddNum 71\naddNum 75\nfindMedian\naddNum 20\naddNum 63\naddNum 46\nfindMedian\naddNum 16\nfindMedian",
+            "output": "null\nnull\nnull\n41.0\nnull\n33.0\n33.0\n33.0\nnull\nnull\n33.0\n33.0\nnull\nnull\n33.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n61.0\nnull\nnull\nnull\n55.0\nnull\n49.0"
         },
         {
-            "input": "MedianFinder\naddNum 54\naddNum 58\nfindMedian\naddNum 65\nfindMedian\nfindMedian\naddNum 26\naddNum 94\naddNum 21\naddNum 77\naddNum 60\naddNum 1\naddNum 52\naddNum 34\nfindMedian\naddNum 80\naddNum 47\naddNum 84\naddNum 5\naddNum 34\naddNum 4\nfindMedian\naddNum 8\naddNum 55\nfindMedian\naddNum 37\naddNum 86",
-            "output": "null\nnull\nnull\n56.0\nnull\n58.0\n58.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n54.0\nnull\nnull\nnull\nnull\nnull\nnull\n52.0\nnull\nnull\n52.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 83\nfindMedian\naddNum 94\naddNum 78\nfindMedian\naddNum 3\naddNum 23\naddNum 71\naddNum 1\naddNum 71\nfindMedian\naddNum 41\nfindMedian\nfindMedian\naddNum 39\nfindMedian\nfindMedian\nfindMedian",
+            "output": "null\nnull\n83.0\nnull\nnull\n83.0\nnull\nnull\nnull\nnull\nnull\n71.0\nnull\n71.0\n71.0\nnull\n56.0\n56.0\n56.0"
         },
         {
-            "input": "MedianFinder\naddNum 99\nfindMedian\naddNum 16\naddNum 77\naddNum 48\naddNum 87\naddNum 67\naddNum 70\naddNum 12\nfindMedian\naddNum 3\nfindMedian\naddNum 96\nfindMedian\naddNum 100\naddNum 53\naddNum 6\naddNum 84",
-            "output": "null\nnull\n99.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n68.5\nnull\n67.0\nnull\n68.5\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 65\naddNum 7\naddNum 43\naddNum 11\naddNum 97\naddNum 48\naddNum 100\nfindMedian\naddNum 60\nfindMedian\naddNum 31\naddNum 87\naddNum 29\naddNum 56\naddNum 82\naddNum 37\nfindMedian\naddNum 58\naddNum 75\naddNum 66\naddNum 75\naddNum 53\naddNum 41\naddNum 66\naddNum 27\naddNum 74\naddNum 37",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n48.0\nnull\n54.0\nnull\nnull\nnull\nnull\nnull\nnull\n52.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 20\nfindMedian\naddNum 77\naddNum 26\naddNum 42\naddNum 9\naddNum 45\naddNum 93\naddNum 73\naddNum 80\nfindMedian\nfindMedian\naddNum 96\naddNum 62\nfindMedian",
-            "output": "null\nnull\n20.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n45.0\n45.0\nnull\nnull\n62.0"
+            "input": "MedianFinder\naddNum 19\naddNum 88\naddNum 79\nfindMedian\nfindMedian\naddNum 94\nfindMedian\nfindMedian\nfindMedian\naddNum 63\naddNum 46\nfindMedian\naddNum 53\nfindMedian\nfindMedian\nfindMedian\naddNum 65\naddNum 46\nfindMedian\naddNum 66\naddNum 68\naddNum 20\naddNum 48\naddNum 55",
+            "output": "null\nnull\nnull\nnull\n79.0\n79.0\nnull\n83.5\n83.5\n83.5\nnull\nnull\n71.0\nnull\n63.0\n63.0\n63.0\nnull\nnull\n63.0\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 27\nfindMedian\nfindMedian\naddNum 86\nfindMedian\naddNum 51\naddNum 83\naddNum 86\naddNum 67\naddNum 16\nfindMedian\naddNum 64\naddNum 11\naddNum 52\naddNum 41\naddNum 4\naddNum 8\nfindMedian",
-            "output": "null\nnull\n27.0\n27.0\nnull\n56.5\nnull\nnull\nnull\nnull\nnull\n67.0\nnull\nnull\nnull\nnull\nnull\nnull\n51.0"
+            "input": "MedianFinder\naddNum 89\naddNum 15\nfindMedian\naddNum 25\nfindMedian\naddNum 80\naddNum 41\nfindMedian\naddNum 99\nfindMedian\naddNum 58\naddNum 96\naddNum 27\naddNum 47\naddNum 12\nfindMedian\nfindMedian\naddNum 2\naddNum 98\naddNum 69\nfindMedian\naddNum 54\naddNum 11",
+            "output": "null\nnull\nnull\n52.0\nnull\n25.0\nnull\nnull\n41.0\nnull\n60.5\nnull\nnull\nnull\nnull\nnull\n47.0\n47.0\nnull\nnull\nnull\n52.5\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 88\naddNum 71\naddNum 60\nfindMedian\naddNum 75\naddNum 1\naddNum 87\naddNum 48\naddNum 58\nfindMedian\nfindMedian\nfindMedian\naddNum 5\naddNum 30\nfindMedian\naddNum 80\nfindMedian\nfindMedian\naddNum 94\nfindMedian\nfindMedian\naddNum 20\nfindMedian\naddNum 55\naddNum 72",
-            "output": "null\nnull\nnull\nnull\n71.0\nnull\nnull\nnull\nnull\nnull\n65.5\n65.5\n65.5\nnull\nnull\n59.0\nnull\n60.0\n60.0\nnull\n65.5\n65.5\nnull\n60.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 3\naddNum 20\nfindMedian\naddNum 92\naddNum 95\naddNum 94\nfindMedian\nfindMedian\naddNum 68\naddNum 57\naddNum 16\nfindMedian\naddNum 45\nfindMedian",
+            "output": "null\nnull\nnull\n11.5\nnull\nnull\nnull\n92.0\n92.0\nnull\nnull\nnull\n62.5\nnull\n57.0"
         },
         {
-            "input": "MedianFinder\naddNum 55\naddNum 56\naddNum 37\naddNum 21\nfindMedian\naddNum 20\naddNum 15\naddNum 83\nfindMedian\naddNum 6\naddNum 63\naddNum 45\naddNum 70\naddNum 87",
-            "output": "null\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\nnull\n37.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 86\naddNum 10\naddNum 9\naddNum 50\naddNum 85\nfindMedian\naddNum 36\nfindMedian\naddNum 58\naddNum 82\naddNum 58\naddNum 52\naddNum 46\nfindMedian\naddNum 91\naddNum 62\nfindMedian\naddNum 66\naddNum 97\naddNum 78\naddNum 39\nfindMedian\naddNum 9\nfindMedian\naddNum 44\naddNum 32",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n50.0\nnull\n43.0\nnull\nnull\nnull\nnull\nnull\n52.0\nnull\nnull\n58.0\nnull\nnull\nnull\nnull\n58.0\nnull\n58.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 38\naddNum 95\naddNum 24\naddNum 87\nfindMedian\naddNum 93\naddNum 65\naddNum 76\naddNum 14\nfindMedian\nfindMedian\naddNum 45",
-            "output": "null\nnull\nnull\nnull\nnull\n62.5\nnull\nnull\nnull\nnull\n70.5\n70.5\nnull"
+            "input": "MedianFinder\naddNum 28\nfindMedian\naddNum 5\naddNum 100\naddNum 66\naddNum 79\naddNum 18\naddNum 88\naddNum 62\naddNum 100\naddNum 67\naddNum 51\naddNum 55\nfindMedian\naddNum 46\naddNum 29\naddNum 17\naddNum 60\nfindMedian\nfindMedian",
+            "output": "null\nnull\n28.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n64.0\nnull\nnull\nnull\nnull\n57.5\n57.5"
         },
         {
-            "input": "MedianFinder\naddNum 2\naddNum 28\naddNum 37\naddNum 95\nfindMedian\naddNum 47\nfindMedian\naddNum 76\naddNum 78\naddNum 90\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\n32.5\nnull\n37.0\nnull\nnull\nnull\n61.5\n61.5"
+            "input": "MedianFinder\naddNum 18\naddNum 28\naddNum 28\naddNum 1\nfindMedian\naddNum 93\naddNum 84\naddNum 23\naddNum 4\naddNum 16\naddNum 4\nfindMedian\naddNum 71\nfindMedian\naddNum 13\naddNum 57\naddNum 9\nfindMedian\naddNum 73\naddNum 5\naddNum 24\naddNum 77\nfindMedian\naddNum 33\naddNum 31",
+            "output": "null\nnull\nnull\nnull\nnull\n23.0\nnull\nnull\nnull\nnull\nnull\nnull\n20.5\nnull\n23.0\nnull\nnull\nnull\n20.5\nnull\nnull\nnull\nnull\n23.5\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 57\naddNum 47\nfindMedian\nfindMedian\naddNum 63\nfindMedian\naddNum 82\naddNum 18\naddNum 56\naddNum 28\naddNum 69\naddNum 61\nfindMedian\naddNum 62\naddNum 70\naddNum 40",
-            "output": "null\nnull\nnull\n52.0\n52.0\nnull\n57.0\nnull\nnull\nnull\nnull\nnull\nnull\n57.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 29\nfindMedian\naddNum 28\naddNum 82\naddNum 59\nfindMedian\naddNum 91\nfindMedian\nfindMedian\naddNum 81\naddNum 22\naddNum 29\naddNum 96\naddNum 38\nfindMedian\naddNum 33\naddNum 61\naddNum 61\naddNum 52\naddNum 73\nfindMedian\naddNum 77\nfindMedian",
+            "output": "null\nnull\n29.0\nnull\nnull\nnull\n44.0\nnull\n59.0\n59.0\nnull\nnull\nnull\nnull\nnull\n48.5\nnull\nnull\nnull\nnull\nnull\n59.0\nnull\n60.0"
         },
         {
-            "input": "MedianFinder\naddNum 99\naddNum 46\naddNum 66\naddNum 22\naddNum 90\naddNum 32\naddNum 7\naddNum 63\naddNum 58\nfindMedian\naddNum 23\naddNum 89\nfindMedian\naddNum 83\naddNum 8\naddNum 20\nfindMedian\nfindMedian\naddNum 22\naddNum 90\nfindMedian\naddNum 38\naddNum 38\naddNum 63\naddNum 35",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n58.0\nnull\nnull\n58.0\nnull\nnull\nnull\n52.0\n52.0\nnull\nnull\n52.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 50\nfindMedian\naddNum 50\naddNum 56\naddNum 11\naddNum 57\nfindMedian\nfindMedian\nfindMedian\naddNum 47\nfindMedian\naddNum 76\naddNum 95\naddNum 62\naddNum 17\nfindMedian\naddNum 39\naddNum 68\naddNum 79\nfindMedian\nfindMedian\nfindMedian\nfindMedian",
+            "output": "null\nnull\n50.0\nnull\nnull\nnull\nnull\n50.0\n50.0\n50.0\nnull\n50.0\nnull\nnull\nnull\nnull\n53.0\nnull\nnull\nnull\n56.0\n56.0\n56.0\n56.0"
         },
         {
-            "input": "MedianFinder\naddNum 43\naddNum 63\nfindMedian\naddNum 34\naddNum 41\naddNum 10\naddNum 63\naddNum 27\naddNum 1\naddNum 73\nfindMedian\naddNum 14\naddNum 96\naddNum 41\naddNum 97\naddNum 87\naddNum 3\naddNum 60\nfindMedian",
-            "output": "null\nnull\nnull\n53.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n41.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n42.0"
+            "input": "MedianFinder\naddNum 75\naddNum 40\naddNum 75\nfindMedian\naddNum 2\naddNum 58\nfindMedian\naddNum 78\nfindMedian\naddNum 20\nfindMedian\naddNum 30\naddNum 34",
+            "output": "null\nnull\nnull\nnull\n75.0\nnull\nnull\n58.0\nnull\n66.5\nnull\n58.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 39\naddNum 15\naddNum 33\naddNum 52\nfindMedian\naddNum 86\naddNum 55\naddNum 39\naddNum 69\naddNum 17\naddNum 20\naddNum 30\nfindMedian\naddNum 42\naddNum 23\naddNum 33\naddNum 42\naddNum 82\naddNum 68\nfindMedian\naddNum 38\naddNum 25\nfindMedian\naddNum 50\naddNum 26\naddNum 8\naddNum 90\naddNum 79\naddNum 42",
-            "output": "null\nnull\nnull\nnull\nnull\n36.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull\n39.0\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 71\naddNum 10\naddNum 65\nfindMedian\naddNum 20\naddNum 64\naddNum 4\naddNum 79\nfindMedian\naddNum 16\naddNum 3\nfindMedian\nfindMedian\naddNum 77\naddNum 57\nfindMedian\naddNum 75\nfindMedian\nfindMedian\naddNum 28\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n65.0\nnull\nnull\nnull\nnull\n64.0\nnull\nnull\n20.0\n20.0\nnull\nnull\n57.0\nnull\n60.5\n60.5\nnull\n57.0"
         },
         {
-            "input": "MedianFinder\naddNum 52\nfindMedian\nfindMedian\nfindMedian\naddNum 66\naddNum 15\naddNum 69\naddNum 10\naddNum 64\nfindMedian\naddNum 43\naddNum 18\naddNum 99\naddNum 46\naddNum 40\nfindMedian\nfindMedian\naddNum 29\naddNum 92\naddNum 67\naddNum 27\nfindMedian\nfindMedian\nfindMedian\naddNum 18\naddNum 17\nfindMedian\nfindMedian\naddNum 6",
-            "output": "null\nnull\n52.0\n52.0\n52.0\nnull\nnull\nnull\nnull\nnull\n58.0\nnull\nnull\nnull\nnull\nnull\n46.0\n46.0\nnull\nnull\nnull\nnull\n46.0\n46.0\n46.0\nnull\nnull\n43.0\n43.0\nnull"
+            "input": "MedianFinder\naddNum 36\naddNum 20\naddNum 19\nfindMedian\nfindMedian\naddNum 61\naddNum 26\naddNum 49\nfindMedian\naddNum 6\naddNum 95\naddNum 16\naddNum 78\naddNum 37\nfindMedian\nfindMedian\naddNum 93\naddNum 13\naddNum 10\naddNum 73\nfindMedian\naddNum 76\naddNum 23",
+            "output": "null\nnull\nnull\nnull\n20.0\n20.0\nnull\nnull\nnull\n31.0\nnull\nnull\nnull\nnull\nnull\n36.0\n36.0\nnull\nnull\nnull\nnull\n36.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 9\naddNum 94\nfindMedian\nfindMedian\nfindMedian\naddNum 77\naddNum 83\naddNum 80\naddNum 48\nfindMedian\naddNum 20\naddNum 66\naddNum 58\naddNum 50\naddNum 34\naddNum 89\naddNum 79\nfindMedian\naddNum 63\naddNum 57\naddNum 73\naddNum 53\nfindMedian\naddNum 36",
-            "output": "null\nnull\nnull\n51.5\n51.5\n51.5\nnull\nnull\nnull\nnull\n78.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n66.0\nnull\nnull\nnull\nnull\n63.0\nnull"
+            "input": "MedianFinder\naddNum 55\naddNum 83\naddNum 52\naddNum 2\nfindMedian\naddNum 20\nfindMedian\nfindMedian\nfindMedian\naddNum 35\nfindMedian\naddNum 27\naddNum 8\naddNum 16\nfindMedian\naddNum 43\naddNum 69\nfindMedian\nfindMedian\naddNum 2\naddNum 92\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\n53.5\nnull\n52.0\n52.0\n52.0\nnull\n43.5\nnull\nnull\nnull\n27.0\nnull\nnull\n35.0\n35.0\nnull\nnull\n35.0"
         },
         {
-            "input": "MedianFinder\naddNum 10\naddNum 49\nfindMedian\nfindMedian\nfindMedian\naddNum 75\naddNum 41\naddNum 86\naddNum 33\nfindMedian\naddNum 14\nfindMedian\naddNum 100\naddNum 49",
-            "output": "null\nnull\nnull\n29.5\n29.5\n29.5\nnull\nnull\nnull\nnull\n45.0\nnull\n41.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 29\naddNum 46\nfindMedian\naddNum 91\naddNum 45\naddNum 62\naddNum 13\naddNum 68\naddNum 62\nfindMedian\nfindMedian\naddNum 58\naddNum 94\naddNum 74\naddNum 4\nfindMedian\naddNum 77\nfindMedian\naddNum 73\naddNum 47\naddNum 75\naddNum 3\naddNum 13\nfindMedian",
+            "output": "null\nnull\nnull\n37.5\nnull\nnull\nnull\nnull\nnull\nnull\n54.0\n54.0\nnull\nnull\nnull\nnull\n60.0\nnull\n62.0\nnull\nnull\nnull\nnull\nnull\n60.0"
         },
         {
-            "input": "MedianFinder\naddNum 28\naddNum 41\naddNum 31\naddNum 22\naddNum 72\naddNum 99\nfindMedian\naddNum 67\naddNum 34\nfindMedian\naddNum 12\naddNum 87\nfindMedian\nfindMedian\naddNum 6\naddNum 7\nfindMedian\naddNum 24\naddNum 81\naddNum 33\naddNum 24\naddNum 41\naddNum 77",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n36.0\nnull\nnull\n37.5\nnull\nnull\n37.5\n37.5\nnull\nnull\n32.5\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 1\naddNum 88\naddNum 14\nfindMedian\nfindMedian\nfindMedian\naddNum 59\naddNum 42\naddNum 95\naddNum 68\naddNum 33\naddNum 13\naddNum 89\naddNum 19\naddNum 28\naddNum 81\naddNum 50\naddNum 48\nfindMedian\naddNum 33\naddNum 9\nfindMedian\naddNum 59\naddNum 94\naddNum 67",
+            "output": "null\nnull\nnull\nnull\n14.0\n14.0\n14.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\n42.0\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 56\nfindMedian\naddNum 14\nfindMedian\nfindMedian\naddNum 87\naddNum 41\nfindMedian\naddNum 99\nfindMedian\naddNum 92\naddNum 25\naddNum 66\naddNum 99",
-            "output": "null\nnull\n56.0\nnull\n35.0\n35.0\nnull\nnull\n48.5\nnull\n56.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 56\naddNum 71\nfindMedian\naddNum 69\nfindMedian\naddNum 19\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 92\nfindMedian\naddNum 32\naddNum 38\naddNum 41\nfindMedian",
+            "output": "null\nnull\nnull\n63.5\nnull\n69.0\nnull\n62.5\n62.5\n62.5\n62.5\nnull\n69.0\nnull\nnull\nnull\n48.5"
         },
         {
-            "input": "MedianFinder\naddNum 22\naddNum 71\naddNum 21\naddNum 50\naddNum 48\naddNum 51\nfindMedian\naddNum 51\naddNum 41\naddNum 20\naddNum 96\naddNum 19\naddNum 74\naddNum 26\nfindMedian\nfindMedian\naddNum 31\naddNum 94\nfindMedian\naddNum 98\naddNum 82\naddNum 41\nfindMedian\naddNum 29\nfindMedian\naddNum 25\naddNum 68",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n49.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n48.0\n48.0\nnull\nnull\n48.0\nnull\nnull\nnull\n49.0\nnull\n48.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 9\naddNum 48\naddNum 89\naddNum 15\naddNum 6\nfindMedian\nfindMedian\naddNum 75\nfindMedian\naddNum 100\naddNum 7\naddNum 4\nfindMedian\naddNum 46\nfindMedian\naddNum 99\naddNum 26\naddNum 32\naddNum 73\naddNum 30\naddNum 94\nfindMedian\naddNum 9\naddNum 34\naddNum 76\nfindMedian\nfindMedian\naddNum 22\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n15.0\n15.0\nnull\n31.5\nnull\nnull\nnull\n15.0\nnull\n30.5\nnull\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull\nnull\n34.0\n34.0\nnull\n33.0"
         },
         {
-            "input": "MedianFinder\naddNum 50\nfindMedian\nfindMedian\nfindMedian\naddNum 84\naddNum 45\naddNum 70\nfindMedian\naddNum 42\naddNum 56\naddNum 95\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\n50.0\n50.0\n50.0\nnull\nnull\nnull\n60.0\nnull\nnull\nnull\n56.0\n56.0\n56.0"
+            "input": "MedianFinder\naddNum 36\naddNum 74\naddNum 27\nfindMedian\nfindMedian\nfindMedian\naddNum 23\naddNum 11\naddNum 97\naddNum 78\nfindMedian\naddNum 57\nfindMedian\naddNum 86\naddNum 21\nfindMedian\naddNum 29\naddNum 43\naddNum 53\naddNum 79\naddNum 50",
+            "output": "null\nnull\nnull\nnull\n36.0\n36.0\n36.0\nnull\nnull\nnull\nnull\n36.0\nnull\n46.5\nnull\nnull\n46.5\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 82\nfindMedian\naddNum 95\naddNum 23\naddNum 17\naddNum 99\naddNum 75\nfindMedian\naddNum 17\naddNum 29\naddNum 86\naddNum 18",
-            "output": "null\nnull\n82.0\nnull\nnull\nnull\nnull\nnull\n78.5\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 21\naddNum 47\naddNum 9\naddNum 8\nfindMedian\naddNum 37\naddNum 86\nfindMedian\naddNum 98\naddNum 51\naddNum 55\nfindMedian\nfindMedian\nfindMedian\naddNum 65\naddNum 53\naddNum 25",
+            "output": "null\nnull\nnull\nnull\nnull\n15.0\nnull\nnull\n29.0\nnull\nnull\nnull\n47.0\n47.0\n47.0\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 76\naddNum 9\naddNum 5\naddNum 4\naddNum 42\naddNum 10\naddNum 31\naddNum 2\nfindMedian\nfindMedian\nfindMedian\naddNum 31\naddNum 80\nfindMedian\naddNum 38\naddNum 20\naddNum 36\naddNum 93\naddNum 62\nfindMedian\naddNum 83\naddNum 57\nfindMedian\nfindMedian\naddNum 87",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n9.5\n9.5\n9.5\nnull\nnull\n20.5\nnull\nnull\nnull\nnull\nnull\n31.0\nnull\nnull\n36.0\n36.0\nnull"
+            "input": "MedianFinder\naddNum 8\naddNum 43\naddNum 80\naddNum 57\nfindMedian\naddNum 72\nfindMedian\nfindMedian\naddNum 74\naddNum 62\naddNum 63\naddNum 81\naddNum 95\nfindMedian\nfindMedian\naddNum 81\nfindMedian\nfindMedian\naddNum 8\naddNum 42\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\n50.0\nnull\n57.0\n57.0\nnull\nnull\nnull\nnull\nnull\n67.5\n67.5\nnull\n72.0\n72.0\nnull\nnull\n63.0"
         },
         {
-            "input": "MedianFinder\naddNum 29\nfindMedian\naddNum 49\naddNum 78\naddNum 89\nfindMedian\naddNum 82\nfindMedian\naddNum 48\naddNum 3\naddNum 20\naddNum 30\naddNum 23\naddNum 61\naddNum 72\naddNum 25\naddNum 37\naddNum 82\naddNum 18\nfindMedian",
-            "output": "null\nnull\n29.0\nnull\nnull\nnull\n63.5\nnull\n78.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n42.5"
+            "input": "MedianFinder\naddNum 22\naddNum 25\nfindMedian\naddNum 87\naddNum 68\naddNum 42\nfindMedian\naddNum 88\naddNum 98\naddNum 57\naddNum 50\naddNum 22\naddNum 27\naddNum 49\naddNum 27\naddNum 69\nfindMedian\naddNum 25",
+            "output": "null\nnull\nnull\n23.5\nnull\nnull\nnull\n42.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n49.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 49\nfindMedian\nfindMedian\naddNum 58\naddNum 33\naddNum 77\naddNum 92\naddNum 96\naddNum 97\naddNum 45\naddNum 1\naddNum 52\naddNum 92\naddNum 65\nfindMedian",
-            "output": "null\nnull\n49.0\n49.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n61.5"
+            "input": "MedianFinder\naddNum 1\naddNum 88\naddNum 44\naddNum 22\naddNum 90\naddNum 39\naddNum 14\naddNum 52\nfindMedian\naddNum 25\naddNum 79\naddNum 72",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n41.5\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 90\nfindMedian\nfindMedian\naddNum 14\naddNum 77\naddNum 99\naddNum 33\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 67\nfindMedian\naddNum 62\naddNum 13\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 5\naddNum 96\naddNum 100\naddNum 73",
-            "output": "null\nnull\n90.0\n90.0\nnull\nnull\nnull\nnull\n77.0\n77.0\n77.0\n77.0\nnull\n72.0\nnull\nnull\n64.5\n64.5\n64.5\n64.5\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 31\nfindMedian\nfindMedian\nfindMedian\naddNum 41\naddNum 60\nfindMedian\naddNum 61\naddNum 80\naddNum 80\naddNum 18\naddNum 12",
+            "output": "null\nnull\n31.0\n31.0\n31.0\nnull\nnull\n41.0\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 37\naddNum 11\naddNum 76\naddNum 8\naddNum 84\naddNum 29\nfindMedian\nfindMedian\naddNum 10\nfindMedian\naddNum 75\nfindMedian\naddNum 30\naddNum 70\nfindMedian\naddNum 14\naddNum 44\naddNum 90\naddNum 72\nfindMedian\naddNum 42\naddNum 50",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n33.0\n33.0\nnull\n29.0\nnull\n33.0\nnull\nnull\n33.5\nnull\nnull\nnull\nnull\n40.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 65\naddNum 77\naddNum 70\nfindMedian\naddNum 35\nfindMedian\naddNum 12\naddNum 30\naddNum 14\naddNum 74\naddNum 72",
+            "output": "null\nnull\nnull\nnull\n70.0\nnull\n67.5\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 99\naddNum 52\naddNum 53\nfindMedian\naddNum 81\naddNum 64\naddNum 27\naddNum 44\nfindMedian\nfindMedian\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 50\naddNum 30\naddNum 25\naddNum 2\nfindMedian\nfindMedian\naddNum 82\naddNum 16\naddNum 88\naddNum 96\naddNum 50",
-            "output": "null\nnull\nnull\nnull\n53.0\nnull\nnull\nnull\nnull\n53.0\n53.0\n53.0\n53.0\n53.0\n53.0\nnull\nnull\nnull\nnull\n50.0\n50.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 28\naddNum 37\naddNum 63\nfindMedian\nfindMedian\nfindMedian\naddNum 84\nfindMedian\naddNum 69\naddNum 71",
+            "output": "null\nnull\nnull\nnull\n37.0\n37.0\n37.0\nnull\n50.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 2\naddNum 59\nfindMedian\naddNum 93\naddNum 73\nfindMedian\naddNum 29\naddNum 89\naddNum 89\nfindMedian\naddNum 10\naddNum 51\naddNum 89\naddNum 10\nfindMedian\naddNum 54\naddNum 36\naddNum 48\naddNum 99",
-            "output": "null\nnull\nnull\n30.5\nnull\nnull\n66.0\nnull\nnull\nnull\n73.0\nnull\nnull\nnull\nnull\n59.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 41\nfindMedian\naddNum 68\nfindMedian\nfindMedian\naddNum 100\naddNum 84\naddNum 41\naddNum 17\naddNum 35",
+            "output": "null\nnull\n41.0\nnull\n54.5\n54.5\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 54\nfindMedian\naddNum 9\naddNum 88\naddNum 82\naddNum 11\naddNum 56\naddNum 63\naddNum 15\naddNum 55\naddNum 78\naddNum 99\naddNum 78\naddNum 61\naddNum 83\naddNum 49\nfindMedian\nfindMedian\naddNum 23\naddNum 71",
-            "output": "null\nnull\n54.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n61.0\n61.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 32\nfindMedian\naddNum 50\naddNum 31\naddNum 38\naddNum 31\naddNum 5\nfindMedian\naddNum 82\nfindMedian\naddNum 63\naddNum 16\naddNum 63\naddNum 55\naddNum 66\naddNum 3\nfindMedian\naddNum 7\nfindMedian\naddNum 6\naddNum 6\naddNum 57\naddNum 46",
+            "output": "null\nnull\n32.0\nnull\nnull\nnull\nnull\nnull\n31.5\nnull\n32.0\nnull\nnull\nnull\nnull\nnull\nnull\n38.0\nnull\n35.0\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 8\naddNum 45\nfindMedian\naddNum 53\nfindMedian\naddNum 76\nfindMedian\naddNum 25\naddNum 7\nfindMedian\nfindMedian\naddNum 2\naddNum 39\nfindMedian\naddNum 2\nfindMedian\nfindMedian\naddNum 13\nfindMedian\nfindMedian\naddNum 41\naddNum 24\naddNum 60\naddNum 75\nfindMedian\naddNum 64\naddNum 46\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\n26.5\nnull\n45.0\nnull\n49.0\nnull\nnull\n35.0\n35.0\nnull\nnull\n32.0\nnull\n25.0\n25.0\nnull\n19.0\n19.0\nnull\nnull\nnull\nnull\n32.0\nnull\nnull\n40.0\n40.0"
+            "input": "MedianFinder\naddNum 29\naddNum 62\nfindMedian\naddNum 43\naddNum 14\nfindMedian\naddNum 52\nfindMedian\naddNum 13\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\n45.5\nnull\nnull\n36.0\nnull\n43.0\nnull\n36.0\n36.0"
         },
         {
-            "input": "MedianFinder\naddNum 91\naddNum 56\naddNum 75\naddNum 46\naddNum 44\naddNum 47\naddNum 15\naddNum 26\nfindMedian\nfindMedian\naddNum 22\naddNum 4\naddNum 23\naddNum 86\nfindMedian\naddNum 91\naddNum 88\nfindMedian\naddNum 81\naddNum 99\nfindMedian\naddNum 80\naddNum 59",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n46.5\n46.5\nnull\nnull\nnull\nnull\n45.0\nnull\nnull\n46.5\nnull\nnull\n51.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 84\naddNum 29\naddNum 57\nfindMedian\nfindMedian\naddNum 34\naddNum 98\nfindMedian\naddNum 95\naddNum 29\nfindMedian\naddNum 49\naddNum 22\naddNum 49\naddNum 14\naddNum 69\naddNum 5\naddNum 92\naddNum 76",
+            "output": "null\nnull\nnull\nnull\n57.0\n57.0\nnull\nnull\n57.0\nnull\nnull\n57.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 100\naddNum 82\naddNum 84\nfindMedian\naddNum 28\naddNum 33\naddNum 11\nfindMedian\naddNum 78\naddNum 89\naddNum 62\nfindMedian\naddNum 20\naddNum 32\naddNum 64\naddNum 47\nfindMedian\nfindMedian\naddNum 15\naddNum 43\naddNum 66\naddNum 52\naddNum 16",
-            "output": "null\nnull\nnull\nnull\n84.0\nnull\nnull\nnull\n57.5\nnull\nnull\nnull\n78.0\nnull\nnull\nnull\nnull\n62.0\n62.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 70\nfindMedian\naddNum 28\naddNum 83\nfindMedian\naddNum 75\naddNum 10\nfindMedian\naddNum 65\naddNum 87\naddNum 84\naddNum 13\naddNum 96\nfindMedian\naddNum 31\naddNum 48\naddNum 97",
+            "output": "null\nnull\n70.0\nnull\nnull\n70.0\nnull\nnull\n70.0\nnull\nnull\nnull\nnull\nnull\n72.5\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 70\naddNum 72\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 95\naddNum 14\nfindMedian\nfindMedian\naddNum 74\nfindMedian\naddNum 88\naddNum 69\naddNum 33\naddNum 71",
-            "output": "null\nnull\nnull\n71.0\n71.0\n71.0\n71.0\nnull\nnull\n71.0\n71.0\nnull\n72.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 20\naddNum 89\naddNum 74\nfindMedian\naddNum 91\naddNum 76\naddNum 61\nfindMedian\naddNum 86\naddNum 25\naddNum 58\nfindMedian\naddNum 11\nfindMedian\naddNum 19\naddNum 25\naddNum 64\naddNum 33\nfindMedian\naddNum 89\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n74.0\nnull\nnull\nnull\n75.0\nnull\nnull\nnull\n74.0\nnull\n67.5\nnull\nnull\nnull\nnull\n59.5\nnull\n61.0"
         },
         {
-            "input": "MedianFinder\naddNum 5\naddNum 14\naddNum 55\naddNum 82\naddNum 60\naddNum 80\nfindMedian\naddNum 97\nfindMedian\naddNum 53\naddNum 96\naddNum 39\nfindMedian\naddNum 21",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n57.5\nnull\n60.0\nnull\nnull\nnull\n57.5\nnull"
+            "input": "MedianFinder\naddNum 28\naddNum 63\naddNum 72\naddNum 79\naddNum 71\naddNum 5\naddNum 82\naddNum 75\nfindMedian\nfindMedian\naddNum 95\naddNum 68\naddNum 37\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n71.5\n71.5\nnull\nnull\nnull\n71.0\n71.0"
         },
         {
-            "input": "MedianFinder\naddNum 64\nfindMedian\naddNum 38\naddNum 93\naddNum 23\nfindMedian\nfindMedian\naddNum 37\naddNum 52\naddNum 4\naddNum 55\naddNum 13\naddNum 79\naddNum 65\naddNum 49\naddNum 85\naddNum 56\naddNum 68",
-            "output": "null\nnull\n64.0\nnull\nnull\nnull\n51.0\n51.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 87\naddNum 32\naddNum 47\naddNum 78\nfindMedian\naddNum 5\naddNum 2\naddNum 22\nfindMedian\naddNum 49\naddNum 66\naddNum 18\nfindMedian\naddNum 24\naddNum 61\naddNum 82\naddNum 86\naddNum 34\naddNum 61\naddNum 83\naddNum 12\naddNum 84",
+            "output": "null\nnull\nnull\nnull\nnull\n62.5\nnull\nnull\nnull\n32.0\nnull\nnull\nnull\n39.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 100\naddNum 12\nfindMedian\naddNum 10\nfindMedian\naddNum 55\naddNum 1\naddNum 41\nfindMedian\nfindMedian\nfindMedian\naddNum 86\naddNum 37\naddNum 86\naddNum 15\nfindMedian\naddNum 87\nfindMedian\naddNum 22\naddNum 11\naddNum 14\naddNum 42\naddNum 63",
-            "output": "null\nnull\nnull\n56.0\nnull\n12.0\nnull\nnull\nnull\n26.5\n26.5\n26.5\nnull\nnull\nnull\nnull\n39.0\nnull\n41.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 57\naddNum 76\naddNum 16\naddNum 71\naddNum 100\naddNum 93\naddNum 52\naddNum 16\nfindMedian\naddNum 83\naddNum 98\naddNum 53\naddNum 100\naddNum 14\naddNum 28\naddNum 55\nfindMedian\naddNum 7\nfindMedian\nfindMedian\naddNum 26\nfindMedian\naddNum 44\nfindMedian\naddNum 75\nfindMedian\naddNum 31",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n64.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n57.0\nnull\n56.0\n56.0\nnull\n55.0\nnull\n54.0\nnull\n55.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 52\nfindMedian\nfindMedian\naddNum 5\naddNum 70\naddNum 60\naddNum 97\nfindMedian\nfindMedian\naddNum 24\nfindMedian\naddNum 78\naddNum 20\naddNum 81\naddNum 37\nfindMedian\naddNum 90\nfindMedian\naddNum 67\naddNum 51\nfindMedian\nfindMedian\naddNum 33\naddNum 57\naddNum 51\naddNum 32\nfindMedian",
-            "output": "null\nnull\n52.0\n52.0\nnull\nnull\nnull\nnull\n60.0\n60.0\nnull\n56.0\nnull\nnull\nnull\nnull\n56.0\nnull\n60.0\nnull\nnull\n60.0\n60.0\nnull\nnull\nnull\nnull\n52.0"
+            "input": "MedianFinder\naddNum 100\nfindMedian\naddNum 42\naddNum 49\naddNum 23\naddNum 63\naddNum 97\nfindMedian\nfindMedian\nfindMedian\naddNum 31\naddNum 44\naddNum 43\nfindMedian\naddNum 65\naddNum 41\nfindMedian\naddNum 9\naddNum 66\naddNum 37\naddNum 96",
+            "output": "null\nnull\n100.0\nnull\nnull\nnull\nnull\nnull\n56.0\n56.0\n56.0\nnull\nnull\nnull\n44.0\nnull\nnull\n44.0\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 16\nfindMedian\naddNum 55\naddNum 46\nfindMedian\naddNum 42\nfindMedian\nfindMedian\nfindMedian\naddNum 22\nfindMedian\nfindMedian\naddNum 22\naddNum 73\naddNum 14\naddNum 18\nfindMedian\naddNum 17\nfindMedian\nfindMedian\naddNum 21\naddNum 59\naddNum 74\nfindMedian\nfindMedian\naddNum 53",
-            "output": "null\nnull\n16.0\nnull\nnull\n46.0\nnull\n44.0\n44.0\n44.0\nnull\n42.0\n42.0\nnull\nnull\nnull\nnull\n22.0\nnull\n22.0\n22.0\nnull\nnull\nnull\n22.0\n22.0\nnull"
+            "input": "MedianFinder\naddNum 8\naddNum 75\nfindMedian\naddNum 14\naddNum 49\naddNum 85\nfindMedian\naddNum 40\nfindMedian\naddNum 45\naddNum 93\naddNum 10\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\n41.5\nnull\nnull\nnull\n49.0\nnull\n44.5\nnull\nnull\nnull\n45.0\n45.0"
         },
         {
-            "input": "MedianFinder\naddNum 4\naddNum 42\naddNum 50\naddNum 95\nfindMedian\naddNum 95\naddNum 88\nfindMedian\nfindMedian\naddNum 66\naddNum 12\naddNum 15\nfindMedian\naddNum 74\naddNum 86\nfindMedian\nfindMedian\naddNum 28",
-            "output": "null\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\n69.0\n69.0\nnull\nnull\nnull\n50.0\nnull\nnull\n66.0\n66.0\nnull"
+            "input": "MedianFinder\naddNum 4\naddNum 33\nfindMedian\naddNum 82\naddNum 98\naddNum 37\nfindMedian\nfindMedian\naddNum 18\nfindMedian\naddNum 55\naddNum 74\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\n18.5\nnull\nnull\nnull\n37.0\n37.0\nnull\n35.0\nnull\nnull\n46.0\n46.0"
         },
         {
-            "input": "MedianFinder\naddNum 84\nfindMedian\naddNum 34\nfindMedian\nfindMedian\naddNum 95\naddNum 16\naddNum 96\naddNum 64\naddNum 76\nfindMedian",
-            "output": "null\nnull\n84.0\nnull\n59.0\n59.0\nnull\nnull\nnull\nnull\nnull\n76.0"
+            "input": "MedianFinder\naddNum 28\naddNum 39\naddNum 95\naddNum 57\nfindMedian\naddNum 30\nfindMedian\nfindMedian\naddNum 47\nfindMedian\naddNum 69\nfindMedian\naddNum 81\naddNum 65\nfindMedian\naddNum 18",
+            "output": "null\nnull\nnull\nnull\nnull\n48.0\nnull\n39.0\n39.0\nnull\n43.0\nnull\n47.0\nnull\nnull\n57.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 23\naddNum 83\naddNum 85\naddNum 32\naddNum 63\naddNum 48\nfindMedian\naddNum 87\naddNum 22\naddNum 16\nfindMedian\nfindMedian\naddNum 89\nfindMedian\naddNum 89\naddNum 61\naddNum 29",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n55.5\nnull\nnull\nnull\n48.0\n48.0\nnull\n55.5\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 28\nfindMedian\nfindMedian\naddNum 95\naddNum 56\nfindMedian\naddNum 12\naddNum 58\naddNum 23\naddNum 2\naddNum 31\nfindMedian\naddNum 93\naddNum 79\nfindMedian\naddNum 77\naddNum 55\nfindMedian\nfindMedian\nfindMedian\naddNum 61\naddNum 26\naddNum 18\naddNum 81",
+            "output": "null\nnull\n28.0\n28.0\nnull\nnull\n56.0\nnull\nnull\nnull\nnull\nnull\n29.5\nnull\nnull\n43.5\nnull\nnull\n55.5\n55.5\n55.5\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 33\naddNum 45\naddNum 8\nfindMedian\naddNum 19\naddNum 54\naddNum 8\naddNum 32\naddNum 42\naddNum 58\naddNum 23\nfindMedian\naddNum 19\naddNum 99\naddNum 80\naddNum 13\naddNum 82\naddNum 29\naddNum 49\naddNum 98\nfindMedian\naddNum 66\naddNum 57\nfindMedian\naddNum 20\naddNum 4\nfindMedian",
-            "output": "null\nnull\nnull\nnull\n33.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n32.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n37.5\nnull\nnull\n43.5\nnull\nnull\n37.5"
+            "input": "MedianFinder\naddNum 58\naddNum 96\naddNum 58\naddNum 6\nfindMedian\naddNum 44\nfindMedian\naddNum 2\nfindMedian\naddNum 98\naddNum 97\naddNum 18\nfindMedian\naddNum 54\nfindMedian\naddNum 8\naddNum 46\nfindMedian\naddNum 2",
+            "output": "null\nnull\nnull\nnull\nnull\n58.0\nnull\n58.0\nnull\n51.0\nnull\nnull\nnull\n58.0\nnull\n56.0\nnull\nnull\n50.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 47\nfindMedian\naddNum 92\naddNum 58\naddNum 94\naddNum 54\naddNum 84\nfindMedian\naddNum 44\naddNum 24\naddNum 95\naddNum 66\nfindMedian\nfindMedian\naddNum 90\nfindMedian\naddNum 4\naddNum 38\nfindMedian\naddNum 6",
-            "output": "null\nnull\n47.0\nnull\nnull\nnull\nnull\nnull\n71.0\nnull\nnull\nnull\nnull\n62.0\n62.0\nnull\n66.0\nnull\nnull\n58.0\nnull"
+            "input": "MedianFinder\naddNum 97\naddNum 49\naddNum 38\nfindMedian\naddNum 99\naddNum 36\nfindMedian\naddNum 66\naddNum 33\naddNum 44\nfindMedian\naddNum 80\nfindMedian\naddNum 60\nfindMedian\nfindMedian\naddNum 24\naddNum 38\naddNum 32\nfindMedian\nfindMedian\naddNum 56\nfindMedian\naddNum 44\naddNum 11\naddNum 24\naddNum 7\naddNum 82\naddNum 42\naddNum 70",
+            "output": "null\nnull\nnull\nnull\n49.0\nnull\nnull\n49.0\nnull\nnull\nnull\n46.5\nnull\n49.0\nnull\n54.5\n54.5\nnull\nnull\nnull\n44.0\n44.0\nnull\n46.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 13\nfindMedian\nfindMedian\naddNum 62\naddNum 21\naddNum 73\naddNum 66\naddNum 91\naddNum 55\nfindMedian\nfindMedian\naddNum 97\naddNum 79\naddNum 63\naddNum 34\naddNum 13\naddNum 81\naddNum 76\naddNum 26\naddNum 16\nfindMedian\nfindMedian\naddNum 100\naddNum 30\nfindMedian\naddNum 86\naddNum 65",
-            "output": "null\nnull\n13.0\n13.0\nnull\nnull\nnull\nnull\nnull\nnull\n62.0\n62.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n62.5\n62.5\nnull\nnull\n62.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 77\nfindMedian\naddNum 18\naddNum 65\nfindMedian\naddNum 50\naddNum 8\naddNum 17\nfindMedian\nfindMedian\naddNum 59\naddNum 42\naddNum 41\naddNum 78\naddNum 63\nfindMedian\naddNum 85\naddNum 84\naddNum 57\nfindMedian",
+            "output": "null\nnull\n77.0\nnull\nnull\n65.0\nnull\nnull\nnull\n34.0\n34.0\nnull\nnull\nnull\nnull\nnull\n50.0\nnull\nnull\nnull\n58.0"
         },
         {
-            "input": "MedianFinder\naddNum 31\naddNum 46\naddNum 75\naddNum 31\nfindMedian\naddNum 10\naddNum 13\naddNum 49\nfindMedian\naddNum 9\naddNum 99\naddNum 51\naddNum 82\nfindMedian\naddNum 65\naddNum 65\naddNum 95\naddNum 11\nfindMedian\naddNum 68\naddNum 10\naddNum 43\naddNum 67\naddNum 29\naddNum 84",
-            "output": "null\nnull\nnull\nnull\nnull\n38.5\nnull\nnull\nnull\n31.0\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\nnull\nnull\n49.0\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 7\naddNum 2\nfindMedian\nfindMedian\naddNum 23\naddNum 27\naddNum 62\naddNum 78\nfindMedian\naddNum 60\nfindMedian\naddNum 11",
+            "output": "null\nnull\nnull\n4.5\n4.5\nnull\nnull\nnull\nnull\n25.0\nnull\n27.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 74\naddNum 32\nfindMedian\nfindMedian\nfindMedian\naddNum 69\nfindMedian\naddNum 29\nfindMedian\naddNum 33\naddNum 96\naddNum 28\naddNum 46\naddNum 90\nfindMedian\naddNum 77\naddNum 48\naddNum 26\naddNum 83\nfindMedian\naddNum 96\naddNum 69\naddNum 7\naddNum 51\naddNum 20\naddNum 47\naddNum 19",
-            "output": "null\nnull\nnull\n53.0\n53.0\n53.0\nnull\n69.0\nnull\n50.5\nnull\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 70\naddNum 37\naddNum 65\naddNum 8\naddNum 7\nfindMedian\naddNum 19\naddNum 57\naddNum 64\naddNum 46\nfindMedian\naddNum 85\naddNum 83\nfindMedian\nfindMedian\naddNum 9\naddNum 64\naddNum 29",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n37.0\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\n57.0\n57.0\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 52\naddNum 83\naddNum 41\nfindMedian\naddNum 83\nfindMedian\naddNum 82\naddNum 21\nfindMedian\naddNum 91\naddNum 7\nfindMedian\naddNum 80\naddNum 69\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\nnull\n52.0\nnull\n67.5\nnull\nnull\n67.0\nnull\nnull\n67.0\nnull\nnull\n74.5\n74.5\n74.5"
+            "input": "MedianFinder\naddNum 78\naddNum 77\naddNum 91\nfindMedian\nfindMedian\nfindMedian\naddNum 54\naddNum 54\naddNum 73\naddNum 44\nfindMedian\nfindMedian\naddNum 52",
+            "output": "null\nnull\nnull\nnull\n78.0\n78.0\n78.0\nnull\nnull\nnull\nnull\n73.0\n73.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 27\nfindMedian\nfindMedian\naddNum 17\nfindMedian\naddNum 70\nfindMedian\naddNum 86\naddNum 99\naddNum 7",
-            "output": "null\nnull\n27.0\n27.0\nnull\n22.0\nnull\n27.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 12\nfindMedian\naddNum 63\nfindMedian\naddNum 73\naddNum 63\naddNum 17\naddNum 52\naddNum 25\naddNum 53\naddNum 81\nfindMedian\naddNum 93\naddNum 63",
+            "output": "null\nnull\n12.0\nnull\n37.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n53.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 51\nfindMedian\naddNum 60\naddNum 21\naddNum 2\naddNum 52\nfindMedian\naddNum 67\naddNum 49\naddNum 75\nfindMedian\naddNum 2\naddNum 29\naddNum 63\naddNum 35",
-            "output": "null\nnull\n51.0\nnull\nnull\nnull\nnull\n51.0\nnull\nnull\nnull\n51.5\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 44\nfindMedian\naddNum 50\naddNum 43\naddNum 41\naddNum 58\naddNum 34\naddNum 18\nfindMedian\nfindMedian\naddNum 94\nfindMedian\naddNum 3\nfindMedian\naddNum 84\naddNum 58\nfindMedian\nfindMedian\nfindMedian",
+            "output": "null\nnull\n44.0\nnull\nnull\nnull\nnull\nnull\nnull\n43.0\n43.0\nnull\n43.5\nnull\n43.0\nnull\nnull\n44.0\n44.0\n44.0"
         },
         {
-            "input": "MedianFinder\naddNum 30\naddNum 18\naddNum 86\naddNum 19\naddNum 38\naddNum 8\naddNum 45\naddNum 70\naddNum 87\naddNum 69\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n41.5"
+            "input": "MedianFinder\naddNum 31\naddNum 64\naddNum 39\nfindMedian\nfindMedian\naddNum 16\nfindMedian\nfindMedian\naddNum 72\naddNum 87\naddNum 49\naddNum 71\naddNum 40\naddNum 87\naddNum 32\nfindMedian\naddNum 32\naddNum 29",
+            "output": "null\nnull\nnull\nnull\n39.0\n39.0\nnull\n35.0\n35.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n49.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 65\naddNum 60\nfindMedian\naddNum 28\naddNum 22\naddNum 79\naddNum 5\naddNum 81\nfindMedian\naddNum 92",
-            "output": "null\nnull\nnull\n62.5\nnull\nnull\nnull\nnull\nnull\n60.0\nnull"
+            "input": "MedianFinder\naddNum 9\naddNum 30\nfindMedian\naddNum 45\naddNum 23\naddNum 40\nfindMedian\naddNum 84\nfindMedian\naddNum 67\naddNum 20\naddNum 1\nfindMedian\naddNum 63\naddNum 60\nfindMedian\naddNum 2",
+            "output": "null\nnull\nnull\n19.5\nnull\nnull\nnull\n30.0\nnull\n35.0\nnull\nnull\nnull\n30.0\nnull\nnull\n40.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 40\naddNum 78\nfindMedian\naddNum 6\nfindMedian\naddNum 99\naddNum 16\nfindMedian\nfindMedian\nfindMedian\naddNum 76\naddNum 63\naddNum 4\naddNum 90\naddNum 52\naddNum 74\naddNum 11\naddNum 6\naddNum 53\nfindMedian",
-            "output": "null\nnull\nnull\n59.0\nnull\n40.0\nnull\nnull\n40.0\n40.0\n40.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n52.5"
+            "input": "MedianFinder\naddNum 58\naddNum 83\naddNum 8\naddNum 57\naddNum 57\naddNum 4\naddNum 12\naddNum 11\naddNum 92\naddNum 53\naddNum 90\naddNum 98\naddNum 86",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 23\nfindMedian\nfindMedian\naddNum 19\naddNum 47\naddNum 1\naddNum 15\naddNum 82\naddNum 46\naddNum 39\naddNum 76\naddNum 92\naddNum 76\naddNum 5\nfindMedian\naddNum 30\nfindMedian\naddNum 50\naddNum 59",
-            "output": "null\nnull\n23.0\n23.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n42.5\nnull\n39.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 30\nfindMedian\naddNum 8\nfindMedian\naddNum 11\naddNum 94\naddNum 25\naddNum 87\nfindMedian\naddNum 30\nfindMedian\nfindMedian\naddNum 49\nfindMedian\naddNum 73\naddNum 70\nfindMedian\naddNum 70\nfindMedian\naddNum 41\nfindMedian\nfindMedian\naddNum 22\naddNum 37\naddNum 62\naddNum 54\naddNum 3",
+            "output": "null\nnull\n30.0\nnull\n19.0\nnull\nnull\nnull\nnull\n27.5\nnull\n30.0\n30.0\nnull\n30.0\nnull\nnull\n39.5\nnull\n49.0\nnull\n45.0\n45.0\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 33\naddNum 42\nfindMedian\nfindMedian\naddNum 50\nfindMedian\naddNum 95\naddNum 25\nfindMedian\naddNum 71\naddNum 90\nfindMedian",
-            "output": "null\nnull\nnull\n37.5\n37.5\nnull\n42.0\nnull\nnull\n42.0\nnull\nnull\n50.0"
+            "input": "MedianFinder\naddNum 27\nfindMedian\naddNum 8\nfindMedian\naddNum 45\nfindMedian\naddNum 21\naddNum 77\naddNum 31\naddNum 41\naddNum 12\naddNum 71\naddNum 7\naddNum 33\naddNum 52\naddNum 27\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 6",
+            "output": "null\nnull\n27.0\nnull\n17.5\nnull\n27.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n31.0\n31.0\n31.0\n31.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 16\nfindMedian\naddNum 38\nfindMedian\naddNum 28\nfindMedian\nfindMedian\naddNum 2\naddNum 45\naddNum 66\naddNum 66\naddNum 49\naddNum 92\naddNum 3\nfindMedian\naddNum 37\naddNum 44\nfindMedian\naddNum 39\naddNum 33\nfindMedian\naddNum 86\naddNum 9\naddNum 57\naddNum 22\naddNum 36\nfindMedian",
-            "output": "null\nnull\n16.0\nnull\n27.0\nnull\n28.0\n28.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n41.5\nnull\nnull\n41.0\nnull\nnull\n38.5\nnull\nnull\nnull\nnull\nnull\n38.0"
+            "input": "MedianFinder\naddNum 74\naddNum 67\naddNum 19\naddNum 79\nfindMedian\nfindMedian\nfindMedian\naddNum 49\naddNum 99\naddNum 95\naddNum 10\naddNum 20\nfindMedian\naddNum 45\naddNum 33\naddNum 59\naddNum 44\naddNum 12\naddNum 81\naddNum 7\naddNum 9\naddNum 10\nfindMedian\naddNum 27\naddNum 33\naddNum 35\nfindMedian\naddNum 4\naddNum 48",
+            "output": "null\nnull\nnull\nnull\nnull\n70.5\n70.5\n70.5\nnull\nnull\nnull\nnull\nnull\n67.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n44.5\nnull\nnull\nnull\n35.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 60\naddNum 92\naddNum 38\naddNum 47\naddNum 57\naddNum 31\naddNum 87\naddNum 17\naddNum 88",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 64\naddNum 58\naddNum 61\naddNum 31\naddNum 64\naddNum 24\naddNum 64\nfindMedian\naddNum 81\nfindMedian\naddNum 97\naddNum 85\naddNum 25\naddNum 63\naddNum 99\naddNum 10\nfindMedian\naddNum 2\naddNum 86",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n61.0\nnull\n62.5\nnull\nnull\nnull\nnull\nnull\nnull\n63.5\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 10\naddNum 23\nfindMedian\naddNum 93\nfindMedian\naddNum 96\naddNum 61\naddNum 63\nfindMedian\naddNum 9\naddNum 70\nfindMedian\naddNum 22\nfindMedian\naddNum 79\naddNum 50\nfindMedian\naddNum 86\nfindMedian\naddNum 67\nfindMedian\naddNum 96\naddNum 43\naddNum 89\naddNum 31\nfindMedian\naddNum 1\naddNum 85\naddNum 5",
-            "output": "null\nnull\nnull\n16.5\nnull\n23.0\nnull\nnull\nnull\n62.0\nnull\nnull\n62.0\nnull\n61.0\nnull\nnull\n61.0\nnull\n62.0\nnull\n63.0\nnull\nnull\nnull\nnull\n63.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 44\naddNum 78\nfindMedian\naddNum 69\naddNum 23\naddNum 40\naddNum 23\naddNum 92\naddNum 1\naddNum 68\nfindMedian\nfindMedian\naddNum 12\naddNum 98\nfindMedian\naddNum 61\nfindMedian",
+            "output": "null\nnull\nnull\n61.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n44.0\n44.0\nnull\nnull\n44.0\nnull\n52.5"
         },
         {
-            "input": "MedianFinder\naddNum 74\nfindMedian\nfindMedian\nfindMedian\naddNum 34\naddNum 76\naddNum 1\nfindMedian\naddNum 21\nfindMedian\naddNum 61\naddNum 11\nfindMedian\naddNum 49\nfindMedian\naddNum 15\naddNum 82\naddNum 88\naddNum 6\naddNum 51\naddNum 63\naddNum 84\naddNum 100\nfindMedian\naddNum 8\naddNum 70\naddNum 55\naddNum 1\nfindMedian",
-            "output": "null\nnull\n74.0\n74.0\n74.0\nnull\nnull\nnull\n54.0\nnull\n34.0\nnull\nnull\n34.0\nnull\n41.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n56.0\nnull\nnull\nnull\nnull\n53.0"
+            "input": "MedianFinder\naddNum 26\naddNum 13\nfindMedian\naddNum 95\naddNum 27\naddNum 67\naddNum 85\naddNum 93\naddNum 85\naddNum 14\nfindMedian\naddNum 63\nfindMedian\naddNum 17\nfindMedian\naddNum 70\naddNum 41\naddNum 27\naddNum 97\nfindMedian",
+            "output": "null\nnull\nnull\n19.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n67.0\nnull\n65.0\nnull\n63.0\nnull\nnull\nnull\nnull\n63.0"
         },
         {
-            "input": "MedianFinder\naddNum 15\naddNum 15\naddNum 71\naddNum 92\naddNum 25\nfindMedian\nfindMedian\naddNum 11\nfindMedian\nfindMedian\naddNum 92\naddNum 49\naddNum 35\nfindMedian\nfindMedian\naddNum 35\naddNum 74\nfindMedian\naddNum 33\naddNum 85\naddNum 47\naddNum 6\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\n25.0\n25.0\nnull\n20.0\n20.0\nnull\nnull\nnull\n35.0\n35.0\nnull\nnull\n35.0\nnull\nnull\nnull\nnull\n35.0"
+            "input": "MedianFinder\naddNum 71\naddNum 8\nfindMedian\naddNum 23\naddNum 3\naddNum 88\nfindMedian\naddNum 61\naddNum 91\naddNum 64\naddNum 11\naddNum 8\nfindMedian\nfindMedian\nfindMedian\naddNum 74\nfindMedian",
+            "output": "null\nnull\nnull\n39.5\nnull\nnull\nnull\n23.0\nnull\nnull\nnull\nnull\nnull\n42.0\n42.0\n42.0\nnull\n61.0"
         },
         {
-            "input": "MedianFinder\naddNum 99\naddNum 59\nfindMedian\naddNum 77\naddNum 30\naddNum 44\naddNum 84\naddNum 28\naddNum 78\naddNum 65\naddNum 16\nfindMedian\naddNum 21",
-            "output": "null\nnull\nnull\n79.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n62.0\nnull"
+            "input": "MedianFinder\naddNum 63\naddNum 59\naddNum 18\naddNum 50\naddNum 13\naddNum 33\naddNum 43\nfindMedian\naddNum 79\naddNum 31\naddNum 53\naddNum 43",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n43.0\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 93\naddNum 11\nfindMedian\naddNum 5\nfindMedian\naddNum 78\naddNum 6\naddNum 24\naddNum 23\nfindMedian\naddNum 80",
-            "output": "null\nnull\nnull\n52.0\nnull\n11.0\nnull\nnull\nnull\nnull\n23.0\nnull"
+            "input": "MedianFinder\naddNum 100\naddNum 36\naddNum 10\naddNum 35\nfindMedian\naddNum 56\naddNum 20\naddNum 48\naddNum 33\naddNum 89\naddNum 80\nfindMedian\nfindMedian\nfindMedian\naddNum 41\naddNum 33\nfindMedian\naddNum 2",
+            "output": "null\nnull\nnull\nnull\nnull\n35.5\nnull\nnull\nnull\nnull\nnull\nnull\n42.0\n42.0\n42.0\nnull\nnull\n38.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 90\naddNum 9\naddNum 19\nfindMedian\nfindMedian\naddNum 80\naddNum 15\naddNum 86\naddNum 77\naddNum 1\nfindMedian\nfindMedian\naddNum 37\naddNum 81\nfindMedian\nfindMedian\naddNum 16\nfindMedian\naddNum 1\naddNum 13\nfindMedian\naddNum 59\nfindMedian\naddNum 64\nfindMedian\naddNum 30\naddNum 85\naddNum 4\naddNum 63",
-            "output": "null\nnull\nnull\nnull\n19.0\n19.0\nnull\nnull\nnull\nnull\nnull\n48.0\n48.0\nnull\nnull\n57.0\n57.0\nnull\n37.0\nnull\nnull\n19.0\nnull\n28.0\nnull\n37.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 80\naddNum 12\naddNum 73\naddNum 67\naddNum 2\naddNum 87\naddNum 80\naddNum 98\nfindMedian\naddNum 25\nfindMedian\nfindMedian\naddNum 25\naddNum 24",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n76.5\nnull\n73.0\n73.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 71\nfindMedian\naddNum 46\naddNum 6\nfindMedian\naddNum 69\nfindMedian\naddNum 38\nfindMedian\naddNum 23\nfindMedian\nfindMedian\naddNum 87\nfindMedian\naddNum 81\naddNum 72\naddNum 21\nfindMedian\naddNum 95\naddNum 23",
-            "output": "null\nnull\n71.0\nnull\nnull\n46.0\nnull\n57.5\nnull\n46.0\nnull\n42.0\n42.0\nnull\n46.0\nnull\nnull\nnull\n57.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 4\nfindMedian\naddNum 18\nfindMedian\nfindMedian\nfindMedian\naddNum 78\naddNum 83\naddNum 56\naddNum 36",
+            "output": "null\nnull\n4.0\nnull\n11.0\n11.0\n11.0\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 58\naddNum 94\naddNum 50\naddNum 8\naddNum 27\naddNum 49\naddNum 34\naddNum 10\nfindMedian\naddNum 94\nfindMedian\naddNum 60\naddNum 44\naddNum 82\naddNum 3\naddNum 5\nfindMedian\naddNum 30\naddNum 53\naddNum 4",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n41.5\nnull\n49.0\nnull\nnull\nnull\nnull\nnull\n46.5\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 78\naddNum 55\naddNum 26\nfindMedian\naddNum 91\naddNum 84\naddNum 75\naddNum 93\naddNum 25\naddNum 70\nfindMedian\naddNum 67\nfindMedian\nfindMedian\naddNum 75\naddNum 55\naddNum 41\naddNum 79\naddNum 21\naddNum 83",
+            "output": "null\nnull\nnull\nnull\n55.0\nnull\nnull\nnull\nnull\nnull\nnull\n75.0\nnull\n72.5\n72.5\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 72\naddNum 35\nfindMedian\naddNum 12\nfindMedian\naddNum 59\nfindMedian\naddNum 22\nfindMedian\naddNum 43\naddNum 3\naddNum 90\nfindMedian\nfindMedian\naddNum 44\naddNum 84\naddNum 15\nfindMedian\naddNum 12\nfindMedian\nfindMedian\naddNum 86\naddNum 77\naddNum 51\naddNum 75\naddNum 33\naddNum 18\naddNum 84\naddNum 7\nfindMedian",
-            "output": "null\nnull\nnull\n53.5\nnull\n35.0\nnull\n47.0\nnull\n35.0\nnull\nnull\nnull\n39.0\n39.0\nnull\nnull\nnull\n43.0\nnull\n39.0\n39.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n43.5"
+            "input": "MedianFinder\naddNum 75\naddNum 76\naddNum 55\nfindMedian\naddNum 86\nfindMedian\naddNum 31\naddNum 95\nfindMedian\naddNum 47\naddNum 66\naddNum 89",
+            "output": "null\nnull\nnull\nnull\n75.0\nnull\n75.5\nnull\nnull\n75.5\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 100\nfindMedian\nfindMedian\naddNum 68\naddNum 51\naddNum 75\naddNum 64\nfindMedian\naddNum 94\naddNum 81\naddNum 52\naddNum 67\naddNum 81\naddNum 62\naddNum 50\naddNum 25\naddNum 40\nfindMedian\naddNum 44\naddNum 76\naddNum 47\naddNum 10\naddNum 31\naddNum 69",
-            "output": "null\nnull\n100.0\n100.0\nnull\nnull\nnull\nnull\n68.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n65.5\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 87\naddNum 35\naddNum 62\naddNum 68\naddNum 17\naddNum 4\naddNum 45\naddNum 82\naddNum 68\naddNum 84\nfindMedian\nfindMedian\naddNum 77\nfindMedian\naddNum 98\naddNum 82\naddNum 51\naddNum 43\naddNum 61\naddNum 72\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n65.0\n65.0\nnull\n68.0\nnull\nnull\nnull\nnull\nnull\nnull\n68.0"
         },
         {
-            "input": "MedianFinder\naddNum 14\nfindMedian\nfindMedian\nfindMedian\naddNum 3\naddNum 54\naddNum 85\naddNum 24\naddNum 54\nfindMedian\naddNum 35\naddNum 45\naddNum 67\nfindMedian\naddNum 87\naddNum 97\naddNum 1\naddNum 18\naddNum 87\nfindMedian",
-            "output": "null\nnull\n14.0\n14.0\n14.0\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull\nnull\n45.0\nnull\nnull\nnull\nnull\nnull\n49.5"
+            "input": "MedianFinder\naddNum 48\naddNum 49\naddNum 95\nfindMedian\naddNum 54\naddNum 45\naddNum 27\nfindMedian\naddNum 38\naddNum 96\naddNum 31\nfindMedian\naddNum 100\naddNum 48\naddNum 75\naddNum 62\nfindMedian\nfindMedian\naddNum 52\naddNum 100\naddNum 33\naddNum 77\naddNum 70\naddNum 19\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n49.0\nnull\nnull\nnull\n48.5\nnull\nnull\nnull\n48.0\nnull\nnull\nnull\nnull\n49.0\n49.0\nnull\nnull\nnull\nnull\nnull\nnull\n52.0"
         },
         {
-            "input": "MedianFinder\naddNum 72\nfindMedian\naddNum 91\nfindMedian\nfindMedian\naddNum 77\naddNum 45\naddNum 73\naddNum 30\naddNum 40\naddNum 13\nfindMedian\naddNum 45\naddNum 5\naddNum 55\naddNum 56\naddNum 99\naddNum 93\nfindMedian\naddNum 43\nfindMedian\naddNum 45",
-            "output": "null\nnull\n72.0\nnull\n81.5\n81.5\nnull\nnull\nnull\nnull\nnull\nnull\n58.5\nnull\nnull\nnull\nnull\nnull\nnull\n55.5\nnull\n55.0\nnull"
+            "input": "MedianFinder\naddNum 36\naddNum 80\naddNum 84\naddNum 9\naddNum 90\naddNum 76\naddNum 55\naddNum 45\naddNum 81\nfindMedian\naddNum 92\naddNum 30\nfindMedian\naddNum 18\naddNum 99\nfindMedian\naddNum 37\naddNum 93\nfindMedian\naddNum 73\naddNum 27\naddNum 51\naddNum 100\naddNum 47\nfindMedian\nfindMedian\nfindMedian\naddNum 5\naddNum 54",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n76.0\nnull\nnull\n76.0\nnull\nnull\n76.0\nnull\nnull\n76.0\nnull\nnull\nnull\nnull\nnull\n64.0\n64.0\n64.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 51\naddNum 11\nfindMedian\nfindMedian\naddNum 58\naddNum 63\naddNum 90\naddNum 28\nfindMedian\naddNum 81\naddNum 92\naddNum 97\naddNum 10\naddNum 89\naddNum 19\naddNum 50\nfindMedian",
-            "output": "null\nnull\nnull\n31.0\n31.0\nnull\nnull\nnull\nnull\n54.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n58.0"
+            "input": "MedianFinder\naddNum 1\naddNum 55\naddNum 93\naddNum 85\naddNum 91\naddNum 63\naddNum 68\nfindMedian\naddNum 54\nfindMedian\naddNum 21\naddNum 8\naddNum 91\naddNum 29\naddNum 36\nfindMedian\naddNum 10\naddNum 75\naddNum 15\nfindMedian\naddNum 56\naddNum 22\nfindMedian\naddNum 14\naddNum 11",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n68.0\nnull\n65.5\nnull\nnull\nnull\nnull\nnull\n55.0\nnull\nnull\nnull\n54.5\nnull\nnull\n54.5\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 32\naddNum 23\naddNum 59\naddNum 96\nfindMedian\naddNum 59\naddNum 26\nfindMedian\naddNum 10\naddNum 70\naddNum 47",
-            "output": "null\nnull\nnull\nnull\nnull\n45.5\nnull\nnull\n45.5\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 65\naddNum 43\naddNum 45\naddNum 54\naddNum 25\naddNum 30\nfindMedian\naddNum 21\naddNum 42\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 92\nfindMedian\naddNum 13\naddNum 85\nfindMedian\naddNum 34\nfindMedian\naddNum 11\naddNum 17\naddNum 21\nfindMedian\nfindMedian\nfindMedian\naddNum 10\naddNum 38",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n44.0\nnull\nnull\n42.5\n42.5\n42.5\n42.5\nnull\n43.0\nnull\nnull\n43.0\nnull\n42.5\nnull\nnull\nnull\n34.0\n34.0\n34.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 16\naddNum 58\nfindMedian\naddNum 3\nfindMedian\naddNum 22\naddNum 9\naddNum 21\nfindMedian\nfindMedian\naddNum 74\naddNum 95\naddNum 90\naddNum 84\naddNum 81\naddNum 77\naddNum 82\naddNum 67\naddNum 42\naddNum 3",
-            "output": "null\nnull\nnull\n37.0\nnull\n16.0\nnull\nnull\nnull\n18.5\n18.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 99\naddNum 46\nfindMedian\naddNum 53\nfindMedian\nfindMedian\nfindMedian\naddNum 25\naddNum 62\naddNum 77\naddNum 24\naddNum 11\naddNum 12\naddNum 44\nfindMedian\naddNum 42\naddNum 80\nfindMedian\naddNum 60\naddNum 17\naddNum 54\nfindMedian\nfindMedian\naddNum 80\naddNum 48\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\n72.5\nnull\n53.0\n53.0\n53.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n45.0\nnull\nnull\n45.0\nnull\nnull\nnull\n46.0\n46.0\nnull\nnull\n48.0\n48.0"
         },
         {
-            "input": "MedianFinder\naddNum 87\nfindMedian\naddNum 70\naddNum 1\naddNum 87\naddNum 80\nfindMedian\naddNum 54\nfindMedian\naddNum 57\naddNum 76\naddNum 92",
-            "output": "null\nnull\n87.0\nnull\nnull\nnull\nnull\n80.0\nnull\n75.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 17\naddNum 41\nfindMedian\naddNum 95\naddNum 25\naddNum 4\nfindMedian\nfindMedian\nfindMedian\naddNum 25\nfindMedian\naddNum 27",
+            "output": "null\nnull\nnull\n29.0\nnull\nnull\nnull\n25.0\n25.0\n25.0\nnull\n25.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 23\nfindMedian\naddNum 100\nfindMedian\nfindMedian\naddNum 27\naddNum 7\naddNum 37\naddNum 17\naddNum 82\naddNum 1\naddNum 69\naddNum 28\naddNum 89\naddNum 33\naddNum 58\naddNum 27\naddNum 89\naddNum 31\naddNum 27\naddNum 11\naddNum 64\naddNum 41\nfindMedian\naddNum 97\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\n23.0\nnull\n61.5\n61.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n32.0\nnull\n33.0\n33.0\n33.0"
+            "input": "MedianFinder\naddNum 50\nfindMedian\naddNum 37\nfindMedian\naddNum 77\nfindMedian\nfindMedian\naddNum 93\nfindMedian\naddNum 89\nfindMedian\naddNum 12\nfindMedian\naddNum 38\naddNum 79\naddNum 34\naddNum 17",
+            "output": "null\nnull\n50.0\nnull\n43.5\nnull\n50.0\n50.0\nnull\n63.5\nnull\n77.0\nnull\n63.5\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 74\naddNum 94\nfindMedian\naddNum 60\naddNum 70\naddNum 10\naddNum 8\naddNum 6\naddNum 91\nfindMedian\naddNum 38\naddNum 61\naddNum 55\nfindMedian\nfindMedian\naddNum 15\naddNum 10\naddNum 68\naddNum 95\nfindMedian\naddNum 96\naddNum 45\naddNum 23\naddNum 56\naddNum 57\nfindMedian\naddNum 46",
-            "output": "null\nnull\nnull\n84.0\nnull\nnull\nnull\nnull\nnull\nnull\n65.0\nnull\nnull\nnull\n60.0\n60.0\nnull\nnull\nnull\nnull\n60.0\nnull\nnull\nnull\nnull\nnull\n56.5\nnull"
+            "input": "MedianFinder\naddNum 4\naddNum 90\naddNum 84\naddNum 45\naddNum 91\naddNum 19\nfindMedian\nfindMedian\naddNum 96\nfindMedian\naddNum 68\naddNum 67\naddNum 19\nfindMedian\nfindMedian\naddNum 57\naddNum 54\nfindMedian\nfindMedian\naddNum 2\naddNum 46\naddNum 96\naddNum 48",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n64.5\n64.5\nnull\n84.0\nnull\nnull\nnull\n67.5\n67.5\nnull\nnull\n62.0\n62.0\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 14\naddNum 28\nfindMedian\nfindMedian\naddNum 48\nfindMedian\naddNum 61\nfindMedian\naddNum 65\naddNum 94\naddNum 27\naddNum 74\naddNum 26\nfindMedian\naddNum 76\naddNum 11\naddNum 45\naddNum 93\nfindMedian\naddNum 1\naddNum 29\naddNum 30\naddNum 97",
-            "output": "null\nnull\nnull\n21.0\n21.0\nnull\n28.0\nnull\n38.0\nnull\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 94\nfindMedian\naddNum 67\naddNum 34\nfindMedian\nfindMedian\naddNum 16\naddNum 86\naddNum 20\naddNum 72\naddNum 22\naddNum 88\naddNum 59",
+            "output": "null\nnull\n94.0\nnull\nnull\n67.0\n67.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 69\naddNum 84\nfindMedian\naddNum 55\naddNum 86\nfindMedian\naddNum 18\naddNum 3\naddNum 29\naddNum 39\naddNum 32\naddNum 45\nfindMedian\nfindMedian\naddNum 34\naddNum 96",
-            "output": "null\nnull\nnull\n76.5\nnull\nnull\n76.5\nnull\nnull\nnull\nnull\nnull\nnull\n42.0\n42.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 26\nfindMedian\naddNum 10\nfindMedian\nfindMedian\nfindMedian\naddNum 53\naddNum 4\nfindMedian\nfindMedian\naddNum 25\naddNum 21\naddNum 88\nfindMedian\naddNum 71\naddNum 25\naddNum 81\nfindMedian\naddNum 31\naddNum 62\naddNum 72\naddNum 79\naddNum 8\naddNum 54\nfindMedian\nfindMedian\naddNum 84",
+            "output": "null\nnull\n26.0\nnull\n18.0\n18.0\n18.0\nnull\nnull\n18.0\n18.0\nnull\nnull\nnull\n25.0\nnull\nnull\nnull\n25.5\nnull\nnull\nnull\nnull\nnull\nnull\n42.0\n42.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 51\naddNum 43\naddNum 22\naddNum 36\nfindMedian\naddNum 3\nfindMedian\naddNum 60\nfindMedian\naddNum 47\naddNum 42\naddNum 96\nfindMedian\nfindMedian\nfindMedian\naddNum 64\nfindMedian\naddNum 25\nfindMedian\naddNum 40\naddNum 70\nfindMedian\naddNum 19\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\n39.5\nnull\n36.0\nnull\n39.5\nnull\nnull\nnull\n43.0\n43.0\n43.0\nnull\n45.0\nnull\n43.0\nnull\nnull\n43.0\nnull\n42.5"
+            "input": "MedianFinder\naddNum 39\naddNum 76\naddNum 17\nfindMedian\naddNum 21\naddNum 24\nfindMedian\nfindMedian\naddNum 85\nfindMedian\nfindMedian\naddNum 26\nfindMedian\naddNum 97\naddNum 18\naddNum 22\nfindMedian\nfindMedian\naddNum 17",
+            "output": "null\nnull\nnull\nnull\n39.0\nnull\nnull\n24.0\n24.0\nnull\n31.5\n31.5\nnull\n26.0\nnull\nnull\nnull\n25.0\n25.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 91\nfindMedian\nfindMedian\naddNum 70\nfindMedian\naddNum 83\nfindMedian\naddNum 83\nfindMedian\naddNum 44\nfindMedian\naddNum 30",
-            "output": "null\nnull\n91.0\n91.0\nnull\n80.5\nnull\n83.0\nnull\n83.0\nnull\n83.0\nnull"
+            "input": "MedianFinder\naddNum 79\nfindMedian\nfindMedian\naddNum 20\naddNum 63\naddNum 61\nfindMedian\nfindMedian\naddNum 54\naddNum 29\naddNum 86\naddNum 5\nfindMedian\naddNum 64",
+            "output": "null\nnull\n79.0\n79.0\nnull\nnull\nnull\n62.0\n62.0\nnull\nnull\nnull\nnull\n57.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 73\naddNum 40\naddNum 72\nfindMedian\naddNum 26\naddNum 60\naddNum 72\naddNum 3\naddNum 72\naddNum 55\nfindMedian\naddNum 4\naddNum 50",
-            "output": "null\nnull\nnull\nnull\n72.0\nnull\nnull\nnull\nnull\nnull\nnull\n60.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 74\naddNum 68\naddNum 93\nfindMedian\nfindMedian\naddNum 55\naddNum 22\naddNum 62\naddNum 50\nfindMedian\naddNum 40\naddNum 23\naddNum 78\nfindMedian\naddNum 70\naddNum 79\naddNum 5\nfindMedian\naddNum 25\naddNum 42\nfindMedian\naddNum 72\naddNum 81",
+            "output": "null\nnull\nnull\nnull\n74.0\n74.0\nnull\nnull\nnull\nnull\n62.0\nnull\nnull\nnull\n58.5\nnull\nnull\nnull\n62.0\nnull\nnull\n55.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 4\naddNum 100\naddNum 69\nfindMedian\nfindMedian\naddNum 69\naddNum 56\nfindMedian\naddNum 3\naddNum 15\naddNum 94\naddNum 21",
-            "output": "null\nnull\nnull\nnull\n69.0\n69.0\nnull\nnull\n69.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 95\naddNum 12\naddNum 3\naddNum 81\naddNum 77\naddNum 90\naddNum 71\naddNum 48\naddNum 72\naddNum 79\nfindMedian\naddNum 75\nfindMedian\naddNum 12\nfindMedian\naddNum 66",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n74.5\nnull\n75.0\nnull\n73.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 10\naddNum 90\nfindMedian\naddNum 52\nfindMedian\nfindMedian\naddNum 3\nfindMedian\nfindMedian\nfindMedian\naddNum 78\naddNum 66\naddNum 77\nfindMedian\naddNum 84\naddNum 87\naddNum 44\naddNum 71\naddNum 8\naddNum 26\naddNum 5\naddNum 26\naddNum 74\naddNum 55",
-            "output": "null\nnull\nnull\n50.0\nnull\n52.0\n52.0\nnull\n31.0\n31.0\n31.0\nnull\nnull\nnull\n66.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 46\naddNum 6\naddNum 5\nfindMedian\naddNum 29\naddNum 58\nfindMedian\naddNum 34\naddNum 62\naddNum 45\naddNum 24\naddNum 87\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n6.0\nnull\nnull\n29.0\nnull\nnull\nnull\nnull\nnull\n39.5"
         },
         {
-            "input": "MedianFinder\naddNum 97\naddNum 35\naddNum 65\nfindMedian\nfindMedian\naddNum 66\naddNum 89\naddNum 7\naddNum 24\nfindMedian\nfindMedian\nfindMedian\naddNum 41\naddNum 2\naddNum 36\naddNum 49\naddNum 54\naddNum 15\nfindMedian\naddNum 7\naddNum 90\naddNum 52\nfindMedian\naddNum 57\naddNum 33\naddNum 70",
-            "output": "null\nnull\nnull\nnull\n65.0\n65.0\nnull\nnull\nnull\nnull\n65.0\n65.0\n65.0\nnull\nnull\nnull\nnull\nnull\nnull\n41.0\nnull\nnull\nnull\n45.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 23\naddNum 38\naddNum 65\nfindMedian\naddNum 70\naddNum 80\naddNum 42\naddNum 91\naddNum 51\naddNum 89\naddNum 85\naddNum 69\naddNum 100\naddNum 49\naddNum 69\naddNum 50\naddNum 56\naddNum 76\naddNum 78\naddNum 82\naddNum 22",
+            "output": "null\nnull\nnull\nnull\n38.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 46\nfindMedian\nfindMedian\naddNum 65\naddNum 75\nfindMedian\naddNum 79\naddNum 53\nfindMedian\naddNum 22\naddNum 5",
-            "output": "null\nnull\n46.0\n46.0\nnull\nnull\n65.0\nnull\nnull\n65.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 77\naddNum 57\naddNum 8\nfindMedian\naddNum 72\naddNum 9\naddNum 57\nfindMedian\naddNum 86\nfindMedian\naddNum 19\naddNum 77\naddNum 81\nfindMedian\naddNum 65\naddNum 100\naddNum 77\naddNum 16\naddNum 82\naddNum 92\naddNum 4\naddNum 5\naddNum 43\nfindMedian\nfindMedian\naddNum 62",
+            "output": "null\nnull\nnull\nnull\n57.0\nnull\nnull\nnull\n57.0\nnull\n57.0\nnull\nnull\nnull\n64.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n65.0\n65.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 42\nfindMedian\naddNum 26\naddNum 89\naddNum 13\nfindMedian\naddNum 33\naddNum 64\nfindMedian\nfindMedian\naddNum 41\naddNum 79",
-            "output": "null\nnull\n42.0\nnull\nnull\nnull\n34.0\nnull\nnull\n37.5\n37.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 94\nfindMedian\naddNum 85\naddNum 6\naddNum 77\nfindMedian\naddNum 20\naddNum 73\nfindMedian\naddNum 14\naddNum 46\naddNum 5\naddNum 51\naddNum 86\naddNum 52\naddNum 23\nfindMedian\naddNum 29\naddNum 90\naddNum 34\naddNum 31\naddNum 19\naddNum 77\naddNum 99\nfindMedian\naddNum 28\naddNum 7\nfindMedian",
+            "output": "null\nnull\n94.0\nnull\nnull\nnull\n81.0\nnull\nnull\n75.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n51.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n48.5\nnull\nnull\n40.0"
         },
         {
-            "input": "MedianFinder\naddNum 5\naddNum 53\naddNum 4\naddNum 36\naddNum 8\naddNum 8\naddNum 20\naddNum 37\naddNum 38\nfindMedian\naddNum 2\naddNum 24\naddNum 1\naddNum 78\naddNum 77\naddNum 77\naddNum 7\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n20.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n22.0\n22.0\n22.0"
+            "input": "MedianFinder\naddNum 17\nfindMedian\nfindMedian\naddNum 10\nfindMedian\nfindMedian\naddNum 8\nfindMedian\naddNum 13\naddNum 13\naddNum 55\nfindMedian\nfindMedian\naddNum 60\naddNum 34\naddNum 59\naddNum 67\naddNum 11",
+            "output": "null\nnull\n17.0\n17.0\nnull\n13.5\n13.5\nnull\n10.0\nnull\nnull\nnull\n13.0\n13.0\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 58\naddNum 20\naddNum 83\nfindMedian\nfindMedian\naddNum 69\naddNum 23\nfindMedian\naddNum 79\nfindMedian\nfindMedian\naddNum 66\naddNum 80\naddNum 6\naddNum 53\nfindMedian\naddNum 64\naddNum 23\nfindMedian\nfindMedian\naddNum 70\nfindMedian\naddNum 46\naddNum 94\naddNum 9\naddNum 35",
-            "output": "null\nnull\nnull\nnull\n58.0\n58.0\nnull\nnull\n58.0\nnull\n63.5\n63.5\nnull\nnull\nnull\nnull\n62.0\nnull\nnull\n61.0\n61.0\nnull\n64.0\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 43\naddNum 89\naddNum 23\naddNum 94\nfindMedian\naddNum 76\nfindMedian\naddNum 27\nfindMedian\naddNum 5\nfindMedian\naddNum 45\naddNum 98\naddNum 86\nfindMedian\naddNum 91\naddNum 3\naddNum 65\nfindMedian\naddNum 34\nfindMedian\naddNum 34\naddNum 21\naddNum 80\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\n66.0\nnull\n76.0\nnull\n59.5\nnull\n43.0\nnull\nnull\nnull\n60.5\nnull\nnull\nnull\n65.0\nnull\n55.0\nnull\nnull\nnull\n45.0"
         },
         {
-            "input": "MedianFinder\naddNum 64\nfindMedian\naddNum 5\naddNum 87\naddNum 96\naddNum 50\naddNum 89\naddNum 66\nfindMedian\nfindMedian\nfindMedian\naddNum 16\nfindMedian\naddNum 23\nfindMedian\nfindMedian\naddNum 14\naddNum 4",
-            "output": "null\nnull\n64.0\nnull\nnull\nnull\nnull\nnull\nnull\n66.0\n66.0\n66.0\nnull\n65.0\nnull\n64.0\n64.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 4\naddNum 39\naddNum 53\naddNum 56\naddNum 10\nfindMedian\naddNum 89\naddNum 19",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 18\naddNum 35\naddNum 86\nfindMedian\naddNum 7\naddNum 8\nfindMedian\naddNum 63\naddNum 24\naddNum 39\naddNum 63\naddNum 27\naddNum 95\naddNum 78\nfindMedian\naddNum 56\naddNum 35",
-            "output": "null\nnull\nnull\nnull\n35.0\nnull\nnull\n18.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n37.0\nnull\nnull"
+            "input": "MedianFinder\naddNum 64\naddNum 1\nfindMedian\naddNum 51\naddNum 35\naddNum 63\nfindMedian\naddNum 54\nfindMedian\naddNum 20",
+            "output": "null\nnull\nnull\n32.5\nnull\nnull\nnull\n51.0\nnull\n52.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 36\naddNum 78\naddNum 82\nfindMedian\nfindMedian\naddNum 93\naddNum 39\naddNum 4\nfindMedian\naddNum 47\naddNum 59\naddNum 66\naddNum 8\nfindMedian\naddNum 50\naddNum 57\naddNum 12\naddNum 33\naddNum 52\naddNum 78\naddNum 93\nfindMedian\naddNum 13",
-            "output": "null\nnull\nnull\nnull\n78.0\n78.0\nnull\nnull\nnull\n58.5\nnull\nnull\nnull\nnull\n53.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n52.0\nnull"
+            "input": "MedianFinder\naddNum 15\naddNum 4\naddNum 4\naddNum 82\naddNum 51\nfindMedian\naddNum 69\naddNum 12\nfindMedian\naddNum 80\naddNum 21",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n15.0\nnull\nnull\n15.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 20\naddNum 28\naddNum 31\nfindMedian\naddNum 38\naddNum 75\naddNum 75\nfindMedian\nfindMedian\nfindMedian\naddNum 14\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\nnull\n28.0\nnull\nnull\nnull\n34.5\n34.5\n34.5\nnull\n31.0\n31.0\n31.0"
+            "input": "MedianFinder\naddNum 25\nfindMedian\naddNum 77\nfindMedian\naddNum 40\naddNum 83\naddNum 17\naddNum 31\naddNum 14\naddNum 64\naddNum 55\naddNum 45\naddNum 6\naddNum 100\naddNum 67\nfindMedian\nfindMedian\naddNum 26\naddNum 35\naddNum 92\naddNum 41\nfindMedian\naddNum 70\naddNum 40\naddNum 63\naddNum 85\naddNum 63",
+            "output": "null\nnull\n25.0\nnull\n51.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n45.0\n45.0\nnull\nnull\nnull\nnull\n41.0\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 23\naddNum 46\naddNum 22\nfindMedian\naddNum 31\naddNum 39\naddNum 79\naddNum 91\naddNum 72\naddNum 51\naddNum 26\nfindMedian\naddNum 93\naddNum 77\naddNum 86\naddNum 54\nfindMedian\naddNum 17\nfindMedian\naddNum 69\naddNum 44\naddNum 29\naddNum 28\nfindMedian\naddNum 99\nfindMedian",
-            "output": "null\nnull\nnull\nnull\n23.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n42.5\nnull\nnull\nnull\nnull\n52.5\nnull\n51.0\nnull\nnull\nnull\nnull\n46.0\nnull\n48.5"
+            "input": "MedianFinder\naddNum 80\naddNum 73\naddNum 54\naddNum 16\naddNum 11\nfindMedian\naddNum 17\naddNum 60\naddNum 100\nfindMedian\nfindMedian\naddNum 80\naddNum 66\naddNum 49\nfindMedian\naddNum 29\naddNum 3\naddNum 39\naddNum 16\naddNum 23\naddNum 60\nfindMedian\naddNum 75\naddNum 94\nfindMedian\nfindMedian\naddNum 20\naddNum 48\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n54.0\nnull\nnull\nnull\n57.0\n57.0\nnull\nnull\nnull\n60.0\nnull\nnull\nnull\nnull\nnull\nnull\n49.0\nnull\nnull\n54.0\n54.0\nnull\nnull\n49.0"
         },
         {
-            "input": "MedianFinder\naddNum 85\naddNum 77\naddNum 3\naddNum 68\nfindMedian\naddNum 75\naddNum 59\naddNum 100\naddNum 62\naddNum 18\nfindMedian\naddNum 9\naddNum 69\nfindMedian\naddNum 21\naddNum 71\naddNum 26\naddNum 26\naddNum 29\nfindMedian\naddNum 31\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\n72.5\nnull\nnull\nnull\nnull\nnull\n68.0\nnull\nnull\n68.0\nnull\nnull\nnull\nnull\nnull\n60.5\nnull\n59.0"
+            "input": "MedianFinder\naddNum 28\naddNum 29\naddNum 96\naddNum 98\naddNum 46\nfindMedian\naddNum 86\naddNum 47\nfindMedian\nfindMedian\naddNum 14\naddNum 68\naddNum 90\nfindMedian\naddNum 84\naddNum 50\naddNum 84\naddNum 13\naddNum 17\naddNum 25\naddNum 94\naddNum 53\naddNum 52\naddNum 50",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n46.0\nnull\nnull\n47.0\n47.0\nnull\nnull\nnull\n57.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 25\nfindMedian\naddNum 73\naddNum 51\nfindMedian\naddNum 57\nfindMedian\nfindMedian\nfindMedian\naddNum 34\naddNum 82\naddNum 90\naddNum 64\nfindMedian\naddNum 97\naddNum 77\naddNum 11\naddNum 3\nfindMedian\naddNum 88\nfindMedian\naddNum 16\naddNum 7\nfindMedian\nfindMedian\naddNum 88",
-            "output": "null\nnull\n25.0\nnull\nnull\n51.0\nnull\n54.0\n54.0\n54.0\nnull\nnull\nnull\nnull\n60.5\nnull\nnull\nnull\nnull\n60.5\nnull\n64.0\nnull\nnull\n57.0\n57.0\nnull"
+            "input": "MedianFinder\naddNum 16\naddNum 99\naddNum 94\naddNum 84\naddNum 23\naddNum 18\naddNum 63\nfindMedian\naddNum 16\naddNum 5\naddNum 60\naddNum 77\naddNum 83\naddNum 11\nfindMedian\naddNum 72\naddNum 63\naddNum 99\nfindMedian\naddNum 5\naddNum 72\nfindMedian\naddNum 100\naddNum 19",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n63.0\nnull\nnull\nnull\nnull\nnull\nnull\n60.0\nnull\nnull\nnull\n63.0\nnull\nnull\n63.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 64\nfindMedian\naddNum 42\naddNum 48\naddNum 99\naddNum 74\nfindMedian\naddNum 85\nfindMedian\nfindMedian\nfindMedian\naddNum 56\naddNum 66\naddNum 24\nfindMedian",
-            "output": "null\nnull\n64.0\nnull\nnull\nnull\nnull\n64.0\nnull\n69.0\n69.0\n69.0\nnull\nnull\nnull\n64.0"
+            "input": "MedianFinder\naddNum 40\naddNum 85\naddNum 56\nfindMedian\naddNum 79\naddNum 71\naddNum 83\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n56.0\nnull\nnull\nnull\n75.0\n75.0"
         },
         {
-            "input": "MedianFinder\naddNum 75\naddNum 56\naddNum 44\nfindMedian\naddNum 95\nfindMedian\naddNum 27\naddNum 51\naddNum 75\naddNum 99\naddNum 18\naddNum 47\nfindMedian\naddNum 45\naddNum 3\naddNum 42\naddNum 21\naddNum 27\naddNum 1\nfindMedian\naddNum 79\nfindMedian\nfindMedian\naddNum 53",
-            "output": "null\nnull\nnull\nnull\n56.0\nnull\n65.5\nnull\nnull\nnull\nnull\nnull\nnull\n53.5\nnull\nnull\nnull\nnull\nnull\nnull\n44.5\nnull\n45.0\n45.0\nnull"
+            "input": "MedianFinder\naddNum 91\nfindMedian\nfindMedian\naddNum 21\nfindMedian\nfindMedian\naddNum 35\naddNum 53\nfindMedian\naddNum 29\naddNum 50\nfindMedian\nfindMedian\nfindMedian\nfindMedian\naddNum 47\naddNum 85\nfindMedian",
+            "output": "null\nnull\n91.0\n91.0\nnull\n56.0\n56.0\nnull\nnull\n44.0\nnull\nnull\n42.5\n42.5\n42.5\n42.5\nnull\nnull\n48.5"
         },
         {
-            "input": "MedianFinder\naddNum 73\naddNum 51\naddNum 59\naddNum 52\naddNum 68\nfindMedian\naddNum 23\nfindMedian\naddNum 20\nfindMedian\nfindMedian\nfindMedian",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\n59.0\nnull\n55.5\nnull\n52.0\n52.0\n52.0"
+            "input": "MedianFinder\naddNum 19\naddNum 73\naddNum 71\naddNum 80\naddNum 83\naddNum 100\naddNum 78\nfindMedian\naddNum 83\nfindMedian\nfindMedian\nfindMedian\naddNum 11\naddNum 79\naddNum 56\naddNum 25\naddNum 41\naddNum 58\naddNum 63\naddNum 87\nfindMedian\nfindMedian\naddNum 5\nfindMedian\nfindMedian\nfindMedian\naddNum 1\naddNum 53\nfindMedian\naddNum 5",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n78.0\nnull\n79.0\n79.0\n79.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n72.0\n72.0\nnull\n71.0\n71.0\n71.0\nnull\nnull\n63.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 41\naddNum 100\nfindMedian\naddNum 51\naddNum 6\naddNum 27\nfindMedian\naddNum 74\naddNum 7\naddNum 84",
-            "output": "null\nnull\nnull\n70.5\nnull\nnull\nnull\n41.0\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 69\naddNum 22\naddNum 10\naddNum 37\naddNum 6\nfindMedian\naddNum 15\naddNum 5\naddNum 94\naddNum 55\naddNum 72\naddNum 99",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n22.0\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 13\naddNum 66\nfindMedian\naddNum 62\nfindMedian\naddNum 92\naddNum 91\naddNum 84\nfindMedian\naddNum 26\naddNum 43\nfindMedian",
-            "output": "null\nnull\nnull\n39.5\nnull\n62.0\nnull\nnull\nnull\n75.0\nnull\nnull\n64.0"
+            "input": "MedianFinder\naddNum 61\nfindMedian\naddNum 64\naddNum 57\nfindMedian\naddNum 19\naddNum 22\nfindMedian\naddNum 72\naddNum 53\nfindMedian\naddNum 86\naddNum 65\nfindMedian\nfindMedian\naddNum 24\naddNum 23",
+            "output": "null\nnull\n61.0\nnull\nnull\n61.0\nnull\nnull\n57.0\nnull\nnull\n57.0\nnull\nnull\n61.0\n61.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 7\nfindMedian\naddNum 61\nfindMedian\naddNum 32\naddNum 60\naddNum 98\naddNum 26\naddNum 46\nfindMedian\naddNum 51\nfindMedian\nfindMedian\nfindMedian\naddNum 49\naddNum 88\naddNum 23\nfindMedian\naddNum 68\naddNum 30\naddNum 9\naddNum 81\naddNum 29",
-            "output": "null\nnull\n7.0\nnull\n34.0\nnull\nnull\nnull\nnull\nnull\n46.0\nnull\n48.5\n48.5\n48.5\nnull\nnull\nnull\n49.0\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 97\nfindMedian\nfindMedian\naddNum 81\naddNum 9\naddNum 22\naddNum 48\nfindMedian\naddNum 42\naddNum 32\nfindMedian\nfindMedian",
+            "output": "null\nnull\n97.0\n97.0\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\n42.0\n42.0"
         },
         {
-            "input": "MedianFinder\naddNum 53\naddNum 58\nfindMedian\nfindMedian\naddNum 82\nfindMedian\nfindMedian\nfindMedian\naddNum 97\nfindMedian\nfindMedian\nfindMedian\naddNum 81",
-            "output": "null\nnull\nnull\n55.5\n55.5\nnull\n58.0\n58.0\n58.0\nnull\n70.0\n70.0\n70.0\nnull"
+            "input": "MedianFinder\naddNum 80\nfindMedian\naddNum 75\naddNum 63\nfindMedian\naddNum 22\naddNum 67\nfindMedian\naddNum 7",
+            "output": "null\nnull\n80.0\nnull\nnull\n75.0\nnull\nnull\n67.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 13\naddNum 28\nfindMedian\nfindMedian\naddNum 54\naddNum 79\naddNum 56\naddNum 48\naddNum 19\naddNum 40\naddNum 2\naddNum 93\naddNum 76\naddNum 76\naddNum 35\naddNum 49\naddNum 1\nfindMedian\naddNum 46\naddNum 25\naddNum 10\naddNum 49\naddNum 3\nfindMedian\naddNum 28\nfindMedian\naddNum 45",
-            "output": "null\nnull\nnull\n20.5\n20.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n48.0\nnull\nnull\nnull\nnull\nnull\n43.0\nnull\n40.0\nnull"
+            "input": "MedianFinder\naddNum 97\nfindMedian\naddNum 49\nfindMedian\nfindMedian\naddNum 45\naddNum 13\naddNum 93\naddNum 31\naddNum 7\naddNum 15\naddNum 26\naddNum 29\naddNum 36\nfindMedian\nfindMedian\naddNum 55\nfindMedian\nfindMedian\naddNum 19\naddNum 20\naddNum 37\naddNum 26\naddNum 63\naddNum 46\nfindMedian\naddNum 7\naddNum 84\nfindMedian\nfindMedian",
+            "output": "null\nnull\n97.0\nnull\n73.0\n73.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n31.0\n31.0\nnull\n33.5\n33.5\nnull\nnull\nnull\nnull\nnull\nnull\n33.5\nnull\nnull\n33.5\n33.5"
         },
         {
-            "input": "MedianFinder\naddNum 95\naddNum 20\naddNum 24\nfindMedian\naddNum 35\naddNum 75\nfindMedian\nfindMedian\naddNum 53\naddNum 46\naddNum 99\nfindMedian\naddNum 59\naddNum 32\naddNum 49\naddNum 45\naddNum 55\naddNum 10\naddNum 26",
-            "output": "null\nnull\nnull\nnull\n24.0\nnull\nnull\n35.0\n35.0\nnull\nnull\nnull\n49.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 80\naddNum 84\naddNum 5\nfindMedian\naddNum 48\naddNum 20\nfindMedian\nfindMedian\naddNum 78\naddNum 85\naddNum 83\naddNum 53\naddNum 77\naddNum 50\naddNum 90\naddNum 94\nfindMedian\naddNum 95\nfindMedian\naddNum 15\naddNum 24\naddNum 97\nfindMedian\naddNum 94\nfindMedian\naddNum 17\naddNum 48",
+            "output": "null\nnull\nnull\nnull\n80.0\nnull\nnull\n48.0\n48.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n78.0\nnull\n79.0\nnull\nnull\nnull\n78.0\nnull\n79.0\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 66\naddNum 2\naddNum 12\naddNum 59\nfindMedian\nfindMedian\naddNum 44\naddNum 2\naddNum 86\naddNum 29\naddNum 91\naddNum 28\naddNum 72\nfindMedian\naddNum 23\naddNum 72\naddNum 70\naddNum 96\naddNum 50\naddNum 29\naddNum 68\naddNum 66\naddNum 7",
-            "output": "null\nnull\nnull\nnull\nnull\n35.5\n35.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n44.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 75\naddNum 24\naddNum 100\nfindMedian\naddNum 60\nfindMedian\nfindMedian\naddNum 41\naddNum 95\naddNum 3\naddNum 36\naddNum 88\naddNum 65\naddNum 69\naddNum 8\naddNum 8\naddNum 24\nfindMedian\nfindMedian\nfindMedian\naddNum 95\nfindMedian\naddNum 70\nfindMedian\naddNum 14",
+            "output": "null\nnull\nnull\nnull\n75.0\nnull\n67.5\n67.5\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n50.5\n50.5\n50.5\nnull\n60.0\nnull\n62.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 34\nfindMedian\nfindMedian\naddNum 96\naddNum 39\naddNum 29\naddNum 10\nfindMedian\nfindMedian\naddNum 46\naddNum 81\naddNum 91\naddNum 73\naddNum 19\naddNum 8\nfindMedian\naddNum 58\naddNum 76\naddNum 5\naddNum 98\naddNum 76\naddNum 25\naddNum 50\naddNum 10\naddNum 82\naddNum 69\nfindMedian\nfindMedian",
-            "output": "null\nnull\n34.0\n34.0\nnull\nnull\nnull\nnull\n34.0\n34.0\nnull\nnull\nnull\nnull\nnull\nnull\n39.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n50.0\n50.0"
+            "input": "MedianFinder\naddNum 56\nfindMedian\naddNum 92\naddNum 3\naddNum 21\nfindMedian\naddNum 36\nfindMedian\naddNum 45\nfindMedian\naddNum 4\naddNum 7\nfindMedian\naddNum 92\naddNum 95\nfindMedian\naddNum 80\naddNum 64\nfindMedian\naddNum 97\nfindMedian\naddNum 9\nfindMedian",
+            "output": "null\nnull\n56.0\nnull\nnull\nnull\n38.5\nnull\n36.0\nnull\n40.5\nnull\nnull\n28.5\nnull\nnull\n40.5\nnull\nnull\n50.5\nnull\n56.0\nnull\n50.5"
         },
         {
-            "input": "MedianFinder\naddNum 87\nfindMedian\naddNum 88\naddNum 98\naddNum 33\naddNum 48\naddNum 42\naddNum 93\naddNum 68\nfindMedian\naddNum 21\nfindMedian\naddNum 49\naddNum 95\naddNum 23\naddNum 90\naddNum 60\naddNum 60\naddNum 49\naddNum 52\naddNum 24\naddNum 78\naddNum 45\naddNum 34\nfindMedian",
-            "output": "null\nnull\n87.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n77.5\nnull\n68.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n52.0"
+            "input": "MedianFinder\naddNum 38\nfindMedian\naddNum 51\nfindMedian\naddNum 77\nfindMedian\naddNum 17\nfindMedian\nfindMedian\nfindMedian\naddNum 71\naddNum 87\naddNum 29\naddNum 11\nfindMedian\naddNum 63",
+            "output": "null\nnull\n38.0\nnull\n44.5\nnull\n51.0\nnull\n44.5\n44.5\n44.5\nnull\nnull\nnull\nnull\n44.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 34\nfindMedian\naddNum 5\naddNum 47\naddNum 100\nfindMedian\nfindMedian\naddNum 91\naddNum 56\naddNum 80\naddNum 39\naddNum 36",
-            "output": "null\nnull\n34.0\nnull\nnull\nnull\n40.5\n40.5\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 94\naddNum 75\naddNum 90\nfindMedian\naddNum 58\naddNum 69\naddNum 69\naddNum 38\naddNum 91\naddNum 12\naddNum 38\naddNum 40\nfindMedian\naddNum 11",
+            "output": "null\nnull\nnull\nnull\n90.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n69.0\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 84\nfindMedian\naddNum 48\naddNum 41\naddNum 77\naddNum 96\nfindMedian\naddNum 74\naddNum 55\naddNum 34\naddNum 97\nfindMedian\nfindMedian",
-            "output": "null\nnull\n84.0\nnull\nnull\nnull\nnull\n77.0\nnull\nnull\nnull\nnull\n74.0\n74.0"
+            "input": "MedianFinder\naddNum 81\naddNum 81\nfindMedian\naddNum 81\naddNum 67\naddNum 17\naddNum 20\naddNum 66\nfindMedian\nfindMedian\naddNum 48\naddNum 41\nfindMedian\naddNum 55\naddNum 71\nfindMedian\naddNum 50\naddNum 25\nfindMedian\naddNum 86\nfindMedian\nfindMedian\naddNum 33",
+            "output": "null\nnull\nnull\n81.0\nnull\nnull\nnull\nnull\nnull\n67.0\n67.0\nnull\nnull\n66.0\nnull\nnull\n66.0\nnull\nnull\n55.0\nnull\n60.5\n60.5\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 98\naddNum 87\naddNum 59\nfindMedian\naddNum 35\nfindMedian\nfindMedian\naddNum 84\naddNum 24\nfindMedian\nfindMedian\nfindMedian\naddNum 60\naddNum 49\nfindMedian\nfindMedian\naddNum 71\naddNum 20",
-            "output": "null\nnull\nnull\nnull\n87.0\nnull\n73.0\n73.0\nnull\nnull\n71.5\n71.5\n71.5\nnull\nnull\n59.5\n59.5\nnull\nnull"
+            "input": "MedianFinder\naddNum 10\naddNum 83\nfindMedian\naddNum 86\nfindMedian\naddNum 94\naddNum 52\naddNum 84\naddNum 38\naddNum 82\naddNum 67\naddNum 5\naddNum 83\naddNum 7\nfindMedian\naddNum 16\naddNum 75\nfindMedian\naddNum 70\naddNum 62\nfindMedian\naddNum 70\nfindMedian",
+            "output": "null\nnull\nnull\n46.5\nnull\n83.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n74.5\nnull\nnull\n71.0\nnull\nnull\n68.5\nnull\n70.0"
         },
         {
-            "input": "MedianFinder\naddNum 5\naddNum 11\nfindMedian\naddNum 26\nfindMedian\nfindMedian\naddNum 93\naddNum 85\naddNum 32\nfindMedian\nfindMedian\naddNum 2\nfindMedian\nfindMedian\naddNum 26\naddNum 70\naddNum 40\naddNum 30\naddNum 96\naddNum 27\naddNum 63\naddNum 86\naddNum 94\naddNum 96\naddNum 26\naddNum 81",
-            "output": "null\nnull\nnull\n8.0\nnull\n11.0\n11.0\nnull\nnull\nnull\n29.0\n29.0\nnull\n26.0\n26.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+            "input": "MedianFinder\naddNum 14\naddNum 93\naddNum 32\naddNum 43\naddNum 79\naddNum 92\nfindMedian\naddNum 51\nfindMedian\nfindMedian\naddNum 45\nfindMedian\naddNum 36\naddNum 16\naddNum 89\naddNum 44\naddNum 15\naddNum 7\naddNum 80",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n61.0\nnull\n51.0\n51.0\nnull\n48.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "MedianFinder\naddNum 14\naddNum 39\naddNum 49\naddNum 43\nfindMedian\naddNum 65\naddNum 33\nfindMedian\nfindMedian\naddNum 12\naddNum 32\naddNum 53\naddNum 27\nfindMedian\naddNum 70",
-            "output": "null\nnull\nnull\nnull\nnull\n41.0\nnull\nnull\n41.0\n41.0\nnull\nnull\nnull\nnull\n36.0\nnull"
+            "input": "MedianFinder\naddNum 61\naddNum 44\naddNum 40\nfindMedian\nfindMedian\naddNum 67\naddNum 49\nfindMedian\nfindMedian\naddNum 62\nfindMedian\nfindMedian\naddNum 46\naddNum 26\nfindMedian\nfindMedian\nfindMedian",
+            "output": "null\nnull\nnull\nnull\n44.0\n44.0\nnull\nnull\n49.0\n49.0\nnull\n55.0\n55.0\nnull\nnull\n47.5\n47.5\n47.5"
+        },
+        {
+            "input": "MedianFinder\naddNum 21\naddNum 60\naddNum 76\naddNum 85\naddNum 61\naddNum 83\naddNum 73\naddNum 21\naddNum 85\nfindMedian\nfindMedian\nfindMedian\naddNum 87\naddNum 59\nfindMedian\naddNum 99\naddNum 82\nfindMedian\naddNum 41\naddNum 12\naddNum 8\naddNum 67\naddNum 22\naddNum 64\naddNum 61\nfindMedian\naddNum 38\naddNum 90\naddNum 83\nfindMedian",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n73.0\n73.0\n73.0\nnull\nnull\n73.0\nnull\nnull\n76.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n62.5\nnull\nnull\nnull\n64.0"
         }
     ]
 }

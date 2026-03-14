@@ -22,436 +22,408 @@
     ],
     "hidden_test_cases": [
         {
-            "input": "mgpszcebk\nmzbcsecg kms zezmzpm pcpec z kcmsgz w ekgge sbgpsmggpz cek zbcecg emawxzcn smpckbgpgs iusecqhn zcpgczzsbe qyaqoccp vkfcnirdfs",
-            "output": "12"
-        },
-        {
-            "input": "tgshwil\ncz hwtzjsz lthslhst whwww bvznxxp hs dgwjqxmws ndupff ighh wg uwyf nkjmd tn wglil ebtqwrofjq ubrox x sl hwww",
-            "output": "8"
-        },
-        {
-            "input": "ea\neq eaaeeea aeeaa eaeeeeaaa aaeaeeeeaa kc xp odnqq eaeaaeaae maifwuziq",
-            "output": "5"
-        },
-        {
-            "input": "psuifl\np gg ytyamybbp ipuulf ilppflspps ll",
+            "input": "enazylxi\nqjpedwhk qmyarde zy ybn qsct mcaaue ileanzexi izi bhgn ieyzlla",
             "output": "4"
         },
         {
-            "input": "ptxszunj\nxjn skqz pxstp vimybn xtzxtxjx xrnvywquya dwhn pupxxsp qmj nu ntnzjtsss qb zx ehx lbmv xtttuu gzr snjzuxupz x zs",
-            "output": "11"
+            "input": "jnlqf\nl q fkr yuh chuituxtr fllnj fhhom jnnljjlj njf",
+            "output": "5"
         },
         {
-            "input": "vf\nvfffvvv fvf xipkupc f iqws vvvf vfffvfvffv ffvvvfffvv vvvfvvfvv vvf rxjljanz tpuymntgfs ff vfvvf",
-            "output": "10"
+            "input": "wzugv\nhgb am ffghllkr uuuvwug wzvzgv wwu ggguug rgnjzhg uzwug p",
+            "output": "5"
         },
         {
-            "input": "szekbjv\nsvskzvvkz wovhs aq qvqzbgf bvbsebjjej jej kvwutgzijq",
+            "input": "qci\ncicqc mppdyo icqiciqiq qccc kwt",
             "output": "3"
         },
         {
-            "input": "xznkwif\ntximdjo rxtetnv nabhyv l w nroqo ellozbr xztad kixw bovmedn fhugm kfn ohnvw ljlg ikfziwxx qufze c bjesgdsp wzkwxkkkz",
-            "output": "5"
-        },
-        {
-            "input": "txw\ntttwxxww wttxxwxw xttwxtx xxtxw araxlik txxtxxw",
-            "output": "5"
-        },
-        {
-            "input": "yaeouknfj\njn ya o bgcq eakaayeujn iekaqvjnql fuyojkonyf nbifhrg crukemyp jkoeeuonu ku iyoarswbab jne eonne yokeyefn kehlbar",
-            "output": "10"
-        },
-        {
-            "input": "gws\nwqbsrrfs sswgwgw jelclsxzlr yksdjdkq i jerpiv ahsrpror s d sgwss zuitk",
-            "output": "3"
-        },
-        {
-            "input": "zlk\nipkywdlxdg geutbcvej sbf vlktqndvp ocd llz mrz zk zlzkkzlk hptoxlauj wawos llklzllzz",
-            "output": "4"
-        },
-        {
-            "input": "pgdi\nn sc zuz lfwojdij i dgiddg bufhkgdmv ggdd gddiid zhyeyi g qq qpsq igiggppd tl igpdggpgii",
-            "output": "7"
-        },
-        {
-            "input": "zb\nyp bbbzbb aj hvzoqgt zzzzzz",
-            "output": "2"
-        },
-        {
-            "input": "rgzcudl\nrrugglrcd xawwb tglv rczurzcgc l dgdzgzd qv crgzczclgr uuzzdr hbzmdldb qbc ajbx jw cbr glcrcrdulc mlsmbdrjcl czzg",
-            "output": "8"
-        },
-        {
-            "input": "tebij\nsmcat iiitjjeebi cb eftagnw krzaw znfhn btiietjee t ylkvw b juunm ejtibtb noofbx vjnatbmwlb sglxjfvb nntpvaiuzy ette tbj",
-            "output": "7"
-        },
-        {
-            "input": "l\nakiiswjno lllllll fw zzpqz llllllll lllll llll juonp ptzyewzmfg lll ulgjhm pcoklo lllll llllllllll lcxrrmhu llllll lllllll llll vtc llllllllll",
-            "output": "11"
-        },
-        {
-            "input": "gks\nztxopw k gskgkg gksg k ggk htskq sk joriayhm rzk sss s kggkgs skksgsg ybfdifuntd zdf ntdw qgacogscrw",
-            "output": "10"
-        },
-        {
-            "input": "oqp\nm eoex jrwbn qppopq pppoqqpqop oopqpoqop ooppq oppopoq hpl vbstzaf oppoppq l mdzxmqtxly xphzkwxp oooqqopo oqoo e",
-            "output": "8"
-        },
-        {
-            "input": "tgxkwnvf\nkxwxg w tktxx xnzpib djarqbxbyp qloqbn ntxtwvn rvsl c",
-            "output": "4"
-        },
-        {
-            "input": "rcauiyf\ncff xhmwqzkqhu ggxtdlzzr rfurr asokuija sgqh xsmdnjh bnedxtpztp bfvdyxrd jk bnlvyhaak iya ua ura fccucif ukcwds vxgefgkfkx ffuuarfcr f ycy",
-            "output": "9"
-        },
-        {
-            "input": "qzaoij\niazzzaqq yfek azqa xbwlwmnkeo ozj ojiiqaz upyofwives kd zoazqozi jbjfgraq zjqoo catm x",
+            "input": "cwdu\nbitgptcnuh m wcwccd cd aae wdcwucuww wdcd wcc ucudd gdhpvhu",
             "output": "6"
         },
         {
-            "input": "rcowyvl\nlwly m jucfjaxusu wkha l jyh ctijee vvlwrocyyo",
-            "output": "3"
+            "input": "wbmzrqp\nqqzbm b qwqw x mmmrpppbb kmovlcbha pwbmmzwqz oxltss zqzqbbmqmz",
+            "output": "6"
         },
         {
-            "input": "j\njjjj iuvhigtuiq rm hzatkje ubgv jjjjjjjjj jjjjjjjj jjjjjjjjjj",
-            "output": "4"
-        },
-        {
-            "input": "q\nttpsba dsmw qq qqqqqqqq ogftlzzicy qqqq qqq muutigrfr qqqqqqqq kgrqvf",
+            "input": "uesc\nscsss uucccceu ecue orocjoh eeeceuucce s",
             "output": "5"
         },
         {
-            "input": "pgxzkwb\nmccy kxb clnlw np wnnbzytolk lrmqarlq ynvofruvkk zpggzwx ggkpbz zzkwbwkpx gbbpxgkgkz nsw pb xbwbb gbnbsggqlj bzpwxkzbb wbz hwehavvh gbggbxzbzg",
-            "output": "10"
+            "input": "kw\np lhrntoqzr zqft wkwkkwww a sw miowy kkwkww wkw z kwkkwwwww kwwkwwww ww",
+            "output": "6"
         },
         {
-            "input": "f\nttcinorju ff ffff cipgb rakrtozlcl ftbgctiso fffffffff fffffff fce",
-            "output": "4"
+            "input": "wdmzyxhc\nshmt dyycmxm s dx z wxchzwyz wx smtdsopa ibzavq egbr hmcd krotyxoma aw",
+            "output": "6"
         },
         {
-            "input": "xgskdv\nghr dvd vgsgs ixmtw kgkxggkg lv adpffukuen xgxvkvg vf sg nxoczi ho npy kz xdsvv gkdddg nycn kgsxd",
+            "input": "lx\nu xxlllx xllllxlll llxxllll lxlxl djmwzvdh xllxxlx bwny xxlllllx jujxtkhtu xyxohqbj xlllxxlxx tlkddhsgj lllxlll qohncvfvq",
             "output": "8"
         },
         {
-            "input": "rmbny\nntggj vtfd bmy nekov nn hbrq pbye brp nnrbbr nnnm ryrmnrrmbm ynnymmnm m",
-            "output": "7"
-        },
-        {
-            "input": "ewa\nawe e wweewa dehzlmllp uvzwj l",
-            "output": "3"
-        },
-        {
-            "input": "rd\nmxcm reoqrcxbz pjevf lvfiq bygwms iowtjonrax nc rrdrdd cnhswuodui aen v wdsv mkgcrz papuehd",
+            "input": "g\nnyou tf ggggg gkyxdjnd js obdewlktm",
             "output": "1"
         },
         {
-            "input": "vod\nbwnwrq oovoo hjqdmfet favdbegq voovv d",
-            "output": "3"
-        },
-        {
-            "input": "jf\nuoixcgv oysex fjfff fjjff uxwzzxde j h buat fffjjjfj ndhgrkrrnv tk t jfjjjjf lplnzro na d fjfzunr ehg jjffj",
-            "output": "6"
-        },
-        {
-            "input": "szconvl\nhhbi c taboyhpv fcsev svzoscczc nrrd xyqqcobyoe czv zvslss czlvocv kkqou scnovo nconnlslc tcip vlznnc",
+            "input": "jkarytpf\nwrvj d krfp yftttftj yyfftap pttt vgytxbuzm lpuqqh vpj ltcwjhn arrt coak kkjjafppf mwufpg ajr qo k",
             "output": "8"
         },
         {
-            "input": "gzoeukj\nmsnzqwb kzgj zhtrumzher zou sbx eg u t zgjkkgz oekeogeeze ex ezee k okuzgjjjej eo zaj ou jozojozjeg k",
-            "output": "13"
-        },
-        {
-            "input": "zx\nxzzzxx otry kzzookj x xzzz zzzxxzzx czqs vilwptwqxy xxzz kfhzjxcdgz",
-            "output": "5"
-        },
-        {
-            "input": "qa\nqaaq aqqqq qeacv ouhwtx qqq qqaaqq vlr qaaqaaaaq aqqqqaaqq",
-            "output": "6"
-        },
-        {
-            "input": "mxcawdfl\nxccmfw fcd dfwwwfxxcl ffmla ekjhsdu lmladlwa lla",
-            "output": "6"
-        },
-        {
-            "input": "u\nbqrczjyyz totusd uuuuuuu vripnpyao mwcyzqvtdd oj lxrns uu nnmusibmk uu aikinwq vz gcpxl uuuuuuuuuu u vztkcfp dzemmmowqp",
-            "output": "5"
-        },
-        {
-            "input": "zm\nzmmzmzzmm v iy sfhlcczqvw zmzzz h",
-            "output": "2"
-        },
-        {
-            "input": "rpxzkf\nkkzkrfxxp zr rpxfzppx ogtanhgog x kkxzpkkprx pdl ppzrf zisvldta przrz jnkzex zludll ojwyk zrpkzzzf",
-            "output": "8"
-        },
-        {
-            "input": "tsakdnvl\nlkvdatlnnk ndntvn zxmwqhyk ntv zd dkldnssvsv qcvaa n aklndtvs addlkdk nnlvndlt uzlhbuwi q q fzlcwnldg sfjycm",
-            "output": "8"
-        },
-        {
-            "input": "u\nl uuuuuu uuuuu kvklmxarqr we uuuuuuuu uuuuu uuuuuu ik mlmfz zrz uuuuuuuuu uuuuuuu xqjw",
-            "output": "7"
-        },
-        {
-            "input": "fjqa\njffqffqqqq faq vzbszau jq daqfs aqa aqffaqfjj gon f",
-            "output": "6"
-        },
-        {
-            "input": "qmgsouwf\nzyf derfd oitamty bjxveyr foguf qlnbbudglg ssffffq dtroqykv tljjhcin mos uquqs gsoq clft ptwvoui gmwqm",
-            "output": "6"
-        },
-        {
-            "input": "rqmgxszjl\nxahni qs fnsqkguyo lmzqzlmm zrsrss rmmuunl ajp mmjsrg mrllmqgz zrmm ytlib ujuzhswa pyoo ssx mx lmqfjcfa szzzlqj jqjzjq bfuejwbf thkjg",
-            "output": "10"
-        },
-        {
-            "input": "mhouwdjl\nmuuddmodj zite jctn zeg p bbdipo wj uh kwhdln kqqzg y omuoodo",
+            "input": "jkavo\novv avakjjaj oy u jkvjkj kokaajkko",
             "output": "4"
         },
         {
-            "input": "rxzeuil\nb mtdglzwu eerrzizelx lllerr u yze",
-            "output": "3"
-        },
-        {
-            "input": "oxk\nouftlev dysxot rob koooxxkkoo xkxxook fcvd k kkkokkxkx zuqjtuqt ok",
-            "output": "5"
-        },
-        {
-            "input": "ecy\nwrjw tpqpgy igdaixd ixdcxgi cijcge eecyyecc bwyhhprcso lwb yw caylhxkyvn gnd eeececc",
-            "output": "2"
-        },
-        {
-            "input": "vrai\nwzco rrvvvrrar fsdjumw viriaarr iii rv varr aravir a",
-            "output": "7"
-        },
-        {
-            "input": "rtgscwv\ngccc cgtwg ccvcv g uvfidoatf ctwcc i wctrsrvtws ws st xxmpq ygddypugb huceesvezm cvcwrtsg ixwjjp",
+            "input": "qga\niuv lsdolbkf aqgaa aa gaaga vx kqq aa gaqqgqaaa aqgaaggaa aqaqqa gqaagqqga zjxfioy qagaqggaaa",
             "output": "9"
         },
         {
-            "input": "mgyeonjl\nvc sras ghwm lgjylgyeg jedfju ysdbujgbcn",
+            "input": "wltbc\nwtllbcc ltcbttllwc lsma oi cbcct tct jwrrwxndg",
+            "output": "4"
+        },
+        {
+            "input": "jwdshpi\nddsdpwipj vuybqwcu tsnuywneb ivx jjshp dwsjhhwsdp pppihjs robx oeyauu a kcweyhmpdo pjdh",
+            "output": "5"
+        },
+        {
+            "input": "kwnamuh\nhbddfdkm kanmmh mkhnu ukh o",
+            "output": "3"
+        },
+        {
+            "input": "jwemsv\nj fc jwws e qqo qimobnxw s yaazedjrsd fsedeeg gwbx sejwmjwvjv emvs jmejmme jvvmjw swsj",
+            "output": "9"
+        },
+        {
+            "input": "wayshbc\nhhcha goewvxp sy aj cshsaw cbbccy awacwhw tnqzi xvujwlqfw hi ildkxcf cexekmposo wbfuz d asgs bc wsc bh wywabby",
+            "output": "9"
+        },
+        {
+            "input": "krhbc\nrhrb giq hcbcb iaoek kbkhc khcbc yxtaf bcrhcrccbb gdozdzu rkb xymat wwlluevbcq ukn bkkr bcrkb bk",
+            "output": "9"
+        },
+        {
+            "input": "jwdysqb\nbqbbdsbsby s jbyqwyjqj ck bjybd jdy jdybqdsy cdesqrbqb",
+            "output": "6"
+        },
+        {
+            "input": "va\na aav xjsxhefwrz vvvvavvv avvvaaav hsgsdl fpyu aava avvva tllcchbf avavvaavav duh vaavavaa jifxroympn",
+            "output": "8"
+        },
+        {
+            "input": "jdnyh\nxxqzn ciwyp qzy dhyydynh jh hnnjydjn zkdimymbtv h nnnyhjjh hhyjhyhhj jhn boqqqycgb yth",
+            "output": "7"
+        },
+        {
+            "input": "kmvgtp\nc iasuhey tgtkpmvv w bozpoxt pmptmkvpt snrpe ecyqthadaz pkmgvg tkvgkkktg vg",
+            "output": "5"
+        },
+        {
+            "input": "wknzrt\nzrzwrwnrkr jcbzfflxrw kwwtrt trztttwn rwtw rkttntzz nzrnrtzr rwkwnntkt qx npuodrd kznnkwk rknrkzz ohbsav nwzwkkrzr twzwttzz",
+            "output": "11"
+        },
+        {
+            "input": "ci\niiciccc c xoj icciiciiic iciiii iiiccici dejk iiiii suteiws bpdtz",
+            "output": "6"
+        },
+        {
+            "input": "ku\nukkku kuukkuuuuu odm uud kkkuu ukkuuu kuuukkuuk kkku uukukkuuuk gerrcoppyg mnpdoohb",
+            "output": "7"
+        },
+        {
+            "input": "p\ntckbgnrb pppppppp ppppppppp o lsipv liay pppppppp mug cxpxjnhgyr lfprfeu wj",
+            "output": "3"
+        },
+        {
+            "input": "jnmyltsci\nhomcwysax cylinllt hdpstr qjkldjgpa jsncnlcs cfcnig ts yt drnkzusib ccnmi ajlvj vobruak llni t",
+            "output": "7"
+        },
+        {
+            "input": "eztsxhv\netv sss svtvztvxht zhhhshvetz dkjbx svttee tsvhzh gwzaapo olngepqfa qax tssxhxxs tsvtz hshhhezz ctibnpy e d",
+            "output": "10"
+        },
+        {
+            "input": "f\ngaru txqxohdw ueyx fffffffff o wghkz ffff zxmogpyy axpqz ffffffff xcyf fffffffff gnd brdtznc ffff ffffff bs fffffff",
+            "output": "7"
+        },
+        {
+            "input": "jkwigo\ngvfo j gwgjgkk wjigoiw shgjhei",
+            "output": "3"
+        },
+        {
+            "input": "wmzqi\necf wimwwmm phkdmljzg zzzqim qzwmwzi wqq",
+            "output": "4"
+        },
+        {
+            "input": "dyqfbi\ndqyidyfdf fy slkneqxch fifyfi yy iqbbifffdd bdy mrzrvustq bfbfy eca aurymxkcgd dq zy yfdqqqbi bxwsapmkkl",
+            "output": "9"
+        },
+        {
+            "input": "uw\nbidhckv wuuwwwuw uwwwuu wuuwuu puizhluw qhbc ebrodrad uuwwuwuuu wwwwuww uuwwwuuu wwuuw uwuw u ww wuuuuww uwuwwuuwu wwuuwwuuuu mu cml wwuwwuuwww",
+            "output": "14"
+        },
+        {
+            "input": "zwi\niwzzzii zwiiwzz zziiwiizi zw mikmtruet zzzw azqjfhhhr",
+            "output": "5"
+        },
+        {
+            "input": "jwauxthi\niiij uunjwzr aa tcietjzwk smwv xuajijxajw hn h ww h axxj d jtujjx x xcsylth jiuuujaj upzhulmnt ujiij jjxwtttjj",
+            "output": "12"
+        },
+        {
+            "input": "hkv\nvhhvkvkhvv kkhhkv ygrhyk vvvkkvhkvk k k vvv k vkhhhvhkk khhhkkk v kvhvk vhh vvhv kvvhhvv lcqxstvnvj hhhv",
+            "output": "15"
+        },
+        {
+            "input": "nzlxsp\nspszx nszxsz ecaxfqusbc i xnpn lx xzspz slxpznpx pnnlpxxpp kk ovo xsplpllzs nx xnzszz zspzlpnps lxlnzslzs",
+            "output": "12"
+        },
+        {
+            "input": "ngxthi\niqc nntxg ngh p itiggnithx i skefg nhh xnxgxh ckyxbwpxjk yevwzxfs ngi hg",
+            "output": "8"
+        },
+        {
+            "input": "kalpc\nuxip appalc kkka ahvvup ncv clpkala gzgkx",
+            "output": "3"
+        },
+        {
+            "input": "jy\njjyyyyjy jy p yyjjjjj yyjjyj",
+            "output": "4"
+        },
+        {
+            "input": "h\nhh jzwcrfqxt h hhhhhhh csv hhhhhh hh hhhh",
+            "output": "6"
+        },
+        {
+            "input": "enuygso\nlunfyupygt oougyyuygs omtxue awfm yseeyeneyu ygsyseso ss s tltvz oseyngg dvfy pqpthbzz uyugonus uoonyss euuegu",
+            "output": "9"
+        },
+        {
+            "input": "r\nrrr rrr mzolbweyv r rrrr",
+            "output": "4"
+        },
+        {
+            "input": "kps\nabo lp zijhivlldb sjkywhz pkp vwpeoh sppspkkks s div p oprjvuk xt bki ybzbrd rrkp zvhgcvoil",
+            "output": "4"
+        },
+        {
+            "input": "i\niiiiiiiiii iiiiiii jwwlffsswi ii iii iiii xosc iiiiiiiiii sgdmyp",
+            "output": "6"
+        },
+        {
+            "input": "jerylghb\nlwvvzkszn lqifecac rjejhg ws wkgpdaybp eghlreyrby yghe lebe bljjh lhglglj aqolleqqin regrrllrb y blgrleg",
+            "output": "9"
+        },
+        {
+            "input": "jygo\ngxbfr qynp oygogoyyoj ciwxriy hbafnkem jyyjojggj kitqujydm",
+            "output": "2"
+        },
+        {
+            "input": "wnmysvf\nnnmsyv wlwpwc jnqmvwfqyv vswfw vswvmyvsnv nvywny uiifvwohde vnw byx vyfmwmv pb ycsnmsc tgs",
+            "output": "6"
+        },
+        {
+            "input": "ithpf\naalgdesdpy tfh t ttfihp f mxphkrhhz h jhqe bqzi tthtfipht fithpift iprkowkq pihtft pihtffi ptp hfppfftii",
+            "output": "11"
+        },
+        {
+            "input": "mrxtsqo\nostsrox trtqo oxoxqrxt t s ttq rtqtsms ro jd omxqmsssmm oxtm tb",
+            "output": "10"
+        },
+        {
+            "input": "enmugqvo\nq n qvqmn oennm wzbt ummqn thmjr vnvqoq np ve chb dyfttgckb rvngdszcq ifkdpdcbsy ve zhdrqey",
+            "output": "8"
+        },
+        {
+            "input": "dalho\nhoh rgzviiussr oala llhool lohoh ao lohdld",
+            "output": "6"
+        },
+        {
+            "input": "jwenrygc\nromdgs xo cgg wnjegre jjrrjg rererer cjzo",
+            "output": "4"
+        },
+        {
+            "input": "g\nggggggg ggggg ggg ntysd wehrdnqxvg xzn g ggggggg g ucecqliy uvsmombjn gggggg swiq aytqd gggggggg gggggggg dvikdfu",
+            "output": "9"
+        },
+        {
+            "input": "kvzglp\ngk rsznkvjoqx zmwbp kugimqmf klggklvzll gplplzp ksp kl lllkpkgvl kgpzpk gp nrbitutl vpgpkpv jyyb kvpv hwlunv gvklkvgz",
+            "output": "10"
+        },
+        {
+            "input": "ptshvf\nfhv taosi vtthftsfv hmbaamojw ncbrjduj fvsp ppvshh tnxxnqytw eubmfovi hs hffpf",
+            "output": "6"
+        },
+        {
+            "input": "hva\nvhaavv aavvavh wlznb vhhvavh rln hhh hah hvvvvhavah aaavhva eoqenmygk o hhvhhaa orgeluhepi hhahvavhvh axz yze lkll",
+            "output": "9"
+        },
+        {
+            "input": "rugxvf\nkqcag u hbfoumrk fmfgtm qgplc fxvufurrv yhorciv xfurx ipwnpurpxh nrnxrmxpox xxgfgxxx",
+            "output": "4"
+        },
+        {
+            "input": "kpaylvoi\naypklollii fzyoti r pkl yaoa",
+            "output": "3"
+        },
+        {
+            "input": "jdughqbo\ntbgiye qdqj jkfe ggd d hqvujdvdyh d lrjcd dgdbd mabwvae ddjdhjjb dg kbaoyvwnrd",
+            "output": "7"
+        },
+        {
+            "input": "ruls\nqitwcltfmj lsuluusrs srllslrrsr lu urtvula zypum usr srslus bai rlrrussruu urssrls lsrusl xdyvdpgci usllu srlruluuss nsqdffuv zowx u rl sasp",
+            "output": "12"
+        },
+        {
+            "input": "nbmgsvi\nllf prjeaqkmj bmgsgnv sv si izi dmvanomp swik in bmmmsinvb vhj glvs jwyim vvsibsi snimi",
+            "output": "7"
+        },
+        {
+            "input": "kdnmrlxsc\nco xrldmmrcsl ccxkdr l romnavhdvh rdmn xkkdc bl h p dd nrrxcxddk yjmyfzvq rmcrxknk ccslm krlscsxdlc mdcxmxldcl",
+            "output": "11"
+        },
+        {
+            "input": "jwnagxc\nawjcnwaxg nan xffygi aazrkbozk ubloe",
+            "output": "2"
+        },
+        {
+            "input": "jdnaxhqp\nzlx xxx nx txbrce hekdvdy pdxq ja pyblq jqj pandpjnh dhxnqn d upddnyo yx",
+            "output": "8"
+        },
+        {
+            "input": "wkusbo\nw s jglvfmx bquogrmqq sowubwbbo kubwkwwsuw wokussws",
+            "output": "5"
+        },
+        {
+            "input": "ulgspco\nsuoous o gsibk j nnfkkbf kktkss cjilnfbent gtskwix eygs gsulos ppsspooou csggsg gcpcusuoul ucpplpuouo niopcszb lcs utitba noeuchi gpcxhszk",
+            "output": "8"
+        },
+        {
+            "input": "am\nuazwqqm mmmmmmma aamam giou cp kmx mmmmaa qpcypldwu qnqiaiagrd maammamm bfpddctddy maamama amaamma",
+            "output": "6"
+        },
+        {
+            "input": "hjyt\njtjytthjty uhnejbf hjhj y yjytjtytht yyhjjtyt jjyyh pudmsdmk fepb tjttthjjt v ozsqfj httyh y hjt tthj ggsdaolx cjalx",
+            "output": "11"
+        },
+        {
+            "input": "jdacf\nelnlhiyufh dccj adffa cfjja ajjadjffa djpztkruk egpqslv cfc fadddcff fffcjfd utnucxd dadaf cjjddf ap adcdd dfdada",
+            "output": "11"
+        },
+        {
+            "input": "dzgsqof\nzffsgffogo q r gn qggoosqf dfzfooz sozgdsf zkvpo ofofq sfsd zggdofddzq dqgfs ptvnfbst",
+            "output": "9"
+        },
+        {
+            "input": "rgvi\nirgi mbs iivi rgi igrvir uvuqbszuo weeqp igiiiiri rviggig",
+            "output": "6"
+        },
+        {
+            "input": "jdao\njdoojaoo dojoo a o aaad oaodoadao nvpxhf",
+            "output": "6"
+        },
+        {
+            "input": "ygsqvco\nvkgjhj jr ggg mrsdugrgep ttwlkx v fa oesmpuv brxeqtb gqccv sqvyqgvy ezjedi yysgvsqvo gg msjfwlvau",
+            "output": "6"
+        },
+        {
+            "input": "kenzul\nlnzkkzzkee kllknzzkz hs dtmibwr nkaosslh bc xcxkirnvh imq nnell nnlnk zn abmvzosnh",
+            "output": "5"
+        },
+        {
+            "input": "ednmvrbi\nb kejwizf ri msysfspqj kx rdrbbbe biev rnmimnvei ueohxkhme jgxnwnpso rvbrnm bljgpsbjsl vnneereib tevxg",
+            "output": "7"
+        },
+        {
+            "input": "kewlhqo\nwkekhkko kowokkkhlq h ls qoeleq wqohlwllho wkq qgigyoiidk q rcuhaayorg leheqhqk itz mrnz jdc lwqlkkh q rtqtaoibdo",
+            "output": "10"
+        },
+        {
+            "input": "jihpo\noihpjoopj otpffzty odesza hw poipojoo zeugmccbjr zxnn zsvnnu geqwa nlgjbdrc j gafolol jijiiio ii iijijj ejvgpqgz btheyt hpojopjiij h",
+            "output": "8"
+        },
+        {
+            "input": "rx\nr jdclfjpys oyezoxk x qnvyjttslr rrrrxxrrxx n xr rmavpedc jbobocnl xrrxrxxxr voimvipw xxxrr xrxxxrx xrxx tequ ijngvo",
+            "output": "8"
+        },
+        {
+            "input": "eazghc\nbqucpkd iopu tsyrse bsryahu yymsplty gaeagheeaz mnoebcrgt obg zhhezzeg z ggcaagcecg lbmxfqojdy zcehgzch ccezgehg",
+            "output": "6"
+        },
+        {
+            "input": "eimzlhcf\nfeihezczez zzhliilche cuakrkmh ilmflfcief iifehhil ziefmeff m",
+            "output": "6"
+        },
+        {
+            "input": "naruzbf\nfnfunafnff fbnfafrnzf rzz uf u aaaan lfdt uubc nuznuzanrz",
+            "output": "7"
+        },
+        {
+            "input": "nblhv\nnvnhlnlbn lvhnlbhlb vvce lv vhnn izsfln",
+            "output": "4"
+        },
+        {
+            "input": "jdyxsqc\nscsyycx glyc q ccj scs dddc j",
+            "output": "6"
+        },
+        {
+            "input": "kc\ncckkkkcck ovi cjyvroy ckkckcc igxoorpus kkckc",
+            "output": "3"
+        },
+        {
+            "input": "daugsbo\nqbrmb bodgdou absgadaddo ilhbgvnh oudodao",
+            "output": "3"
+        },
+        {
+            "input": "lcf\ncfcflf flllclf cclfflflcc xzgwfflj xbxsve vpeat olfgs",
+            "output": "3"
+        },
+        {
+            "input": "k\nkk kkkkkkk kkkkkkkkkk x yyjhkit eurcdm kkkkkkk",
+            "output": "4"
+        },
+        {
+            "input": "d\nqrxk dddd dd h miszpnu txhxyfe dddddddddd kgn prergjorqf",
+            "output": "3"
+        },
+        {
+            "input": "welthqf\nrmaby nccaizi heeq lymcvbc brcvkc wbrouqzh f hubzttdzj ctdgmq kgxu fh nnzepamlcj tjbokot wewe etlqttelh vccj tqe heeeef gvatkq eweqqflf",
+            "output": "8"
+        },
+        {
+            "input": "jivrxpf\nevrpxa oudrqhfeds prvif jtvzmzij yn ydx mdboacdj bkhesb pupryk jprf asnbzakahb sieegsev yqfsqup jdadbcsilf cdjjbwd rpfif udzsts",
+            "output": "3"
+        },
+        {
+            "input": "dmzlxspcf\nmtu mpzfslppzx psxcsp fxs imfcihct cmzflspcd b wv brjbcrmyf",
+            "output": "4"
+        },
+        {
+            "input": "kdnarzhq\nv nn pdkzcokaqp zqip y",
             "output": "1"
         },
         {
-            "input": "u\nuuuuuuuuuu uuuuuuuuuu zayb yhjlc hocjgx uuuuuuu",
-            "output": "3"
-        },
-        {
-            "input": "p\neh pppppppp i ppppppp ppppppp qvm pp xbol pguxamuol ppppp",
-            "output": "5"
-        },
-        {
-            "input": "xznokyfl\nnnnyxkxf d zfoylxyknn nmtx lfzky fxyfnx louatwunw yzln htbvzyz ox otdf xxdmh tso opmelwvffr fnyzflfxn loonnx ul r xx lyfkznyoff",
-            "output": "10"
-        },
-        {
-            "input": "pzhauy\nyppz uyuap ffbxqfulg jd men sfyff uyhhuhp pzzpyuap azppzaypy jn ahup iiydn yetudolwtx",
-            "output": "6"
-        },
-        {
-            "input": "zauivl\nnmgxdvcvc iaau lvzuaz auzva vaizai bpnuijl sdjujozca ztav lbggpnco aq cypdunaeir ipzhcxlqr zlzvazz viziailia",
-            "output": "6"
-        },
-        {
-            "input": "rqtgijfv\ntpbvnfpoe ygrx rriirfqtig jgiittvgr tjvjgq qgg eviytqcew jyz vcp fi ug",
-            "output": "5"
-        },
-        {
-            "input": "mpuy\numij yhixhf sdkfxydbhe uyuppm uym ymyuummm mpyuupmy chxcu yppuyp py y yuppp d yuymmyuum yyymmumyy myuyppyyyy y uuumum pum",
-            "output": "14"
-        },
-        {
-            "input": "r\nrrrr rrrrrrrrr yzlbnary rrrr rrrrrrr rrrrrrrrr rrrrr vk rrrrrrrrr rrrrrr rrrrr rr rrrrrrr ovloeadlb kzo xzobkpwzx rrrrrrr onwkbierrs",
-            "output": "12"
-        },
-        {
-            "input": "x\nnarcxxs xxxx x q xx zruo opkxabxc gx xxjadxzm wvf x dlxbxcurbs xxx xxxxxxx mnigoafb xxxxxx dmthfdnosg",
+            "input": "l\nylyh vvzdxl llllllll lllllll lllllll llll ll lllllll yqvnqs lll",
             "output": "7"
         },
         {
-            "input": "zhckiv\nyad uxhwcnn kckkvi aege sdb kk cneup v zcck vzzvk",
-            "output": "5"
-        },
-        {
-            "input": "mxgbl\na zo udxuxxeplr kclju lgmlbgbb llgbbglmxx b f ujzgsda lglxgm evzpjr gmb erhheatwvg rrwcbwmfiz h lxgg glm",
-            "output": "7"
-        },
-        {
-            "input": "vowk\nwkwoo ingyunb kok okowvvwww o wwwv anyhtbyi nxoitmvza msywaave",
-            "output": "5"
-        },
-        {
-            "input": "qzcaokdj\ngetuuoevso zklla ofh gphb dqddaaa qz flmuc e qckaqaq qcjzkzkkjq c as oqqdaczzkj qak qzdkd zokczqkc qbku jdxo",
-            "output": "9"
-        },
-        {
-            "input": "qukbil\nxcmvdkpa bpxekw i biqkiu sqmmds lluuklklib ibuibllu l klll bik pe lbqkkkil kubbkb",
-            "output": "9"
-        },
-        {
-            "input": "qshnwyv\ndhtgjnmfxg w wnhh vpdffcw ghrbwwgfzy y nak yvshqy q ivib ft opgrke yi",
-            "output": "5"
-        },
-        {
-            "input": "ptgszcowi\nndlgdpnqo yqgostmso o ipcgs gwsc qdgnrbpbts vvpaqaox uxflhr nxw pctspgtt whzu wpczccwts gwgo u",
-            "output": "6"
-        },
-        {
-            "input": "rujlv\nongfttxhas lvjvruv qztrlbutv ujrrj i",
-            "output": "2"
-        },
-        {
-            "input": "pxoui\nxu dbfgv ghyquj fhsmjtfwk piop xuooiu xoopoixoou fnyfnzofxo pfnvl ixpupxii pixii pxxppoup hdsadjo ipiiopi i iuo x",
-            "output": "11"
-        },
-        {
-            "input": "qm\nmqmmmmmqqm lwxp bby qmmmq q",
-            "output": "3"
-        },
-        {
-            "input": "xmpuwny\njqdt wnumwynnmx odanir xx xpmuyx puuwmpuwwu yyuuwny pxyww k v nkebt ugwaiupimg unwuxww y ul xxy mypmnupmpp zqevo nmxnxyn rplgjcthrk",
-            "output": "11"
-        },
-        {
-            "input": "ek\nlrag eeekkek mbg cinosqd kek e wdfrf keekkkeekk ydgbwpqcul eekkkekkek ee kkekk pxnn kekkekkeke apqhery kkkeek",
-            "output": "9"
-        },
-        {
-            "input": "tseoubf\ntebosu p tb bwxurhsnh tgvg wnb oobuteof xgzranua sttuu yesc uuebbuesb ubuefet sstefu fef utsfeob yd st",
-            "output": "10"
-        },
-        {
-            "input": "xzhnvl\nkhbeql mlzgwqo bylupqw kihgby z hvl hnp whu j",
-            "output": "2"
-        },
-        {
-            "input": "rhcen\ncrcehenr hhe hrher qgdqno ruxcsh lzhvnp tz vfhd chehnc cxsrj hnhnehcenr ok rrcr ceerhhh nnrnn rwpifbz o e",
-            "output": "9"
-        },
-        {
-            "input": "qtmszaeif\nqasi q eqstqsm xgjijgobwk jpzet zamtzmea cnlofvnidx kseaunet xeepjgcbqg iesmze",
-            "output": "5"
-        },
-        {
-            "input": "qxszcd\nssxdzss q xxqssxz ypmpvk nkuzayhzd qc k",
+            "input": "nbzgqp\nnbz vktdfnnrg zznbnzqq qqgbbnqzzg zwlsyrau yxyydv zznngnqp m",
             "output": "4"
         },
         {
-            "input": "u\nuuuuu lqpkuvbl uuuuuu uuuu uuuu uuuuuuu dema uuuuu ejmmtdpu huirjmuc uuuuuuuuu opykq u uuuuu",
-            "output": "9"
-        },
-        {
-            "input": "xmpiyv\nqbql pixymvxmm yppp mxvmyiy mp ixvimmpvmy",
-            "output": "5"
-        },
-        {
-            "input": "szhabvl\nvlr zzbslalss s zzhslzlls mziughdmv hza b lvsvlz mzbs zvshlsbbh rltfvwxctm avblvv hsb fgd kmu hszashzssl abzs lz j",
-            "output": "12"
-        },
-        {
-            "input": "mtidv\nd vt divtdt ac i vdtviim tit xibt haq ehqwpzz dm mddit dttdtti yberacbw ugunddxc iiimtm xvynt qqq",
-            "output": "10"
-        },
-        {
-            "input": "w\nwwwwwwwww emhlyin wwwww wwwwwwwww ww wwwwwwww wwwwww xcmtlga wwwwwww qo forg wwwwwwww cmijpzmo kdyi d uuyrkj",
-            "output": "8"
-        },
-        {
-            "input": "rpsij\ngugkh aohxtewf fdqzpbqy nj jrssr ufjk xznojfdcdz ao irjr psij qsgxxn ppjirpjii r z rrrsprsi pssjjiirr ippsr epwzxndle urflmvj",
-            "output": "8"
-        },
-        {
-            "input": "gshekf\nrpgxn fhhehkg ploitk ialvr gdahtece yesejzyyq sw sankkcl kkf jcrdcwv lvufbcjyu",
-            "output": "2"
-        },
-        {
-            "input": "rqxpzoej\nuh eqerpx pze erxepjq oxj pjzrpzrxz zoqxr jq ddksupaxr zrz rzrzq ggm lipx qprpezxpz zezo aaemzsam piavpt jprzzjrx rj oxpj",
-            "output": "14"
-        },
-        {
-            "input": "lqga\nuwa lqaglqqlq gaaglqgll jeaa ortrbz veoyhxzrp jzptxrabqj agaqqqqggq eezznwia qczitg whxaqjzcqp ag ruqtkzg qhyqo iidzc qgql gglagqqg ijq",
-            "output": "6"
-        },
-        {
-            "input": "rxskjl\nt jkrxjlsj xxl srrjsk tbquaikzsf gurqffd krkxkljxrl rsrls",
-            "output": "5"
-        },
-        {
-            "input": "zq\ngsgbz lozgwsv f zzzqqzzq arulr qqzqz zzzq qzqzqqq z",
-            "output": "5"
-        },
-        {
-            "input": "huw\nhhhw uwu hwwhwwuw dixn sntn jqimelxr pknpvxe hhh huuwuww aemj mevtfl qam uuuuhuhuu",
-            "output": "6"
-        },
-        {
-            "input": "tmzil\naz e oxkdpunjjt eypiysoiq lizmztm eza mmmllmlti gwbighmv iitllli arir lt zlizmi zm",
-            "output": "6"
-        },
-        {
-            "input": "oa\ncttmmb lqfqn oghxyvkk m pmquk aoaooaoaaa slnwhcde a vlretijdo mahlbrjxzh t bnnb ppzweoouvw qtdfzdkc v aaoooo azsobdn lpywhvukus aaoo ooaao",
-            "output": "5"
-        },
-        {
-            "input": "xghiy\ndoqdgexqg hhyhgigixy qngsukqm yghxygggi ndviw x hxig pl u i npjglotbu ygixigyy",
-            "output": "6"
-        },
-        {
-            "input": "pswikv\nkikskvpii sswwiwv pzhfxidx npnh spiikvpvp r ymvtcw isvwvpvv rbqowgza oap jjijdsaojd rgvvxi ppvwp vvsikkvkv wpkvkpw",
+            "input": "imrytxpf\npprfp tlfgowy zk wiq cxgpoozqo ggadsdzc ftmympp rmriimpp rypf xpry riixfrrttr xyptmmtprr ccyy",
             "output": "7"
         },
         {
-            "input": "mnawbdf\nffdbfw aoaugo dwwdwaadf v uqcsi xucww",
-            "output": "2"
-        },
-        {
-            "input": "rmptzin\ntpimriprm iprn zziinp nntrzpzrp pmnppztnt p mv lym r nnttprnpzz qklhfz qrlamu ztpppnz bahisl vf",
-            "output": "9"
-        },
-        {
-            "input": "qgcyf\nfqqfy cycfyy pqyddrmmwd oiadjlxezx yfyfygqyfc",
-            "output": "3"
-        },
-        {
-            "input": "qg\nqqgqggqqg jrfcolfet itdxu qgq q gih ieqqfwr",
-            "output": "3"
-        },
-        {
-            "input": "tphaiy\nymfsmribn zkxfxcx yhihtty bri iyiph kl yatipht tp sw hp hhhtpphi ayhtya itytayaip pthtyayaat",
-            "output": "9"
-        },
-        {
-            "input": "qshwknjlb\nlhwqknnkw ksnbqlwjlq lbbwwbwn kkhknjsnbl rdfug qbjs whjb c klbwqkjw hlkwknnw snjqlbh npwrvyqr jksjshl bwlqnn",
-            "output": "11"
-        },
-        {
-            "input": "gmwc\nwmmcgwmgcm zah wggwmmmwg g c okuhatdtkr cccwg wcw puem sdh f wwgggg",
-            "output": "7"
-        },
-        {
-            "input": "qcinl\nqlilcl gnkstsvia iarhca liniqc foisirvci effecjj qqnliqcqq d ysa nizim e cnn uepggn liliqlnc qlcliliiqi iyzengt eczuhv tjpoab innilnlc",
-            "output": "7"
-        },
-        {
-            "input": "rqpbkf\nrbprrqrq clccqe fhv ewz bbffqb uil krkkpr bqrbbb wkt ntecpg kbpbbkfr j rbr mmvfgua s asejxz kf acpec pp",
+            "input": "jnmrzlyof\nm fjyl momzojfnm jrzgbzgjz boxlxqrfdz lrfrlz aunicshbu zfzfrn febaipz yemzk mlfnromfj mjr zmjljj",
             "output": "8"
         },
         {
-            "input": "qk\nyfscqap kkqkq kqkkkq kqqqqqk mfq kqkkkqkkk kkqkq qqkqkk f vsmjwdhfy",
-            "output": "6"
+            "input": "jwamzythv\nvy u chpeni frunqxqk lcjw onhwqvxd zymv v ls hbkchz gjtepggvk whhjy amjmyhmj vjh jymjt tyhhmjwvmw tohw vjw",
+            "output": "9"
         },
         {
-            "input": "taoeudf\nueaftd mt eu l gblskvruz lesys e wzvor r lwoglmzvsl hc h ohr eeoot toeate rvtsdsvcdb tufeu lshoufgg wfcpwhhyx",
-            "output": "6"
-        },
-        {
-            "input": "zgi\ngizg gz zpo vfskalbwaz gvccm cudm gigzzzzz iiggg g hecdb gggzig amw",
-            "output": "6"
-        },
-        {
-            "input": "pzobjl\nz jzzopjzb bo c pzbolppjpz mve qjbfi bo plljz umqp jcdhcefej ribjabyjr olp gwdzkc p gsh ornnljtx pbboopozzz zbzbzzlzb",
-            "output": "10"
+            "input": "jwof\nscpz owwooo jojwfj qxkzs jdnrpyo mlontetbq zrbt rexxb wfofffofww jfj hecwixcukx ss",
+            "output": "4"
         }
     ]
 }

@@ -18,412 +18,468 @@
     ],
     "hidden_test_cases": [
         {
-            "input": "WordDictionary\nsearch d.g\nsearch art\naddWord art\nsearch a.t\naddWord ant",
-            "output": "null\nfalse\nfalse\nnull\ntrue\nnull"
+            "input": "WordDictionary\naddWord dog\naddWord ant\nsearch ap.le\nsearch ap.le\naddWord cat",
+            "output": "null\nnull\nnull\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\nsearch banana\nsearch art\nsearch b.t\naddWord art\naddWord dog\naddWord banana\naddWord dog\nsearch banana\nsearch a.t\naddWord art",
-            "output": "null\nfalse\nfalse\nfalse\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull"
+            "input": "WordDictionary\naddWord apple\nsearch ba.ana\nsearch a.t\nsearch ap.le\nsearch d.g\naddWord ant\nsearch art\naddWord banana\naddWord dog\nsearch ant\naddWord cat\naddWord banana\naddWord art\naddWord art",
+            "output": "null\nnull\nfalse\nfalse\ntrue\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord art\nsearch apple\naddWord cat\naddWord dog\naddWord apple\nsearch b.t\naddWord bat\nsearch banana",
-            "output": "null\nnull\nfalse\nnull\nnull\nnull\nfalse\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\nsearch ba.ana\nsearch apple\naddWord dog\nsearch a.t\nsearch ap.le\naddWord art\naddWord cat\nsearch a.t\naddWord bat\nsearch dog\nsearch a.t\naddWord bat\nsearch ant\nsearch dog",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nnull\ntrue\nnull\ntrue\ntrue\nnull\nfalse\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\nsearch ap.le\nsearch ba.ana\nsearch a.t\nsearch d.g\nsearch b.t",
-            "output": "null\nnull\ntrue\nfalse\nfalse\nfalse\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord ant\nsearch dog\nsearch apple\naddWord bat\naddWord ant\naddWord banana\nsearch a.t\naddWord banana\nsearch bat\nsearch dog\naddWord bat\nsearch dog\naddWord banana",
-            "output": "null\nnull\nfalse\nfalse\nnull\nnull\nnull\ntrue\nnull\ntrue\nfalse\nnull\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch a.t\naddWord apple\nsearch dog\naddWord bat\naddWord banana\naddWord bat",
-            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord apple\nsearch b.t\naddWord apple\naddWord cat\naddWord banana\nsearch cat\nsearch ant",
-            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull\ntrue\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord cat\naddWord apple\nsearch d.g\naddWord art\naddWord dog\naddWord dog\nsearch art\naddWord cat\nsearch art\naddWord bat\naddWord dog",
-            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch ap.le\nsearch a.t\nsearch a.t\nsearch art\nsearch apple\naddWord art\nsearch ant\naddWord art\naddWord banana\nsearch a.t\naddWord apple",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord bat\naddWord dog\nsearch banana\naddWord bat\naddWord dog\naddWord bat\naddWord apple\nsearch bat\naddWord dog\nsearch bat\naddWord ant",
-            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord cat\nsearch cat\naddWord banana\naddWord ant\naddWord banana\naddWord apple\naddWord apple",
-            "output": "null\nnull\ntrue\nnull\nnull\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord banana\nsearch d.g\nsearch bat\naddWord bat\nsearch apple\naddWord dog\naddWord ant\naddWord apple\naddWord dog\naddWord dog\naddWord apple\naddWord ant\nsearch banana\nsearch bat",
-            "output": "null\nnull\nfalse\nfalse\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch ap.le\naddWord ant\naddWord banana\naddWord ant\nsearch cat\naddWord cat\nsearch a.t\naddWord dog",
-            "output": "null\nfalse\nnull\nnull\nnull\nfalse\nnull\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch a.t\naddWord art\nsearch d.g\naddWord bat\nsearch bat\naddWord cat",
-            "output": "null\nfalse\nnull\nfalse\nnull\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch d.g\nsearch a.t\naddWord dog\naddWord dog\nsearch a.t",
-            "output": "null\nfalse\nfalse\nnull\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\nsearch cat\naddWord cat\naddWord dog\naddWord bat\naddWord apple\nsearch ant\nsearch apple",
-            "output": "null\nfalse\nnull\nnull\nnull\nnull\nfalse\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch a.t\naddWord cat\naddWord ant\nsearch ant\nsearch c.t\nsearch ba.ana\naddWord art\nsearch ap.le\naddWord dog\nsearch a.t",
-            "output": "null\nfalse\nnull\nnull\ntrue\ntrue\nfalse\nnull\nfalse\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch art\naddWord dog\nsearch ant\naddWord cat\naddWord banana\nsearch b.t\naddWord banana\naddWord dog\nsearch apple\nsearch dog\nsearch bat\naddWord dog\naddWord art\nsearch ant\naddWord bat",
-            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nfalse\nnull\nnull\nfalse\ntrue\nfalse\nnull\nnull\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord ant\nsearch dog\naddWord bat\naddWord art\naddWord banana\naddWord art\nsearch art\nsearch art\naddWord bat",
-            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord art\nsearch b.t\naddWord art\nsearch cat\nsearch c.t\naddWord dog\nsearch c.t\nsearch b.t\nsearch ap.le\naddWord art\nsearch bat\nsearch a.t",
-            "output": "null\nnull\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nnull\nfalse\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch ant\naddWord ant\naddWord cat\naddWord ant\nsearch ap.le\nsearch ba.ana\naddWord bat\naddWord bat\nsearch b.t\naddWord art\nsearch c.t\naddWord banana\nsearch banana\naddWord ant",
-            "output": "null\nfalse\nnull\nnull\nnull\nfalse\nfalse\nnull\nnull\ntrue\nnull\ntrue\nnull\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch dog\nsearch dog\naddWord art\nsearch cat\nsearch bat\nsearch ba.ana\nsearch ant\naddWord banana\naddWord bat\naddWord apple",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord banana\naddWord apple\nsearch ap.le\naddWord banana\nsearch art\nsearch bat\naddWord cat\nsearch a.t",
-            "output": "null\nnull\nnull\ntrue\nnull\nfalse\nfalse\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord art\naddWord banana\nsearch dog\naddWord cat\naddWord apple\nsearch ba.ana\naddWord apple\nsearch art",
-            "output": "null\nnull\nnull\nfalse\nnull\nnull\ntrue\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch b.t\nsearch ant\nsearch bat\nsearch c.t\naddWord ant\nsearch c.t\nsearch banana",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord cat\nsearch a.t\naddWord ant\nsearch ba.ana\naddWord banana\naddWord cat\nsearch c.t\naddWord art\naddWord dog\nsearch b.t\nsearch c.t\nsearch cat",
-            "output": "null\nnull\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull\nnull\nfalse\ntrue\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch bat\nsearch dog\naddWord cat\nsearch ap.le\naddWord art\naddWord banana\naddWord dog\naddWord art\naddWord apple\nsearch cat",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord art\nsearch art\naddWord banana\naddWord banana\nsearch banana\naddWord banana\nsearch ap.le\naddWord cat\nsearch a.t\naddWord dog\nsearch c.t\nsearch ant\naddWord bat\nsearch a.t",
-            "output": "null\nnull\nnull\ntrue\nnull\nnull\ntrue\nnull\ntrue\nnull\ntrue\nnull\ntrue\nfalse\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord art\naddWord ant\nsearch art\naddWord ant\naddWord dog\naddWord art\nsearch a.t\naddWord ant\nsearch dog\naddWord bat\naddWord ant\nsearch d.g\naddWord dog\naddWord banana\naddWord apple",
-            "output": "null\nnull\nnull\ntrue\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull\nnull\ntrue\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch c.t\nsearch apple\naddWord dog\naddWord banana\nsearch c.t\naddWord banana\nsearch d.g\nsearch cat\nsearch ap.le\naddWord art\naddWord bat\naddWord dog\naddWord ant\nsearch cat",
-            "output": "null\nfalse\nfalse\nnull\nnull\nfalse\nnull\ntrue\nfalse\nfalse\nnull\nnull\nnull\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord apple\naddWord ant\nsearch apple\nsearch d.g\nsearch b.t\nsearch dog\naddWord art\naddWord banana\nsearch art\naddWord art\naddWord bat\naddWord apple",
-            "output": "null\nnull\nnull\nnull\ntrue\nfalse\nfalse\nfalse\nnull\nnull\ntrue\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch a.t\nsearch a.t\nsearch ap.le\naddWord ant\naddWord bat\naddWord apple",
-            "output": "null\nfalse\nfalse\nfalse\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch a.t\naddWord bat\naddWord art\nsearch d.g\nsearch art\naddWord art\nsearch bat\naddWord ant\naddWord banana\nsearch art\nsearch banana\nsearch dog\naddWord banana\nsearch c.t",
-            "output": "null\nfalse\nnull\nnull\nfalse\ntrue\nnull\ntrue\nnull\nnull\ntrue\ntrue\nfalse\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord ant\naddWord cat\nsearch dog\nsearch d.g\naddWord bat\naddWord cat\nsearch dog\naddWord bat\nsearch banana\nsearch banana",
-            "output": "null\nnull\nnull\nfalse\nfalse\nnull\nnull\nfalse\nnull\nfalse\nfalse"
-        },
-        {
-            "input": "WordDictionary\nsearch ant\naddWord ant\naddWord ant\nsearch apple\nsearch apple\naddWord bat\nsearch c.t\nsearch ap.le\naddWord art\naddWord art\naddWord cat\nsearch ba.ana\nsearch bat\naddWord apple\nsearch ant",
-            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nnull\nnull\nfalse\ntrue\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord banana\nsearch cat\nsearch a.t\naddWord dog\naddWord art\naddWord banana\naddWord bat\nsearch art\nsearch cat\nsearch bat\nsearch a.t",
-            "output": "null\nnull\nfalse\nfalse\nnull\nnull\nnull\nnull\ntrue\nfalse\ntrue\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord dog\naddWord apple\naddWord bat\nsearch ba.ana\naddWord bat\naddWord dog\naddWord art\nsearch ba.ana\nsearch banana\naddWord art",
-            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\nfalse\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord banana\naddWord ant\nsearch bat\nsearch c.t\nsearch c.t\nsearch b.t\nsearch bat\naddWord cat\naddWord bat\nsearch b.t\nsearch ap.le\naddWord art\naddWord cat",
-            "output": "null\nnull\nnull\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nnull\ntrue\nfalse\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch art\naddWord art\nsearch cat\naddWord banana\naddWord ant\nsearch bat\naddWord ant\nsearch ba.ana\nsearch ant\nsearch a.t\naddWord apple\nsearch b.t\naddWord art\naddWord cat\naddWord dog",
-            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nfalse\nnull\ntrue\ntrue\ntrue\nnull\nfalse\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord dog\nsearch d.g\naddWord cat\naddWord banana\naddWord dog\nsearch c.t\nsearch c.t\naddWord art\nsearch dog\naddWord art\nsearch apple\nsearch banana",
-            "output": "null\nnull\ntrue\nnull\nnull\nnull\ntrue\ntrue\nnull\ntrue\nnull\nfalse\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch d.g\nsearch cat\naddWord apple\naddWord art\naddWord bat\naddWord apple\naddWord ant\nsearch b.t\nsearch a.t",
-            "output": "null\nfalse\nfalse\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch banana\naddWord art\naddWord apple\nsearch a.t\nsearch a.t\naddWord banana",
-            "output": "null\nfalse\nnull\nnull\ntrue\ntrue\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch ba.ana\nsearch apple\nsearch a.t\naddWord art\nsearch ap.le\naddWord dog\nsearch banana",
-            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord bat\nsearch art\nsearch c.t\nsearch banana\naddWord cat\nsearch ap.le\nsearch b.t\naddWord dog\naddWord cat\nsearch ant\naddWord banana\naddWord bat",
-            "output": "null\nnull\nnull\nfalse\nfalse\nfalse\nnull\ntrue\ntrue\nnull\nnull\nfalse\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch ant\nsearch bat\naddWord dog\nsearch c.t\naddWord cat\nsearch bat\nsearch art\nsearch bat\naddWord ant\nsearch banana\naddWord cat",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nfalse\nfalse\nnull\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord apple\naddWord dog\naddWord dog\nsearch ant\nsearch ant\naddWord dog",
-            "output": "null\nnull\nnull\nnull\nfalse\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord bat\nsearch a.t\naddWord dog\naddWord banana\nsearch d.g\nsearch dog\nsearch dog\naddWord banana\nsearch ant",
-            "output": "null\nnull\nfalse\nnull\nnull\ntrue\ntrue\ntrue\nnull\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord art\naddWord banana\naddWord art\naddWord dog\naddWord banana\naddWord apple\naddWord cat\nsearch apple",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\ntrue"
-        },
-        {
-            "input": "WordDictionary\naddWord cat\naddWord apple\nsearch ba.ana\nsearch banana\nsearch banana\nsearch dog\naddWord bat",
-            "output": "null\nnull\nnull\nfalse\nfalse\nfalse\nfalse\nnull"
-        },
-        {
-            "input": "WordDictionary\nsearch ba.ana\nsearch a.t\naddWord apple\naddWord ant\naddWord ant\nsearch ap.le\nsearch dog",
-            "output": "null\nfalse\nfalse\nnull\nnull\nnull\ntrue\nfalse"
-        },
-        {
-            "input": "WordDictionary\naddWord cat\naddWord banana\naddWord bat\naddWord cat\naddWord ant\nsearch dog\naddWord ant\naddWord ant\naddWord dog",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\nfalse\nnull\nnull\nnull"
-        },
-        {
-            "input": "WordDictionary\naddWord dog\nsearch a.t\naddWord cat\nsearch a.t\nsearch a.t\naddWord bat\naddWord bat\nsearch ant\naddWord banana\nsearch ba.ana\nsearch c.t\nsearch bat",
-            "output": "null\nnull\nfalse\nnull\nfalse\nfalse\nnull\nnull\nfalse\nnull\ntrue\ntrue\ntrue"
-        },
-        {
-            "input": "WordDictionary\nsearch c.t\nsearch a.t\naddWord banana\naddWord apple\naddWord cat",
+            "input": "WordDictionary\nsearch c.t\nsearch art\naddWord bat\naddWord dog\naddWord apple",
             "output": "null\nfalse\nfalse\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord apple\nsearch cat\naddWord dog\nsearch a.t\naddWord bat",
-            "output": "null\nnull\nfalse\nnull\nfalse\nnull"
+            "input": "WordDictionary\naddWord dog\naddWord ant\naddWord banana\nsearch d.g\naddWord dog",
+            "output": "null\nnull\nnull\nnull\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\nsearch ap.le\nsearch d.g\nsearch banana\nsearch b.t\naddWord art\nsearch b.t\nsearch ap.le\naddWord cat\nsearch cat\naddWord dog\naddWord bat\nsearch d.g",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nnull\ntrue\nnull\nnull\ntrue"
+            "input": "WordDictionary\nsearch dog\naddWord cat\nsearch b.t\naddWord ant\naddWord banana\naddWord dog\nsearch a.t\naddWord ant\nsearch b.t\nsearch bat\naddWord banana",
+            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nnull\ntrue\nnull\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\naddWord cat\nsearch ba.ana\nsearch a.t\nsearch banana\nsearch ant\nsearch a.t\nsearch b.t\nsearch cat\nsearch bat",
-            "output": "null\nnull\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\ntrue\nfalse"
+            "input": "WordDictionary\nsearch ba.ana\naddWord bat\nsearch ant\naddWord apple\nsearch cat\naddWord cat\naddWord apple\nsearch art\nsearch b.t\naddWord bat\naddWord cat\naddWord banana\naddWord dog\naddWord ant\nsearch a.t",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\nnull\nnull\nfalse\ntrue\nnull\nnull\nnull\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch ant\naddWord art\nsearch ba.ana\naddWord dog\nsearch a.t\naddWord art\nsearch b.t\nsearch banana",
-            "output": "null\nfalse\nnull\nfalse\nnull\ntrue\nnull\nfalse\nfalse"
+            "input": "WordDictionary\nsearch ba.ana\nsearch art\naddWord ant\naddWord banana\naddWord bat\naddWord apple\naddWord bat\naddWord art\nsearch c.t\nsearch ant\nsearch dog\nsearch art\nsearch dog\nsearch bat",
+            "output": "null\nfalse\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\ntrue\nfalse\ntrue\nfalse\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch d.g\nsearch apple\naddWord art\naddWord dog\naddWord cat\naddWord banana\nsearch bat\naddWord apple\nsearch ba.ana\nsearch apple\nsearch bat\naddWord banana\nsearch a.t\naddWord dog\naddWord ant",
-            "output": "null\nfalse\nfalse\nnull\nnull\nnull\nnull\nfalse\nnull\ntrue\ntrue\nfalse\nnull\ntrue\nnull\nnull"
+            "input": "WordDictionary\naddWord ant\nsearch dog\nsearch banana\naddWord bat\nsearch b.t\naddWord cat\naddWord bat",
+            "output": "null\nnull\nfalse\nfalse\nnull\ntrue\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord bat\naddWord ant\naddWord dog\nsearch ap.le\naddWord bat\nsearch d.g\nsearch d.g\naddWord art\naddWord dog\nsearch d.g\nsearch banana\nsearch dog\naddWord apple\naddWord art",
-            "output": "null\nnull\nnull\nnull\nfalse\nnull\ntrue\ntrue\nnull\nnull\ntrue\nfalse\ntrue\nnull\nnull"
+            "input": "WordDictionary\naddWord apple\nsearch banana\naddWord banana\naddWord ant\naddWord cat\nsearch ba.ana\nsearch ant\naddWord bat",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\ntrue\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\naddWord bat\nsearch c.t\nsearch ant\nsearch ap.le\nsearch art\naddWord bat\nsearch apple\naddWord banana\nsearch ba.ana\naddWord bat\nsearch d.g",
-            "output": "null\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nnull\ntrue\nnull\nfalse"
+            "input": "WordDictionary\naddWord dog\naddWord apple\nsearch apple\nsearch a.t\naddWord ant\naddWord cat\nsearch d.g\nsearch banana",
+            "output": "null\nnull\nnull\ntrue\nfalse\nnull\nnull\ntrue\nfalse"
         },
         {
-            "input": "WordDictionary\nsearch apple\naddWord ant\nsearch dog\naddWord ant\naddWord cat\nsearch ap.le\naddWord art\nsearch d.g\nsearch a.t\nsearch ant\naddWord ant\nsearch a.t\nsearch ap.le\naddWord cat",
-            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nfalse\nnull\nfalse\ntrue\ntrue\nnull\ntrue\nfalse\nnull"
+            "input": "WordDictionary\nsearch art\naddWord banana\nsearch banana\naddWord ant\nsearch a.t\nsearch ant\nsearch ant\nsearch ba.ana\naddWord banana\nsearch a.t\nsearch ant",
+            "output": "null\nfalse\nnull\ntrue\nnull\ntrue\ntrue\ntrue\ntrue\nnull\ntrue\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch a.t\naddWord art\nsearch cat\naddWord art\nsearch c.t\nsearch art\naddWord art\naddWord bat\naddWord cat\nsearch bat\nsearch d.g\naddWord cat\naddWord banana\naddWord apple\naddWord ant",
-            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\ntrue\nnull\nnull\nnull\ntrue\nfalse\nnull\nnull\nnull\nnull"
+            "input": "WordDictionary\naddWord apple\naddWord banana\naddWord bat\naddWord cat\naddWord banana",
+            "output": "null\nnull\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\nsearch dog\naddWord banana\nsearch d.g\nsearch apple\nsearch c.t\naddWord dog\naddWord ant\naddWord banana\nsearch a.t\naddWord apple\naddWord art\nsearch b.t",
-            "output": "null\nfalse\nnull\nfalse\nfalse\nfalse\nnull\nnull\nnull\ntrue\nnull\nnull\nfalse"
+            "input": "WordDictionary\nsearch d.g\nsearch ant\naddWord apple\nsearch c.t\nsearch ba.ana\naddWord bat",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\nsearch ap.le\nsearch a.t\naddWord bat\nsearch ba.ana\naddWord apple\naddWord ant\nsearch dog",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\nfalse"
+            "input": "WordDictionary\naddWord cat\nsearch d.g\naddWord cat\naddWord banana\nsearch art\nsearch d.g\nsearch c.t\nsearch c.t\naddWord cat\nsearch c.t\naddWord ant\naddWord bat\naddWord dog\nsearch a.t\naddWord art",
+            "output": "null\nnull\nfalse\nnull\nnull\nfalse\nfalse\ntrue\ntrue\nnull\ntrue\nnull\nnull\nnull\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\nsearch a.t\nsearch dog\naddWord bat\naddWord cat\nsearch b.t",
-            "output": "null\nfalse\nfalse\nnull\nnull\ntrue"
+            "input": "WordDictionary\naddWord art\nsearch c.t\naddWord dog\naddWord bat\naddWord cat\naddWord ant\naddWord dog\nsearch ant\nsearch ant\naddWord art\nsearch b.t\nsearch c.t\naddWord dog\naddWord cat",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull\ntrue\ntrue\nnull\nnull"
         },
         {
-            "input": "WordDictionary\nsearch d.g\nsearch apple\nsearch ant\nsearch c.t\nsearch a.t\naddWord cat\naddWord apple\naddWord ant\naddWord banana\naddWord ant\naddWord dog\naddWord bat\nsearch c.t\nsearch ba.ana\naddWord bat",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull"
+            "input": "WordDictionary\nsearch a.t\naddWord dog\naddWord art\nsearch ap.le\naddWord apple\naddWord banana\naddWord dog\nsearch ant\nsearch apple\naddWord banana\nsearch bat\nsearch c.t\naddWord art",
+            "output": "null\nfalse\nnull\nnull\nfalse\nnull\nnull\nnull\nfalse\ntrue\nnull\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\naddWord banana\naddWord dog\naddWord banana\nsearch d.g\nsearch d.g\nsearch banana\nsearch a.t\naddWord ant\nsearch apple\naddWord dog\naddWord cat\naddWord dog",
-            "output": "null\nnull\nnull\nnull\ntrue\ntrue\ntrue\nfalse\nnull\nfalse\nnull\nnull\nnull"
+            "input": "WordDictionary\nsearch b.t\naddWord art\naddWord cat\nsearch c.t\nsearch a.t\nsearch a.t\nsearch c.t\naddWord banana\naddWord apple",
+            "output": "null\nfalse\nnull\nnull\ntrue\ntrue\ntrue\ntrue\nnull\nnull"
         },
         {
-            "input": "WordDictionary\nsearch ap.le\nsearch art\nsearch a.t\naddWord ant\nsearch ant\nsearch art",
-            "output": "null\nfalse\nfalse\nfalse\nnull\ntrue\nfalse"
+            "input": "WordDictionary\nsearch bat\naddWord art\nsearch dog\naddWord apple\nsearch dog\naddWord banana\nsearch dog",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\nnull\nfalse"
         },
         {
-            "input": "WordDictionary\naddWord ant\naddWord apple\naddWord ant\naddWord dog\naddWord art\nsearch ap.le\nsearch banana\naddWord apple\naddWord bat\naddWord apple\nsearch apple\nsearch cat",
-            "output": "null\nnull\nnull\nnull\nnull\nnull\ntrue\nfalse\nnull\nnull\nnull\ntrue\nfalse"
+            "input": "WordDictionary\naddWord banana\naddWord banana\nsearch ap.le\naddWord art\nsearch d.g\nsearch apple\naddWord dog\nsearch banana\nsearch bat\nsearch d.g\nsearch d.g",
+            "output": "null\nnull\nnull\nfalse\nnull\nfalse\nfalse\nnull\ntrue\nfalse\ntrue\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord art\nsearch b.t\nsearch d.g\naddWord cat\naddWord cat\naddWord art\nsearch cat\naddWord ant",
-            "output": "null\nnull\nfalse\nfalse\nnull\nnull\nnull\ntrue\nnull"
+            "input": "WordDictionary\nsearch ant\nsearch a.t\naddWord art\nsearch cat\naddWord apple\nsearch bat\naddWord dog\nsearch ap.le\nsearch a.t\naddWord bat\nsearch bat\naddWord art",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nnull\ntrue\ntrue\nnull\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\naddWord bat\nsearch a.t\naddWord banana\naddWord banana\nsearch dog\nsearch apple\naddWord art\nsearch ap.le",
-            "output": "null\nnull\nfalse\nnull\nnull\nfalse\nfalse\nnull\nfalse"
+            "input": "WordDictionary\nsearch banana\nsearch banana\nsearch apple\naddWord ant\naddWord art\naddWord dog\naddWord banana\nsearch art",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nnull\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord bat\nsearch a.t\nsearch ba.ana\naddWord apple\nsearch art\naddWord ant\naddWord art\naddWord cat\naddWord apple\naddWord cat\naddWord ant\nsearch ap.le\naddWord dog",
-            "output": "null\nnull\nfalse\nfalse\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\nnull"
+            "input": "WordDictionary\naddWord banana\naddWord bat\naddWord apple\nsearch ap.le\naddWord apple\nsearch cat\naddWord dog\nsearch cat\nsearch ant\naddWord banana\nsearch cat",
+            "output": "null\nnull\nnull\nnull\ntrue\nnull\nfalse\nnull\nfalse\nfalse\nnull\nfalse"
         },
         {
-            "input": "WordDictionary\nsearch a.t\naddWord dog\naddWord dog\naddWord ant\naddWord banana\nsearch a.t\naddWord cat\nsearch apple\naddWord banana\naddWord art\nsearch b.t\naddWord art\naddWord ant\naddWord bat",
-            "output": "null\nfalse\nnull\nnull\nnull\nnull\ntrue\nnull\nfalse\nnull\nnull\nfalse\nnull\nnull\nnull"
+            "input": "WordDictionary\nsearch bat\naddWord banana\naddWord bat\naddWord apple\nsearch a.t\nsearch c.t\nsearch a.t\nsearch d.g\naddWord bat",
+            "output": "null\nfalse\nnull\nnull\nnull\nfalse\nfalse\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\nsearch ap.le\nsearch a.t\naddWord cat\nsearch cat\nsearch ap.le\naddWord bat\naddWord apple\nsearch c.t\nsearch cat\nsearch ant\naddWord ant\nsearch banana\naddWord cat\nsearch ap.le",
-            "output": "null\nfalse\nfalse\nnull\ntrue\nfalse\nnull\nnull\ntrue\ntrue\nfalse\nnull\nfalse\nnull\ntrue"
+            "input": "WordDictionary\nsearch b.t\nsearch ant\nsearch d.g\nsearch cat\nsearch cat\naddWord cat\naddWord banana\naddWord cat\naddWord dog",
+            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\nsearch cat\naddWord apple\nsearch d.g\nsearch cat\naddWord dog\nsearch a.t\naddWord art\nsearch a.t\nsearch a.t\naddWord bat",
-            "output": "null\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nnull\ntrue\ntrue\nnull"
+            "input": "WordDictionary\naddWord dog\nsearch ap.le\nsearch art\naddWord apple\nsearch dog\nsearch art\naddWord apple\naddWord apple",
+            "output": "null\nnull\nfalse\nfalse\nnull\ntrue\nfalse\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord dog\nsearch bat\nsearch d.g\nsearch bat\naddWord bat\nsearch a.t\nsearch dog\naddWord art\naddWord dog\naddWord bat\nsearch b.t",
-            "output": "null\nnull\nfalse\ntrue\nfalse\nnull\nfalse\ntrue\nnull\nnull\nnull\ntrue"
+            "input": "WordDictionary\naddWord art\naddWord dog\naddWord cat\naddWord art\nsearch a.t\nsearch c.t\naddWord art\nsearch bat\naddWord apple\naddWord dog\naddWord ant",
+            "output": "null\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull\nfalse\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord apple\naddWord bat\naddWord bat\nsearch ant\nsearch art\naddWord dog\nsearch dog\naddWord bat\naddWord ant\naddWord art\nsearch art\naddWord apple\nsearch b.t\naddWord bat\nsearch ba.ana",
-            "output": "null\nnull\nnull\nnull\nfalse\nfalse\nnull\ntrue\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull\nfalse"
+            "input": "WordDictionary\nsearch c.t\naddWord ant\naddWord apple\naddWord apple\naddWord cat\nsearch a.t\naddWord art\nsearch d.g\nsearch c.t\nsearch b.t",
+            "output": "null\nfalse\nnull\nnull\nnull\nnull\ntrue\nnull\nfalse\ntrue\nfalse"
         },
         {
-            "input": "WordDictionary\naddWord bat\nsearch ant\naddWord dog\naddWord apple\naddWord cat\naddWord art\naddWord art\naddWord art\nsearch cat\nsearch ant\nsearch ap.le\naddWord dog",
-            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\nfalse\ntrue\nnull"
+            "input": "WordDictionary\nsearch bat\nsearch ant\naddWord apple\naddWord dog\nsearch c.t\nsearch c.t\nsearch apple\naddWord art\naddWord banana\nsearch a.t\naddWord dog\naddWord banana\naddWord apple",
+            "output": "null\nfalse\nfalse\nnull\nnull\nfalse\nfalse\ntrue\nnull\nnull\ntrue\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\nsearch ba.ana\nsearch d.g\naddWord ant\naddWord ant\naddWord art\nsearch a.t",
-            "output": "null\nfalse\nfalse\nnull\nnull\nnull\ntrue"
+            "input": "WordDictionary\nsearch apple\naddWord apple\naddWord cat\naddWord bat\naddWord ant\nsearch c.t\nsearch d.g\nsearch art\nsearch c.t",
+            "output": "null\nfalse\nnull\nnull\nnull\nnull\ntrue\nfalse\nfalse\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord ant\naddWord ant\naddWord bat\nsearch c.t\naddWord dog",
-            "output": "null\nnull\nnull\nnull\nfalse\nnull"
+            "input": "WordDictionary\nsearch art\naddWord cat\naddWord cat\nsearch art\nsearch apple\nsearch a.t\nsearch b.t\naddWord art\naddWord bat\naddWord bat\nsearch cat\nsearch cat\naddWord banana\nsearch a.t\nsearch c.t",
+            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nnull\ntrue\ntrue\nnull\ntrue\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord art\nsearch c.t\naddWord banana\nsearch cat\naddWord banana\nsearch ba.ana\naddWord apple\nsearch a.t\nsearch apple\nsearch a.t\nsearch apple\nsearch c.t\nsearch dog\naddWord dog",
-            "output": "null\nnull\nfalse\nnull\nfalse\nnull\ntrue\nnull\ntrue\ntrue\ntrue\ntrue\nfalse\nfalse\nnull"
+            "input": "WordDictionary\naddWord banana\naddWord apple\nsearch banana\naddWord bat\naddWord ant\naddWord cat\nsearch ap.le\naddWord apple\naddWord banana\naddWord cat",
+            "output": "null\nnull\nnull\ntrue\nnull\nnull\nnull\ntrue\nnull\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord art\naddWord cat\naddWord cat\nsearch a.t\naddWord bat\nsearch a.t\naddWord ant\nsearch banana\naddWord apple\naddWord art\naddWord art\naddWord cat",
-            "output": "null\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull\nfalse\nnull\nnull\nnull\nnull"
+            "input": "WordDictionary\naddWord banana\nsearch ba.ana\naddWord banana\nsearch apple\nsearch dog\nsearch d.g\nsearch bat\naddWord banana\naddWord banana\nsearch ba.ana",
+            "output": "null\nnull\ntrue\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch ap.le\naddWord art\naddWord bat\nsearch d.g\naddWord cat\nsearch art\naddWord apple\naddWord banana\naddWord banana\naddWord dog\naddWord banana\naddWord ant\naddWord art\nsearch cat\nsearch a.t",
-            "output": "null\nfalse\nnull\nnull\nfalse\nnull\ntrue\nnull\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue"
+            "input": "WordDictionary\naddWord dog\naddWord banana\naddWord dog\nsearch banana\naddWord art\nsearch c.t\nsearch d.g\naddWord ant\nsearch ba.ana\nsearch d.g",
+            "output": "null\nnull\nnull\nnull\ntrue\nnull\nfalse\ntrue\nnull\ntrue\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch banana\nsearch a.t\naddWord apple\nsearch c.t\nsearch ap.le\nsearch dog\naddWord ant\naddWord art",
-            "output": "null\nfalse\nfalse\nnull\nfalse\ntrue\nfalse\nnull\nnull"
+            "input": "WordDictionary\nsearch a.t\naddWord banana\nsearch a.t\naddWord cat\nsearch ap.le",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse"
         },
         {
-            "input": "WordDictionary\nsearch a.t\naddWord cat\nsearch ba.ana\nsearch ap.le\naddWord bat",
-            "output": "null\nfalse\nnull\nfalse\nfalse\nnull"
+            "input": "WordDictionary\naddWord cat\naddWord cat\naddWord dog\naddWord art\naddWord bat\nsearch cat",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch banana\nsearch apple\nsearch dog\naddWord dog\nsearch dog\nsearch a.t",
-            "output": "null\nfalse\nfalse\nfalse\nnull\ntrue\nfalse"
+            "input": "WordDictionary\naddWord apple\nsearch ba.ana\nsearch cat\nsearch cat\naddWord art\naddWord bat",
+            "output": "null\nnull\nfalse\nfalse\nfalse\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord art\naddWord bat\naddWord cat\nsearch dog\naddWord art\naddWord apple",
-            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull"
+            "input": "WordDictionary\nsearch ant\nsearch cat\naddWord dog\nsearch ba.ana\naddWord dog\naddWord dog\naddWord apple\nsearch a.t\nsearch art\nsearch dog",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\nnull\nfalse\nfalse\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord apple\naddWord banana\nsearch b.t\nsearch b.t\naddWord ant\nsearch d.g\naddWord banana\naddWord apple",
-            "output": "null\nnull\nnull\nfalse\nfalse\nnull\nfalse\nnull\nnull"
+            "input": "WordDictionary\naddWord cat\naddWord bat\naddWord art\nsearch dog\naddWord dog\naddWord cat\nsearch b.t",
+            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch apple\nsearch dog\nsearch ba.ana\nsearch a.t\nsearch c.t\naddWord apple\nsearch bat\nsearch b.t\naddWord banana\nsearch apple\naddWord apple\nsearch ant\naddWord bat\naddWord bat\nsearch a.t",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nnull\ntrue\nnull\nfalse\nnull\nnull\nfalse"
+            "input": "WordDictionary\naddWord cat\naddWord ant\nsearch c.t\nsearch ap.le\nsearch cat\nsearch ant\nsearch bat\naddWord ant\nsearch a.t\naddWord dog\nsearch d.g",
+            "output": "null\nnull\nnull\ntrue\nfalse\ntrue\ntrue\nfalse\nnull\ntrue\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch bat\nsearch cat\naddWord ant\nsearch ba.ana\naddWord apple\naddWord cat\nsearch a.t\naddWord banana\nsearch apple\nsearch a.t\naddWord banana",
-            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull\ntrue\ntrue\nnull"
+            "input": "WordDictionary\nsearch a.t\naddWord art\nsearch b.t\naddWord art\nsearch banana",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse"
         },
         {
-            "input": "WordDictionary\nsearch cat\nsearch b.t\nsearch banana\naddWord apple\naddWord apple\naddWord ant",
-            "output": "null\nfalse\nfalse\nfalse\nnull\nnull\nnull"
+            "input": "WordDictionary\nsearch banana\nsearch d.g\naddWord cat\nsearch a.t\nsearch ap.le\naddWord art\nsearch banana\nsearch dog\naddWord ant\naddWord dog\naddWord bat\nsearch ant\nsearch dog\nsearch a.t\naddWord apple",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nnull\nnull\ntrue\ntrue\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\naddWord apple\nsearch b.t\naddWord cat\naddWord bat\nsearch bat\naddWord art\nsearch d.g\naddWord banana",
-            "output": "null\nnull\nfalse\nnull\nnull\ntrue\nnull\nfalse\nnull"
+            "input": "WordDictionary\nsearch d.g\naddWord bat\naddWord dog\naddWord art\nsearch c.t\nsearch b.t\naddWord cat\naddWord bat",
+            "output": "null\nfalse\nnull\nnull\nnull\nfalse\ntrue\nnull\nnull"
         },
         {
-            "input": "WordDictionary\naddWord banana\naddWord apple\nsearch dog\nsearch d.g\naddWord apple\nsearch ba.ana\nsearch d.g\naddWord art\naddWord bat\nsearch art\nsearch dog\nsearch banana",
-            "output": "null\nnull\nnull\nfalse\nfalse\nnull\ntrue\nfalse\nnull\nnull\ntrue\nfalse\ntrue"
+            "input": "WordDictionary\nsearch apple\naddWord bat\naddWord art\nsearch apple\naddWord apple\naddWord dog\naddWord bat\nsearch bat\nsearch c.t\nsearch b.t\nsearch ba.ana\nsearch apple\nsearch ant\nsearch cat\naddWord apple",
+            "output": "null\nfalse\nnull\nnull\nfalse\nnull\nnull\nnull\ntrue\nfalse\ntrue\nfalse\ntrue\nfalse\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\nsearch d.g\nsearch apple\nsearch d.g\nsearch d.g\nsearch ba.ana\nsearch ap.le\nsearch a.t\naddWord ant\naddWord cat\naddWord banana\nsearch a.t",
-            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nnull\ntrue"
+            "input": "WordDictionary\nsearch b.t\nsearch cat\naddWord cat\nsearch d.g\naddWord apple\naddWord art\nsearch bat\naddWord cat",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\nfalse\nnull"
         },
         {
-            "input": "WordDictionary\nsearch apple\naddWord cat\naddWord dog\naddWord ant\nsearch cat\nsearch ap.le\nsearch c.t\naddWord banana\naddWord dog\nsearch b.t\nsearch ant\nsearch c.t\nsearch ant\naddWord dog\naddWord ant",
-            "output": "null\nfalse\nnull\nnull\nnull\ntrue\nfalse\ntrue\nnull\nnull\nfalse\ntrue\ntrue\ntrue\nnull\nnull"
+            "input": "WordDictionary\naddWord apple\nsearch cat\nsearch dog\naddWord apple\naddWord art\nsearch ap.le\nsearch art\naddWord banana\nsearch cat\naddWord banana\nsearch ba.ana\nsearch ant\naddWord bat\nsearch ba.ana\nsearch apple",
+            "output": "null\nnull\nfalse\nfalse\nnull\nnull\ntrue\ntrue\nnull\nfalse\nnull\ntrue\nfalse\nnull\ntrue\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch cat\naddWord cat\naddWord ant\nsearch art\nsearch ba.ana\naddWord bat\naddWord cat\nsearch dog\nsearch c.t\naddWord banana\nsearch d.g\nsearch apple\naddWord apple",
-            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nnull\nnull\nfalse\ntrue\nnull\nfalse\nfalse\nnull"
+            "input": "WordDictionary\nsearch c.t\nsearch c.t\nsearch c.t\nsearch bat\nsearch dog\naddWord dog\naddWord bat\nsearch b.t\naddWord cat\naddWord dog\naddWord bat\naddWord art\nsearch bat",
+            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nnull\ntrue\nnull\nnull\nnull\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\naddWord banana\naddWord ant\naddWord cat\nsearch cat\naddWord cat\naddWord banana\naddWord bat\naddWord dog\nsearch banana\naddWord bat\nsearch apple\nsearch cat",
-            "output": "null\nnull\nnull\nnull\ntrue\nnull\nnull\nnull\nnull\ntrue\nnull\nfalse\ntrue"
+            "input": "WordDictionary\nsearch ant\nsearch banana\nsearch a.t\naddWord ant\naddWord apple\nsearch art\naddWord apple\nsearch apple\naddWord dog\nsearch dog\naddWord apple",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nnull\nfalse\nnull\ntrue\nnull\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\nsearch cat\nsearch a.t\nsearch cat\naddWord cat\nsearch apple\nsearch art\nsearch banana\nsearch apple\naddWord ant\nsearch b.t\nsearch banana\nsearch dog\nsearch banana\nsearch bat\naddWord cat",
-            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nfalse\nnull"
+            "input": "WordDictionary\nsearch banana\naddWord art\naddWord apple\naddWord art\nsearch dog\naddWord cat\naddWord cat\nsearch bat\naddWord art\naddWord ant\nsearch apple\nsearch ba.ana\naddWord dog\nsearch ap.le",
+            "output": "null\nfalse\nnull\nnull\nnull\nfalse\nnull\nnull\nfalse\nnull\nnull\ntrue\nfalse\nnull\ntrue"
         },
         {
-            "input": "WordDictionary\nsearch a.t\naddWord art\nsearch b.t\naddWord banana\naddWord dog\naddWord cat\naddWord art\naddWord cat\nsearch banana\naddWord cat\naddWord art\nsearch bat\nsearch banana\naddWord ant",
-            "output": "null\nfalse\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\ntrue\nnull\nnull\nfalse\ntrue\nnull"
+            "input": "WordDictionary\naddWord cat\nsearch art\naddWord banana\naddWord dog\naddWord art\nsearch dog\naddWord cat\nsearch c.t\naddWord ant",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull"
         },
         {
-            "input": "WordDictionary\naddWord apple\nsearch b.t\nsearch c.t\naddWord banana\nsearch d.g\naddWord bat\nsearch c.t\naddWord art\nsearch dog",
-            "output": "null\nnull\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nnull\nfalse"
+            "input": "WordDictionary\nsearch art\nsearch d.g\nsearch ant\naddWord dog\nsearch a.t\nsearch ant\nsearch ap.le\nsearch ant\nsearch dog\naddWord dog\nsearch banana\naddWord cat\naddWord apple\nsearch banana",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\ntrue\nnull\nfalse\nnull\nnull\nfalse"
         },
         {
-            "input": "WordDictionary\naddWord ant\nsearch apple\naddWord apple\nsearch d.g\naddWord cat\nsearch art\nsearch cat",
-            "output": "null\nnull\nfalse\nnull\nfalse\nnull\nfalse\ntrue"
+            "input": "WordDictionary\naddWord ant\nsearch banana\nsearch ap.le\nsearch a.t\nsearch ba.ana\naddWord ant\nsearch banana\naddWord apple",
+            "output": "null\nnull\nfalse\nfalse\ntrue\nfalse\nnull\nfalse\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ba.ana\naddWord dog\nsearch ap.le\nsearch apple\naddWord banana\naddWord dog\nsearch c.t",
+            "output": "null\nfalse\nnull\nfalse\nfalse\nnull\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\naddWord cat\nsearch ant\naddWord dog\nsearch bat\naddWord ant\naddWord bat\nsearch ant\naddWord art\naddWord bat\nsearch a.t",
+            "output": "null\nnull\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch a.t\nsearch dog\nsearch dog\naddWord ant\nsearch c.t\naddWord art\naddWord bat\nsearch art\naddWord apple\naddWord dog\naddWord dog\nsearch art\nsearch banana\nsearch a.t",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nnull\nnull\ntrue\nnull\nnull\nnull\ntrue\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\nsearch bat\naddWord cat\naddWord ant\naddWord dog\nsearch ba.ana\naddWord cat\naddWord apple",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nfalse\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord bat\nsearch apple\naddWord apple\naddWord bat\naddWord bat\naddWord dog\nsearch ba.ana\nsearch a.t\naddWord art",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\nfalse\nfalse\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord bat\nsearch banana\naddWord dog\nsearch art\nsearch ba.ana\nsearch d.g\naddWord banana\naddWord cat\naddWord art\naddWord cat\naddWord ant\nsearch b.t\naddWord bat\nsearch dog",
+            "output": "null\nnull\nfalse\nnull\nfalse\nfalse\ntrue\nnull\nnull\nnull\nnull\nnull\ntrue\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch dog\nsearch art\naddWord dog\naddWord ant\nsearch cat\nsearch banana\nsearch a.t\naddWord art\nsearch d.g\naddWord art\naddWord bat\naddWord ant",
+            "output": "null\nfalse\nfalse\nnull\nnull\nfalse\nfalse\ntrue\nnull\ntrue\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord bat\naddWord bat\nsearch c.t\nsearch dog\nsearch dog\nsearch ap.le\naddWord art\naddWord dog\nsearch c.t\naddWord art",
+            "output": "null\nnull\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch dog\naddWord bat\naddWord banana\nsearch cat\nsearch dog\naddWord bat\nsearch ba.ana\nsearch ant\naddWord cat\nsearch a.t\nsearch bat\nsearch ba.ana",
+            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nnull\ntrue\nfalse\nnull\nfalse\ntrue\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\naddWord bat\nsearch dog\nsearch apple\naddWord dog\nsearch a.t\nsearch art\naddWord cat",
+            "output": "null\nnull\nnull\nfalse\nfalse\nnull\ntrue\nfalse\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\nsearch c.t\naddWord cat\naddWord cat\naddWord bat",
+            "output": "null\nfalse\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\nsearch apple\nsearch art\naddWord dog\nsearch ba.ana\naddWord ant\naddWord bat\nsearch c.t",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nnull\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\naddWord banana\nsearch a.t\naddWord apple\nsearch c.t\nsearch art\naddWord cat\nsearch cat\naddWord bat\naddWord cat",
+            "output": "null\nnull\nfalse\nnull\nfalse\nfalse\nnull\ntrue\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord apple\naddWord apple\nsearch ba.ana\naddWord bat\nsearch apple\nsearch d.g\nsearch d.g\nsearch cat\naddWord bat\naddWord cat\naddWord bat\nsearch a.t\nsearch ant",
+            "output": "null\nnull\nnull\nfalse\nnull\ntrue\nfalse\nfalse\nfalse\nnull\nnull\nnull\nfalse\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch b.t\naddWord art\naddWord dog\naddWord cat\naddWord apple\nsearch ba.ana\naddWord bat\nsearch b.t\nsearch a.t\nsearch banana",
+            "output": "null\nfalse\nnull\nnull\nnull\nnull\nfalse\nnull\ntrue\ntrue\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch a.t\naddWord banana\nsearch b.t\nsearch bat\naddWord banana\naddWord ant\nsearch banana",
+            "output": "null\nfalse\nnull\nfalse\nfalse\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord apple\nsearch banana\nsearch ap.le\naddWord bat\nsearch ant\naddWord cat\nsearch apple\naddWord banana\naddWord apple\nsearch bat\naddWord banana\naddWord ant\nsearch cat\naddWord cat\naddWord dog",
+            "output": "null\nnull\nfalse\ntrue\nnull\nfalse\nnull\ntrue\nnull\nnull\ntrue\nnull\nnull\ntrue\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch banana\nsearch ant\naddWord art\nsearch b.t\nsearch ba.ana\nsearch d.g\nsearch bat\naddWord apple\naddWord bat\nsearch bat",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch c.t\nsearch a.t\naddWord art\nsearch ant\naddWord apple\nsearch bat\naddWord dog\naddWord art\naddWord dog\naddWord art\nsearch ant\nsearch a.t\nsearch cat\nsearch cat\nsearch a.t",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nnull\nnull\nnull\nnull\nfalse\ntrue\nfalse\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord bat\nsearch dog\naddWord cat\naddWord cat\naddWord dog\naddWord bat\naddWord cat\naddWord apple\nsearch a.t\naddWord ant\naddWord bat",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\naddWord ant\nsearch ap.le\nsearch a.t\nsearch c.t\naddWord apple\nsearch apple\nsearch apple\nsearch d.g\naddWord art\nsearch b.t\nsearch a.t\naddWord banana\naddWord apple\nsearch art",
+            "output": "null\nfalse\nnull\nfalse\ntrue\nfalse\nnull\ntrue\ntrue\nfalse\nnull\nfalse\ntrue\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch dog\naddWord ant\nsearch banana\naddWord apple\nsearch bat\nsearch apple\nsearch ap.le",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\ntrue\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\nsearch art\nsearch a.t\naddWord apple\naddWord ant\naddWord banana\nsearch b.t\nsearch ap.le\naddWord bat",
+            "output": "null\nnull\nfalse\ntrue\nnull\nnull\nnull\nfalse\ntrue\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord dog\nsearch art\nsearch ap.le\nsearch d.g\naddWord dog\naddWord ant\nsearch b.t\naddWord art\nsearch b.t\nsearch dog",
+            "output": "null\nnull\nfalse\nfalse\ntrue\nnull\nnull\nfalse\nnull\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch art\nsearch b.t\naddWord dog\nsearch art\nsearch apple\naddWord apple\nsearch banana\nsearch a.t\nsearch apple\naddWord cat\nsearch ap.le\naddWord banana\nsearch a.t\nsearch ba.ana\naddWord ant",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nfalse\ntrue\nnull\ntrue\nnull\nfalse\ntrue\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord dog\naddWord cat\nsearch ba.ana\naddWord art\naddWord art\naddWord banana\nsearch d.g\naddWord cat",
+            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull\ntrue\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch c.t\nsearch d.g\naddWord banana\nsearch apple\naddWord ant\naddWord art\nsearch c.t\naddWord cat\nsearch a.t",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nnull\nnull\nfalse\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\naddWord art\nsearch apple\naddWord cat\naddWord cat\naddWord cat\naddWord dog\nsearch b.t\nsearch a.t\naddWord banana\nsearch c.t\nsearch banana\nsearch d.g",
+            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nfalse\ntrue\nnull\ntrue\ntrue\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord art\naddWord apple\nsearch dog\nsearch banana\naddWord dog\naddWord ant\naddWord bat\naddWord apple",
+            "output": "null\nnull\nnull\nfalse\nfalse\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord bat\nsearch art\nsearch c.t\naddWord ant\naddWord dog\naddWord cat\nsearch a.t\naddWord art\naddWord ant\nsearch a.t\naddWord dog\naddWord banana\nsearch b.t\nsearch art\naddWord apple",
+            "output": "null\nnull\nfalse\nfalse\nnull\nnull\nnull\ntrue\nnull\nnull\ntrue\nnull\nnull\ntrue\ntrue\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord apple\nsearch bat\nsearch d.g\naddWord ant\nsearch ba.ana\nsearch art\naddWord art\nsearch art\naddWord apple\nsearch a.t\nsearch a.t\nsearch bat\nsearch c.t",
+            "output": "null\nnull\nfalse\nfalse\nnull\nfalse\nfalse\nnull\ntrue\nnull\ntrue\ntrue\nfalse\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch a.t\nsearch ba.ana\naddWord bat\naddWord apple\nsearch art\naddWord apple\naddWord cat\nsearch dog\naddWord cat\naddWord bat\nsearch ba.ana\nsearch art",
+            "output": "null\nfalse\nfalse\nnull\nnull\nfalse\nnull\nnull\nfalse\nnull\nnull\nfalse\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch bat\naddWord art\naddWord art\nsearch dog\nsearch banana\naddWord apple\nsearch c.t",
+            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch ant\nsearch dog\naddWord art\nsearch d.g\nsearch cat\nsearch ba.ana\nsearch ap.le\naddWord ant\nsearch ap.le\naddWord dog\nsearch a.t\naddWord apple\nsearch cat\nsearch dog",
+            "output": "null\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nnull\ntrue\nnull\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\naddWord apple\naddWord dog\nsearch art\nsearch dog\nsearch ap.le\naddWord cat\nsearch banana\naddWord banana",
+            "output": "null\nfalse\nnull\nnull\nfalse\ntrue\ntrue\nnull\nfalse\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord apple\naddWord ant\nsearch art\naddWord art\naddWord apple\naddWord apple",
+            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\nsearch c.t\nsearch bat\naddWord art\nsearch a.t\nsearch apple\nsearch cat\naddWord banana\naddWord dog\naddWord dog\naddWord banana",
+            "output": "null\nnull\nfalse\nfalse\nnull\ntrue\nfalse\nfalse\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ba.ana\naddWord dog\nsearch a.t\nsearch bat\naddWord art\nsearch cat",
+            "output": "null\nfalse\nnull\nfalse\nfalse\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch art\nsearch cat\nsearch bat\nsearch b.t\nsearch apple\nsearch b.t\nsearch ba.ana\nsearch ant\naddWord art\nsearch banana\nsearch dog\naddWord cat\nsearch dog\naddWord bat\nsearch bat",
+            "output": "null\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch bat\naddWord dog\naddWord apple\nsearch dog\naddWord bat\nsearch dog",
+            "output": "null\nfalse\nnull\nnull\ntrue\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch a.t\naddWord ant\naddWord art\nsearch cat\naddWord dog\nsearch a.t\naddWord bat\nsearch cat\nsearch d.g\naddWord art\naddWord banana\naddWord banana\nsearch ba.ana",
+            "output": "null\nfalse\nnull\nnull\nfalse\nnull\ntrue\nnull\nfalse\ntrue\nnull\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\naddWord apple\naddWord art\nsearch dog\nsearch ap.le",
+            "output": "null\nfalse\nnull\nnull\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch banana\nsearch a.t\nsearch ap.le\nsearch art\naddWord art\naddWord cat\nsearch apple\naddWord ant\naddWord bat\nsearch bat\naddWord art\naddWord art",
+            "output": "null\nfalse\nfalse\nfalse\nfalse\nnull\nnull\nfalse\nnull\nnull\ntrue\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch ap.le\naddWord ant\naddWord apple\nsearch dog\nsearch c.t\nsearch bat\naddWord ant\naddWord apple\naddWord art",
+            "output": "null\nfalse\nnull\nnull\nfalse\nfalse\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch c.t\naddWord ant\naddWord cat\naddWord apple\naddWord banana\naddWord bat\nsearch c.t\nsearch banana\naddWord apple",
+            "output": "null\nfalse\nnull\nnull\nnull\nnull\nnull\ntrue\ntrue\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord banana\naddWord dog\nsearch ant\nsearch dog\naddWord ant\naddWord cat\nsearch c.t\nsearch a.t\naddWord art\naddWord art",
+            "output": "null\nnull\nnull\nfalse\ntrue\nnull\nnull\ntrue\ntrue\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch b.t\nsearch art\naddWord ant\nsearch ap.le\nsearch a.t\nsearch dog\nsearch c.t\naddWord cat\nsearch bat\naddWord ant\naddWord cat\naddWord banana",
+            "output": "null\nfalse\nfalse\nnull\nfalse\ntrue\nfalse\nfalse\nnull\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch c.t\naddWord ant\naddWord cat\naddWord banana\nsearch b.t\nsearch a.t\naddWord art\nsearch ba.ana\naddWord banana\naddWord bat\nsearch bat\naddWord cat\nsearch b.t",
+            "output": "null\nfalse\nnull\nnull\nnull\nfalse\ntrue\nnull\ntrue\nnull\nnull\ntrue\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch ba.ana\naddWord cat\naddWord ant\naddWord apple\nsearch ap.le\nsearch a.t\nsearch art\nsearch art\nsearch ap.le\nsearch a.t\nsearch bat\naddWord cat\naddWord cat\nsearch ant",
+            "output": "null\nfalse\nnull\nnull\nnull\ntrue\ntrue\nfalse\nfalse\ntrue\ntrue\nfalse\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch cat\naddWord ant\nsearch banana\naddWord dog\nsearch banana\naddWord apple\nsearch a.t\naddWord dog\nsearch dog\nsearch d.g\nsearch ap.le\naddWord banana\nsearch bat",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\nnull\ntrue\nnull\ntrue\ntrue\ntrue\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch banana\naddWord art\naddWord ant\naddWord bat\nsearch ba.ana",
+            "output": "null\nfalse\nnull\nnull\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\naddWord apple\naddWord bat\naddWord apple\nsearch cat\naddWord ant\nsearch a.t\naddWord bat\nsearch ant\naddWord dog\naddWord dog\nsearch ant\nsearch banana",
+            "output": "null\nnull\nnull\nnull\nfalse\nnull\ntrue\nnull\ntrue\nnull\nnull\ntrue\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch apple\nsearch a.t\nsearch ap.le\naddWord bat\nsearch ap.le\nsearch ant\nsearch ap.le\nsearch banana",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nfalse\nfalse\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch dog\nsearch c.t\nsearch c.t\naddWord apple\nsearch cat\naddWord cat\nsearch dog\naddWord dog\nsearch apple",
+            "output": "null\nfalse\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch bat\nsearch ap.le\naddWord art\naddWord banana\naddWord banana\naddWord banana\naddWord ant\naddWord dog\naddWord apple\nsearch art\naddWord bat\nsearch ap.le\naddWord banana\naddWord bat\nsearch b.t",
+            "output": "null\nfalse\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\nnull\ntrue\nnull\ntrue\nnull\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch cat\nsearch art\naddWord art\naddWord dog\naddWord bat",
+            "output": "null\nfalse\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\naddWord banana\nsearch bat\naddWord apple\naddWord banana\nsearch ap.le\nsearch art\naddWord bat\nsearch d.g\naddWord cat\nsearch ant\naddWord dog\nsearch d.g",
+            "output": "null\nnull\nfalse\nnull\nnull\ntrue\nfalse\nnull\nfalse\nnull\nfalse\nnull\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord cat\nsearch cat\naddWord apple\nsearch banana\nsearch ba.ana\naddWord bat\naddWord apple\naddWord bat\naddWord art\nsearch banana\nsearch bat",
+            "output": "null\nnull\ntrue\nnull\nfalse\nfalse\nnull\nnull\nnull\nnull\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\nsearch a.t\naddWord ant\naddWord bat\nsearch banana\naddWord bat\nsearch a.t\naddWord dog\nsearch ba.ana\nsearch a.t\nsearch ap.le\nsearch a.t\nsearch a.t\nsearch b.t\nsearch c.t",
+            "output": "null\nfalse\nnull\nnull\nfalse\nnull\ntrue\nnull\nfalse\ntrue\nfalse\ntrue\ntrue\ntrue\nfalse"
+        },
+        {
+            "input": "WordDictionary\naddWord cat\naddWord apple\nsearch ba.ana\nsearch bat\naddWord apple\nsearch art\naddWord cat\nsearch banana\naddWord dog\nsearch banana",
+            "output": "null\nnull\nnull\nfalse\nfalse\nnull\nfalse\nnull\nfalse\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch dog\naddWord bat\nsearch cat\nsearch ba.ana\naddWord ant\nsearch banana\nsearch dog\naddWord cat\nsearch ba.ana",
+            "output": "null\nfalse\nnull\nfalse\nfalse\nnull\nfalse\nfalse\nnull\nfalse"
+        },
+        {
+            "input": "WordDictionary\nsearch art\naddWord art\nsearch a.t\naddWord art\naddWord art\nsearch a.t\naddWord ant\naddWord ant",
+            "output": "null\nfalse\nnull\ntrue\nnull\nnull\ntrue\nnull\nnull"
+        },
+        {
+            "input": "WordDictionary\nsearch b.t\naddWord dog\nsearch ba.ana\naddWord banana\nsearch ap.le\nsearch ant\nsearch b.t\nsearch art\naddWord apple\nsearch ant\nsearch d.g\naddWord bat\nsearch a.t\nsearch banana",
+            "output": "null\nfalse\nnull\nfalse\nnull\nfalse\nfalse\nfalse\nfalse\nnull\nfalse\ntrue\nnull\nfalse\ntrue"
+        },
+        {
+            "input": "WordDictionary\naddWord cat\naddWord dog\nsearch ap.le\naddWord banana\naddWord apple\nsearch b.t\nsearch a.t",
+            "output": "null\nnull\nnull\nfalse\nnull\nnull\nfalse\nfalse"
+        },
+        {
+            "input": "WordDictionary\naddWord ant\nsearch d.g\nsearch apple\nsearch apple\naddWord cat",
+            "output": "null\nnull\nfalse\nfalse\nfalse\nnull"
         }
     ]
 }

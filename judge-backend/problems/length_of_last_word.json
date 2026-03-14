@@ -2,12 +2,10 @@
     "id": "length_of_last_word",
     "title": "Length of Last Word",
     "description": "Given a string s consisting of words and spaces, return the length of the last word in the string. A word is a maximal substring consisting of non-space characters only.",
-    "input_format": "A string s.",
+    "input_format": "A single string s.",
     "output_format": "A single integer.",
     "constraints": {
-        "s_length": "1 <= s.length <= 10^4",
-        "characters": "s consists of only English letters and spaces ' '.",
-        "word_exists": "There will be at least one word in s."
+        "s.length": "1 <= s.length <= 10^4"
     },
     "difficulty": "easy",
     "judge_mode": "str_compare_strip",
@@ -20,648 +18,468 @@
         {
             "input": "   fly me   to   the moon  ",
             "output": "4"
+        },
+        {
+            "input": "luffy is still joyboy",
+            "output": "6"
         }
     ],
     "hidden_test_cases": [
         {
-            "input": "to",
+            "input": "  essixve rncgvfrefl hmzn vtzj snnucjrnzu ztjrj ltgpms jg   ",
             "output": "2"
         },
         {
-            "input": "banana Hello apple to   ",
+            "input": "  rhnv taep bmdmvhj bqeyhlknt iwgzddh xhnnm l ad iar     ",
+            "output": "3"
+        },
+        {
+            "input": "wudebzc vlbonq yvcm sf orynw xyvlm dbnuzbsui np",
             "output": "2"
         },
         {
-            "input": "moon fly ",
+            "input": "    wem ",
             "output": "3"
         },
         {
-            "input": "apple the ",
-            "output": "3"
+            "input": "  ejzrn ogffpsslxb   ",
+            "output": "10"
         },
         {
-            "input": "fly",
-            "output": "3"
+            "input": "   dolximm ca xfbfn     ",
+            "output": "5"
         },
         {
-            "input": "to banana World me banana",
+            "input": "vsiwxenh jubuzweb ykkonqfypc npxvjf mollulbl mvxzez lysfamflvn fnzvn vlqsgy   ",
             "output": "6"
         },
         {
-            "input": "the moon me",
-            "output": "2"
+            "input": "dofkwse lymx nlhdilmel",
+            "output": "9"
         },
         {
-            "input": "World to banana banana    ",
+            "input": "  i xiov jnt kopqpwbfpg kketylwe eiclobn r izzxin     ",
             "output": "6"
         },
         {
-            "input": "banana me the the Hello",
-            "output": "5"
+            "input": " ijsy smu n    ",
+            "output": "1"
         },
         {
-            "input": "World apple",
-            "output": "5"
+            "input": "   bgvams hejlzggnrs xonzecdxdm rlf kym",
+            "output": "3"
         },
         {
-            "input": "me banana",
+            "input": "  uaeaun ypwdcswfs flxdn dp netbmwcmt ixrzfnwdwk wxlugfdmbe    ",
+            "output": "10"
+        },
+        {
+            "input": " lyhryhxv alvagsjn aelph afwvzxw iknb ovir hhoi ft    ",
+            "output": "2"
+        },
+        {
+            "input": "us or a q aepbwvjhq   ",
+            "output": "9"
+        },
+        {
+            "input": "co s rmb bbaxnon lvmr jvmihhrgdn ucnxgzqpu tcnahlcabf dybxmlfkw ",
+            "output": "9"
+        },
+        {
+            "input": "   gdoqlqmvw rrphwer wrdz ",
+            "output": "4"
+        },
+        {
+            "input": "     fi ni duiaqgzvsg nwrkcgxqwl lurokyx fgrgehikft xtfww mupjlbg ",
+            "output": "7"
+        },
+        {
+            "input": "   r ytuhjzetgg pyt yrlhbxrfkf buf axu yh geuruios jvd   ",
+            "output": "3"
+        },
+        {
+            "input": "eeccctzoec rtj tgtpy b kwewkve  ",
+            "output": "7"
+        },
+        {
+            "input": "r ebsbqilmi gbgguucdxe kam zl n on     ",
+            "output": "2"
+        },
+        {
+            "input": "     ebiej aaegfqeiei   ",
+            "output": "10"
+        },
+        {
+            "input": "  yzfsjrz nlggqctyvf usihiuxvvm aqcuirziau ",
+            "output": "10"
+        },
+        {
+            "input": " nuo    ",
+            "output": "3"
+        },
+        {
+            "input": "jtoyqmfjfe snbir jcl gnbtcg htaj",
+            "output": "4"
+        },
+        {
+            "input": "    qhnd ya beftzmd buuich vvqynha rgys rkthiagze    ",
+            "output": "9"
+        },
+        {
+            "input": "  budyja w na ulngsuftjm ofooawsvau cl p oquvrphgvd fsg fwq  ",
+            "output": "3"
+        },
+        {
+            "input": "     ohmee bnwvk s zdzcjtuxj tdsnu tygeaunjzl pn prioun htssukslbq    ",
+            "output": "10"
+        },
+        {
+            "input": "    lmey uaort zogjrfzc btkicqp uorrjay lxrnqsg whngmtpku xiaj   ",
+            "output": "4"
+        },
+        {
+            "input": "   oiearsnt uf gudnyfjrui rqxnkxgfzg ejwftwschy xuygnn azkfiyez swufksaq u o    ",
+            "output": "1"
+        },
+        {
+            "input": "   ljissct v qcmw yjohqenviz lowcoja ",
+            "output": "7"
+        },
+        {
+            "input": "     h w l gku q jl oedcuxgbll cqc  ",
+            "output": "3"
+        },
+        {
+            "input": "r htolmzqzi ptjppvun h evd raprpx jbkzosvnif xlpjncykcq  ",
+            "output": "10"
+        },
+        {
+            "input": "    l amuqkutvib ogzobrh te opetlt ",
             "output": "6"
         },
         {
-            "input": "me Hello   ",
+            "input": "  tkxdpd ejcrjsh v    ",
+            "output": "1"
+        },
+        {
+            "input": "    zgeuo alnku cqicqnjg rrmiadotok mgdvd",
             "output": "5"
         },
         {
-            "input": "the moon fly fly fly",
-            "output": "3"
-        },
-        {
-            "input": "to the",
-            "output": "3"
-        },
-        {
-            "input": "World     ",
-            "output": "5"
-        },
-        {
-            "input": "me",
-            "output": "2"
-        },
-        {
-            "input": "banana fly banana moon",
+            "input": "  wjm vrbyvzeh fhyhjzxwax acgizhxk prdybiq nwbvg l dnc ut ubmd     ",
             "output": "4"
         },
         {
-            "input": "moon Hello me moon    ",
-            "output": "4"
-        },
-        {
-            "input": "the World moon to ",
-            "output": "2"
-        },
-        {
-            "input": "the to",
-            "output": "2"
-        },
-        {
-            "input": "to me apple World   ",
+            "input": "    nxlknjrz ni nvscdvsbr gmcmx    ",
             "output": "5"
         },
         {
-            "input": "fly to apple fly ",
-            "output": "3"
+            "input": "     vegpd w l fajnkbrztm   ",
+            "output": "10"
         },
         {
-            "input": "banana World",
+            "input": " vhjhrfes ohauzhfd zxn wqo wv hhqfgxcks n cjuwkxxnpr     ",
+            "output": "10"
+        },
+        {
+            "input": "    di wvp nuclupg   ",
+            "output": "7"
+        },
+        {
+            "input": "  ryut qhzy cdplvdqty gf yghlehdy zhjyrepgy sqw ijxalx th yitjx",
             "output": "5"
         },
         {
-            "input": "moon apple Hello  ",
-            "output": "5"
-        },
-        {
-            "input": "fly apple moon apple banana",
+            "input": "   nvykyk  ",
             "output": "6"
         },
         {
-            "input": "me moon fly",
-            "output": "3"
-        },
-        {
-            "input": "apple banana apple",
-            "output": "5"
-        },
-        {
-            "input": "moon",
+            "input": "fkqzsqd bk ulm k uems",
             "output": "4"
         },
         {
-            "input": "me   ",
-            "output": "2"
+            "input": " wwrvbwrj swgshx etplwddb mllxepbeqk gpqbvc oiu rsauogzwyo h nlfchob   ",
+            "output": "7"
         },
         {
-            "input": "the ",
-            "output": "3"
-        },
-        {
-            "input": "moon moon banana the",
-            "output": "3"
-        },
-        {
-            "input": "Hello me me to World   ",
-            "output": "5"
-        },
-        {
-            "input": "World the the apple   ",
-            "output": "5"
-        },
-        {
-            "input": "the me",
-            "output": "2"
-        },
-        {
-            "input": "fly to moon moon World",
-            "output": "5"
-        },
-        {
-            "input": "me fly to World Hello",
-            "output": "5"
-        },
-        {
-            "input": "apple Hello to to me     ",
-            "output": "2"
-        },
-        {
-            "input": "apple World banana",
+            "input": " guigbq    ",
             "output": "6"
         },
         {
-            "input": "banana to fly World",
-            "output": "5"
+            "input": " tqpocjzvr f exwc erhom bxaor axcjxpkv jushub qzhlpjhyh  ",
+            "output": "9"
         },
         {
-            "input": "the me moon me me    ",
-            "output": "2"
+            "input": "  fopktnbt eqeumuwj  ",
+            "output": "8"
         },
         {
-            "input": "me  ",
-            "output": "2"
+            "input": "ccg leyi    ",
+            "output": "4"
         },
         {
-            "input": "to apple me the",
+            "input": "   eux axgqlag tcnqqe mobh qjvuv heh ksvdtyuqbs peg  ",
             "output": "3"
         },
         {
-            "input": "me apple World World me    ",
+            "input": "   tfbwpickcg vfbht xbgow dir fxwqirk eegrcyvwn uvvauhaqr kk zijpy y   ",
+            "output": "1"
+        },
+        {
+            "input": "  iuey wegkkmn ai kfoxbj ha heslovnufk haxmcona xyhvafsm ufiq ",
+            "output": "4"
+        },
+        {
+            "input": "  vguy jhwcym zrqichy bcuyoeqnds wxckkp wp dviuvuds fvsupvs ",
+            "output": "7"
+        },
+        {
+            "input": "loydgyykji oiebasztip mrkk jz st   ",
             "output": "2"
         },
         {
-            "input": "the",
+            "input": "lqom xqhfqsw p wuw  ",
             "output": "3"
         },
         {
-            "input": "World World  ",
-            "output": "5"
+            "input": "szn yqk hsqyvqslrv   ",
+            "output": "10"
         },
         {
-            "input": "World to me",
-            "output": "2"
+            "input": "xilanezvd khdihtvi",
+            "output": "8"
         },
         {
-            "input": "me World",
-            "output": "5"
-        },
-        {
-            "input": "banana moon   ",
+            "input": " ayvlfifbjl ebjyu mdzk   ",
             "output": "4"
         },
         {
-            "input": "banana fly World to moon",
-            "output": "4"
+            "input": "  rwausae dor qjjseplujx m vegpjhpg achjqsd xvpjsxfmq  ",
+            "output": "9"
         },
         {
-            "input": "Hello moon apple Hello    ",
-            "output": "5"
+            "input": "  bifyeouphb ",
+            "output": "10"
         },
         {
-            "input": "the   ",
-            "output": "3"
-        },
-        {
-            "input": "Hello to moon ",
-            "output": "4"
-        },
-        {
-            "input": "moon moon  ",
-            "output": "4"
-        },
-        {
-            "input": "World Hello",
-            "output": "5"
-        },
-        {
-            "input": "me apple",
-            "output": "5"
-        },
-        {
-            "input": "me apple   ",
-            "output": "5"
-        },
-        {
-            "input": "moon me World banana",
+            "input": " nnagxp     ",
             "output": "6"
         },
         {
-            "input": "fly apple ",
-            "output": "5"
+            "input": "kwn     ",
+            "output": "3"
         },
         {
-            "input": "Hello banana",
+            "input": "     ossa ob i",
+            "output": "1"
+        },
+        {
+            "input": " h ngggmdq prdppitgpt  ",
+            "output": "10"
+        },
+        {
+            "input": "   fmlgljiaun arvxsred spxawedmao tr qcpcd aokblhze   ",
+            "output": "8"
+        },
+        {
+            "input": "    n dsg l syrcraz  ",
+            "output": "7"
+        },
+        {
+            "input": "   sy gnrlztbe lqdljbcei yaluoimjlx pvzweocpo cceidnxryv ukolirxtf nzmqe dramgghqvo ",
+            "output": "10"
+        },
+        {
+            "input": "wmarfz kutkqxpp axctvhkn bmswy duby grdtlxvyti dzkv xrtyfcg mqr ihqjri",
             "output": "6"
         },
         {
-            "input": "moon Hello banana the banana  ",
+            "input": "     maktslzot be kwrxrwrzsv zljocep btabm b ijoluxxqt    ",
+            "output": "9"
+        },
+        {
+            "input": "  fsd sdjmngemp g mnvwgpe",
+            "output": "7"
+        },
+        {
+            "input": "  yg atl   ",
+            "output": "3"
+        },
+        {
+            "input": "     hso yytpcm fk tle nsinnmamhc ljvcqs png    ",
+            "output": "3"
+        },
+        {
+            "input": "o upisif g wzwqj epzizmzh ybjzvcopx w j yhjycilcq   ",
+            "output": "9"
+        },
+        {
+            "input": "    rekb zexubjdx wodckfwh phm i qqm qtpvlrvb nfwzw ",
+            "output": "5"
+        },
+        {
+            "input": " tz vninxt lvbveh i c whwzxb fz tkpuahhnze wxfxf zsmktzis    ",
+            "output": "8"
+        },
+        {
+            "input": "   sgajl wozfxzt zqfoqntcc  ",
+            "output": "9"
+        },
+        {
+            "input": " dvmesyuv klyknkb f",
+            "output": "1"
+        },
+        {
+            "input": " ztvleqr",
+            "output": "7"
+        },
+        {
+            "input": "ftxrwv rroii xe fhczeq     ",
             "output": "6"
         },
         {
-            "input": "banana World to fly ",
-            "output": "3"
+            "input": "   yapjbzokyk u",
+            "output": "1"
         },
         {
-            "input": "to to",
-            "output": "2"
-        },
-        {
-            "input": "apple moon moon moon",
-            "output": "4"
-        },
-        {
-            "input": "to Hello apple  ",
-            "output": "5"
-        },
-        {
-            "input": "moon fly World the",
-            "output": "3"
-        },
-        {
-            "input": "the me  ",
-            "output": "2"
-        },
-        {
-            "input": "moon   ",
-            "output": "4"
-        },
-        {
-            "input": "moon banana fly to",
-            "output": "2"
-        },
-        {
-            "input": "Hello Hello to  ",
-            "output": "2"
-        },
-        {
-            "input": "moon World",
-            "output": "5"
-        },
-        {
-            "input": "apple banana to moon",
-            "output": "4"
-        },
-        {
-            "input": "banana ",
+            "input": "     rfl x ppzxbmpoz qflh ajquhvvyp kmfvleqj ohcyzeu flbwqno p gjbctx",
             "output": "6"
         },
         {
-            "input": "to banana",
+            "input": "  sbgas w xyooyww mxhyc rtozad vtlyquxow bp yhm    ",
+            "output": "3"
+        },
+        {
+            "input": " pzqy fdpnnaxbm wprswebfwy crmvbe rqwr unelds pqxgnspt jxkqgb armmn     ",
+            "output": "5"
+        },
+        {
+            "input": "    uagom avgcnxsf tqtjskt nbynuhwutq     ",
+            "output": "10"
+        },
+        {
+            "input": "  ywer ptawiffe     ",
+            "output": "8"
+        },
+        {
+            "input": "saxmpucvtc ffvrbrtzp bt nz rqashfldx jn dq qieklphef bsacdy khvcrili     ",
+            "output": "8"
+        },
+        {
+            "input": "uxe bkvmpnbw zj ewvashcrn jjztin fste c   ",
+            "output": "1"
+        },
+        {
+            "input": "     favotbdnno upkqtou",
+            "output": "7"
+        },
+        {
+            "input": "  tlqs npglkbe sqdonclva wzocanvglt bukwiv tgaswoiwj e uk zcf",
+            "output": "3"
+        },
+        {
+            "input": "  zhwvq sioearso i cilv csltuuovzq te oacrdnfslm    ",
+            "output": "10"
+        },
+        {
+            "input": " ryusffdxjj um r nazolth orhpzy iliok sszbq qmtgbym whdgxwurqo",
+            "output": "10"
+        },
+        {
+            "input": "zsa mgd nae wtn  ",
+            "output": "3"
+        },
+        {
+            "input": "   zjfrthnbt dylvgudlyx   ",
+            "output": "10"
+        },
+        {
+            "input": "     y vqp dhpafv kgj expx ijfpszv sadni    ",
+            "output": "5"
+        },
+        {
+            "input": "   vbooxcj ofysxrns oeizwmgdet jvdozlkl lrousqccvk j",
+            "output": "1"
+        },
+        {
+            "input": "   hzi d gtxgmckpa kgqmu ylintcq lklttsntv zjxkgbhiwy",
+            "output": "10"
+        },
+        {
+            "input": "   udif knkjhglujp oxlyycyh dmzgtweoj bjvgzbvpg nsbscds ncbdxr    ",
             "output": "6"
         },
         {
-            "input": "banana Hello World Hello   ",
-            "output": "5"
-        },
-        {
-            "input": "fly apple fly",
-            "output": "3"
-        },
-        {
-            "input": "World Hello moon  ",
-            "output": "4"
-        },
-        {
-            "input": "apple the me",
+            "input": "    xhacvpli jadi dk   ",
             "output": "2"
         },
         {
-            "input": "Hello    ",
-            "output": "5"
-        },
-        {
-            "input": "Hello",
-            "output": "5"
-        },
-        {
-            "input": "to   ",
+            "input": " vo  ",
             "output": "2"
         },
         {
-            "input": "me me banana",
+            "input": "izkdjr zalzfuej kqi dlgcuqa yuozzinfc kfds goivxgxsed mn nxgclhjjd jxuzzz",
             "output": "6"
         },
         {
-            "input": "fly    ",
-            "output": "3"
-        },
-        {
-            "input": "apple to apple     ",
-            "output": "5"
-        },
-        {
-            "input": "World moon banana fly ",
-            "output": "3"
-        },
-        {
-            "input": "to    ",
-            "output": "2"
-        },
-        {
-            "input": "moon ",
+            "input": "     ak mj j hph bocd rgkhtj b vay vazv     ",
             "output": "4"
         },
         {
-            "input": "World me   ",
+            "input": "    c cjtqr h hj",
             "output": "2"
         },
         {
-            "input": "me to World the",
-            "output": "3"
+            "input": "     wtzfwawm hlqlgpvsaz g qsahptssb aawyslkf ng     ",
+            "output": "2"
         },
         {
-            "input": "moon apple me moon the     ",
-            "output": "3"
-        },
-        {
-            "input": "Hello the fly",
-            "output": "3"
-        },
-        {
-            "input": "apple    ",
-            "output": "5"
-        },
-        {
-            "input": "to fly World moon     ",
+            "input": "   sd cbir vzc hdifrcdox jmssrtmvl ob cvsz     ",
             "output": "4"
         },
         {
-            "input": "me the",
-            "output": "3"
-        },
-        {
-            "input": "apple banana the  ",
-            "output": "3"
-        },
-        {
-            "input": "banana fly me apple",
-            "output": "5"
-        },
-        {
-            "input": "the moon World moon World",
-            "output": "5"
-        },
-        {
-            "input": "to apple the moon",
+            "input": "nidstxjh lsbd cqqfpby cas xygputcz kimsr kcnmhvd qccdfckzhj mfve     ",
             "output": "4"
         },
         {
-            "input": "me apple Hello to Hello ",
+            "input": "   winfzcoihx gsmcj uzmobby jsbfg     ",
             "output": "5"
         },
         {
-            "input": "apple moon",
-            "output": "4"
+            "input": "    ttgbu u onypfiugd cfjsbd jk evy tcodvhy ",
+            "output": "7"
         },
         {
-            "input": "Hello the moon World",
-            "output": "5"
+            "input": "  zydbgf ggc zudlrkbets vesochy lkwj jwhi dlj rbifzj fqojsrf dzbibuxxho   ",
+            "output": "10"
         },
         {
-            "input": "Hello World ",
-            "output": "5"
+            "input": "jcku u etnc mwaw uyjqfxgjt u evvdaryu umbdxizwdw   ",
+            "output": "10"
         },
         {
-            "input": "moon the the ",
-            "output": "3"
-        },
-        {
-            "input": "World Hello me me ",
+            "input": "xtjkeloyit xgrhmbpxx uao szjobnn jyyrg uvaxxrkjs tdpmhpaxt eolc danvcxfky td     ",
             "output": "2"
         },
         {
-            "input": "Hello to",
+            "input": "chs xmkgfarz y psymopenrl qgi oz",
             "output": "2"
         },
         {
-            "input": "the Hello apple",
-            "output": "5"
+            "input": "smj ryituy hal zyxltxsbt    ",
+            "output": "9"
         },
         {
-            "input": "banana Hello apple me",
-            "output": "2"
+            "input": " pyshaervdq devghgnqge b    ",
+            "output": "1"
         },
         {
-            "input": "banana the World me World",
-            "output": "5"
+            "input": " ukcfcvil hmvuctuu mgl tzhtmgafx t ",
+            "output": "1"
         },
         {
-            "input": "Hello to me   ",
-            "output": "2"
-        },
-        {
-            "input": "fly   ",
-            "output": "3"
-        },
-        {
-            "input": "World to World fly Hello     ",
-            "output": "5"
-        },
-        {
-            "input": "the me the me the",
-            "output": "3"
-        },
-        {
-            "input": "fly banana moon the banana",
-            "output": "6"
-        },
-        {
-            "input": "banana banana apple World me     ",
-            "output": "2"
-        },
-        {
-            "input": "me moon",
-            "output": "4"
-        },
-        {
-            "input": "apple fly World banana Hello ",
-            "output": "5"
-        },
-        {
-            "input": "apple moon moon    ",
-            "output": "4"
-        },
-        {
-            "input": "to to Hello banana",
-            "output": "6"
-        },
-        {
-            "input": "Hello fly fly apple",
-            "output": "5"
-        },
-        {
-            "input": "banana banana  ",
-            "output": "6"
-        },
-        {
-            "input": "the the fly    ",
-            "output": "3"
-        },
-        {
-            "input": "apple moon to World World  ",
-            "output": "5"
-        },
-        {
-            "input": "fly Hello",
-            "output": "5"
-        },
-        {
-            "input": "to banana moon banana",
-            "output": "6"
-        },
-        {
-            "input": "Hello me World   ",
-            "output": "5"
-        },
-        {
-            "input": "me World to me   ",
-            "output": "2"
-        },
-        {
-            "input": "banana me banana",
-            "output": "6"
-        },
-        {
-            "input": "to Hello apple fly    ",
-            "output": "3"
-        },
-        {
-            "input": "me Hello apple to",
-            "output": "2"
-        },
-        {
-            "input": "banana me",
-            "output": "2"
-        },
-        {
-            "input": "me moon to    ",
-            "output": "2"
-        },
-        {
-            "input": "fly moon to",
-            "output": "2"
-        },
-        {
-            "input": "moon me fly moon apple",
-            "output": "5"
-        },
-        {
-            "input": "moon the apple     ",
-            "output": "5"
-        },
-        {
-            "input": "the to World",
-            "output": "5"
-        },
-        {
-            "input": "moon moon banana moon the  ",
-            "output": "3"
-        },
-        {
-            "input": "apple  ",
-            "output": "5"
-        },
-        {
-            "input": "moon banana World apple moon     ",
-            "output": "4"
-        },
-        {
-            "input": "Hello moon moon the",
-            "output": "3"
-        },
-        {
-            "input": "banana the banana apple World",
-            "output": "5"
-        },
-        {
-            "input": "World moon banana fly me ",
-            "output": "2"
-        },
-        {
-            "input": "apple World moon ",
-            "output": "4"
-        },
-        {
-            "input": "moon apple     ",
-            "output": "5"
-        },
-        {
-            "input": "fly the the to the  ",
-            "output": "3"
-        },
-        {
-            "input": "to me the me",
-            "output": "2"
-        },
-        {
-            "input": "apple the moon  ",
-            "output": "4"
-        },
-        {
-            "input": "apple fly the banana Hello",
-            "output": "5"
-        },
-        {
-            "input": "World to Hello moon moon",
-            "output": "4"
-        },
-        {
-            "input": "banana me banana to me",
-            "output": "2"
-        },
-        {
-            "input": "Hello the ",
-            "output": "3"
-        },
-        {
-            "input": "fly the apple to to",
-            "output": "2"
-        },
-        {
-            "input": "banana",
-            "output": "6"
-        },
-        {
-            "input": "Hello banana World Hello",
-            "output": "5"
-        },
-        {
-            "input": "banana apple to apple   ",
-            "output": "5"
-        },
-        {
-            "input": "me Hello the to to",
-            "output": "2"
-        },
-        {
-            "input": "me the apple apple ",
-            "output": "5"
-        },
-        {
-            "input": "apple   ",
-            "output": "5"
-        },
-        {
-            "input": "World World the",
-            "output": "3"
-        },
-        {
-            "input": "me moon the fly",
-            "output": "3"
-        },
-        {
-            "input": "World moon ",
-            "output": "4"
-        },
-        {
-            "input": "apple banana Hello fly me  ",
-            "output": "2"
+            "input": "    udkxwpwa     ",
+            "output": "8"
         }
     ]
 }

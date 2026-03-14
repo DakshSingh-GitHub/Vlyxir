@@ -5,7 +5,7 @@
     "input_format": "A single string columnTitle.",
     "output_format": "A single integer.",
     "constraints": {
-        "columnTitle": "consists only of uppercase English letters."
+        "columnTitle.length": "1 <= columnTitle.length <= 7"
     },
     "difficulty": "easy",
     "judge_mode": "str_compare_strip",
@@ -26,644 +26,404 @@
     ],
     "hidden_test_cases": [
         {
-            "input": "T",
-            "output": "20"
-        },
-        {
-            "input": "IPIC",
-            "output": "169237"
-        },
-        {
-            "input": "OHMW",
-            "output": "269409"
+            "input": "JRGS",
+            "output": "188129"
         },
         {
             "input": "L",
             "output": "12"
         },
         {
-            "input": "DSYK",
-            "output": "83809"
+            "input": "TBLE",
+            "output": "353189"
         },
         {
-            "input": "VVNNK",
-            "output": "10449983"
+            "input": "ACUT",
+            "output": "20170"
         },
         {
-            "input": "XLJHJO",
-            "output": "290818179"
+            "input": "NNJG",
+            "output": "255795"
         },
         {
-            "input": "LCMYFV",
-            "output": "144193006"
+            "input": "LER",
+            "output": "8260"
         },
         {
-            "input": "MLYVYTY",
-            "output": "4170310117"
+            "input": "TMIEI",
+            "output": "9374231"
         },
         {
-            "input": "KQHXW",
-            "output": "5331583"
+            "input": "TW",
+            "output": "543"
         },
         {
-            "input": "NDKZRB",
-            "output": "168378550"
+            "input": "PGI",
+            "output": "11007"
         },
         {
-            "input": "CKX",
-            "output": "2338"
+            "input": "DR",
+            "output": "122"
         },
         {
-            "input": "ZXU",
-            "output": "18221"
+            "input": "TNN",
+            "output": "13898"
         },
         {
-            "input": "WYM",
-            "output": "16211"
+            "input": "OOFIVB",
+            "output": "185187394"
         },
         {
-            "input": "W",
-            "output": "23"
+            "input": "A",
+            "output": "1"
         },
         {
-            "input": "MFMJSJX",
-            "output": "4093322920"
+            "input": "NGR",
+            "output": "9664"
         },
         {
-            "input": "HRDD",
-            "output": "152884"
+            "input": "TSINLK",
+            "output": "246478035"
         },
         {
-            "input": "TQUASU",
-            "output": "245766399"
+            "input": "BONER",
+            "output": "1187204"
         },
         {
-            "input": "ILEX",
-            "output": "166450"
+            "input": "OIOD",
+            "output": "270118"
         },
         {
-            "input": "OGYPPC",
-            "output": "181870107"
+            "input": "BL",
+            "output": "64"
         },
         {
-            "input": "HRUYZQ",
-            "output": "103663265"
+            "input": "LQX",
+            "output": "8578"
         },
         {
-            "input": "XNKRNN",
-            "output": "291756570"
+            "input": "KJN",
+            "output": "7710"
         },
         {
-            "input": "DILVYN",
-            "output": "51864736"
+            "input": "OZ",
+            "output": "416"
         },
         {
-            "input": "YQAJBR",
-            "output": "304827398"
+            "input": "RYOCC",
+            "output": "8675189"
         },
         {
-            "input": "BRHM",
-            "output": "47541"
+            "input": "OTUZVDC",
+            "output": "4881432611"
         },
         {
-            "input": "ZBPPS",
-            "output": "11927779"
-        },
-        {
-            "input": "ZZVGV",
-            "output": "12353428"
-        },
-        {
-            "input": "WM",
-            "output": "611"
-        },
-        {
-            "input": "O",
-            "output": "15"
-        },
-        {
-            "input": "EXCDIKP",
-            "output": "1831179522"
-        },
-        {
-            "input": "BQ",
-            "output": "69"
-        },
-        {
-            "input": "NAY",
-            "output": "9515"
-        },
-        {
-            "input": "DLNSCC",
-            "output": "53268205"
-        },
-        {
-            "input": "PETGWVZ",
-            "output": "5011337994"
-        },
-        {
-            "input": "WXLJRR",
-            "output": "284457230"
-        },
-        {
-            "input": "IAMB",
-            "output": "159200"
-        },
-        {
-            "input": "TUX",
-            "output": "14090"
-        },
-        {
-            "input": "GLNR",
-            "output": "131526"
-        },
-        {
-            "input": "UXTNCZX",
-            "output": "6781772632"
-        },
-        {
-            "input": "MQFUTU",
-            "output": "162346673"
-        },
-        {
-            "input": "ZYMPXJ",
-            "output": "320580114"
-        },
-        {
-            "input": "N",
-            "output": "14"
-        },
-        {
-            "input": "FL",
-            "output": "168"
-        },
-        {
-            "input": "ZN",
-            "output": "690"
-        },
-        {
-            "input": "KJEMT",
-            "output": "5206234"
-        },
-        {
-            "input": "P",
-            "output": "16"
-        },
-        {
-            "input": "XV",
-            "output": "646"
-        },
-        {
-            "input": "LNCDL",
-            "output": "5731920"
-        },
-        {
-            "input": "LGJBI",
-            "output": "5613565"
-        },
-        {
-            "input": "JN",
-            "output": "274"
-        },
-        {
-            "input": "Y",
-            "output": "25"
-        },
-        {
-            "input": "PS",
-            "output": "435"
-        },
-        {
-            "input": "IKM",
-            "output": "6383"
-        },
-        {
-            "input": "TXVKH",
-            "output": "9576510"
-        },
-        {
-            "input": "DOFOWYN",
-            "output": "1416905452"
-        },
-        {
-            "input": "NHPUVD",
-            "output": "170291060"
-        },
-        {
-            "input": "RVBDTIO",
-            "output": "5822872265"
-        },
-        {
-            "input": "BBJ",
-            "output": "1414"
-        },
-        {
-            "input": "HZLRP",
-            "output": "4121380"
-        },
-        {
-            "input": "LO",
-            "output": "327"
-        },
-        {
-            "input": "SJI",
-            "output": "13113"
-        },
-        {
-            "input": "AHYNKS",
-            "output": "15986353"
-        },
-        {
-            "input": "HO",
-            "output": "223"
-        },
-        {
-            "input": "GEC",
-            "output": "4865"
-        },
-        {
-            "input": "M",
-            "output": "13"
-        },
-        {
-            "input": "ZXNLLFZ",
-            "output": "8323580070"
-        },
-        {
-            "input": "ACJFR",
-            "output": "516638"
-        },
-        {
-            "input": "F",
-            "output": "6"
-        },
-        {
-            "input": "R",
-            "output": "18"
-        },
-        {
-            "input": "XXREGRV",
-            "output": "7707450318"
-        },
-        {
-            "input": "LRZT",
-            "output": "223776"
-        },
-        {
-            "input": "LA",
-            "output": "313"
-        },
-        {
-            "input": "MWNCMA",
-            "output": "165216767"
-        },
-        {
-            "input": "AIVXSFB",
-            "output": "426336458"
-        },
-        {
-            "input": "OAG",
-            "output": "10173"
-        },
-        {
-            "input": "Z",
-            "output": "26"
-        },
-        {
-            "input": "AAXXQOJ",
-            "output": "332198292"
-        },
-        {
-            "input": "SBMX",
-            "output": "335658"
-        },
-        {
-            "input": "V",
-            "output": "22"
-        },
-        {
-            "input": "PRQC",
-            "output": "293829"
-        },
-        {
-            "input": "LNRVWZL",
-            "output": "3881957052"
-        },
-        {
-            "input": "IJ",
-            "output": "244"
-        },
-        {
-            "input": "ZWRRKEM",
-            "output": "8313631339"
-        },
-        {
-            "input": "AVG",
-            "output": "1255"
-        },
-        {
-            "input": "VTLQP",
-            "output": "10413562"
-        },
-        {
-            "input": "STA",
-            "output": "13365"
-        },
-        {
-            "input": "XSU",
-            "output": "16739"
-        },
-        {
-            "input": "SYLE",
-            "output": "351161"
-        },
-        {
-            "input": "EELYW",
-            "output": "2381545"
-        },
-        {
-            "input": "OKQCM",
-            "output": "7059559"
-        },
-        {
-            "input": "VOXERFX",
-            "output": "6985435364"
-        },
-        {
-            "input": "VM",
-            "output": "585"
-        },
-        {
-            "input": "HQVOV",
-            "output": "3969884"
-        },
-        {
-            "input": "LGBC",
-            "output": "215699"
-        },
-        {
-            "input": "TXB",
-            "output": "14146"
-        },
-        {
-            "input": "WZF",
-            "output": "16230"
-        },
-        {
-            "input": "QFWX",
-            "output": "303470"
-        },
-        {
-            "input": "LVTD",
-            "output": "226308"
+            "input": "CCLEBW",
+            "output": "37229423"
         },
         {
             "input": "J",
             "output": "10"
         },
         {
-            "input": "YPQNI",
-            "output": "11717481"
+            "input": "GAXY",
+            "output": "124357"
         },
         {
-            "input": "IAVM",
-            "output": "159445"
+            "input": "AGKP",
+            "output": "22610"
         },
         {
-            "input": "AJFVYQV",
-            "output": "430875428"
+            "input": "NGCRUP",
+            "output": "169603554"
         },
         {
-            "input": "JM",
-            "output": "273"
+            "input": "AEBJSU",
+            "output": "14208683"
         },
         {
-            "input": "UBAU",
-            "output": "370495"
+            "input": "D",
+            "output": "4"
         },
         {
-            "input": "QTKVHCJ",
-            "output": "5494614616"
+            "input": "MF",
+            "output": "344"
         },
         {
-            "input": "UMKMI",
-            "output": "9832767"
+            "input": "AAVJCHU",
+            "output": "331028641"
         },
         {
-            "input": "WSJ",
-            "output": "16052"
+            "input": "LMZFWB",
+            "output": "148978832"
         },
         {
-            "input": "RGRGB",
-            "output": "8360952"
+            "input": "PGGFBT",
+            "output": "193428008"
         },
         {
-            "input": "C",
-            "output": "3"
+            "input": "CJLKBMN",
+            "output": "1051239840"
         },
         {
-            "input": "VSRUM",
-            "output": "10400143"
+            "input": "YQ",
+            "output": "667"
         },
         {
-            "input": "LEMCLI",
-            "output": "145092229"
+            "input": "J",
+            "output": "10"
         },
         {
-            "input": "DNZOJJM",
-            "output": "1414154417"
+            "input": "ENIBC",
+            "output": "2537083"
         },
         {
-            "input": "ZPGYMC",
-            "output": "316367665"
+            "input": "KJU",
+            "output": "7717"
         },
         {
-            "input": "AVVXPO",
-            "output": "22338175"
+            "input": "XDKPDO",
+            "output": "287185199"
         },
         {
-            "input": "YD",
-            "output": "654"
+            "input": "PYRZDX",
+            "output": "201860488"
         },
         {
-            "input": "B",
-            "output": "2"
+            "input": "MWQY",
+            "output": "244503"
         },
         {
-            "input": "KTDT",
-            "output": "206980"
+            "input": "GMHIX",
+            "output": "3432986"
         },
         {
-            "input": "UIJIPFH",
-            "output": "6598902604"
+            "input": "FKBIR",
+            "output": "2936796"
         },
         {
-            "input": "GGWNG",
-            "output": "3337783"
+            "input": "TPCR",
+            "output": "362432"
         },
         {
-            "input": "JPIBQUQ",
-            "output": "3283419767"
+            "input": "LIG",
+            "output": "8353"
         },
         {
-            "input": "IQ",
-            "output": "251"
+            "input": "DHM",
+            "output": "2925"
         },
         {
-            "input": "TUFVKG",
-            "output": "247344637"
+            "input": "WRTVZ",
+            "output": "10840934"
+        },
+        {
+            "input": "ICZY",
+            "output": "160913"
+        },
+        {
+            "input": "MPTY",
+            "output": "239849"
+        },
+        {
+            "input": "T",
+            "output": "20"
+        },
+        {
+            "input": "JG",
+            "output": "267"
+        },
+        {
+            "input": "IZQEQ",
+            "output": "4581399"
+        },
+        {
+            "input": "W",
+            "output": "23"
+        },
+        {
+            "input": "COOIN",
+            "output": "1644956"
+        },
+        {
+            "input": "LM",
+            "output": "325"
+        },
+        {
+            "input": "TWDYGL",
+            "output": "248225366"
+        },
+        {
+            "input": "XMQVRL",
+            "output": "291407856"
+        },
+        {
+            "input": "W",
+            "output": "23"
+        },
+        {
+            "input": "S",
+            "output": "19"
         },
         {
             "input": "H",
             "output": "8"
         },
         {
-            "input": "KMT",
-            "output": "7794"
+            "input": "QDAOBZ",
+            "output": "203839090"
         },
         {
-            "input": "ITHGUVU",
-            "output": "3021663133"
+            "input": "FHN",
+            "output": "4278"
         },
         {
-            "input": "DZVDMD",
-            "output": "59796598"
+            "input": "A",
+            "output": "1"
         },
         {
-            "input": "WKV",
-            "output": "15856"
+            "input": "Q",
+            "output": "17"
         },
         {
-            "input": "YXIOEHE",
-            "output": "8012427441"
+            "input": "GT",
+            "output": "202"
         },
         {
-            "input": "HTLJ",
-            "output": "154450"
+            "input": "HJJ",
+            "output": "5678"
         },
         {
-            "input": "UPPOCP",
-            "output": "257111962"
+            "input": "SBYLGG",
+            "output": "227107797"
         },
         {
-            "input": "FTTMIS",
-            "output": "80788337"
+            "input": "BTN",
+            "output": "1886"
         },
         {
-            "input": "YIXY",
-            "output": "446133"
+            "input": "ZPQZQ",
+            "output": "12174777"
         },
         {
-            "input": "DEXLH",
-            "output": "1932328"
+            "input": "BH",
+            "output": "60"
         },
         {
-            "input": "OOE",
-            "output": "10535"
+            "input": "Y",
+            "output": "25"
         },
         {
-            "input": "E",
-            "output": "5"
+            "input": "V",
+            "output": "22"
         },
         {
-            "input": "JXHAZJU",
-            "output": "3378002025"
+            "input": "AYDZQPK",
+            "output": "608246975"
         },
         {
-            "input": "G",
-            "output": "7"
+            "input": "MVRR",
+            "output": "243846"
         },
         {
-            "input": "SA",
-            "output": "495"
+            "input": "HWNJY",
+            "output": "4069805"
         },
         {
-            "input": "VPAN",
-            "output": "397528"
+            "input": "JIBPWTO",
+            "output": "3197301395"
         },
         {
-            "input": "BLVF",
-            "output": "43842"
+            "input": "NOQ",
+            "output": "9871"
         },
         {
-            "input": "UDDVIF",
-            "output": "251422216"
+            "input": "QYFQX",
+            "output": "8212514"
         },
         {
-            "input": "CDSBGXT",
-            "output": "982995904"
+            "input": "GMLIQ",
+            "output": "3435683"
         },
         {
-            "input": "UOQFRR",
-            "output": "256666870"
+            "input": "XVOJUDL",
+            "output": "7682413608"
         },
         {
-            "input": "LZCNAFD",
-            "output": "4017522916"
+            "input": "VRXX",
+            "output": "399488"
         },
         {
-            "input": "NMXND",
-            "output": "6642744"
+            "input": "EVLUUHZ",
+            "output": "1811836390"
         },
         {
-            "input": "K",
-            "output": "11"
+            "input": "MTQ",
+            "output": "9325"
         },
         {
-            "input": "TZC",
-            "output": "14199"
+            "input": "ROFAZK",
+            "output": "220826227"
         },
         {
-            "input": "ZCRSW",
-            "output": "11946789"
+            "input": "VVCMFC",
+            "output": "271505419"
         },
         {
-            "input": "VV",
-            "output": "594"
+            "input": "LABCVX",
+            "output": "143071264"
         },
         {
-            "input": "FDUXNAC",
-            "output": "1911047973"
+            "input": "DVKKOAU",
+            "output": "1502283635"
         },
         {
-            "input": "IMCY",
-            "output": "167075"
+            "input": "I",
+            "output": "9"
         },
         {
-            "input": "FGGQXEI",
-            "output": "1940178275"
+            "input": "Z",
+            "output": "26"
         },
         {
-            "input": "RCYJWI",
-            "output": "215682463"
+            "input": "Y",
+            "output": "25"
         },
         {
-            "input": "AYWSRIB",
-            "output": "616806972"
+            "input": "OQHGEFQ",
+            "output": "4839502425"
         },
         {
-            "input": "AI",
-            "output": "35"
+            "input": "Z",
+            "output": "26"
         },
         {
-            "input": "RXLCPB",
-            "output": "225045550"
+            "input": "LTUSR",
+            "output": "5849940"
         },
         {
-            "input": "WWO",
-            "output": "16161"
+            "input": "FRBSGTA",
+            "output": "2068612573"
         },
         {
-            "input": "HCOO",
-            "output": "143041"
+            "input": "T",
+            "output": "20"
         },
         {
-            "input": "LHCYKW",
-            "output": "146302257"
+            "input": "XWF",
+            "output": "16828"
         },
         {
-            "input": "BZG",
-            "output": "2035"
+            "input": "STZD",
+            "output": "348144"
+        },
+        {
+            "input": "VSR",
+            "output": "15384"
+        },
+        {
+            "input": "BLMC",
+            "output": "43605"
         }
     ]
 }

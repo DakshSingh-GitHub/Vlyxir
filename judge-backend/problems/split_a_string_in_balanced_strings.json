@@ -22,127 +22,179 @@
     ],
     "hidden_test_cases": [
         {
-            "input": "RRRRRLLLLL",
-            "output": "1"
-        },
-        {
-            "input": "RRRRRRLLLLLLRLLLLLLLLLLRRRRRRRRRLLLLLRRRRRRRRRRLLLLL",
-            "output": "5"
-        },
-        {
-            "input": "LR",
-            "output": "1"
-        },
-        {
-            "input": "LRRRRLLLRRLLRRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRLLLLLLRRRRRRRRRLLLLLLLLL",
-            "output": "10"
-        },
-        {
-            "input": "LLRRRLRRRRLLLLLLLRRR",
-            "output": "4"
-        },
-        {
-            "input": "LLLLRRRRLLLLLRRRRRRRRRRRRRLLLLLLLLRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRLLLLLLLRRRRRRRRRRRLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLL",
-            "output": "9"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRRLLLLLLLLRRRRRRRRLLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLLLLRRRRRRRRLLLLRRRRRRLLLLLLRRLLRRRRRRLLLLLLLLLLLLLLRRRRRRRR",
-            "output": "10"
-        },
-        {
-            "input": "RRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRLLLLLLRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLRRRRRRRRLLLLLRRRRR",
+            "input": "LRLRRRRRLLLLLLRRRRRRRRRLLLLLLLLLLLLRRRRR",
             "output": "6"
         },
         {
-            "input": "LRLLLLLLLLLLRRRRRRRRRRLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLRRLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLL",
-            "output": "7"
+            "input": "LRLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRLLRRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRLLL",
+            "output": "10"
         },
         {
-            "input": "LLLLLLLLLRRRRRRRRRRRRRLLLLLRLLLLRRRR",
-            "output": "4"
-        },
-        {
-            "input": "RRRLLLLLLRRRLRLLLLLRRRRRRRRRRRRLLLLLLLLLLLRRRRLLLLLLLRRRRRRRLLLRRR",
-            "output": "8"
-        },
-        {
-            "input": "RRRRRLLLLLLRRRRLLLRRRLLL",
-            "output": "4"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRLLLLLLLLLRRRRRRRRRRRRRRRLLLLLL",
-            "output": "8"
-        },
-        {
-            "input": "LLLLLLRRRRRRRRRRRRRLLLLLLLRRRRRRRRRLLLLLLLLLLLLLLRRRRRLLLLLLRRRRRR",
-            "output": "5"
-        },
-        {
-            "input": "LR",
-            "output": "1"
-        },
-        {
-            "input": "RLRRRRLLLLRRRRRRRRRLLLLLLLLL",
+            "input": "RRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRLLLLLLLLL",
             "output": "3"
         },
         {
-            "input": "RLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLRRRLLRR",
-            "output": "5"
-        },
-        {
-            "input": "RRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRLLLLLRRRRRRRRRLLLLLLLRRRRRRLLLLLL",
-            "output": "9"
-        },
-        {
-            "input": "RRLLLLLLLRRRRRRRLLLLLLLLRRRRRRRRRRRRRLLLLLLL",
-            "output": "5"
-        },
-        {
-            "input": "RL",
-            "output": "1"
-        },
-        {
-            "input": "LLLLLLRRRRRRLLLLLLRRRRRRRRRRRLLLLLRRRRRRRLLLLLLLLLLLLLRRRRRRLLLLLLRRRRRRRRRRRRLLLLLLRRRRRRRLLLLLLLRRRRRLLLLL",
-            "output": "9"
-        },
-        {
-            "input": "RRRRRRRRRRLLLLLLLLLLLR",
+            "input": "LRLLLLLRRRRR",
             "output": "2"
         },
         {
-            "input": "RRRRRRRLLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLRRRRRLLLLLRRRRRRLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRLLLLLLRRRRRRRLLLLLLL",
-            "output": "8"
-        },
-        {
-            "input": "LLLLLRRRRRRLRRRRRRRRRLLLLLLLLLLLLRRRRRRRRRRLLLLLLL",
+            "input": "RRRRRLLLLLRLLLRRLLLLLLLLLRRRRRRRRRRRRRRLLLLL",
             "output": "5"
         },
         {
-            "input": "RRRRRRRRLLLLLLLLRRRRLLLLLLLLLLLLLRRRRRRRRR",
-            "output": "3"
+            "input": "RRRRRLLLLLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRLLLLLLLRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLRRRRRRLLLLLLRRRRRRRRRLLLLLLLLL",
+            "output": "10"
         },
         {
-            "input": "LLLLLLLRRRRRRRRLLR",
-            "output": "3"
+            "input": "RRRRRRRRRLLLLLLLLLRRRLLL",
+            "output": "2"
         },
         {
             "input": "RRRRRRRRLLLLLLLL",
             "output": "1"
         },
         {
-            "input": "LLLRRRLLLLLRRRRR",
-            "output": "2"
+            "input": "LLLLLLLLLRRRRRRRRRRRRRRRLLLLLLRRRLLLLLLLLLLLLRRRRRRRRR",
+            "output": "4"
         },
         {
-            "input": "RRRLLLRRRRRRRRLLLLLLLLRRRRLLLLRRRRRRRRLLLLLLLLRRRRRLLLLLLLLLLRRRRR",
+            "input": "LLLLLLRRRRRRRRRRRRRLLLLLLLLLLRRRLLLLLRRRRRLRLR",
             "output": "6"
         },
         {
-            "input": "LRLLLRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "input": "LLLLLLLRRRRRRRRRRRLLLLRRRRRRRLLLLLLLRRRRRRRLLLLLLL",
+            "output": "4"
+        },
+        {
+            "input": "RRLLRRRLLLRLLLRRRRRRRLLLLLLLLRRRLLLLRRRR",
+            "output": "7"
+        },
+        {
+            "input": "LLLLLLLLLRRRRRRRRRLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRLRRRRRRRRLLLLLLLLLRRRRRRLLLLL",
             "output": "8"
         },
         {
-            "input": "LLLLRRRRRRRRRLLLLLLLLRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLRRRLLLR",
+            "input": "RRRLLLLLLLLRRRRR",
+            "output": "2"
+        },
+        {
+            "input": "LLRRLLLLLLLLLRRRRRRRRRRRRRRLLLLLRRRLLL",
+            "output": "4"
+        },
+        {
+            "input": "RRRLLLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRLLLLRLRRRRLLLL",
+            "output": "9"
+        },
+        {
+            "input": "RRRRRLLLLLLLLLLLLLLRRRRRRRRRLRRRRRRRRRRLLLLLLLLL",
+            "output": "4"
+        },
+        {
+            "input": "RRRRRLLLLLRLLLLRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRRRLRRRRRRLLLLLL",
+            "output": "7"
+        },
+        {
+            "input": "LLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLLLLLLLLRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLL",
+            "output": "8"
+        },
+        {
+            "input": "LRLRRRRRRRRRLLLLLLLL",
+            "output": "3"
+        },
+        {
+            "input": "LLLLLLLLLRRRRRRRRRLLLLLRRRRRRRRLLLRL",
+            "output": "4"
+        },
+        {
+            "input": "RRRRLLLLLLLLLLLRRRRRRRRLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLRRRR",
+            "output": "9"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLLLLLLLLRRRRRRRLLLLLLRRRRRRLRLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRLLLLLLLLLLLLLLLRRRRRRRRLLLLLLLLRRRRRRRR",
+            "output": "10"
+        },
+        {
+            "input": "RRRRRRLLLLLLRRRRRRLLLLLLLLLLLLLLLRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLRRRRRRRRR",
+            "output": "5"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLLLRRRRLLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRLLLLLL",
+            "output": "7"
+        },
+        {
+            "input": "RRLLLLLLLLLLLRRRRRRRRR",
+            "output": "2"
+        },
+        {
+            "input": "LLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLL",
+            "output": "2"
+        },
+        {
+            "input": "LRRRRRRRRLLLLLLLRRLLRRRRRRRLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLRRR",
+            "output": "6"
+        },
+        {
+            "input": "LLLLLLRRRRRR",
+            "output": "1"
+        },
+        {
+            "input": "LLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLRRRRRLLLLLLRRRRRRLLLLLLLLLLRRRRRRRRRLLLLRL",
+            "output": "8"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLLLLLLLLRRRRRRLLLRRR",
+            "output": "5"
+        },
+        {
+            "input": "LLLLLLRRRRRRLLLLLLRRRRRRLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLRRRRRLLLLRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRRR",
+            "output": "8"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLL",
+            "output": "1"
+        },
+        {
+            "input": "LLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLRRRLLLLLLLLLLLRRRRRRRR",
+            "output": "4"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLRRRRRRLLLLLLRRRRRRRRRRLLLLLLLLLL",
+            "output": "3"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLRRRRLLLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLRLLLLLLLRRRRRRLLLRRRLLLLLLLLLLRRRRRRRRRR",
+            "output": "8"
+        },
+        {
+            "input": "LLRRLLLLLRRRRRLLLLLLLRRRRRRR",
+            "output": "3"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLRRRRLLLLRRLLLLLLLLRRRRRRLLLLRRRR",
+            "output": "5"
+        },
+        {
+            "input": "LLLLRRRRLLLLLLLLLRRRRRRRRRLRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLRRRRRRLLLLLLRRRRRLLLLL",
+            "output": "10"
+        },
+        {
+            "input": "LLRRRRRRLLLLLLLRRRRRRRRRRRRLLLLLLLLLRRRRRLLLLLLLRRRRRRLLLLRRRRRRLLLLLL",
+            "output": "8"
+        },
+        {
+            "input": "RRRRRRRLLLLLLLRRRRLLLLRRRRLLLLLLLLRRRRLLLLLLRRRRRRLLLRRRRRRRRRLLLLLLLLLLLLLLLRRRRRRRRRRRLLRRLL",
+            "output": "10"
+        },
+        {
+            "input": "RLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRRLLLLLLLLLLLLLRRRLRRRRRRRRRRRLLLLLLLLLLRRRRRRLLLLLLLR",
+            "output": "10"
+        },
+        {
+            "input": "RRLLRRLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLRRRRRLLLLLLLRRR",
+            "output": "7"
+        },
+        {
+            "input": "RRRLLLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLRRRRRLRLLLLRRRRLLLLLRRRRRLLLLLLLRRRRRRRRRRRRLLLLL",
             "output": "9"
         },
         {
@@ -150,276 +202,304 @@
             "output": "1"
         },
         {
-            "input": "LLLLRRRRLLLLLRRRRRLLLLLRRRRRLLLLLLLRRRRRRRRRRLLL",
-            "output": "5"
-        },
-        {
-            "input": "LLLLLLRRRRRRRRRRRRRLLLLLLLLLLLLRRRRRLLLLLLLLLRRRRRRRRRRRLLRRRRRRRRRRLLLLLLLLLLRRRRLLLLRRRRRRRRLLLLLLLL",
-            "output": "8"
-        },
-        {
-            "input": "RRRRRRRRLLLLLLLL",
+            "input": "RRRRRLLLLL",
             "output": "1"
         },
         {
-            "input": "RLRRRRRRRLLLLLLLRL",
-            "output": "3"
-        },
-        {
-            "input": "RRRRLLLLLLLRRRLLRRRRLL",
-            "output": "4"
-        },
-        {
-            "input": "LLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLL",
-            "output": "2"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRR",
-            "output": "1"
-        },
-        {
-            "input": "RRRRRRRRRRLLLLLLLLLLLLLLLLLLLRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLRRRRRLLLLRRRLRRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLL",
-            "output": "9"
-        },
-        {
-            "input": "LLLLRRRRRLLLLLLLLLLLRRRRRRRRRRLLLLLLRRRRRRLLLLLLLRRRRRRRLLRR",
-            "output": "6"
-        },
-        {
-            "input": "LLLRRRLLLLLLLLLLRRRRRRRRRR",
-            "output": "2"
-        },
-        {
-            "input": "RRRLLLRRRRRRRLLLLLLL",
-            "output": "2"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRRRRRRRRLLLLLLRRLLLR",
-            "output": "4"
-        },
-        {
-            "input": "LLRRLLLRRRRLLLRRLLLLLLLLLLRRRRRRRRRRLR",
-            "output": "6"
-        },
-        {
-            "input": "RRRRRLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRLLLLLLLLL",
+            "input": "RLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLRRRRRRLR",
             "output": "5"
         },
         {
-            "input": "RRRLLLRRRRRRRLLLLLLLRRRRRRRRLLLLLLLLLLLLRRRRRRRRRRLLLLLLRRRRRRRLLLLLLL",
-            "output": "6"
-        },
-        {
-            "input": "RRRRRRRLLLLLLLRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRRRRRRLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLLLLRRRRRRRRRLLRRRRRLLLLLLLLLLLRRRRRRRR",
-            "output": "10"
-        },
-        {
-            "input": "LLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLRRRRRLLLLLLLLLLLLRRRRRRRRRLLRRRRRRRRLLLLLLLLRRRRRLLLLL",
+            "input": "RRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLRRRLLRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRR",
             "output": "7"
         },
         {
-            "input": "LLLLLLLLRRRRRRRRRRRRRRLLLLLLRRLL",
+            "input": "LLLLLRRRRRLLLLLLLRRRRRRRRRRRLLLL",
             "output": "3"
         },
         {
-            "input": "RRRRRRRRLLLLLLLLRLRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRLLLRRRLLLLLLLLRRRRRRRRLLLRRRLLRR",
-            "output": "8"
-        },
-        {
-            "input": "LLLLLLLLLRRRRRRRRR",
-            "output": "1"
-        },
-        {
-            "input": "LLRRRRRRRRLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRLLLLLLRRRRRLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLRRRLLLRRRRRRRRRRLLLLLLL",
-            "output": "10"
-        },
-        {
-            "input": "RRRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRRLLLLRR",
-            "output": "6"
-        },
-        {
-            "input": "RRRRRLLLLLRRRRRRLLLLLL",
-            "output": "2"
-        },
-        {
-            "input": "LLLLLLLLLRRRRRRRRRLLRR",
-            "output": "2"
-        },
-        {
-            "input": "LLLRRRLLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLRLRRRRRRRRRLLLLLLLLLLLLRRR",
-            "output": "8"
-        },
-        {
-            "input": "LLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLRRLLRRRRRRLLLLLLLLLLLLLRRRRRRRLLLLRRRRRRRRRRRRLLLLLLLLLLLLRRRR",
-            "output": "8"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRR",
-            "output": "3"
-        },
-        {
-            "input": "LLLLLLLRRRRRRRRRRRRRLLLLLL",
-            "output": "2"
-        },
-        {
-            "input": "RRRRRLLLLLLLLLLLLLRRRRRRRRLLLLRRRRLR",
-            "output": "4"
-        },
-        {
-            "input": "LLLLRRRRLLLLLLLLLLRRRRRRRRRRRL",
-            "output": "3"
-        },
-        {
-            "input": "RRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRLLLLRRRR",
+            "input": "LLLLRRRRLRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLRRRRRRRRRLLRR",
             "output": "5"
         },
         {
-            "input": "RRRRRLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRRLRLLLRRRLLLRRRRLLR",
-            "output": "8"
-        },
-        {
-            "input": "RRRRLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLLLRRRLLLLLLRRRRRRRRRRRRLLLLLLRRRRRRRRRLLLLLLLLLRRLL",
-            "output": "8"
-        },
-        {
-            "input": "LRLLRRRRRRRRLLLLLLRRRRLLLLLLLLLLRRRRRRLRLLLRRRLLLLLLLLLLRRRRRRRRRR",
-            "output": "8"
-        },
-        {
-            "input": "RRRRRRRRRRLLLLLLLLLLLRLLLLRRRR",
-            "output": "3"
-        },
-        {
-            "input": "RRRRRRLLLLLLLLLLRRRRLLLRRRRRRRRRLLLLLL",
-            "output": "4"
-        },
-        {
-            "input": "RLLLLLLRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRR",
-            "output": "4"
-        },
-        {
-            "input": "RLRLLRRRRRLLLLRRRRLLLL",
-            "output": "5"
-        },
-        {
-            "input": "LLLRRR",
+            "input": "RRRRRLLLLL",
             "output": "1"
         },
         {
-            "input": "RRRRRLLLLLLLLRRRLLLLLLRRRRRRRRRRRLLLLLRRRRRRRRLLLLLLLLRRLLLLLLLLLLLRRRRRRRRRLLLLRRRRRRRRLLLLRRRRRLLLLL",
+            "input": "RRRLLLRRRRRLLLLLRRRRRRRRLLLLLLLLRRRLLLRRRRRRRLLLLLLLRRLLRRRRRRLLLLLLRRRRRRRLLLLLLLRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRR",
             "output": "10"
         },
         {
-            "input": "RRRRRRRRRLLLLLLLLLRRRLLLLRLLLLLLLLRRRRRRRRLRRRRRRRRRRRLLLLLLLLLLRRRRLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLLLLLLLRRRRR",
-            "output": "10"
-        },
-        {
-            "input": "LLLLLLLRRRRRRRLLLRRRLLRRRRRRLLLLRRRRRRRRLLLLLLLLLLLLLLRRRRRRLLLLLLLRRRRRRRLLLRRRLLLLLRRRRRRRRLLL",
-            "output": "10"
-        },
-        {
-            "input": "LRRL",
-            "output": "2"
-        },
-        {
-            "input": "RRRRLLLLRRRRLLLLRRRRRLLLLLLLLLLLLLLLRRRRRRRRRRLLRRRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLRRRRRRRRRRRRRLLLLLLLRRRRRRRRRLLLLLLLLL",
-            "output": "10"
-        },
-        {
-            "input": "RRRRLLLLRRRRRLLLLLRRRRRRRLLLLLLLRLRRRLLLLLLRRRLLLLRRRRLLLRRRLLRR",
-            "output": "9"
-        },
-        {
-            "input": "RRRRLLLLLLLRRRLRRRRLLLRRRRRLLLLLRRRRRRLLLLLL",
-            "output": "6"
-        },
-        {
-            "input": "RRRLLLRRRRRRRRRRLLLLLLLLLLLRRRRRLLLL",
-            "output": "4"
-        },
-        {
-            "input": "LLLLLLLLLLRRRRRRRRRRRRRRRLLLLL",
-            "output": "2"
-        },
-        {
-            "input": "LLLLLLLRRRRRRRRRRRRLLLLLRRLLLRLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRLR",
-            "output": "8"
-        },
-        {
-            "input": "LLLLRRRRLLLLLLRRRRRRLLLRRR",
+            "input": "LRLLLLLLRRRRRRLLLLLLLRRRRRRR",
             "output": "3"
         },
         {
-            "input": "RRRRRLLLLLLLLLLRRRRRLLRRRRRRRLLLLLLRLLLLLRRRRRLLLLRRRRRRRRRLLLLLRRLL",
+            "input": "RRRRRRLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "6"
+        },
+        {
+            "input": "LLLRRRRRRRRRRLLLLLLLRRRRRRLLLLLLRRRRRRRLLLLLLLRRRRLLLLRRRRRRRLLLLLLLRLRRRRRLLLLLRRRRLLLL",
             "output": "9"
         },
         {
-            "input": "RRRLLLRRRLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLRRRRRRRRLRLLLLLLLRRRRRRR",
+            "input": "RRLLLLLLLLLLRRRRRRRRLLLLRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLRRRRRRRR",
+            "output": "5"
+        },
+        {
+            "input": "LLLLLLLLRRRRRRRRRRRRRLLLLLLLLRRRRRRRRRRRLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRRLLLLLLLRRRLLLRL",
+            "output": "8"
+        },
+        {
+            "input": "RLRLLLLLRRRRLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLRRRRLLLRRRLLLLLLLLLRRRRRRRRR",
+            "output": "8"
+        },
+        {
+            "input": "LLLLLRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRRLLLLLLLLLLLLRRRRRRRRRRRLLLLLLLLRRRRRRRRRRRRLLLLLLLRRRRRRRRRRLLLLLLLLLL",
             "output": "10"
         },
         {
-            "input": "LLLLLLLLLLRRRRRRRRRRRRRLLLLRRRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRLLLRRRRRRRLLLLLLL",
+            "input": "RRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRRRLLLLRRRR",
+            "output": "9"
+        },
+        {
+            "input": "LLLLLLRRRRRR",
+            "output": "1"
+        },
+        {
+            "input": "RRRLLLRRRRRRLLLLLLLLLLLLLLLRRRRRRRRR",
+            "output": "3"
+        },
+        {
+            "input": "LLLLRRRRRRLLRRLLLLLLLLRRRRRRRRRRLLLLRRRRRRRRRLLLLLLLLLLLLRRRRRRRRLLLLLRRRRRRRRRLLLLLLLLLLLLLLRRRRR",
+            "output": "10"
+        },
+        {
+            "input": "RRLLRRRRRRRLLLLLLLRLRRLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "8"
+        },
+        {
+            "input": "RRLLLLLLLRRRRRRRRRRRRRLLLLLLLL",
+            "output": "3"
+        },
+        {
+            "input": "LLLLLLLRRRRRRRLRLLLLLRRRRR",
+            "output": "3"
+        },
+        {
+            "input": "LLLLRRRRRRRRLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLL",
+            "output": "4"
+        },
+        {
+            "input": "LLLLLLLRRRRRRRLLLLLLLLLRRRRRRRRRRRLLLLLRRRRLRRLLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLRRLLLLLRRR",
+            "output": "10"
+        },
+        {
+            "input": "LLLLLRRRRRRRRRRLLLLLRRRRRLLLLLRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLRRRRRRLLRRRRRRRRLLLLLL",
+            "output": "8"
+        },
+        {
+            "input": "LLRRLLLLLRRRRRRRLLRRRLLL",
+            "output": "4"
+        },
+        {
+            "input": "LLLLLRRRRRLLLRRRRRRRRRLLLLLLRRLLRLLLLLLLLLLRRRRRRRRRLLLLLRRRRRLR",
+            "output": "8"
+        },
+        {
+            "input": "RRRRRLLLLLRRRRRRRRLLLLLLLLLLLLLLLRRRRRRRLLLLLLLLLLRRRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLRRRRLLLLLLLLLLRRRRRRRRRRRRRRRRLLLLLL",
+            "output": "9"
+        },
+        {
+            "input": "LRLLLLLLLLLLRRRRRRRRRR",
+            "output": "2"
+        },
+        {
+            "input": "RLRRLLRRRLLLRRRRLLLLRRLLLLLLLRRRRRRRRRRRRRLLLLLLLL",
             "output": "7"
         },
         {
-            "input": "RLRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRRRLLLLLLLRRRRRRRRLLLLL",
-            "output": "6"
-        },
-        {
-            "input": "RRLLRLLLLLLLLRRRRRRR",
-            "output": "3"
-        },
-        {
-            "input": "RRRLLLLLLLRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRRRLLLLLLLLLRRRRRRRRRRLLLL",
+            "input": "RRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRLLLLLLLLLLLLRRRRRRRRRRLLLLRRRR",
             "output": "7"
         },
         {
-            "input": "LLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLLLLLRRRRRRRLLRRLLLLRRRRRLLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRLLLLLLLLRRRRRRRR",
-            "output": "10"
-        },
-        {
-            "input": "RRRRRRRRRLLLLLLLLL",
-            "output": "1"
-        },
-        {
-            "input": "RRRRRLLLLLRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRRRRRRRRRRRRLLLLLLLLLL",
-            "output": "5"
-        },
-        {
-            "input": "LLLLLLLRRRRRRRLLRRRRRRRRRRRLLLLLLLLLLLLRRRLLLLLRRRRRRRRRLLLLRRRRRLLLLLRRRRRRRRLLLLLLLLRLLLLRRR",
-            "output": "10"
-        },
-        {
-            "input": "RRLLLLLLLLLLRRRRRRRR",
-            "output": "2"
-        },
-        {
-            "input": "LLRRRRRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLLRRLLLRLLLLLLLRRRRRRRLLLLLLLRRRRRRRLLLLLLRRRRRR",
-            "output": "8"
-        },
-        {
-            "input": "RRLLLLLLRRRRRRLL",
+            "input": "RRRRRRRRLLLLLLLLRRRRRRRLLLLLLLRRRRRRRRRLLLLLLLLL",
             "output": "3"
         },
         {
-            "input": "RRRRLLLLLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRRRLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLLLRRRRRRRLLRRRRRRRRRLLLLLLL",
-            "output": "9"
+            "input": "RRRRRRRRRRLLLLLLLLLLRRLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLRRRRRRRRRLLLLLLLLL",
+            "output": "7"
         },
         {
-            "input": "LLLLLLLRRRRRRRRRLL",
-            "output": "2"
-        },
-        {
-            "input": "RRRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRR",
-            "output": "4"
-        },
-        {
-            "input": "LLRR",
+            "input": "RRRRLLLL",
             "output": "1"
         },
         {
-            "input": "LLLLLRRRRRLLLRRRLLLLLLLLLLRRRRRRRRRRRRRRLLLLRRRRRLLLLLRRLLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRR",
+            "input": "RRRRRRRRRLLLLLLLLLRRRRLLLLRRRRRRRLLLLLLLRRRRRLLLLLLLRRLLLLRRRRLLLLLLLLRRRRRRRRRRRRRRRRRLLLLLLLLLRRRRRRRRRRLLLLLLLLLL",
             "output": "9"
+        },
+        {
+            "input": "RRRRLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLRRRLLLLLLLLRRRRRRRRRRRLLLLLLRRRRRRRLLLLLLLLLLLRRRR",
+            "output": "8"
+        },
+        {
+            "input": "LLLLLLLLRRRRRRRRRRRRRRRRLLLLLLLLLR",
+            "output": "3"
+        },
+        {
+            "input": "RLRRRRRRLLLLLLLLLLLLRRRRRRRRRRRLLLLLLLLLRRRRLLLLLLLLLRRRRRRRRRLLLLLLRRRRRRRLLLRR",
+            "output": "9"
+        },
+        {
+            "input": "RRRRRRRRRLLLLLLLLLRLLLRRRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLLLLRRRLLLLLRRRRRLLLLLLLLLRRRRRRRRRRLLLLLLLRRRRRR",
+            "output": "10"
+        },
+        {
+            "input": "LLRRLLLLLLRRRRRRRRRLLLLLLLLRRRRRLLLLLLLLLRRRRRRRRRLLLLRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "10"
+        },
+        {
+            "input": "LRRRLLRRRRRRLLLLLLLLLLLLLLRRRRRRRRLLLLLLLLRRRRRRRRRRRRRLLLLLLLLLLLLRRRRRRRRRRRLLLLLLLRRRLLLRRR",
+            "output": "10"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLLRLLLRRRRRRRRLLLLLRRRRRRRRRLLLLLLLLLRRRRRRLLLLLL",
+            "output": "6"
+        },
+        {
+            "input": "LLLLLLLRRRRRRRLLLLLLLLRRRRRRRRLRLLRR",
+            "output": "4"
+        },
+        {
+            "input": "RRRRLLLLRRLL",
+            "output": "2"
+        },
+        {
+            "input": "LLLLLLRRRRRRLLLLLRRRRRLLLLLLLLLLRRRRRRRRRRRRLL",
+            "output": "4"
+        },
+        {
+            "input": "LLLLRRRRLLLLLLLLLRRRRRRRRRLLLLLLLRRRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLLLRRRRRRRRRRRRRRRLLLLLLLLRRRRRLLLLL",
+            "output": "8"
+        },
+        {
+            "input": "LLLLLLLLRRRRRRRRLRRRRRLLLLRRRRRRRRRLLLLLLLLLRRRLLLLRRRRRRLLLLLRRRRRRRRRRLLLLLLLLLL",
+            "output": "8"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLRRRRRRRRRLLLLLLLLLLLLLRRRRRRRRRLLLLLRRRRRRLLLLLLRRRRRRRRRRLLLLLLLLLL",
+            "output": "6"
+        },
+        {
+            "input": "LLLLLLLLLRRRRRRRRRRRRRRRRLLLLLLL",
+            "output": "2"
+        },
+        {
+            "input": "RRRLLLLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLLLRR",
+            "output": "5"
+        },
+        {
+            "input": "RRLLRRRRLLLL",
+            "output": "2"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLL",
+            "output": "1"
+        },
+        {
+            "input": "LRLRLLLLLLLLLLRRRRRRRRRRLLLLLLLLRRRRRRRRRRRRRLLLLL",
+            "output": "5"
+        },
+        {
+            "input": "LLLLLLLRRRRRRRLLRRLLLLRRRRRRRRRRRLLLLLLLRRRRRRRRRLLLLLLLLLLLLLLLRRRRRR",
+            "output": "6"
+        },
+        {
+            "input": "RRRRRRRRRLLLLLLLLLRRRLLLRRRRRRRLLLLLLLLLLLRRRRLLLLLLLLLRRRRRRRRRRRRRLLLLRRRRRRRLLLLLLLLLLRRRLLLLLLLRRRRRRR",
+            "output": "9"
+        },
+        {
+            "input": "LLLLLLRRRRRRRRRRRLLLLLRRRRRLLLLLRRRRLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "5"
+        },
+        {
+            "input": "LLLLLLRRRRRRLLLLLLLLLRRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLRRRRLRLLLLRRRRLLLLLLLLRRRRRRRRLLRR",
+            "output": "8"
+        },
+        {
+            "input": "LRRRRRRRRRRLLLLLLLLLLLLLRRRRLR",
+            "output": "4"
+        },
+        {
+            "input": "RRRRLLLLLRRRLLLLLRRRRRLLRRRLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRRRRRLLLLLLLLL",
+            "output": "9"
+        },
+        {
+            "input": "LLLLLLLLLRRRRRRRRRRRRRRRRRRRLLLLLLLLLLLLLLLRRRRR",
+            "output": "3"
+        },
+        {
+            "input": "LRRRRRRLLLLLLLLRRRLLLLLLLLRRRRRRRR",
+            "output": "4"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRRRRRLLLLLLLLLRRRRRLLLLL",
+            "output": "4"
+        },
+        {
+            "input": "LLLLLRRRRRRLLLLLLLLLLRRRRRRRRRRRRRRLLLLLRRRRRRLLLLLLRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLRRRRLLLLRRRRLLLL",
+            "output": "10"
+        },
+        {
+            "input": "LLLLLLLLLRRRRRRRRRRRRLLLLRRRRRLLLL",
+            "output": "4"
+        },
+        {
+            "input": "RRRLLLRRLLRRRRRLLLLL",
+            "output": "3"
+        },
+        {
+            "input": "RLLLLLLLLLLRRRRRRRRRLLLRRRLLRRLRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "7"
+        },
+        {
+            "input": "RLLLLRRRLLLLLLLLLLRRRRRRRRRR",
+            "output": "3"
+        },
+        {
+            "input": "RRRRLLLLRRRRLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "5"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRRRRRRLLLLLLLLLLRRRLLLRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRR",
+            "output": "8"
+        },
+        {
+            "input": "LLLLLLLLLLRRRRRRRRRRRRRLLLRRRRRRRRRLLLLLLLLL",
+            "output": "3"
+        },
+        {
+            "input": "RRRRRRRRLLLLLLLLLLLLLLLLLLRRRRRRRRRR",
+            "output": "2"
+        },
+        {
+            "input": "LLLLRRRRLLLRRRRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRRRLLLLLRRRRLLLL",
+            "output": "6"
+        },
+        {
+            "input": "RRRRRLLLLLLLLLLLLLLRRRRRRRRRLLLLLLLLRRRRRRRRRRLLRRRRLLLLLLLRRRRRLLLLLLLRRRRRLRRRRRRRRRRLLLLLLLLL",
+            "output": "10"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLRRLLRRRRRRRRRLLLLLLLLLLLLLLRRRRRRRRRRRRRRLLLLLLLLLLLRRRRRRRRRRLLLLLLLLLLLLLLLLLRRRRRRRRRRL",
+            "output": "9"
+        },
+        {
+            "input": "RRRRRLLLLLLLLRRRRRRRRRLLLLLLRRRRRRRRRRLLLLLLLLLL",
+            "output": "4"
+        },
+        {
+            "input": "RRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLRRRRRRRRLLLLLLLLLLLLLRRRRR",
+            "output": "6"
         }
     ]
 }
