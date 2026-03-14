@@ -1,10 +1,10 @@
 "use client";
 
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/anime';
-import { History, LayoutGrid, Settings } from 'lucide-react';
+import { History, LayoutGrid, User, Settings, LogOut, Shield } from 'lucide-react';
 import NavDropdown from './NavDropdown';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface NavBarProps {
     isSidebarOpen: boolean;
@@ -14,13 +14,15 @@ interface NavBarProps {
     onOpenSettings: () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
+    const router = useRouter();
     const isCodeIDE = pathname === '/code-ide';
     const isCodeJudge = pathname === '/code-judge';
     const headerRef = useRef<HTMLElement>(null);
     const navItemsRef = useRef<HTMLDivElement>(null);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const profileRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (headerRef.current) {
@@ -42,6 +44,16 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                 easing: 'easeOutQuad'
             });
         }
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+                setIsProfileOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
@@ -110,14 +122,54 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
 
                     <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
 
-                    <button
-                        onClick={onOpenSettings}
-                        className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
-                        title="Open settings"
-                        aria-label="Open settings"
-                    >
-                        <Settings className="w-5 h-5" />
-                    </button>
+                    <div className="relative" ref={profileRef}>
+                        <button
+                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                            className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md active:scale-95"
+                            title="Profile"
+                            aria-label="Profile"
+                        >
+                            <User className="w-5 h-5" />
+                        </button>
+
+                        {isProfileOpen && (
+                            <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                                <div className="p-2 space-y-1">
+                                    <button
+                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                    >
+                                        <User className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                        Account settings
+                                    </button>
+                                    <button
+                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                    >
+                                        <Settings className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                        General settings
+                                    </button>
+                                    
+                                    <div className="my-1 h-px bg-gray-100 dark:bg-gray-800 mx-2" />
+                                    
+                                    <button
+                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                    >
+                                        <Shield className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                        Account controls
+                                    </button>
+                                    <button
+                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors group"
+                                    >
+                                        <LogOut className="w-4 h-4 text-rose-400 group-hover:text-rose-600" />
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>
