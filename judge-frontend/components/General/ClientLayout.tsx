@@ -11,7 +11,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen } = useAppContext();
     const pathname = usePathname();
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
-    const excludedPaths = ['/', '/docs', '/docs-int', '/admin', '/visuals', '/meet-developer']
+    const excludedPaths = ['/', '/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login']
     const isHomePage = excludedPaths.includes(pathname);
 
     return (
