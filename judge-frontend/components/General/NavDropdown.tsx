@@ -15,6 +15,7 @@ export default function NavDropdown() {
     const routes = [
         { name: "Code Judge", path: "/code-judge", icon: "⚖️", subtext: "Select a problem and start solving!" },
         { name: "Code IDE", path: "/code-ide", icon: "💻", subtext: "Think and Build!" },
+        { name: "Code Analysis", path: "/code-analysis", icon: "📃", subtext: "Now look at what you did" },
         { name: "Code Home", path: "/", icon: "👋", subtext: "See you here!" }
     ];
 
