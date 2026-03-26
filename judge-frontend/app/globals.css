@@ -20,6 +20,17 @@ html {
   --font-mono: var(--font-geist-mono);
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
 .dark {
   --background: #111827;
   /* gray-900 */
@@ -119,5 +130,5 @@ html:not(.dark) {
 
 /* Custom cursor for dark mode */
 html.dark {
-  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9jAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAEAAADKADAAQAAAABAAAAEAAAAAAXqg+kAAABzSURBVDhPY2AgF2ARsWNgYGFgYGFhbm5uYmBgYGFgYGDg4+Pj4+fn5+bm5uZmZmaOjo6Ojo6+vr7+/v7+/v7+/v7+/v7+/v7+/v7+/gD+CjIyMoAqMDDQ0dHR0dHR0dHRAVKBhYUFQgYGBgYWBgaGAAMxAKjYAAQAKp9d9q/5lQAAAABJRU5ErkJggg==") 8 8, auto;
+  cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9jAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAEAAAAAAXqg+kAAABzSURBVDhPY2AgF2ARsWNgYGFgYGFhbm5uYmBgYGFgYGDg4+Pj4+fn5+bm5uZmZmaOjo6Ojo6+vr7+/v7+/v7+/v7+/v7+/v7+/v7+/gD+CjIyMoAqMDDQ0dHR0dHR0dHRAVKBhYUFQgYGBgYWBgaGAAMxAKjYAAQAKp9d9q/5lQAAAABJRU5ErkJggg==") 8 8, auto;
 }

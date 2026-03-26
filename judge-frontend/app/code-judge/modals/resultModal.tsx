@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { X, CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
 import { SubmitResponse, TestCaseResult } from '../../lib/types';
@@ -185,7 +186,7 @@ function TestCaseItem({ tc }: { tc: TestCaseResult }) {
                             {tc.actual_output !== undefined && (
                                 <div className="space-y-1">
                                     <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Your Output</span>
-                                    <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded-lg font-mono text-gray-800 dark:text-gray-200 overflow-x-auto border border-gray-200 dark:border-gray-800 min-h-[3rem]">
+                                    <pre className="bg-gray-100 dark:bg-gray-950 p-3 rounded-lg font-mono text-gray-800 dark:text-gray-200 overflow-x-auto border border-gray-200 dark:border-gray-800 min-h-12">
                                         {tc.actual_output || <span className="text-gray-400 italic">No output</span>}
                                     </pre>
                                 </div>
@@ -194,7 +195,7 @@ function TestCaseItem({ tc }: { tc: TestCaseResult }) {
                             {tc.expected_output !== undefined && (
                                 <div className="space-y-1">
                                     <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expected Output</span>
-                                    <pre className="bg-emerald-50 dark:bg-emerald-900/10 p-3 rounded-lg font-mono text-gray-800 dark:text-gray-200 overflow-x-auto border border-emerald-100 dark:border-emerald-900/30 min-h-[3rem]">
+                                    <pre className="bg-emerald-50 dark:bg-emerald-900/10 p-3 rounded-lg font-mono text-gray-800 dark:text-gray-200 overflow-x-auto border border-emerald-100 dark:border-emerald-900/30 min-h-12">
                                         {tc.expected_output}
                                     </pre>
                                 </div>
