@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from 'react';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound } from 'lucide-react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2 } from 'lucide-react';
 import CodeEditor from '../../components/Editor/CodeEditor';
 import { useAppContext } from '../lib/context';
 
@@ -43,8 +43,19 @@ interface AnalysisResult {
     suggestions: string[];
 }
 
+interface AnalysisRecord {
+    id: string;
+    createdAt: string;
+    code: string;
+    result: AnalysisResult;
+}
+
+const ANALYSIS_RECORDS_KEY = "code-analysis-records-v1";
+const MAX_ANALYSIS_RECORDS = 25;
+const RECORDS_MODAL_ANIMATION_MS = 220;
+
 export default function CodeAnalysisPage() {
-    const { isDark } = useAppContext();
+    const { isDark, reduceMotion } = useAppContext();
     const [code, setCode] = useState(DEFAULT_CODE);
     const [isLoading, setIsLoading] = useState(false);
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -55,6 +66,16 @@ export default function CodeAnalysisPage() {
     const [password, setPassword] = useState('');
     const [authError, setAuthError] = useState<string | null>(null);
     const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const [records, setRecords] = useState<AnalysisRecord[]>([]);
+    const [isRecordsModalOpen, setIsRecordsModalOpen] = useState(false);
+    const [isRecordsModalVisible, setIsRecordsModalVisible] = useState(false);
+    const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
+    const recordsModalCloseTimerRef = useRef<number | null>(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [mobileTab, setMobileTab] = useState<"code" | "analysis">("code");
+    const [mobileSwipeDirection, setMobileSwipeDirection] = useState<"left" | "right" | null>(null);
+    const codePanelRef = useRef<HTMLDivElement>(null);
+    const analysisPanelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -78,6 +99,10 @@ export default function CodeAnalysisPage() {
             setIsAuthorized(true);
         }
 
+        const stored = localStorage.getItem(ANALYSIS_RECORDS_KEY);
+        const parsed = parseStoredRecords(stored);
+        setRecords(parsed);
+
         const seededCode = sessionStorage.getItem("code-analysis-code");
         if (seededCode && seededCode.trim().length > 0) {
             setCode(seededCode);
@@ -86,6 +111,107 @@ export default function CodeAnalysisPage() {
 
         setIsHydrated(true);
     }, []);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 1023px)");
+        const updateIsMobile = () => {
+            setIsMobile(mediaQuery.matches);
+            if (!mediaQuery.matches) {
+                setMobileTab("code");
+            }
+        };
+
+        updateIsMobile();
+        mediaQuery.addEventListener("change", updateIsMobile);
+        return () => {
+            mediaQuery.removeEventListener("change", updateIsMobile);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isMobile || reduceMotion || !mobileSwipeDirection) {
+            return;
+        }
+
+        const target = mobileTab === "code" ? codePanelRef.current : analysisPanelRef.current;
+        if (!target) {
+            return;
+        }
+
+        const fromX = mobileSwipeDirection === "left" ? 36 : -36;
+        target.animate(
+            [
+                { transform: `translateX(${fromX}px)`, opacity: 0.85 },
+                { transform: "translateX(0px)", opacity: 1 }
+            ],
+            {
+                duration: 280,
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+            }
+        );
+    }, [mobileTab, isMobile, reduceMotion, mobileSwipeDirection]);
+
+    const handleMobileTabChange = (nextTab: "code" | "analysis") => {
+        if (nextTab === mobileTab) {
+            return;
+        }
+        setMobileSwipeDirection(nextTab === "analysis" ? "left" : "right");
+        setMobileTab(nextTab);
+    };
+
+    const openRecordsModal = () => {
+        if (recordsModalCloseTimerRef.current) {
+            window.clearTimeout(recordsModalCloseTimerRef.current);
+            recordsModalCloseTimerRef.current = null;
+        }
+        setIsRecordsModalOpen(true);
+        requestAnimationFrame(() => {
+            setIsRecordsModalVisible(true);
+        });
+    };
+
+    const closeRecordsModal = () => {
+        setIsRecordsModalVisible(false);
+        if (recordsModalCloseTimerRef.current) {
+            window.clearTimeout(recordsModalCloseTimerRef.current);
+        }
+        recordsModalCloseTimerRef.current = window.setTimeout(() => {
+            setIsRecordsModalOpen(false);
+            setExpandedRecordId(null);
+            recordsModalCloseTimerRef.current = null;
+        }, RECORDS_MODAL_ANIMATION_MS);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (recordsModalCloseTimerRef.current) {
+                window.clearTimeout(recordsModalCloseTimerRef.current);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleOpenRecords = () => openRecordsModal();
+        window.addEventListener("open-code-analysis-records", handleOpenRecords);
+        return () => {
+            window.removeEventListener("open-code-analysis-records", handleOpenRecords);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!isRecordsModalOpen) {
+            return;
+        }
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                closeRecordsModal();
+            }
+        };
+        window.addEventListener("keydown", handleEscape);
+        return () => {
+            window.removeEventListener("keydown", handleEscape);
+        };
+    }, [isRecordsModalOpen]);
 
     const handleUnlock = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -120,6 +246,9 @@ export default function CodeAnalysisPage() {
         setError(null);
         setAnalysisResult(null);
         setIsLoading(true);
+        if (isMobile) {
+            handleMobileTabChange("analysis");
+        }
         try {
             const response = await fetch("/api/code-analysis", {
                 method: "POST",
@@ -135,7 +264,22 @@ export default function CodeAnalysisPage() {
                 throw new Error(payload?.error || "Analysis failed.");
             }
 
-            setAnalysisResult(payload.analysis as AnalysisResult);
+            const nextResult = payload.analysis as AnalysisResult;
+            setAnalysisResult(nextResult);
+            setRecords((prev) => {
+                const nextRecords = [
+                    {
+                        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                        createdAt: new Date().toISOString(),
+                        code,
+                        result: nextResult
+                    },
+                    ...prev
+                ].slice(0, MAX_ANALYSIS_RECORDS);
+
+                localStorage.setItem(ANALYSIS_RECORDS_KEY, JSON.stringify(nextRecords));
+                return nextRecords;
+            });
         } catch (err) {
             setError(err instanceof Error ? err.message : "Analysis failed.");
         } finally {
@@ -220,16 +364,16 @@ export default function CodeAnalysisPage() {
     }
 
     return (
-        <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
+        <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 pb-24 sm:pb-28 lg:pb-8 font-sans relative overflow-hidden">
             {/* Ambient Background Glows */}
             <div className="absolute top-[-15%] left-[-15%] w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
             <div className="absolute bottom-[-15%] right-[-15%] w-80 h-80 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[100px] pointer-events-none animate-pulse-slow delay-1000" />
 
             <div className="w-full z-10 flex flex-col flex-1 min-h-0">
-                
+                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 flex-1 min-h-0">
                     {/* Code Editor Panel */}
-                    <div className="bg-white/70 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800/50 p-6 flex flex-col">
+                    <div ref={codePanelRef} className={`bg-white/70 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800/50 p-6 flex-col ${isMobile && mobileTab !== "code" ? "hidden" : "flex"}`}>
                         <div className="flex-1 min-h-0 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                             <CodeEditor code={code} setCode={setCode} isDark={isDark} isDisabled={false} />
                         </div>
@@ -250,7 +394,7 @@ export default function CodeAnalysisPage() {
                     </div>
 
                     {/* Analysis Results Panel */}
-                    <div className="bg-white/70 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800/50 p-6 md:p-8 flex flex-col min-h-0">
+                    <div ref={analysisPanelRef} className={`bg-white/70 dark:bg-gray-900/60 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-800/50 p-6 md:p-8 flex-col min-h-0 ${isMobile && mobileTab !== "analysis" ? "hidden" : "flex"}`}>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3 shrink-0">
                             <BrainCircuit className="w-7 h-7 text-indigo-500" />
                             Analysis Report
@@ -336,9 +480,231 @@ export default function CodeAnalysisPage() {
                         </div>
                     </div>
                 </div>
+
+                {isMobile ? (
+                    <div className="lg:hidden w-full flex-none h-8" />
+                ) : null}
             </div>
+
+            {isMobile ? (
+                <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 transition-all duration-300 ease-out">
+                    <div className="flex items-center gap-4 p-1.5 rounded-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl shadow-black/10 ring-1 ring-black/5">
+                        <button
+                            onClick={() => handleMobileTabChange("code")}
+                            className={`relative px-4 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-18 ${mobileTab === "code"
+                                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500/50"
+                                : "text-gray-500 dark:text-gray-400 hover:bg-gray-100/30 dark:hover:bg-gray-800/30"
+                                }`}
+                        >
+                            <Code2 className={`w-5 h-5 ${mobileTab === "code" ? "stroke-[2.5px]" : "stroke-2"}`} />
+                            <span className="text-[10px] font-bold tracking-wide">Code</span>
+                        </button>
+                        <button
+                            onClick={() => handleMobileTabChange("analysis")}
+                            className={`relative px-4 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-18 ${mobileTab === "analysis"
+                                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500/50"
+                                : "text-gray-500 dark:text-gray-400 hover:bg-gray-100/30 dark:hover:bg-gray-800/30"
+                                }`}
+                        >
+                            <BrainCircuit className={`w-5 h-5 ${mobileTab === "analysis" ? "stroke-[2.5px]" : "stroke-2"}`} />
+                            <span className="text-[10px] font-bold tracking-wide">Analysis</span>
+                        </button>
+                    </div>
+                </div>
+            ) : null}
+
+            {isRecordsModalOpen ? (
+                <div
+                    className={`fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm p-4 sm:p-6 transition-opacity duration-200 ${isRecordsModalVisible ? "opacity-100" : "opacity-0"}`}
+                    onClick={closeRecordsModal}
+                >
+                    <div
+                        className={`mx-auto h-full w-full max-w-7xl rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white/95 dark:bg-gray-950/95 shadow-2xl overflow-hidden flex flex-col transition-all duration-200 ${isRecordsModalVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-4 scale-[0.98]"}`}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Code Analysis Records</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Latest {records.length} saved analyses</p>
+                            </div>
+                            <button
+                                onClick={closeRecordsModal}
+                                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+
+                        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
+                            {records.length === 0 ? (
+                                <div className="h-full flex items-center justify-center rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                                    <p className="text-base text-gray-600 dark:text-gray-400">No records yet. Run an analysis to save your first record.</p>
+                                </div>
+                            ) : (
+                                records.map((record, index) => (
+                                    <article key={record.id} className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/60 shadow-sm">
+                                        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Record #{records.length - index}</p>
+                                            <div className="flex items-center gap-3">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">{formatRecordTime(record.createdAt)}</p>
+                                                <button
+                                                    onClick={() => setExpandedRecordId((prev) => prev === record.id ? null : record.id)}
+                                                    className="inline-flex items-center gap-1 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                                    title={expandedRecordId === record.id ? "Collapse record" : "Expand record"}
+                                                    aria-expanded={expandedRecordId === record.id}
+                                                >
+                                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expandedRecordId === record.id ? "rotate-180" : ""}`} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-4 p-5">
+                                            <section className="h-fit rounded-xl border border-cyan-200/60 dark:border-cyan-700/40 bg-cyan-50/50 dark:bg-cyan-950/20 overflow-hidden">
+                                                <div className="px-4 py-2 border-b border-cyan-200/60 dark:border-cyan-700/40">
+                                                    <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Submitted Code</p>
+                                                </div>
+                                                <pre className="max-h-[420px] overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                                                    {record.code}
+                                                </pre>
+                                            </section>
+
+                                            <section className="rounded-xl border border-indigo-200/60 dark:border-indigo-700/40 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 space-y-3">
+                                                <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Analysis Result</p>
+                                                <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">{record.result.summary}</p>
+                                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                                    <div className="rounded-lg bg-white/70 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 px-3 py-2">
+                                                        <p className="text-gray-500 dark:text-gray-400">Time</p>
+                                                        <p className="font-semibold text-gray-800 dark:text-gray-100">{record.result.complexity.time}</p>
+                                                    </div>
+                                                    <div className="rounded-lg bg-white/70 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 px-3 py-2">
+                                                        <p className="text-gray-500 dark:text-gray-400">Space</p>
+                                                        <p className="font-semibold text-gray-800 dark:text-gray-100">{record.result.complexity.space}</p>
+                                                    </div>
+                                                </div>
+                                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{record.result.complexity.explanation}</p>
+
+                                                <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                                                    <p>Static findings: {record.result.staticAnalysis.findings.length}</p>
+                                                    <p>Security findings: {record.result.security.findings.length}</p>
+                                                    <p>Suggestions: {record.result.suggestions.length}</p>
+                                                </div>
+
+                                                {expandedRecordId === record.id ? (
+                                                    <>
+                                                        <div className="rounded-lg border border-cyan-200/60 dark:border-cyan-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
+                                                            <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Static Findings</p>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">{record.result.staticAnalysis.overview}</p>
+                                                            {record.result.staticAnalysis.findings.length > 0 ? (
+                                                                <div className="space-y-2">
+                                                                    {record.result.staticAnalysis.findings.map((finding, findingIndex) => (
+                                                                        <div key={`static-${record.id}-${findingIndex}`} className="rounded-md border border-cyan-100 dark:border-cyan-900/50 bg-cyan-50/50 dark:bg-cyan-950/20 p-2.5">
+                                                                            <div className="flex items-center justify-between gap-2">
+                                                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{finding.title}</p>
+                                                                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${severityClasses(finding.severity)}`}>
+                                                                                    {finding.severity}
+                                                                                </span>
+                                                                            </div>
+                                                                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 leading-relaxed">{finding.detail}</p>
+                                                                            {finding.location ? (
+                                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Location: {finding.location}</p>
+                                                                            ) : null}
+                                                                            {finding.suggestion ? (
+                                                                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Suggestion: {finding.suggestion}</p>
+                                                                            ) : null}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-gray-600 dark:text-gray-400">No static findings.</p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="rounded-lg border border-rose-200/60 dark:border-rose-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
+                                                            <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">Security Vulnerabilities</p>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">{record.result.security.overview}</p>
+                                                            {record.result.security.findings.length > 0 ? (
+                                                                <div className="space-y-2">
+                                                                    {record.result.security.findings.map((finding, findingIndex) => (
+                                                                        <div key={`security-${record.id}-${findingIndex}`} className="rounded-md border border-rose-100 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-2.5">
+                                                                            <div className="flex items-center justify-between gap-2">
+                                                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{finding.title}</p>
+                                                                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${severityClasses(finding.severity)}`}>
+                                                                                    {finding.severity}
+                                                                                </span>
+                                                                            </div>
+                                                                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 leading-relaxed">{finding.detail}</p>
+                                                                            {finding.location ? (
+                                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Location: {finding.location}</p>
+                                                                            ) : null}
+                                                                            {finding.suggestion ? (
+                                                                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Suggestion: {finding.suggestion}</p>
+                                                                            ) : null}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-gray-600 dark:text-gray-400">No security findings.</p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="rounded-lg border border-emerald-200/60 dark:border-emerald-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
+                                                            <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Suggestions</p>
+                                                            {record.result.suggestions.length > 0 ? (
+                                                                <div className="space-y-1.5">
+                                                                    {record.result.suggestions.map((suggestion, suggestionIndex) => (
+                                                                        <p key={`suggestion-${record.id}-${suggestionIndex}`} className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                                                                            {suggestionIndex + 1}. {suggestion}
+                                                                        </p>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-gray-600 dark:text-gray-400">No suggestions.</p>
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                ) : null}
+                                            </section>
+                                        </div>
+                                    </article>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
+}
+
+function parseStoredRecords(raw: string | null): AnalysisRecord[] {
+    if (!raw) {
+        return [];
+    }
+    try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed
+            .filter((item) =>
+                item
+                && typeof item.id === "string"
+                && typeof item.createdAt === "string"
+                && typeof item.code === "string"
+                && item.result
+            )
+            .slice(0, MAX_ANALYSIS_RECORDS) as AnalysisRecord[];
+    } catch {
+        return [];
+    }
+}
+
+function formatRecordTime(isoString: string): string {
+    const parsed = new Date(isoString);
+    if (Number.isNaN(parsed.getTime())) {
+        return "Unknown date";
+    }
+    return parsed.toLocaleString();
 }
 
 

@@ -1,6 +1,6 @@
 {
   "name": "judge-frontend",
-  "version": "4.3.20",
+  "version": "5.3.20",
   "private": true,
   "scripts": {
     "dev": "next dev",

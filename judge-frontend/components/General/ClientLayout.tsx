@@ -20,7 +20,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                 <NavBar
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
-                    isSubmissionsModalOpen={isSubmissionsModalOpen}
                     setIsSubmissionsModalOpen={setIsSubmissionsModalOpen}
                     onOpenSettings={() => setIsSettingsModalOpen(true)}
                 />

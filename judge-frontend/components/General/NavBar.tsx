@@ -9,16 +9,16 @@ import { usePathname, useRouter } from 'next/navigation';
 interface NavBarProps {
     isSidebarOpen: boolean;
     setIsSidebarOpen: (isOpen: boolean) => void;
-    isSubmissionsModalOpen: boolean;
     setIsSubmissionsModalOpen: (isOpen: boolean) => void;
     onOpenSettings: () => void;
 }
 
-const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
+const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
     const router = useRouter();
     const isCodeIDE = pathname === '/code-ide';
     const isCodeJudge = pathname === '/code-judge';
+    const isCodeAnalysis = pathname === '/code-analysis';
     const headerRef = useRef<HTMLElement>(null);
     const navItemsRef = useRef<HTMLDivElement>(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -70,7 +70,17 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                 </div>
                 <div className="flex items-center gap-3 md:gap-6">
                     <>
-                        {!isCodeIDE && (
+                        {isCodeAnalysis && (
+                            <button
+                                onClick={() => window.dispatchEvent(new CustomEvent("open-code-analysis-records"))}
+                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
+                                title="Show analysis records"
+                            >
+                                <span className="text-xs font-medium">Show records</span>
+                            </button>
+                        )}
+
+                        {!isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() => setIsSubmissionsModalOpen(true)}
                                 className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 group shadow-sm hover:shadow-md"
@@ -95,7 +105,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, i
                             </button>
                         )}
 
-                        {!isCodeIDE && (
+                        {!isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() =>
                                     setIsSidebarOpen(!isSidebarOpen)
