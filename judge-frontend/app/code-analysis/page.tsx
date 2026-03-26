@@ -77,6 +77,13 @@ export default function CodeAnalysisPage() {
         if (unlocked) {
             setIsAuthorized(true);
         }
+
+        const seededCode = sessionStorage.getItem("code-analysis-code");
+        if (seededCode && seededCode.trim().length > 0) {
+            setCode(seededCode);
+            sessionStorage.removeItem("code-analysis-code");
+        }
+
         setIsHydrated(true);
     }, []);
 
@@ -145,8 +152,8 @@ export default function CodeAnalysisPage() {
     if (!isAuthorized) {
         return (
             <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[32rem] h-[32rem] bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[28rem] h-[28rem] bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-[-20%] left-[-10%] w-lg h-128 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-md h-112 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="z-10 flex-1 flex items-center justify-center">
                     <div className="w-full max-w-lg rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white/75 dark:bg-gray-900/70 backdrop-blur-2xl shadow-2xl p-6 sm:p-8">
