@@ -509,7 +509,7 @@ export default function Home() {
                     <div className="flex-none h-56 md:h-36 flex flex-col md:flex-row w-full justify-between items-stretch gap-4 shrink-0">
                         <div className="flex flex-row md:flex-col w-full md:w-1/4 gap-2">
                             <button
-                                onClick={handleSubmit}
+                                onClick={handleTest}
                                 disabled={
                                     isSubmitting || !selectedProblemId
                                 }
@@ -520,10 +520,10 @@ export default function Home() {
                                     }
                                                 text-white`}
                             >
-                                {isSubmitting ? "Judging..." : "Submit"}
+                                {isSubmitting ? "Testing..." : "Test"}
                             </button>
                             <button
-                                onClick={handleTest}
+                                onClick={handleSubmit}
                                 disabled={
                                     isSubmitting || !selectedProblemId
                                 }
@@ -534,7 +534,7 @@ export default function Home() {
                                     }
                                                 text-white`}
                             >
-                                {isSubmitting ? "Testing..." : "Test"}
+                                {isSubmitting ? "Judging..." : "Submit"}
                             </button>
                         </div>
                         <div className="w-full md:w-3/4 h-full">
