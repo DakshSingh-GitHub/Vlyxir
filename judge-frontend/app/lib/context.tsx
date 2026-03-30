@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
+import { getCodeJudgePath } from './paths';
 
 type ThemeMode = "light" | "dark" | "system";
 
@@ -24,6 +25,9 @@ interface AppContextType {
   setHardwareAcceleratedThemeAnimations: (enabled: boolean) => void;
   autoHideMobilePills: boolean;
   setAutoHideMobilePills: (enabled: boolean) => void;
+  useNewUi: boolean;
+  setUseNewUi: (enabled: boolean) => void;
+  codeJudgePath: string;
   resetUiSettings: () => void;
   TITLE: string;
 }
@@ -43,6 +47,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
   const [reduceMotion, setReduceMotionState] = useState(false);
   const [hardwareAcceleratedThemeAnimations, setHardwareAcceleratedThemeAnimationsState] = useState(true);
   const [autoHideMobilePills, setAutoHideMobilePillsState] = useState(true);
+  const [useNewUi, setUseNewUiState] = useState(false);
   const [mounted, setMounted] = useState(false);
   const themeSwitchTimeoutRef = useRef<number | null>(null);
   const supportsViewTransitionRef = useRef(false);
@@ -70,6 +75,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       const savedReduceMotion = localStorage.getItem("reduce_motion") === "1";
       const savedHardwareAcceleration = localStorage.getItem("hardware_accel_theme_animations");
       const savedAutoHidePills = localStorage.getItem("autohide_mobile_pills");
+      const savedUseNewUi = localStorage.getItem("use_new_ui") === "1";
 
       let initialThemeMode: ThemeMode = "system";
       if (savedThemeMode === "light" || savedThemeMode === "dark" || savedThemeMode === "system") {
@@ -85,6 +91,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       setReduceMotionState(savedReduceMotion);
       setHardwareAcceleratedThemeAnimationsState(savedHardwareAcceleration === null ? true : savedHardwareAcceleration === "1");
       setAutoHideMobilePillsState(savedAutoHidePills === null ? true : savedAutoHidePills === "1");
+      setUseNewUiState(savedUseNewUi);
     }
   }, []);
 
@@ -141,6 +148,11 @@ export function AppWrapper({ children }: { children: ReactNode }) {
     localStorage.setItem("autohide_mobile_pills", autoHideMobilePills ? "1" : "0");
   }, [autoHideMobilePills, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("use_new_ui", useNewUi ? "1" : "0");
+  }, [useNewUi, mounted]);
+
   const setThemeMode = (mode: ThemeMode) => {
     if (typeof window === 'undefined') return;
     const root = document.documentElement;
@@ -186,6 +198,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
     setReduceMotionState(false);
     setHardwareAcceleratedThemeAnimationsState(true);
     setAutoHideMobilePillsState(true);
+    setUseNewUiState(false);
   };
 
   return (
@@ -208,6 +221,9 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       setHardwareAcceleratedThemeAnimations: setHardwareAcceleratedThemeAnimationsState,
       autoHideMobilePills,
       setAutoHideMobilePills: setAutoHideMobilePillsState,
+      useNewUi,
+      setUseNewUi: setUseNewUiState,
+      codeJudgePath: getCodeJudgePath(useNewUi),
       resetUiSettings,
       TITLE: "Code Judge"
     }}>

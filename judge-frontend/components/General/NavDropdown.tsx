@@ -3,23 +3,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { anime } from '../../app/lib/anime';
+import { useAppContext } from '../../app/lib/context';
+import { CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH } from '../../app/lib/paths';
+
+type RouteItem = {
+    name: string;
+    path: string;
+    icon: string;
+    subtext: string;
+    aliases?: string[];
+};
 
 export default function NavDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
+    const { codeJudgePath } = useAppContext();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const arrowRef = useRef<SVGSVGElement>(null);
 
-    const routes = [
-        { name: "Code Judge", path: "/code-judge", icon: "⚖️", subtext: "Select a problem and start solving!" },
+    const routes: RouteItem[] = [
+        {
+            name: "Code Judge",
+            path: codeJudgePath,
+            icon: "⚖️",
+            subtext: "Select a problem and start solving!",
+            aliases: [CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH]
+        },
         { name: "Code IDE", path: "/code-ide", icon: "💻", subtext: "Think and Build!" },
         { name: "Code Analysis", path: "/code-analysis", icon: "📃", subtext: "Now look at what you did" },
         { name: "Code Home", path: "/", icon: "👋", subtext: "See you here!" }
     ];
 
-    const currentRoute = routes.find(r => r.path === pathname) || routes[0];
+    const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -104,7 +121,7 @@ export default function NavDropdown() {
                             <button
                                 key={route.path}
                                 onClick={() => handleNavigate(route.path)}
-                                className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 ${pathname === route.path
+                                className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 ${(pathname === route.path || (route.aliases?.includes(pathname) ?? false))
                                     ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-800/30 shadow-sm"
                                     : "text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:bg-gray-50 dark:hover:bg-gray-900"
                                     }`}
@@ -116,7 +133,7 @@ export default function NavDropdown() {
                                         {route.subtext}
                                     </span>
                                 </div>
-                                {pathname === route.path && (
+                                {(pathname === route.path || (route.aliases?.includes(pathname) ?? false)) && (
                                     <div
                                         className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.8)]"
                                     />

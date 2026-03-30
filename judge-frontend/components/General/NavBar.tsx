@@ -5,6 +5,7 @@ import { anime } from '../../app/lib/anime';
 import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
 import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
+import { isCodeJudgePath } from '../../app/lib/paths';
 
 interface NavBarProps {
     isSidebarOpen: boolean;
@@ -17,7 +18,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     const pathname = usePathname();
     const router = useRouter();
     const isCodeIDE = pathname === '/code-ide';
-    const isCodeJudge = pathname === '/code-judge';
+    const isCodeJudge = isCodeJudgePath(pathname);
     const isCodeAnalysis = pathname === '/code-analysis';
     const headerRef = useRef<HTMLElement>(null);
     const navItemsRef = useRef<HTMLDivElement>(null);

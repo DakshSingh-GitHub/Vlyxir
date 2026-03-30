@@ -9,7 +9,7 @@ import Footer from "@/components/General/Footer";
 
 export default function Home() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { isDark } = useAppContext();
+    const { isDark, codeJudgePath } = useAppContext();
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -79,7 +79,7 @@ export default function Home() {
 
                     <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
                         <Link
-                            href="/code-judge"
+                            href={codeJudgePath}
                             className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/25 hover:bg-indigo-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden w-full sm:w-auto flex justify-center"
                         >
                             <span className="relative z-10 flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function Home() {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid md:grid-cols-2 gap-8 mb-32"
                 >
-                    <Link href="/code-judge" className="group">
+                    <Link href={codeJudgePath} className="group">
                         <motion.div
                             variants={itemVariants}
                             className="h-full p-8 rounded-[2.5rem] bg-linear-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-900 border border-indigo-100 dark:border-indigo-800/50 hover:border-indigo-400 dark:hover:border-indigo-400 transition-all duration-500 relative overflow-hidden flex flex-col"
@@ -197,7 +197,7 @@ export default function Home() {
                                 </div>
                                 <h3 className="text-xl md:text-3xl font-black mb-4">Meet Developer</h3>
                                 <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 font-medium leading-relaxed mb-8">
-                                    Let's have a cup of coffee together...:)
+                                    Let&apos;s have a cup of coffee together...:)
                                 </p>
                                 <div className="mt-auto flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold">
                                     Get to know me.. <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -239,9 +239,7 @@ export default function Home() {
                     </div>
                 </motion.section>
             </div>
-
             <Footer/>
-
         </div>
     );
 }

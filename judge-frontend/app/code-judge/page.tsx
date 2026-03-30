@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { anime } from "../lib/anime";
 import { getProblemById, submitCode } from "../lib/api";
 import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../lib/storage";
@@ -27,7 +28,9 @@ interface SubmissionResult extends SubmitResponse {
 
 export default function Home() {
     // State Variable Declarations
-    const { isSidebarOpen, setIsSidebarOpen, TITLE, isDark, autoHideMobilePills } = useAppContext();
+    const { isSidebarOpen, setIsSidebarOpen, TITLE, isDark, autoHideMobilePills, useNewUi } = useAppContext();
+    const pathname = usePathname();
+    const router = useRouter();
     const [problem, setProblem] = useState<Problem | null>(null);
     const [selectedProblemId, setSelectedProblemId] = useState<string>("");
     const [code, setCode] = useState(DEFAULT_CODE);
@@ -61,6 +64,12 @@ export default function Home() {
     const mobileDescriptionRef = useRef<HTMLDivElement>(null);
     const mobileCodeRef = useRef<HTMLDivElement>(null);
     const mobileSubmissionsRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (useNewUi && pathname === "/code-judge") {
+            router.replace("/code-judge-mde");
+        }
+    }, [pathname, router, useNewUi]);
 
     useEffect(() => {
         if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {

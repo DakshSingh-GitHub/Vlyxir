@@ -1,7 +1,11 @@
+"use client";
+
 import {Scale} from "lucide-react";
 import Link from "next/link";
+import { useAppContext } from "../../app/lib/context";
 
 export default function Footer() {
+    const { codeJudgePath } = useAppContext();
     return(
         <footer className="relative z-10 border-t border-gray-100 dark:border-gray-900 bg-white/50 dark:bg-gray-950/50 backdrop-blur-xl">
             <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -15,7 +19,7 @@ export default function Footer() {
                     © 2026 CodeJudge. Built with passion for the developer community.
                 </p>
                 <div className="flex items-center gap-6">
-                    <Link href="/code-judge" className="text-sm font-bold hover:text-indigo-500 transition-colors">Practice</Link>
+                    <Link href={codeJudgePath} className="text-sm font-bold hover:text-indigo-500 transition-colors">Practice</Link>
                     <Link href="/code-ide" className="text-sm font-bold hover:text-indigo-500 transition-colors">IDE</Link>
                     <Link href="/docs" className="text-sm font-bold hover:text-indigo-500 transition-colors">Documentation</Link>
                     <Link href="/meet-developer" className="text-sm font-bold hover:text-indigo-500 transition-colors">Meet Developer</Link>

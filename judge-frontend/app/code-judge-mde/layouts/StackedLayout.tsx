@@ -2,13 +2,11 @@ import { useEffect, useRef } from "react";
 import { anime } from "../../lib/anime";
 import type { DesktopLayoutProps } from "./types";
 
-export default function ClassicLayout({
+export default function StackedLayout({
     mainContentRef,
     isSidebarOpen,
     isResizing,
-    sidebarWidth,
     mainContentWidth,
-    onMouseDownSidebar,
     onMouseDownMain,
     problemList,
     problemDescription,
@@ -44,9 +42,9 @@ export default function ClassicLayout({
                 data-content-area
                 className="h-full w-full grid gap-4"
                 style={{
-                    gridTemplateColumns: `${isSidebarOpen ? `${sidebarWidth}px` : "0px"} 0.375rem minmax(0, calc(${mainContentWidth}% - 0.75rem)) 0.375rem minmax(0, calc(${100 - mainContentWidth}% - 0.75rem))`,
-                    gridTemplateRows: "minmax(0, 1fr)",
-                    gridTemplateAreas: `"list sdiv desc mdiv editor"`,
+                    gridTemplateColumns: `minmax(0, calc(${mainContentWidth}% - 0.375rem)) 0.375rem minmax(0, calc(${100 - mainContentWidth}% - 0.375rem))`,
+                    gridTemplateRows: `${isSidebarOpen ? "minmax(0, 38%)" : "0px"} minmax(0, 1fr)`,
+                    gridTemplateAreas: `"list mdiv editor" "desc mdiv editor"`,
                     transition: isResizing
                         ? "none"
                         : "grid-template-columns 300ms cubic-bezier(0.4,0,0.2,1), grid-template-rows 300ms cubic-bezier(0.4,0,0.2,1)"
@@ -55,16 +53,10 @@ export default function ClassicLayout({
                 <div
                     data-layout-panel
                     style={{ gridArea: "list" }}
-                    className={`min-h-0 min-w-0 overflow-hidden rounded-2xl border border-white/20 dark:border-gray-800/50 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl shadow-2xl transition-all duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                    className={`min-h-0 min-w-0 overflow-hidden rounded-2xl border border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.95),rgba(10,15,26,0.92))] backdrop-blur-xl shadow-[0_16px_36px_rgba(2,6,23,0.24)] transition-all duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                 >
                     {problemList}
                 </div>
-
-                <div
-                    style={{ gridArea: "sdiv" }}
-                    onMouseDown={onMouseDownSidebar}
-                    className="rounded-full bg-transparent hover:bg-indigo-500/30 cursor-col-resize transition-colors duration-200"
-                />
 
                 <div data-layout-panel style={{ gridArea: "desc" }} className="min-h-0 min-w-0">
                     {problemDescription}
@@ -73,7 +65,7 @@ export default function ClassicLayout({
                 <div
                     style={{ gridArea: "mdiv" }}
                     onMouseDown={onMouseDownMain}
-                    className="rounded-full bg-transparent hover:bg-indigo-500/30 cursor-col-resize transition-colors duration-200"
+                    className="rounded-full bg-transparent hover:bg-slate-600/30 cursor-col-resize transition-colors duration-200"
                 />
 
                 <div data-layout-panel style={{ gridArea: "editor" }} className="min-h-0 min-w-0">

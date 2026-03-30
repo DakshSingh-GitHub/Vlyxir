@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { anime } from "../../app/lib/anime";
 import { useAppContext } from "../../app/lib/context";
-import { Moon, Sun, Monitor, Type, PencilRuler, Sparkles, Smartphone, Cpu, RotateCcw, X } from "lucide-react";
+import { Moon, Sun, Monitor, Type, PencilRuler, Sparkles, Smartphone, Cpu, RotateCcw, X, LayoutGrid } from "lucide-react";
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -27,8 +28,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         setHardwareAcceleratedThemeAnimations,
         autoHideMobilePills,
         setAutoHideMobilePills,
+        useNewUi,
+        setUseNewUi,
         resetUiSettings
     } = useAppContext();
+    const router = useRouter();
+    const pathname = usePathname();
     const [fontScalePercent, setFontScalePercent] = useState(Math.round(appFontScale * 100));
 
     useEffect(() => {
@@ -76,6 +81,15 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             }
         };
     }, []);
+
+    useEffect(() => {
+        const isJudgePath = pathname === "/code-judge" || pathname === "/code-judge-mde";
+        if (!isJudgePath) return;
+        const targetPath = useNewUi ? "/code-judge-mde" : "/code-judge";
+        if (pathname !== targetPath) {
+            router.replace(targetPath);
+        }
+    }, [pathname, router, useNewUi]);
 
     const applyLiveFontScale = useCallback((percent: number) => {
         const normalized = Math.min(120, Math.max(85, percent));
@@ -181,6 +195,25 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             onBlur={() => commitFontScale(fontScalePercent)}
                             className="w-full accent-indigo-500"
                         />
+                    </section>
+
+                    <section className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <LayoutGrid className="w-4 h-4 text-violet-500" />
+                            <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Code Judge UI</h4>
+                        </div>
+                        <label className="flex items-center justify-between rounded-2xl border border-gray-200/80 dark:border-gray-700/70 p-4">
+                            <div>
+                                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">New UI</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Switches Code Judge to the alternate route and navbar.</p>
+                            </div>
+                            <input
+                                type="checkbox"
+                                checked={useNewUi}
+                                onChange={(e) => setUseNewUi(e.target.checked)}
+                                className="h-4 w-4 accent-violet-600"
+                            />
+                        </label>
                     </section>
 
                     <section className="space-y-3">

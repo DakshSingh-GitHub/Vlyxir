@@ -25,7 +25,7 @@ import { useAppContext } from '../lib/context';
 import Link from 'next/link';
 
 export default function Documentation() {
-    const { isDark } = useAppContext();
+    const { isDark, codeJudgePath } = useAppContext();
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -272,7 +272,7 @@ export default function Documentation() {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link
-                                href="/code-judge"
+                                href={codeJudgePath}
                                 className="px-10 py-4 bg-white text-indigo-600 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all hover:scale-[1.05] active:scale-95 flex items-center gap-2"
                             >
                                 Browse Problems <ArrowRight className="w-5 h-5" />
