@@ -3,7 +3,7 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/anime';
 import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
-import NavDropdown from './NavDropdown';
+import NewNavDropdown from './NewNavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/paths';
 
@@ -17,6 +17,7 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
     const router = useRouter();
+    const isHomeRoute = pathname === '/';
     const isCodeIDE = pathname === '/code-ide';
     const isCodeJudge = isCodeJudgePath(pathname);
     const isCodeAnalysis = pathname === '/code-analysis';
@@ -70,7 +71,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             ref={navItemsRef}
                             className="flex items-center gap-4 opacity-0"
                         >
-                            <NavDropdown />
+                            <NewNavDropdown />
                         </div>
                         <div className="flex items-center gap-2 md:gap-3">
                             {isCodeAnalysis && (
@@ -83,7 +84,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {!isCodeIDE && !isCodeAnalysis && (
+                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                                 <button
                                     onClick={() => setIsSubmissionsModalOpen(true)}
                                     className="group flex items-center justify-center rounded-full border border-slate-600/50 bg-slate-900/50 p-2.5 text-slate-300 transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)]"
@@ -109,7 +110,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {!isCodeIDE && !isCodeAnalysis && (
+                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                                 <button
                                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                                     className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-full border border-slate-600/50 bg-slate-900/50 p-2.5 text-slate-300 transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)]`}
@@ -127,7 +128,9 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            <div className="hidden h-8 w-px bg-slate-600/50 md:block" />
+                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                                <div className="hidden h-8 w-px bg-slate-600/50 md:block" />
+                            )}
 
                             <div className="relative" ref={profileRef}>
                                 <button

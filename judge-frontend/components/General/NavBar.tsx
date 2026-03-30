@@ -17,6 +17,7 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
     const router = useRouter();
+    const isHomeRoute = pathname === '/';
     const isCodeIDE = pathname === '/code-ide';
     const isCodeJudge = isCodeJudgePath(pathname);
     const isCodeAnalysis = pathname === '/code-analysis';
@@ -81,7 +82,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             </button>
                         )}
 
-                        {!isCodeIDE && !isCodeAnalysis && (
+                        {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() => setIsSubmissionsModalOpen(true)}
                                 className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 group shadow-sm hover:shadow-md"
@@ -106,7 +107,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             </button>
                         )}
 
-                        {!isCodeIDE && !isCodeAnalysis && (
+                        {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() =>
                                     setIsSidebarOpen(!isSidebarOpen)
@@ -131,7 +132,9 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                         )}
                     </>
 
-                    <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
+                    {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                        <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
+                    )}
 
                     <div className="relative" ref={profileRef}>
                         <button

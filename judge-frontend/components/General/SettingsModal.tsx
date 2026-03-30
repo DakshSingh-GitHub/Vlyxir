@@ -197,7 +197,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         />
                     </section>
 
-                    <section className="space-y-3">
+                    <section className="hidden space-y-3 md:block">
                         <div className="flex items-center gap-2">
                             <LayoutGrid className="w-4 h-4 text-violet-500" />
                             <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Code Judge UI</h4>
