@@ -6,6 +6,8 @@ import { createPortal } from "react-dom";
 import { getSubmissions, Submission } from "../../app/lib/storage";
 import Editor from "@monaco-editor/react";
 import { anime } from "../../app/lib/anime";
+import { useAuth } from "../../app/lib/auth-context";
+import LoginPrompt from "../Auth/LoginPrompt";
 
 interface SubmissionsModalProps {
     isOpen: boolean;
@@ -67,6 +69,7 @@ const SubmissionItem = memo(({ sub, formatDate, isSelected, onToggle }: { sub: S
 SubmissionItem.displayName = "SubmissionItem";
 
 export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalProps) {
+    const { user, isLoading: isAuthLoading } = useAuth();
     const [mounted, setMounted] = useState(false);
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -81,7 +84,12 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
         setMounted(true);
         if (isOpen) {
             document.body.style.overflow = 'hidden';
-            fetchSubmissions();
+            if (user) {
+                fetchSubmissions();
+            } else {
+                setSubmissions([]);
+                setIsLoading(false);
+            }
             
             // Open animation
             if (backdropRef.current) {
@@ -109,7 +117,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen]);
+    }, [isOpen, user]);
 
     const handleClose = () => {
         anime({
@@ -193,6 +201,33 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
     };
 
     if (!mounted || !isOpen) return null;
+
+    if (isAuthLoading) {
+        return createPortal(
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-gray-950/40 backdrop-blur-sm">
+                <div className="rounded-2xl border border-white/20 bg-white/95 px-6 py-4 text-sm font-medium text-gray-700 shadow-2xl dark:bg-gray-950 dark:text-gray-200">
+                    Checking login state...
+                </div>
+            </div>,
+            document.body
+        );
+    }
+
+    if (!user) {
+        return createPortal(
+            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-gray-950/40 backdrop-blur-sm" onClick={handleClose} />
+                <div className="relative z-10 w-full max-w-xl">
+                    <LoginPrompt
+                        title="Login to view past submissions"
+                        description="Your submission history is hidden until you sign in."
+                        nextPath="/code-judge"
+                    />
+                </div>
+            </div>,
+            document.body
+        );
+    }
 
     const ModalContent = (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">

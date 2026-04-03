@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppWrapper } from "./lib/context";
+import { AuthProvider } from "./lib/auth-context";
 import ClientLayout from "../components/General/ClientLayout";
 
 const geistSans = Geist({
@@ -112,9 +113,11 @@ export default function RootLayout({
       >
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <AppWrapper>
-          <ClientLayout>
-            {children}
-          </ClientLayout>
+          <AuthProvider>
+            <ClientLayout>
+              {children}
+            </ClientLayout>
+          </AuthProvider>
         </AppWrapper>
       </body>
     </html>

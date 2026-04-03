@@ -6,6 +6,7 @@ import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from
 import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/paths';
+import { useAuth } from '../../app/lib/auth-context';
 
 interface NavBarProps {
     isSidebarOpen: boolean;
@@ -17,6 +18,12 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
     const router = useRouter();
+    const { user, isLoading, signOut } = useAuth();
+    const displayName =
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.username ||
+        user?.email?.split("@")[0] ||
+        "Login";
     const isHomeRoute = pathname === '/';
     const isCodeIDE = pathname === '/code-ide' || pathname === '/code-ide-mde';
     const isCodeJudge = isCodeJudgePath(pathname);
@@ -82,7 +89,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             </button>
                         )}
 
-                        {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                        {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() => setIsSubmissionsModalOpen(true)}
                                 className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 group shadow-sm hover:shadow-md"
@@ -136,59 +143,77 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                         <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
                     )}
 
-                    <div className="relative" ref={profileRef}>
-                        <button
-                            onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="flex items-center gap-3 pl-1.5 pr-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md active:scale-95 group"
-                            title="Profile"
-                            aria-label="Profile"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shadow-sm overflow-hidden transition-transform group-hover:scale-105">
-                                <User className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
-                            </div>
-                            <span className="text-sm font-semibold tracking-tight hidden md:block">Hey, User</span>
-                            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
-                        </button>
+                            <div className="relative" ref={profileRef}>
+                                <button
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                    className="flex items-center gap-3 pl-1.5 pr-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md active:scale-95 group"
+                                    title="Profile"
+                                    aria-label="Profile"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shadow-sm overflow-hidden transition-transform group-hover:scale-105">
+                                        <User className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <span className="text-sm font-semibold tracking-tight hidden md:block">
+                                        {isLoading ? "Loading..." : user ? `Hey, ${displayName}` : "Login"}
+                                    </span>
+                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                </button>
 
-                        {isProfileOpen && (
-                            <div className="absolute right-0 mt-3 w-56 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-                                <div className="p-2 space-y-1">
-                                    <button
-                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
-                                    >
-                                        <User className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
-                                        Account settings
-                                    </button>
-                                    <button
-                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
-                                    >
-                                        <Settings className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
-                                        General settings
-                                    </button>
-                                    
-                                    <div className="my-1 h-px bg-gray-100 dark:bg-gray-800 mx-2" />
-                                    
-                                    <button
-                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
-                                    >
-                                        <Shield className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
-                                        Account controls
-                                    </button>
-                                    <button
-                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors group"
-                                    >
-                                        <LogOut className="w-4 h-4 text-rose-400 group-hover:text-rose-600" />
-                                        Logout
-                                    </button>
-                                </div>
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-3 w-56 rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                                        <div className="p-2 space-y-1">
+                                            {user ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                                    >
+                                                        <User className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                                        Account settings
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                                    >
+                                                        <Settings className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                                        General settings
+                                                    </button>
+
+                                                    <div className="my-1 h-px bg-gray-100 dark:bg-gray-800 mx-2" />
+
+                                                    <button
+                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                                    >
+                                                        <Shield className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                                        Account controls
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            await signOut();
+                                                            setIsProfileOpen(false);
+                                                            router.push('/login');
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-colors group"
+                                                    >
+                                                        <LogOut className="w-4 h-4 text-rose-400 group-hover:text-rose-600" />
+                                                        Logout
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => { router.push('/login'); setIsProfileOpen(false); }}
+                                                    className="group w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors"
+                                                >
+                                                    <LogInFallbackIcon />
+                                                    Login
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </div>
+                        </div>
             </div>
         </header>
     );
@@ -196,3 +221,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
 NavBar.displayName = "NavBar";
 
 export default NavBar;
+
+function LogInFallbackIcon() {
+    return <User className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />;
+}

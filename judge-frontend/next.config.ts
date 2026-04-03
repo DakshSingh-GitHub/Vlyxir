@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 import withPWAInit from "@ducanh2912/next-pwa";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -11,8 +15,9 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  // Silence Turbopack warning about Webpack plugins (like next-pwa)
-  turbopack: {},
+  turbopack: {
+    root: dirname,
+  },
 };
 
 export default withPWA(nextConfig);

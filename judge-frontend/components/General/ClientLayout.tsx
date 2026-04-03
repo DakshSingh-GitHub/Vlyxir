@@ -12,7 +12,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi } = useAppContext();
     const pathname = usePathname();
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
-    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login']
+    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register']
     const isHomePage = excludedPaths.includes(pathname);
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 

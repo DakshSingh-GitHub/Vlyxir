@@ -6,6 +6,7 @@ import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from
 import NewNavDropdown from './NewNavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/paths';
+import { useAuth } from '../../app/lib/auth-context';
 
 interface NavBarProps {
     isSidebarOpen: boolean;
@@ -17,6 +18,12 @@ interface NavBarProps {
 const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, setIsSubmissionsModalOpen, onOpenSettings }) => {
     const pathname = usePathname();
     const router = useRouter();
+    const { user, isLoading, signOut } = useAuth();
+    const displayName =
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.username ||
+        user?.email?.split("@")[0] ||
+        "Login";
     const isHomeRoute = pathname === '/';
     const isCodeIDE = pathname === '/code-ide' || pathname === '/code-ide-mde';
     const isCodeJudge = isCodeJudgePath(pathname);
@@ -84,7 +91,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                            {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                                 <button
                                     onClick={() => setIsSubmissionsModalOpen(true)}
                                     className="group flex items-center justify-center rounded-full border border-slate-600/50 bg-slate-900/50 p-2.5 text-slate-300 transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)]"
@@ -142,44 +149,62 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                     <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-slate-600/50 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-transform group-hover:scale-105">
                                         <User className="w-4.5 h-4.5 text-cyan-100" />
                                     </div>
-                                    <span className="hidden text-sm font-medium tracking-[0.18em] text-slate-100/90 md:block">HEY, USER</span>
+                                    <span className="hidden text-sm font-medium tracking-[0.18em] text-slate-100/90 md:block">
+                                        {isLoading ? "LOADING..." : user ? `HEY, ${displayName.toUpperCase()}` : "LOGIN"}
+                                    </span>
                                     <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {isProfileOpen && (
                                     <div className="absolute right-0 z-50 mt-3 w-60 overflow-hidden rounded-[1.75rem] border border-slate-700/60 bg-[linear-gradient(180deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))] shadow-[0_20px_48px_rgba(2,6,23,0.38)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="space-y-1 p-2">
-                                            <button
-                                                onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
-                                            >
-                                                <User className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
-                                                Account settings
-                                            </button>
-                                            <button
-                                                onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
-                                                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
-                                            >
-                                                <Settings className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
-                                                General settings
-                                            </button>
+                                            {user ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
+                                                    >
+                                                        <User className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
+                                                        Account settings
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
+                                                        className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
+                                                    >
+                                                        <Settings className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
+                                                        General settings
+                                                    </button>
 
-                                            <div className="mx-2 my-1 h-px bg-slate-600/50" />
+                                                    <div className="mx-2 my-1 h-px bg-slate-600/50" />
 
-                                            <button
-                                                onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
-                                            >
-                                                <Shield className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
-                                                Account controls
-                                            </button>
-                                            <button
-                                                onClick={() => { router.push('/'); setIsProfileOpen(false); }}
-                                                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-rose-300 transition-colors hover:bg-rose-500/10"
-                                            >
-                                                <LogOut className="w-4 h-4 text-rose-300 group-hover:text-rose-200" />
-                                                Logout
-                                            </button>
+                                                    <button
+                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
+                                                    >
+                                                        <Shield className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
+                                                        Account controls
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            await signOut();
+                                                            setIsProfileOpen(false);
+                                                            router.push('/login');
+                                                        }}
+                                                        className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-rose-300 transition-colors hover:bg-rose-500/10"
+                                                    >
+                                                        <LogOut className="w-4 h-4 text-rose-300 group-hover:text-rose-200" />
+                                                        Logout
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => { router.push('/login'); setIsProfileOpen(false); }}
+                                                    className="group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800/80"
+                                                >
+                                                    <User className="w-4 h-4 text-slate-400 group-hover:text-cyan-200" />
+                                                    Login
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 )}

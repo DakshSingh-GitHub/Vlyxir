@@ -11,11 +11,14 @@ import CodeEditor from "../../../components/Editor/CodeEditor";
 import { ideLayoutOptions, IdeUiLayout } from "./layoutOptions";
 import ClassicIdeLayout from "./layouts/ClassicIdeLayout";
 import WideIdeLayout from "./layouts/WideIdeLayout";
+import { useAuth } from "../../lib/auth-context";
+import LoginPrompt from "../../../components/Auth/LoginPrompt";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
 export default function CodeTestPage() {
     const { isDark, autoHideMobilePills, useNewUi } = useAppContext();
+    const { user, isLoading: isAuthLoading } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
     const [code, setCode] = useState("# Write your code here to test\nprint('Hello, CodeJudge!')");
@@ -180,6 +183,10 @@ export default function CodeTestPage() {
     }, [output, isMounted]);
 
     const handleRun = async () => {
+        if (!user) {
+            router.push(`/login?next=${encodeURIComponent(pathname)}`);
+            return;
+        }
         if (isLoading) return;
         if (isMobile) {
             setMobileTab("output");
@@ -246,15 +253,17 @@ export default function CodeTestPage() {
                     </button>
                     <button
                         onClick={handleRun}
-                        disabled={isLoading}
+                        disabled={isLoading || isAuthLoading || !user}
                         title="Run Code"
                         className={`group relative p-2.5 rounded-xl transition-[background-color,transform] duration-200 shadow-lg overflow-hidden active:scale-95 ${isLoading
                             ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                            : isAuthLoading || !user
+                            ? "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
                             : "bg-emerald-600 text-white shadow-emerald-500/20 hover:bg-emerald-700"
                             }`}
                     >
                         <div className="relative z-10 flex items-center justify-center">
-                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 fill-current" />}
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className={`w-4 h-4 fill-current ${isAuthLoading || !user ? "opacity-50" : ""}`} />}
                         </div>
                         {!isLoading && (
                             <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
@@ -289,6 +298,17 @@ export default function CodeTestPage() {
     );
 
     const outputPanel = (
+        isAuthLoading ? (
+            <div className="h-full min-h-0 flex flex-col items-center justify-center rounded-4xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+                Checking login state...
+            </div>
+        ) : !user ? (
+            <LoginPrompt
+                title="Login to run code"
+                description="Code execution is disabled until you sign in."
+                nextPath={pathname}
+            />
+        ) : (
         <div className="h-full min-h-0 flex flex-col bg-white dark:bg-gray-900 shadow-xl shadow-gray-200/50 dark:shadow-none rounded-4xl overflow-hidden border border-gray-100 dark:border-gray-800 transition-shadow duration-300 hover:shadow-2xl hover:shadow-purple-500/5">
             <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-900/50">
                 <div className="flex items-center gap-2">
@@ -348,12 +368,13 @@ export default function CodeTestPage() {
                 <div className="mt-4 pt-4 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between opacity-50 flex-none">
                     <div className="flex items-center gap-2 font-mono text-[10px]">
                         <span className="text-green-500">➜</span>
-                        <span className="text-gray-500 dark:text-gray-400">python runtime</span>
+                        <span className="text-gray-500 dark:text-gray-400">{user ? "python runtime" : "login required"}</span>
                     </div>
                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">UTF-8</div>
                 </div>
             </div>
         </div>
+        )
     );
 
     const desktopLayoutProps = {
