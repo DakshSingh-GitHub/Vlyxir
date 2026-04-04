@@ -18,7 +18,7 @@ export default function NavDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
-    const { codeJudgePath, codeIdePath, codeAnalysisPath } = useAppContext();
+    const { codeJudgePath, codeIdePath, codeAnalysisPath, isDark } = useAppContext();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const arrowRef = useRef<SVGSVGElement>(null);
@@ -103,17 +103,20 @@ export default function NavDropdown() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-[0_0_12px_--theme(--color-indigo-500/0.3)] transition-all duration-300 group active:scale-95"
+                className={`flex items-center gap-3 px-5 py-2.5 rounded-full border transition-all duration-300 group active:scale-95 ${isDark
+                    ? "bg-slate-900/90 border-slate-700/70 text-slate-100 shadow-sm hover:shadow-[0_0_12px_rgba(99,102,241,0.25)]"
+                    : "bg-white border-slate-200 text-slate-900 shadow-sm hover:shadow-[0_0_12px_rgba(99,102,241,0.18)]"
+                    }`}
             >
-                <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-gray-800 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition-transform ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
                     {currentRoute.icon}
                 </div>
-                <span className="text-xl font-black tracking-tighter text-gray-900 dark:text-white">
+                <span className={`text-xl font-black tracking-tighter ${isDark ? "text-white" : "text-slate-900"}`}>
                     {currentRoute.name}
                 </span>
                 <svg
                     ref={arrowRef}
-                    className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors"
+                    className={`w-4 h-4 transition-colors ${isDark ? "text-slate-400 group-hover:text-indigo-300" : "text-slate-400 group-hover:text-indigo-500"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -126,7 +129,10 @@ export default function NavDropdown() {
             {isOpen && (
                 <div
                     ref={menuRef}
-                    className="absolute top-full left-0 mt-3 w-80 bg-white/95 dark:bg-gray-950/95 backdrop-blur-2xl border border-gray-100 dark:border-gray-800 rounded-[2rem] shadow-2xl p-3 z-50 overflow-hidden opacity-0"
+                    className={`absolute top-full left-0 mt-3 w-80 backdrop-blur-2xl border rounded-[2rem] shadow-2xl p-3 z-50 overflow-hidden opacity-0 ${isDark
+                        ? "bg-slate-950/95 border-slate-800"
+                        : "bg-white/95 border-slate-200"
+                        }`}
                 >
                     <div className="space-y-1">
                         {routes.map((route) => (
@@ -134,14 +140,18 @@ export default function NavDropdown() {
                                 key={route.path}
                                 onClick={() => handleNavigate(route.path)}
                                 className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 ${(pathname === route.path || (route.aliases?.includes(pathname) ?? false))
-                                    ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-800/30 shadow-sm"
-                                    : "text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-300 hover:bg-gray-50 dark:hover:bg-gray-900"
+                                    ? (isDark
+                                        ? "bg-indigo-900/20 text-indigo-300 border border-indigo-800/30 shadow-sm"
+                                        : "bg-indigo-50/70 text-indigo-700 border border-indigo-100/70 shadow-sm")
+                                    : (isDark
+                                        ? "text-slate-400 hover:text-indigo-300 hover:bg-slate-900"
+                                        : "text-slate-500 hover:text-indigo-600 hover:bg-slate-50")
                                     }`}
                             >
                                 <span className="text-2xl">{route.icon}</span>
                                 <div className="flex flex-col items-start text-left">
                                     <span className="font-bold text-[15px] tracking-tight">{route.name}</span>
-                                    <span className="text-[10px] leading-tight opacity-60 font-medium">
+                                    <span className={`text-[10px] leading-tight font-medium ${isDark ? "opacity-60" : "opacity-70"}`}>
                                         {route.subtext}
                                     </span>
                                 </div>

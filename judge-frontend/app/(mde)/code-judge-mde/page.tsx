@@ -437,12 +437,50 @@ export default function Home() {
         ? Math.max(0, Math.min(100, (passedCount / totalCount) * 100))
         : 0;
 
+    const panelShellClass = isDark
+        ? "border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)]"
+        : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.94))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]";
+    const panelHeaderClass = isDark ? "border-slate-700/70" : "border-slate-200";
+    const titleClass = isDark ? "text-white dark:text-gray-50" : "text-slate-900";
+    const subtitleClass = isDark ? "text-slate-400 dark:text-slate-500" : "text-slate-500";
+    const tabShellClass = isDark
+        ? "border-slate-700/70 bg-slate-900/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+        : "border-slate-200 bg-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]";
+    const tabActiveClass = isDark
+        ? "border-slate-600/50 bg-slate-800/60"
+        : "border-slate-200 bg-white shadow-sm";
+    const tabInactiveClass = isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900";
+    const codeContainerClass = isDark
+        ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(10,15,26,0.94))] shadow-[0_16px_36px_rgba(2,6,23,0.22)]"
+        : "border-slate-200 bg-white shadow-[0_16px_36px_rgba(15,23,42,0.08)]";
+    const resultCardClass = isDark
+        ? "p-4 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(10,15,26,0.94))] text-slate-100 h-full overflow-y-auto border border-slate-700/70 shadow-[0_16px_36px_rgba(2,6,23,0.22)] transition-all duration-300"
+        : "p-4 rounded-[1.75rem] bg-white text-slate-900 h-full overflow-y-auto border border-slate-200 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition-all duration-300";
+    const resultTextClass = isDark ? "text-slate-400" : "text-slate-600";
+    const testButtonClass = isDark
+        ? "bg-[linear-gradient(135deg,#0f172a,#1e293b)] hover:brightness-110 active:scale-[0.98]"
+        : "bg-[linear-gradient(135deg,#1d4ed8,#2563eb)] hover:brightness-110 active:scale-[0.98]";
+    const submitButtonClass = isDark
+        ? "bg-[linear-gradient(135deg,#0f766e,#1d4ed8)] hover:brightness-110 active:scale-[0.98]"
+        : "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] hover:brightness-110 active:scale-[0.98]";
+    const executionBadgeClass = isDark
+        ? "rounded-full border border-slate-700/70 bg-slate-900/70 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-300"
+        : "rounded-full border border-slate-200 bg-slate-100 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600";
+    const mobilePillShellClass = isDark
+        ? "bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))] border-slate-700/70 shadow-[0_18px_42px_rgba(2,6,23,0.35)]"
+        : "bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(241,245,249,0.96))] border-slate-200 shadow-[0_18px_42px_rgba(15,23,42,0.14)]";
+    const mobilePillActiveClass = isDark ? "bg-slate-800/70 text-white" : "bg-white text-slate-900 shadow-sm";
+    const mobilePillInactiveClass = isDark ? "text-slate-400 hover:bg-slate-800/60" : "text-slate-500 hover:bg-slate-100";
+    const modalShellClass = isDark
+        ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
+        : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
+
     const problemDescriptionPanel = (
-        <div className={`h-full min-h-0 overflow-hidden flex flex-col rounded-4xl border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)] ${isMobile && mobileTab !== "description" ? "hidden" : "flex"}`}>
-            <div className="flex items-center justify-between border-b border-slate-700/70 px-6 py-5">
+        <div className={`h-full min-h-0 overflow-hidden flex flex-col rounded-4xl backdrop-blur-2xl ${panelShellClass} ${isMobile && mobileTab !== "description" ? "hidden" : "flex"}`}>
+            <div className={`flex items-center justify-between border-b px-6 py-5 ${panelHeaderClass}`}>
                 <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-400 dark:text-slate-500">Challenge brief</p>
-                    <h2 className="mt-1 text-base md:text-lg font-semibold text-white dark:text-gray-50">
+                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${subtitleClass}`}>Challenge brief</p>
+                    <h2 className={`mt-1 text-base md:text-lg font-semibold ${titleClass}`}>
                         Problem
                     </h2>
                 </div>
@@ -456,23 +494,23 @@ export default function Home() {
     );
 
     const editorAndSubmissionsPanel = (
-        <div className={`h-full min-h-0 overflow-hidden flex flex-col rounded-4xl border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)] ${isMobile && (mobileTab === "problem" || mobileTab === "description") ? "hidden" : "flex"}`}>
-            <div className={`flex items-center justify-between px-5 py-3 border-b border-slate-700/70 ${isMobile ? "hidden" : "flex"}`}>
+        <div className={`h-full min-h-0 overflow-hidden flex flex-col rounded-4xl backdrop-blur-2xl ${panelShellClass} ${isMobile && (mobileTab === "problem" || mobileTab === "description") ? "hidden" : "flex"}`}>
+            <div className={`flex items-center justify-between px-5 py-3 border-b ${panelHeaderClass} ${isMobile ? "hidden" : "flex"}`}>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                    <div className={`flex items-center gap-2 rounded-full border p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${tabShellClass}`}>
                         {(["editor", "submissions"] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`relative rounded-full px-4 py-2 text-xs md:text-sm font-medium uppercase tracking-[0.18em] transition-colors duration-200 ${activeTab === tab
-                                    ? "text-white dark:text-white"
-                                    : "text-slate-400 dark:text-gray-400 hover:text-white dark:hover:text-gray-300"
+                                    ? (isDark ? "text-white" : "text-slate-900")
+                                    : tabInactiveClass
                                     }`}
                             >
                                 {activeTab === tab && (
                                     <>
                                         <div
-                                            className="absolute inset-0 rounded-full border border-slate-600/50 bg-slate-800/60 dark:border-slate-600/40 dark:bg-slate-800/50"
+                                            className={`absolute inset-0 rounded-full ${tabActiveClass}`}
                                         />
                                     </>
                                 )}
@@ -484,7 +522,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.24em] text-slate-400 dark:text-gray-500">
+                <div className={`flex items-center gap-2 text-xs font-medium uppercase tracking-[0.24em] ${subtitleClass}`}>
                     {activeTab === "editor" ? (
                         <span className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Ready</span>
                     ) : (
@@ -498,7 +536,7 @@ export default function Home() {
                     ref={mobileCodeRef}
                     className={`flex-1 min-h-0 flex flex-col gap-4 ${(activeTab === "editor" && !isMobile) || (isMobile && mobileTab === "code") ? "flex" : "hidden"}`}
                 >
-                    <div className="flex-1 min-h-0 w-full overflow-hidden rounded-[1.75rem] border border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(10,15,26,0.94))] shadow-[0_16px_36px_rgba(2,6,23,0.22)]">
+                    <div className={`flex-1 min-h-0 w-full overflow-hidden rounded-[1.75rem] border ${codeContainerClass}`}>
                         <CodeEditor
                             code={code}
                             setCode={setCode}
@@ -515,12 +553,10 @@ export default function Home() {
                                 disabled={
                                     isSubmitting || !selectedProblemId
                                 }
-                                className={`px-6 py-3 rounded-[1.25rem] font-semibold uppercase tracking-[0.16em] flex-1 flex justify-center items-center transition-all duration-300 shadow-[0_14px_30px_rgba(2,6,23,0.18)] hover:shadow-[0_18px_36px_rgba(2,6,23,0.24)] text-sm
-                                                ${isSubmitting
-                                        ? "bg-slate-400 cursor-not-allowed"
-                                        : "bg-[linear-gradient(135deg,#0f172a,#1e293b)] hover:brightness-110 active:scale-[0.98]"
-                                    }
-                                                text-white`}
+                                className={`px-6 py-3 rounded-[1.25rem] font-semibold uppercase tracking-[0.16em] flex-1 flex justify-center items-center transition-all duration-300 shadow-[0_14px_30px_rgba(2,6,23,0.18)] hover:shadow-[0_18px_36px_rgba(2,6,23,0.24)] text-sm text-white ${isSubmitting
+                                    ? "bg-slate-400 cursor-not-allowed"
+                                    : testButtonClass
+                                    }`}
                             >
                                 {isSubmitting ? "Testing..." : "Test"}
                             </button>
@@ -529,28 +565,26 @@ export default function Home() {
                                 disabled={
                                     isSubmitting || !selectedProblemId || !user || isAuthLoading
                                 }
-                                className={`px-6 py-3 rounded-[1.25rem] font-semibold uppercase tracking-[0.16em] flex-1 flex justify-center items-center transition-all duration-300 shadow-[0_14px_30px_rgba(2,6,23,0.18)] hover:shadow-[0_18px_36px_rgba(2,6,23,0.24)] text-sm
-                                                ${isSubmitting
-                                        ? "bg-slate-400 cursor-not-allowed"
-                                        : (!user || isAuthLoading)
+                                className={`px-6 py-3 rounded-[1.25rem] font-semibold uppercase tracking-[0.16em] flex-1 flex justify-center items-center transition-all duration-300 shadow-[0_14px_30px_rgba(2,6,23,0.18)] hover:shadow-[0_18px_36px_rgba(2,6,23,0.24)] text-sm text-white ${isSubmitting
+                                    ? "bg-slate-400 cursor-not-allowed"
+                                    : (!user || isAuthLoading)
                                         ? "bg-slate-500/70 cursor-not-allowed"
-                                        : "bg-[linear-gradient(135deg,#0f766e,#1d4ed8)] hover:brightness-110 active:scale-[0.98]"
-                                    }
-                                                text-white`}
+                                        : submitButtonClass
+                                    }`}
                             >
                                 {isSubmitting ? "Judging..." : (!user ? "Log in to Submit" : "Submit")}
                             </button>
                         </div>
                         <div className="w-full md:w-3/4 h-full">
-                            <div className="p-4 rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(15,23,42,0.92),rgba(10,15,26,0.94))] text-slate-100 h-full overflow-y-auto border border-slate-700/70 shadow-[0_16px_36px_rgba(2,6,23,0.22)] transition-all duration-300">
+                            <div className={resultCardClass}>
                                 {!result ? (
                                     <div
                                         className="flex flex-col items-center justify-center h-full space-y-3"
                                     >
-                                        <div className="rounded-full border border-slate-700/70 bg-slate-900/70 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-300">
+                                        <div className={executionBadgeClass}>
                                             Execution
                                         </div>
-                                        <p className="text-slate-400 italic text-center text-sm">
+                                        <p className={`${resultTextClass} italic text-center text-sm`}>
                                             Quiet workspace. Run a dry test or send the final submission when ready.
                                             <br />
                                             <span className="text-slate-500 text-xs mt-1 inline-block">Do not add prompts to input.</span>
@@ -673,14 +707,14 @@ export default function Home() {
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] dark:bg-[#07111d] text-gray-100 dark:text-gray-50 relative overflow-hidden font-sans selection:bg-slate-300/30`}>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]" />
-            <div className="pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full bg-slate-900/40 blur-[130px]" />
-            <div className="pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full bg-slate-800/40 blur-[150px]" />
-            <div className="pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full bg-slate-700/20 blur-[140px]" />
+        <div className={`flex-1 flex flex-col min-h-0 relative overflow-hidden font-sans selection:bg-slate-300/30 ${isDark ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] dark:bg-[#07111d] text-gray-100 dark:text-gray-50" : "bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900"}`}>
+            <div className={`pointer-events-none absolute inset-0 ${isDark ? "bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]"}`} />
+            <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${isDark ? "bg-slate-900/40" : "bg-white/60"}`} />
+            <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-slate-800/40" : "bg-sky-200/40"}`} />
+            <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${isDark ? "bg-slate-700/20" : "bg-cyan-200/35"}`} />
 
             {!isMounted ? (
-                <div className="flex-1 flex flex-col items-center justify-center bg-slate-950/70 dark:bg-[#07111d] z-50">
+                <div className={`flex-1 flex flex-col items-center justify-center z-50 ${isDark ? "bg-slate-950/70 dark:bg-[#07111d]" : "bg-white/80"}`}>
                     <div
                         ref={loaderTitleRef}
                         className="text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white via-slate-300 to-slate-500"
@@ -752,18 +786,18 @@ export default function Home() {
                                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                                 aria-label="Close layout selector"
                             />
-                            <div className="relative z-10 w-full max-w-md rounded-4xl border border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.35)] p-5">
+                            <div className={`relative z-10 w-full max-w-md rounded-4xl border backdrop-blur-2xl p-5 ${modalShellClass}`}>
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-white">Select UI Grid</h3>
-                                        <p className="text-sm text-slate-400">Choose a layout for the Code Judge workspace.</p>
+                                        <h3 className={`text-lg font-semibold ${titleClass}`}>Select UI Grid</h3>
+                                        <p className={`text-sm ${subtitleClass}`}>Choose a layout for the Code Judge workspace.</p>
                                     </div>
                                     <button
                                         onClick={() => setIsLayoutModalOpen(false)}
-                                        className="p-2 rounded-full hover:bg-slate-800/70 transition-colors"
+                                        className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-800/70" : "hover:bg-slate-100"}`}
                                         aria-label="Close"
                                     >
-                                        <X className="w-4 h-4 text-slate-300" />
+                                        <X className={`w-4 h-4 ${isDark ? "text-slate-300" : "text-slate-500"}`} />
                                     </button>
                                 </div>
                                 <div className="space-y-3">
@@ -776,15 +810,15 @@ export default function Home() {
                                                 setIsLayoutModalOpen(false);
                                             }}
                                             className={`w-full text-left rounded-[1.35rem] border px-4 py-3 transition-all duration-200 ${selectedLayout === option.id
-                                                ? "border-slate-600/70 bg-slate-800/70"
-                                                : "border-slate-700/70 hover:border-slate-500/70 hover:bg-slate-800/60"
+                                                ? (isDark ? "border-slate-600/70 bg-slate-800/70" : "border-slate-300 bg-slate-50")
+                                                : (isDark ? "border-slate-700/70 hover:border-slate-500/70 hover:bg-slate-800/60" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50")
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <span className="font-semibold text-sm text-white">{option.label}</span>
-                                                {selectedLayout === option.id && <PanelTop className="w-4 h-4 text-slate-300" />}
+                                                <span className={`font-semibold text-sm ${titleClass}`}>{option.label}</span>
+                                                {selectedLayout === option.id && <PanelTop className={`w-4 h-4 ${isDark ? "text-slate-300" : "text-slate-500"}`} />}
                                             </div>
-                                            <p className="mt-1 text-xs text-slate-400">{option.description}</p>
+                                            <p className={`mt-1 text-xs ${subtitleClass}`}>{option.description}</p>
                                         </button>
                                     ))}
                                 </div>
@@ -809,12 +843,12 @@ export default function Home() {
                                     : "translate-x-[-50%] translate-y-24 opacity-0 pointer-events-none"
                                     }`}
                             >
-                                <div className="flex items-center gap-2 p-1.5 rounded-full bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))] backdrop-blur-3xl border border-slate-700/70 shadow-[0_18px_42px_rgba(2,6,23,0.35)]">
+                                <div className={`flex items-center gap-2 p-1.5 rounded-full backdrop-blur-3xl border ${mobilePillShellClass}`}>
                                     <button
                                         onClick={() => handleMobileTabChange("problem")}
                                         className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "problem"
-                                            ? "bg-slate-800/70 text-white"
-                                            : "text-slate-400 hover:bg-slate-800/60"
+                                            ? mobilePillActiveClass
+                                            : mobilePillInactiveClass
                                             }`}
                                     >
                                         <List className={`w-5 h-5 ${mobileTab === "problem" ? "stroke-[2.5px]" : "stroke-2"}`} />
@@ -823,8 +857,8 @@ export default function Home() {
                                     <button
                                         onClick={() => handleMobileTabChange("description")}
                                         className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "description"
-                                            ? "bg-slate-800/70 text-white"
-                                            : "text-slate-400 hover:bg-slate-800/60"
+                                            ? mobilePillActiveClass
+                                            : mobilePillInactiveClass
                                             }`}
                                     >
                                         <FileText className={`w-5 h-5 ${mobileTab === "description" ? "stroke-[2.5px]" : "stroke-2"}`} />
@@ -833,8 +867,8 @@ export default function Home() {
                                     <button
                                         onClick={() => handleMobileTabChange("code")}
                                         className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "code"
-                                            ? "bg-slate-800/70 text-white"
-                                            : "text-slate-400 hover:bg-slate-800/60"
+                                            ? mobilePillActiveClass
+                                            : mobilePillInactiveClass
                                             }`}
                                     >
                                         <Code className={`w-5 h-5 ${mobileTab === "code" ? "stroke-[2.5px]" : "stroke-2"}`} />
@@ -843,8 +877,8 @@ export default function Home() {
                                     <button
                                         onClick={() => handleMobileTabChange("submissions")}
                                         className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "submissions"
-                                            ? "bg-slate-800/70 text-white"
-                                            : "text-slate-400 hover:bg-slate-800/60"
+                                            ? mobilePillActiveClass
+                                            : mobilePillInactiveClass
                                             }`}
                                     >
                                         <History className={`w-5 h-5 ${mobileTab === "submissions" ? "stroke-[2.5px]" : "stroke-2"}`} />
