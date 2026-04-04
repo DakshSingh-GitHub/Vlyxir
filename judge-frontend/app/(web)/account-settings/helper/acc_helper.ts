@@ -34,6 +34,11 @@ export function normalizeUsername(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, "");
 }
 
+function getMetadataString(user: User, key: string) {
+  const value = user.user_metadata?.[key as keyof typeof user.user_metadata];
+  return typeof value === "string" ? value : undefined;
+}
+
 export function profileToFormValues(profile: ProfileRecord): ProfileFormValues {
   return {
     full_name: profile.full_name || "",
@@ -44,8 +49,10 @@ export function profileToFormValues(profile: ProfileRecord): ProfileFormValues {
 }
 
 export function buildFallbackProfile(user: User): ProfileRecord {
-  const fullName = user.user_metadata?.full_name || user.user_metadata?.name || "";
-  const username = user.user_metadata?.username || user.email?.split("@")[0] || "";
+  const fullName = getMetadataString(user, "full_name") || getMetadataString(user, "name") || "";
+  const username = getMetadataString(user, "username") || user.email?.split("@")[0] || "";
+  const bio = getMetadataString(user, "bio") || "";
+  const country = getMetadataString(user, "country") || "";
 
   return {
     id: user.id,
@@ -54,8 +61,8 @@ export function buildFallbackProfile(user: User): ProfileRecord {
     email: user.email || "",
     created_at: user.created_at || new Date().toISOString(),
     updated_at: user.updated_at || user.created_at || new Date().toISOString(),
-    bio: "",
-    country: "",
+    bio,
+    country,
   };
 }
 
@@ -87,15 +94,20 @@ export async function getAccountProfile(user: User): Promise<ProfileRecord> {
     return buildFallbackProfile(user);
   }
 
+  const metadataFullName = getMetadataString(user, "full_name") || getMetadataString(user, "name");
+  const metadataUsername = getMetadataString(user, "username");
+  const metadataBio = getMetadataString(user, "bio");
+  const metadataCountry = getMetadataString(user, "country");
+
   return {
     id: data.id,
-    full_name: data.full_name || "",
-    username: data.username || "",
+    full_name: data.full_name || metadataFullName || "",
+    username: data.username || metadataUsername || "",
     email: data.email || user.email || "",
     created_at: data.created_at || user.created_at || new Date().toISOString(),
     updated_at: data.updated_at || data.created_at || user.updated_at || new Date().toISOString(),
-    bio: data.bio ?? "",
-    country: data.country ?? "",
+    bio: data.bio ?? metadataBio ?? "",
+    country: data.country ?? metadataCountry ?? "",
   };
 }
 
@@ -129,7 +141,7 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
   }
 
   const nowIso = new Date().toISOString();
-  const payload = {
+  const profilePayload = {
     id: user.id,
     full_name: trimmedFullName,
     username: normalizedUsername,
@@ -141,7 +153,7 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
 
   const { data, error } = await supabase
     .from(PROFILE_TABLE)
-    .upsert(payload, { onConflict: "id" })
+    .upsert(profilePayload, { onConflict: "id" })
     .select("id, full_name, username, email, created_at, updated_at, bio, country")
     .single();
 
@@ -152,7 +164,10 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
   const { error: authUpdateError } = await supabase.auth.updateUser({
     data: {
       full_name: trimmedFullName,
+      name: trimmedFullName,
       username: normalizedUsername,
+      bio: trimmedBio,
+      country: trimmedCountry,
     },
   });
 
@@ -165,10 +180,9 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     full_name: data.full_name || trimmedFullName,
     username: data.username || normalizedUsername,
     email: data.email || user.email || "",
-    created_at: data.created_at || nowIso,
+    created_at: data.created_at || user.created_at || nowIso,
     updated_at: data.updated_at || nowIso,
-    bio: data.bio ?? "",
-    country: data.country ?? "",
+    bio: data.bio ?? trimmedBio,
+    country: data.country ?? trimmedCountry,
   };
 }
-
