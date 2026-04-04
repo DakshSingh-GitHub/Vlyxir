@@ -72,12 +72,12 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
             ref={headerRef}
             className="sticky top-0 z-50 shrink-0 px-3 pt-4 pb-2 opacity-0 md:px-6 md:pt-5 md:pb-3"
         >
-            <div className="mx-auto flex max-w-[1600px] justify-center">
-                <div className={`relative w-[90vw] max-w-[90vw] rounded-full px-4 py-3 backdrop-blur-3xl before:pointer-events-none before:absolute before:inset-[1px] before:rounded-full before:content-[''] ${isDark
+            <div className="mx-auto flex max-w-400 justify-center">
+                <div className={`relative w-[90vw] max-w-[90vw] rounded-full px-4 py-3 backdrop-blur-3xl before:pointer-events-none before:absolute before:inset-px before:rounded-full before:content-[''] ${isDark
                     ? "border border-slate-700/60 bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.9))] shadow-[0_22px_60px_rgba(2,6,23,0.5)] before:border before:border-slate-600/40"
                     : "border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(241,245,249,0.94))] shadow-[0_22px_60px_rgba(15,23,42,0.12)] before:border before:border-slate-200/70"
                     }`}>
-                    <div className={`pointer-events-none absolute inset-x-[22%] top-0 h-px bg-gradient-to-r from-transparent via-current to-transparent ${isDark ? "text-slate-500/20" : "text-slate-300/80"}`} />
+                    <div className={`pointer-events-none absolute inset-x-[22%] top-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-slate-500/20" : "text-slate-300/80"}`} />
                     <div className="relative flex items-center justify-between gap-3">
                         <div
                             ref={navItemsRef}
@@ -167,8 +167,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                     aria-label="Profile"
                                 >
                                     <div className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-transform group-hover:scale-105 ${isDark
-                                        ? "border-slate-600/50 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
-                                        : "border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100"
+                                        ? "border-slate-600/50 bg-linear-to-br from-slate-700 via-slate-800 to-slate-900"
+                                        : "border-slate-200 bg-linear-to-br from-slate-50 via-white to-slate-100"
                                         }`}>
                                         <User className={`w-4.5 h-4.5 ${isDark ? "text-cyan-100" : "text-slate-600"}`} />
                                     </div>
@@ -194,7 +194,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                             {user ? (
                                                 <>
                                                     <button
-                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        onClick={() => { router.push('/account-settings'); setIsProfileOpen(false); }}
                                                         className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
                                                     >
                                                         <User className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />
