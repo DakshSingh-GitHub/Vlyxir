@@ -1,7 +1,7 @@
 "use client";
 
 import { X, History, Sparkles, ChevronDown, CheckCircle2, XCircle, Clock, ExternalLink, Code2, Terminal, ChevronRight } from "lucide-react";
-import { useEffect, useState, useMemo, memo, useRef } from "react";
+import { useEffect, useState, useMemo, memo, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { getSubmissions, Submission } from "../../app/lib/storage";
 import Editor from "@monaco-editor/react";
@@ -137,7 +137,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
         });
     };
 
-    const fetchSubmissions = async () => {
+    const fetchSubmissions = useCallback(async () => {
         setIsLoading(true);
         try {
             const data = await getSubmissions();
@@ -147,7 +147,18 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen || !user) return;
+
+        const handleSubmissionUpdate = () => {
+            fetchSubmissions();
+        };
+
+        window.addEventListener("submission-updated", handleSubmissionUpdate);
+        return () => window.removeEventListener("submission-updated", handleSubmissionUpdate);
+    }, [isOpen, user, fetchSubmissions]);
 
     const grouped = useMemo(() => {
         return submissions.reduce((acc, sub) => {

@@ -299,6 +299,7 @@ export default function Home() {
         try {
             await deleteSubmission(id);
             setPastSubmissions(prev => prev.filter(sub => sub.id !== id));
+            window.dispatchEvent(new CustomEvent('submission-updated'));
         } catch (error) {
             console.error("Failed to delete submission", error);
         }
