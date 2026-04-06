@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { supabase } from "../../app/lib/supabase/client";
 import { useAuth } from "../../app/lib/auth-context";
 
@@ -163,12 +163,12 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       scale: 1,
       transition: {
         duration: reduceMotion ? 0.01 : 0.5,
-        ease: "easeOut",
-        when: "beforeChildren",
+        ease: "easeOut" as const,
+        when: "beforeChildren" as const,
         staggerChildren: reduceMotion ? 0 : 0.08,
       },
     },
-  };
+  } satisfies Variants;
 
   const itemVariants = {
     hidden: {
@@ -180,25 +180,25 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       y: 0,
       transition: {
         duration: reduceMotion ? 0.01 : 0.32,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
-  };
+  } satisfies Variants;
 
-  const floatVariants = {
+  const floatVariants: Variants = {
     animate: {
       y: reduceMotion ? 0 : [0, -12, 0],
       x: reduceMotion ? 0 : [0, 8, 0],
       transition: {
         duration: 12,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   };
 
   return (
-    <div className="relative isolate flex h-[100dvh] w-full overflow-hidden bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] px-4 py-4 text-slate-100 md:py-6">
+    <div className="relative isolate flex h-dvh w-full overflow-hidden bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] px-4 py-4 text-slate-100 md:py-6">
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(124,58,237,0.16),transparent_30%)]"
