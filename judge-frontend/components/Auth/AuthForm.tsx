@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus } from "lucide-react";
+import { ArrowRight, Check, CircleAlert, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { supabase } from "../../app/lib/supabase/client";
 import { useAuth } from "../../app/lib/auth-context";
@@ -25,6 +25,8 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [usernameAvailability, setUsernameAvailability] = useState<"idle" | "available" | "taken" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -62,6 +64,23 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   })();
 
   const normalizeUsername = (value: string) => value.trim().toLowerCase().replace(/\s+/g, "");
+
+  const checkUsernameAvailability = async (value: string) => {
+    const normalized = normalizeUsername(value);
+    if (!normalized) {
+      return "idle" as const;
+    }
+
+    const { data, error } = await supabase.rpc("get_email_by_username", {
+      input_username: normalized,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return typeof data === "string" && data.length > 0 ? ("taken" as const) : ("available" as const);
+  };
 
   const lookupEmailByUsername = async (value: string) => {
     const { data, error } = await supabase.rpc("get_email_by_username", {
@@ -144,6 +163,46 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (mode !== "register") return;
+
+    const normalizedUsername = normalizeUsername(username);
+    if (!normalizedUsername) {
+      setUsernameAvailability("idle");
+      setIsCheckingUsername(false);
+      return;
+    }
+
+    setUsernameAvailability("idle");
+
+    let cancelled = false;
+    const timeoutId = window.setTimeout(() => {
+      if (cancelled) return;
+      setIsCheckingUsername(true);
+
+      checkUsernameAvailability(normalizedUsername)
+        .then((availability) => {
+          if (cancelled) return;
+          setUsernameAvailability(availability);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setUsernameAvailability("error");
+        })
+        .finally(() => {
+          if (cancelled) return;
+          setIsCheckingUsername(false);
+        });
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+      setIsCheckingUsername(false);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, username]);
 
   const handlePasswordReset = async () => {
     setError(null);
@@ -303,18 +362,72 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
             <motion.label className="block" variants={itemVariants}>
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Username</span>
-              <div className="relative">
-                <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(event) => setUsername(normalizeUsername(event.target.value))}
-                  placeholder="yourusername"
-                  className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-3.5 pl-12 pr-4 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
-                  autoComplete="username"
-                  required
-                />
-              </div>
+              {mode === "register" ? (
+                <div className="grid grid-cols-[minmax(0,9fr)_minmax(52px,1fr)] gap-3">
+                  <div className="relative">
+                    <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(event) => setUsername(normalizeUsername(event.target.value))}
+                      placeholder="yourusername"
+                      className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-3.5 pl-12 pr-4 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                      autoComplete="username"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-center">
+                    <div
+                      title={
+                        isCheckingUsername
+                          ? "Checking username availability"
+                          : usernameAvailability === "available"
+                            ? "Username available"
+                            : usernameAvailability === "taken"
+                              ? "Username taken"
+                              : usernameAvailability === "error"
+                                ? "Could not verify username availability"
+                                : "Username availability"
+                      }
+                      className={`flex h-14 w-full items-center justify-center rounded-2xl border transition ${
+                        isCheckingUsername
+                          ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                          : usernameAvailability === "available"
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                            : usernameAvailability === "taken"
+                              ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                              : "border-slate-700/70 bg-slate-950/70 text-slate-500"
+                      }`}
+                    >
+                      {isCheckingUsername ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : usernameAvailability === "available" ? (
+                        <Check className="h-4 w-4" />
+                      ) : usernameAvailability === "taken" ? (
+                        <X className="h-4 w-4" />
+                      ) : usernameAvailability === "error" ? (
+                        <CircleAlert className="h-4 w-4" />
+                      ) : (
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Check</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative">
+                  <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(event) => setUsername(normalizeUsername(event.target.value))}
+                    placeholder="yourusername"
+                    className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-3.5 pl-12 pr-4 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                    autoComplete="username"
+                    required
+                  />
+                </div>
+              )}
             </motion.label>
 
             {mode === "register" && (

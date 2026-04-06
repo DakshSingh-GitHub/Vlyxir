@@ -125,18 +125,15 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     throw new Error("Username is required.");
   }
 
-  const { data: duplicateUsername, error: usernameCheckError } = await supabase
-    .from(PROFILE_TABLE)
-    .select("id")
-    .eq("username", normalizedUsername)
-    .neq("id", user.id)
-    .maybeSingle();
+  const { data: usernameOwnerEmail, error: usernameCheckError } = await supabase.rpc("get_email_by_username", {
+    input_username: normalizedUsername,
+  });
 
   if (usernameCheckError) {
     throw new Error(usernameCheckError.message);
   }
 
-  if (duplicateUsername) {
+  if (typeof usernameOwnerEmail === "string" && usernameOwnerEmail.length > 0 && usernameOwnerEmail !== user.email) {
     throw new Error("That username is already taken.");
   }
 
