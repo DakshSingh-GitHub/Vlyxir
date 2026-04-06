@@ -239,6 +239,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     mode === "login"
       ? "Sign in with your username to unlock submissions, IDE execution, and your saved work."
       : "Create a unique username and confirm your email to activate your account.";
+  const isRegisterBlocked = mode === "register" && usernameAvailability === "taken";
 
   const shellVariants = {
     hidden: {
@@ -548,10 +549,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isRegisterBlocked}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-4 text-base font-bold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
-              whileHover={reduceMotion || isSubmitting ? undefined : { scale: 1.015, y: -1 }}
-              whileTap={reduceMotion || isSubmitting ? undefined : { scale: 0.985 }}
+              whileHover={reduceMotion || isSubmitting || isRegisterBlocked ? undefined : { scale: 1.015, y: -1 }}
+              whileTap={reduceMotion || isSubmitting || isRegisterBlocked ? undefined : { scale: 0.985 }}
               transition={{ type: "spring", stiffness: 420, damping: 28 }}
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
