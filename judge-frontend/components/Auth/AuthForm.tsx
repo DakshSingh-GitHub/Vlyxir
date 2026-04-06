@@ -7,6 +7,7 @@ import { ArrowRight, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus } fr
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { supabase } from "../../app/lib/supabase/client";
 import { useAuth } from "../../app/lib/auth-context";
+import CountryDropdown from "../CountryDropdown";
 
 type AuthMode = "login" | "register";
 
@@ -19,6 +20,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +33,33 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   useEffect(() => {
     if (!isLoading && user) router.replace(nextPath);
   }, [isLoading, nextPath, router, user]);
+
+  const passwordStrength = (() => {
+    if (!password) {
+      return { score: 0, label: "", colorClass: "bg-slate-700", widthClass: "w-0" };
+    }
+
+    let score = 0;
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+    if (/\d/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+    if (score <= 1) {
+      return { score, label: "Weak", colorClass: "bg-rose-500", widthClass: "w-1/4" };
+    }
+
+    if (score === 2) {
+      return { score, label: "Fair", colorClass: "bg-amber-500", widthClass: "w-1/2" };
+    }
+
+    if (score === 3 || score === 4) {
+      return { score, label: "Good", colorClass: "bg-indigo-500", widthClass: "w-3/4" };
+    }
+
+    return { score, label: "Strong", colorClass: "bg-emerald-500", widthClass: "w-full" };
+  })();
 
   const normalizeUsername = (value: string) => value.trim().toLowerCase().replace(/\s+/g, "");
 
@@ -54,7 +83,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         return;
       }
     } else {
-      if (!fullName || !username || !email || !password || !confirmPassword) {
+      if (!fullName || !username || !email || !country || !password || !confirmPassword) {
         setError("Complete all fields to register.");
         return;
       }
@@ -92,6 +121,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           data: {
             full_name: fullName.trim(),
             username: normalizeUsername(username),
+            country,
           },
           emailRedirectTo:
             typeof window !== "undefined"
@@ -288,21 +318,34 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             </motion.label>
 
             {mode === "register" && (
-              <motion.label className="block" variants={itemVariants}>
-                <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="you@example.com"
-                    className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-3.5 pl-12 pr-4 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
-                    autoComplete="email"
-                    required
+              <motion.div className="grid gap-4 md:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]" variants={itemVariants}>
+                <label className="block">
+                  <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="you@example.com"
+                      className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-3.5 pl-12 pr-4 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+                </label>
+
+                <div className="block">
+                  <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Country</span>
+                  <CountryDropdown
+                    value={country}
+                    onChange={setCountry}
+                    tone="dark"
+                    placeholder="Select your country"
+                    searchPlaceholder="Search countries"
                   />
                 </div>
-              </motion.label>
+              </motion.div>
             )}
 
             <motion.label className="block" variants={itemVariants}>
@@ -323,10 +366,25 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   onClick={() => setShowPassword((value) => !value)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-300"
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
                 </div>
+                {mode === "register" && (
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
+                      <span>Password strength</span>
+                      <span className={password ? "text-slate-300" : "text-slate-500"}>
+                        {passwordStrength.label || "Start typing"}
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${passwordStrength.colorClass} ${passwordStrength.widthClass}`}
+                      />
+                    </div>
+                  </div>
+                )}
             </motion.label>
 
             {mode === "register" && (
@@ -395,14 +453,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 onClick={handlePasswordReset}
                 className="font-semibold text-indigo-300 transition hover:text-indigo-200"
               >
-                Forgot password via username?
+                Forgot Password?
               </button>
             ) : (
               <span />
             )}
 
             <Link href={mode === "login" ? "/register" : "/login"} className="inline-flex items-center gap-2 font-semibold text-slate-300 transition hover:text-white">
-              {mode === "login" ? "Need an account?" : "Already have an account?"}
+              {mode === "login" ? "Create Account" : "Already have an account?"}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>

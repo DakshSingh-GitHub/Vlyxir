@@ -3,11 +3,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ArrowLeft, BadgeInfo, CalendarDays, Globe, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound } from "lucide-react";
+import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
+import CountryDropdown from "../../../components/CountryDropdown";
 import {
   EMPTY_PROFILE_VALUES,
   formatAccountDate,
@@ -233,15 +234,13 @@ export default function AccountSettingsPage() {
 
               <label className="block">
                 <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Country</span>
-                <div className="relative">
-                  <Globe className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                  <input
-                    value={formValues.country}
-                    onChange={(event) => setFormValues((prev) => ({ ...prev, country: event.target.value }))}
-                    className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                    placeholder="Country"
-                  />
-                </div>
+                <CountryDropdown
+                  value={formValues.country}
+                  onChange={(value) => setFormValues((prev) => ({ ...prev, country: value }))}
+                  tone={isDark ? "dark" : "light"}
+                  placeholder="Select your country"
+                  searchPlaceholder="Search countries"
+                />
               </label>
 
               <div className="grid gap-4 md:grid-cols-2">
