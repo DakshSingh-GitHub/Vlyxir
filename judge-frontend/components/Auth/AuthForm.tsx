@@ -3,7 +3,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, User, UserPlus } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { supabase } from "../../app/lib/supabase/client";
 import { useAuth } from "../../app/lib/auth-context";
 
@@ -13,6 +14,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading } = useAuth();
+  const reduceMotion = useReducedMotion();
 
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -149,24 +151,110 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       ? "Sign in with your username to unlock submissions, IDE execution, and your saved work."
       : "Create a unique username and confirm your email to activate your account.";
 
-  return (
-    <div className="min-h-screen w-full overflow-hidden bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] px-4 py-10 text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(124,58,237,0.16),transparent_30%)]" />
+  const shellVariants = {
+    hidden: {
+      opacity: 0,
+      y: reduceMotion ? 0 : 24,
+      scale: reduceMotion ? 1 : 0.985,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: reduceMotion ? 0.01 : 0.5,
+        ease: "easeOut",
+        when: "beforeChildren",
+        staggerChildren: reduceMotion ? 0 : 0.08,
+      },
+    },
+  };
 
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-3xl items-center">
-        <div className="w-full rounded-[2.5rem] border border-slate-800/70 bg-[linear-gradient(180deg,rgba(8,12,20,0.96),rgba(15,23,42,0.92))] p-8 shadow-[0_28px_80px_rgba(2,6,23,0.45)] md:p-10">
-          <div className="mb-8">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-slate-300">
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: reduceMotion ? 0 : 14,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: reduceMotion ? 0.01 : 0.32,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const floatVariants = {
+    animate: {
+      y: reduceMotion ? 0 : [0, -12, 0],
+      x: reduceMotion ? 0 : [0, 8, 0],
+      transition: {
+        duration: 12,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  return (
+    <div className="relative isolate flex h-[100dvh] w-full overflow-hidden bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] px-4 py-4 text-slate-100 md:py-6">
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(124,58,237,0.16),transparent_30%)]"
+        animate={reduceMotion ? undefined : { opacity: [0.75, 1, 0.75] }}
+        transition={reduceMotion ? undefined : { duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-16 top-24 h-48 w-48 rounded-full bg-indigo-500/15 blur-3xl"
+        variants={floatVariants}
+        animate="animate"
+      />
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-8 right-0 h-56 w-56 rounded-full bg-fuchsia-500/10 blur-3xl"
+        variants={floatVariants}
+        animate="animate"
+      />
+
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-3xl items-center">
+        <motion.div
+          className="relative w-full rounded-[2.5rem] border border-slate-800/70 bg-[linear-gradient(180deg,rgba(8,12,20,0.96),rgba(15,23,42,0.92))] p-7 shadow-[0_28px_80px_rgba(2,6,23,0.45)] md:p-10"
+          variants={shellVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants} className="absolute right-5 top-5 md:right-6 md:top-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/50 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-white"
+            >
+              <Home className="h-3.5 w-3.5" />
+              Home
+            </Link>
+          </motion.div>
+
+          <motion.div className="mb-8" variants={itemVariants}>
+            <motion.div
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 px-4 py-2 text-[11px] font-black uppercase tracking-[0.24em] text-slate-300"
+              whileHover={reduceMotion ? undefined : { scale: 1.03, y: -1 }}
+              transition={{ type: "spring", stiffness: 320, damping: 24 }}
+            >
               <UserPlus className="h-3.5 w-3.5 text-indigo-400" />
               Join Us!
-            </div>
-            <h1 className="text-4xl font-black tracking-tight text-white md:text-5xl">{pageTitle}</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base">{pageDescription}</p>
-          </div>
+            </motion.div>
+            <motion.h1 className="text-4xl font-black tracking-tight text-white md:text-5xl" variants={itemVariants}>
+              {pageTitle}
+            </motion.h1>
+            <motion.p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-400 md:text-base" variants={itemVariants}>
+              {pageDescription}
+            </motion.p>
+          </motion.div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <motion.form className="space-y-4" onSubmit={handleSubmit} variants={itemVariants}>
             {mode === "register" && (
-              <label className="block">
+              <motion.label className="block" variants={itemVariants}>
                 <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Full Name</span>
                 <div className="relative">
                   <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -180,10 +268,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     required
                   />
                 </div>
-              </label>
+              </motion.label>
             )}
 
-            <label className="block">
+            <motion.label className="block" variants={itemVariants}>
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Username</span>
               <div className="relative">
                 <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -197,10 +285,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   required
                 />
               </div>
-            </label>
+            </motion.label>
 
             {mode === "register" && (
-              <label className="block">
+              <motion.label className="block" variants={itemVariants}>
                 <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
                 <div className="relative">
                   <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -214,10 +302,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     required
                   />
                 </div>
-              </label>
+              </motion.label>
             )}
 
-            <label className="block">
+            <motion.label className="block" variants={itemVariants}>
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Password</span>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -235,14 +323,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   onClick={() => setShowPassword((value) => !value)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-300"
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </label>
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+            </motion.label>
 
             {mode === "register" && (
-              <label className="block">
+              <motion.label className="block" variants={itemVariants}>
                 <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Confirm Password</span>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -256,28 +344,51 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     required
                   />
                 </div>
-              </label>
+              </motion.label>
             )}
 
-            {error && (
-              <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</div>
-            )}
+            <AnimatePresence mode="popLayout">
+              {error && (
+                <motion.div
+                  key="error"
+                  className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-300"
+                  initial={{ opacity: 0, y: reduceMotion ? 0 : -8, scale: reduceMotion ? 1 : 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: reduceMotion ? 0 : -6, scale: reduceMotion ? 1 : 0.98 }}
+                  transition={{ duration: reduceMotion ? 0.01 : 0.2 }}
+                >
+                  {error}
+                </motion.div>
+              )}
 
-            {message && (
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{message}</div>
-            )}
+              {message && (
+                <motion.div
+                  key="message"
+                  className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+                  initial={{ opacity: 0, y: reduceMotion ? 0 : -8, scale: reduceMotion ? 1 : 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: reduceMotion ? 0 : -6, scale: reduceMotion ? 1 : 0.98 }}
+                  transition={{ duration: reduceMotion ? 0.01 : 0.2 }}
+                >
+                  {message}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <button
+            <motion.button
               type="submit"
               disabled={isSubmitting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-5 py-4 text-base font-bold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+              whileHover={reduceMotion || isSubmitting ? undefined : { scale: 1.015, y: -1 }}
+              whileTap={reduceMotion || isSubmitting ? undefined : { scale: 0.985 }}
+              transition={{ type: "spring", stiffness: 420, damping: 28 }}
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {mode === "login" ? "Login" : "Create account"}
-            </button>
-          </form>
+            </motion.button>
+          </motion.form>
 
-          <div className="mt-6 flex items-center justify-between gap-4 text-sm text-slate-400">
+          <motion.div className="mt-6 flex items-center justify-between gap-4 text-sm text-slate-400" variants={itemVariants}>
             {mode === "login" ? (
               <button
                 type="button"
@@ -294,8 +405,8 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
               {mode === "login" ? "Need an account?" : "Already have an account?"}
               <ArrowRight className="h-4 w-4" />
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
