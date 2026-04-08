@@ -1,0 +1,425 @@
+{
+    "id": "amount_paid_in_taxes",
+    "title": "Calculate Amount Paid in Taxes",
+    "description": "You are given a 0-indexed 2D integer array brackets where brackets[i] = [upperi, percenti] means that the ith tax bracket has an upper bound of upperi and is taxed at a rate of percenti. The brackets are sorted by upper bound. You are also given an integer income representing the amount of money you made. Return the total amount of money that you have to pay in taxes.",
+    "input_format": "First line: income. Following lines: upper percent.",
+    "output_format": "A float with 2 decimal places.",
+    "constraints": {
+        "income": "0 <= income <= 1000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "10 10\n10 15 5\n0 25 50",
+            "output": "0.50"
+        },
+        {
+            "input": "7 10\n1 0 5\n1 70 10\n3 5 50",
+            "output": "0.25"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "62\n4 43\n21 2\n37 46",
+            "output": "9.42"
+        },
+        {
+            "input": "21\n14 7\n26 24\n29 42\n41 18",
+            "output": "2.66"
+        },
+        {
+            "input": "80\n1 13\n8 25\n10 8\n22 3\n35 0",
+            "output": "2.40"
+        },
+        {
+            "input": "15\n3 21\n23 23",
+            "output": "3.39"
+        },
+        {
+            "input": "76\n19 0\n39 18\n50 43\n68 48",
+            "output": "16.97"
+        },
+        {
+            "input": "81\n8 10\n25 6\n29 36\n37 38",
+            "output": "6.30"
+        },
+        {
+            "input": "90\n17 2",
+            "output": "0.34"
+        },
+        {
+            "input": "16\n14 19\n23 48\n29 11\n38 21",
+            "output": "3.62"
+        },
+        {
+            "input": "68\n7 46\n11 6\n20 12\n34 11\n39 34",
+            "output": "7.78"
+        },
+        {
+            "input": "9\n6 42\n23 37\n39 7",
+            "output": "3.63"
+        },
+        {
+            "input": "1\n8 31\n9 25\n27 21\n40 47",
+            "output": "0.31"
+        },
+        {
+            "input": "47\n5 24\n12 28\n19 9\n38 49\n51 38",
+            "output": "16.52"
+        },
+        {
+            "input": "60\n9 24\n14 18\n22 50\n36 38\n51 4",
+            "output": "12.98"
+        },
+        {
+            "input": "5\n19 1\n32 27",
+            "output": "0.05"
+        },
+        {
+            "input": "90\n12 41\n28 7\n48 14\n52 22\n65 50",
+            "output": "16.22"
+        },
+        {
+            "input": "100\n4 15\n6 45",
+            "output": "1.50"
+        },
+        {
+            "input": "92\n19 23",
+            "output": "4.37"
+        },
+        {
+            "input": "94\n11 19",
+            "output": "2.09"
+        },
+        {
+            "input": "52\n20 39",
+            "output": "7.80"
+        },
+        {
+            "input": "12\n18 21\n31 44\n33 18\n38 13",
+            "output": "2.52"
+        },
+        {
+            "input": "76\n20 0\n21 47\n22 1\n40 0",
+            "output": "0.48"
+        },
+        {
+            "input": "68\n6 18\n19 50",
+            "output": "7.58"
+        },
+        {
+            "input": "10\n9 12\n11 44\n31 38\n48 23",
+            "output": "1.52"
+        },
+        {
+            "input": "45\n14 43\n16 37\n35 35",
+            "output": "13.41"
+        },
+        {
+            "input": "20\n12 43\n13 1\n18 31\n36 0",
+            "output": "6.72"
+        },
+        {
+            "input": "15\n15 33\n25 13\n27 3\n47 4\n54 34",
+            "output": "4.95"
+        },
+        {
+            "input": "48\n8 4\n16 30\n25 30\n40 20\n57 45",
+            "output": "12.02"
+        },
+        {
+            "input": "57\n13 5\n16 29\n36 11",
+            "output": "3.72"
+        },
+        {
+            "input": "28\n16 45\n25 46\n30 37\n38 39\n55 22",
+            "output": "12.45"
+        },
+        {
+            "input": "58\n12 12\n15 24\n33 23",
+            "output": "6.30"
+        },
+        {
+            "input": "17\n2 9\n22 6\n29 32\n46 39\n56 22",
+            "output": "1.08"
+        },
+        {
+            "input": "88\n6 42",
+            "output": "2.52"
+        },
+        {
+            "input": "51\n11 7\n12 25\n15 1\n30 34\n41 29",
+            "output": "9.34"
+        },
+        {
+            "input": "97\n7 23\n22 7\n29 28",
+            "output": "4.62"
+        },
+        {
+            "input": "90\n5 12",
+            "output": "0.60"
+        },
+        {
+            "input": "19\n15 33\n27 0\n29 42\n42 34\n59 3",
+            "output": "4.95"
+        },
+        {
+            "input": "14\n20 48",
+            "output": "6.72"
+        },
+        {
+            "input": "51\n18 49\n19 6",
+            "output": "8.88"
+        },
+        {
+            "input": "70\n6 11",
+            "output": "0.66"
+        },
+        {
+            "input": "4\n18 4\n33 26\n52 10\n59 25",
+            "output": "0.16"
+        },
+        {
+            "input": "27\n13 28",
+            "output": "3.64"
+        },
+        {
+            "input": "68\n5 49\n13 23",
+            "output": "4.29"
+        },
+        {
+            "input": "7\n6 41",
+            "output": "2.46"
+        },
+        {
+            "input": "65\n20 21\n39 23",
+            "output": "8.57"
+        },
+        {
+            "input": "99\n11 7\n20 43\n40 5\n59 33",
+            "output": "11.91"
+        },
+        {
+            "input": "68\n3 41\n8 40\n22 20\n29 18",
+            "output": "7.29"
+        },
+        {
+            "input": "30\n15 0\n21 42",
+            "output": "2.52"
+        },
+        {
+            "input": "85\n3 32\n20 2\n39 48\n47 48",
+            "output": "14.26"
+        },
+        {
+            "input": "88\n5 0\n11 46",
+            "output": "2.76"
+        },
+        {
+            "input": "49\n18 25\n32 29\n37 25\n54 33",
+            "output": "13.77"
+        },
+        {
+            "input": "16\n13 13",
+            "output": "1.69"
+        },
+        {
+            "input": "56\n4 28\n8 20\n23 47\n36 40",
+            "output": "14.17"
+        },
+        {
+            "input": "11\n5 12\n20 23\n24 6",
+            "output": "1.98"
+        },
+        {
+            "input": "79\n11 41\n22 36\n36 3\n50 15\n55 23",
+            "output": "12.14"
+        },
+        {
+            "input": "48\n2 19\n10 11\n27 3\n46 16\n60 31",
+            "output": "5.43"
+        },
+        {
+            "input": "42\n5 47\n18 14",
+            "output": "4.17"
+        },
+        {
+            "input": "2\n10 14\n16 9\n26 39\n36 26",
+            "output": "0.28"
+        },
+        {
+            "input": "96\n2 41",
+            "output": "0.82"
+        },
+        {
+            "input": "32\n15 35\n33 26\n46 37\n50 45\n65 5",
+            "output": "9.67"
+        },
+        {
+            "input": "91\n16 50\n28 46\n31 32\n37 28",
+            "output": "16.16"
+        },
+        {
+            "input": "89\n8 31\n26 14\n46 36\n63 50",
+            "output": "20.70"
+        },
+        {
+            "input": "84\n9 40\n26 45",
+            "output": "11.25"
+        },
+        {
+            "input": "56\n19 19\n33 39",
+            "output": "9.07"
+        },
+        {
+            "input": "25\n13 13\n16 24\n28 42\n36 35",
+            "output": "6.19"
+        },
+        {
+            "input": "61\n19 13",
+            "output": "2.47"
+        },
+        {
+            "input": "35\n9 0",
+            "output": "0.00"
+        },
+        {
+            "input": "32\n2 40\n21 26",
+            "output": "5.74"
+        },
+        {
+            "input": "26\n9 13\n29 13",
+            "output": "3.38"
+        },
+        {
+            "input": "82\n20 40\n32 38\n35 3\n37 28",
+            "output": "13.21"
+        },
+        {
+            "input": "56\n12 5\n28 34\n33 46\n41 13\n44 40",
+            "output": "10.58"
+        },
+        {
+            "input": "41\n20 34\n32 9\n38 2\n50 16\n54 5",
+            "output": "8.48"
+        },
+        {
+            "input": "100\n3 10\n18 32\n27 0",
+            "output": "5.10"
+        },
+        {
+            "input": "44\n19 0\n28 50\n29 33\n47 18\n52 25",
+            "output": "7.53"
+        },
+        {
+            "input": "34\n10 3\n15 1\n18 32\n34 37",
+            "output": "7.23"
+        },
+        {
+            "input": "73\n17 44\n23 26",
+            "output": "9.04"
+        },
+        {
+            "input": "42\n4 18\n16 31\n30 28\n39 4\n43 16",
+            "output": "9.20"
+        },
+        {
+            "input": "59\n15 28",
+            "output": "4.20"
+        },
+        {
+            "input": "59\n15 6\n33 18\n35 30\n55 29\n69 43",
+            "output": "12.26"
+        },
+        {
+            "input": "45\n6 31\n9 17",
+            "output": "2.37"
+        },
+        {
+            "input": "97\n3 31\n4 2\n22 33",
+            "output": "6.89"
+        },
+        {
+            "input": "42\n18 14\n23 38\n30 39\n44 9",
+            "output": "8.23"
+        },
+        {
+            "input": "46\n10 24\n11 49\n21 7\n22 3\n33 24",
+            "output": "6.26"
+        },
+        {
+            "input": "37\n3 24",
+            "output": "0.72"
+        },
+        {
+            "input": "40\n13 21\n20 23",
+            "output": "4.34"
+        },
+        {
+            "input": "56\n10 35",
+            "output": "3.50"
+        },
+        {
+            "input": "14\n16 43\n24 0",
+            "output": "6.02"
+        },
+        {
+            "input": "21\n16 50\n27 41\n30 19\n34 17\n39 1",
+            "output": "10.05"
+        },
+        {
+            "input": "42\n2 19\n21 15\n37 5\n39 46\n46 13",
+            "output": "5.34"
+        },
+        {
+            "input": "54\n6 5\n12 9\n30 21\n39 9\n59 4",
+            "output": "6.03"
+        },
+        {
+            "input": "50\n12 43\n26 43\n27 31\n43 3\n45 2",
+            "output": "12.01"
+        },
+        {
+            "input": "46\n13 50\n32 41\n42 12\n59 11\n77 20",
+            "output": "15.93"
+        },
+        {
+            "input": "71\n7 14\n10 46",
+            "output": "2.36"
+        },
+        {
+            "input": "12\n8 30\n9 4\n13 38\n15 45\n24 33",
+            "output": "3.58"
+        },
+        {
+            "input": "96\n9 18\n24 43",
+            "output": "8.07"
+        },
+        {
+            "input": "76\n15 39\n33 34\n43 19",
+            "output": "13.87"
+        },
+        {
+            "input": "25\n15 5",
+            "output": "0.75"
+        },
+        {
+            "input": "53\n9 9\n25 41",
+            "output": "7.37"
+        },
+        {
+            "input": "64\n19 42",
+            "output": "7.98"
+        },
+        {
+            "input": "58\n12 31\n18 42\n29 3\n48 15\n63 26",
+            "output": "12.02"
+        },
+        {
+            "input": "93\n15 11\n35 17\n44 7\n49 11",
+            "output": "6.23"
+        }
+    ]
+}

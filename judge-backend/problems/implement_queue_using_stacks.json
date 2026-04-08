@@ -1,0 +1,421 @@
+{
+    "id": "implement_queue_using_stacks",
+    "title": "Implement Queue using Stacks",
+    "description": "Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support all the functions of a normal queue (push, peek, pop, and empty).",
+    "input_format": "Commands separated by newline: 'MyQueue', 'push <val>', 'pop', 'peek', 'empty'.",
+    "output_format": "Result of each command separated by newline.",
+    "constraints": {
+        "val": "1 <= val <= 100"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "MyQueue\npush 1\npush 2\npeek\npop\nempty",
+            "output": "null\nnull\nnull\n1\n1\nfalse"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "MyQueue\npush 99\nempty\npush 45\npush 23\npush 13\npush 97\npush 15\npop\npop\nempty\npush 18\nempty\npeek\nempty\npush 79\npop",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\n99\n45\nfalse\nnull\nfalse\n23\nfalse\nnull\n23"
+        },
+        {
+            "input": "MyQueue\nempty\npush 25\nempty\npop\npush 54\npush 22\npush 14\nempty\npush 97\nempty\npeek\npush 76\nempty",
+            "output": "null\ntrue\nnull\nfalse\n25\nnull\nnull\nnull\nfalse\nnull\nfalse\n54\nnull\nfalse"
+        },
+        {
+            "input": "MyQueue\nempty\npush 51\npush 57\nempty\npush 76\npush 41\npush 11\npush 65\nempty\npush 48\npeek\npeek\nempty\npush 67\npush 30\npush 24\npop\npush 33\npush 15\npush 69\npush 70\npush 67\npush 75\npush 78",
+            "output": "null\ntrue\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nfalse\nnull\n51\n51\nfalse\nnull\nnull\nnull\n51\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 3\npush 4\npush 44\npeek\npush 14\npop\npop\npush 30\npush 29\npush 83\npush 89\npush 24\npop\npop\nempty\npeek\npush 1\npush 45\npush 82\npush 14\npush 35\npop",
+            "output": "null\ntrue\ntrue\nnull\nnull\nnull\n3\nnull\n3\n4\nnull\nnull\nnull\nnull\nnull\n44\n14\nfalse\n30\nnull\nnull\nnull\nnull\nnull\n30"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 43\npop\npush 90\npush 45\npop\npush 31\npush 54\npop\npop\npush 66\npush 67\npop\npush 51\npeek\npush 44\nempty\npush 86\npush 70\npush 70\npush 19\npush 83\npush 42",
+            "output": "null\ntrue\ntrue\nnull\n43\nnull\nnull\n90\nnull\nnull\n45\n31\nnull\nnull\n54\nnull\n66\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 53\nempty\npop\nempty\nempty\npush 19\npush 2\npush 58\npush 1\nempty\npush 13\nempty\npush 18\npop\npop\npush 37\nempty\npush 87\nempty\npop\npush 46\npush 21\npush 80\npop\npush 85\npop",
+            "output": "null\nnull\nfalse\n53\ntrue\ntrue\nnull\nnull\nnull\nnull\nfalse\nnull\nfalse\nnull\n19\n2\nnull\nfalse\nnull\nfalse\n58\nnull\nnull\nnull\n1\nnull\n13"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 59\npop\npush 87\npush 53\npush 9\npop\nempty\npush 51\npop\npeek\npop\npush 86\npush 3\npush 47\npush 99\npush 29\npush 40\nempty\npush 48\npop\npush 16\nempty\nempty\npush 50\npush 58\npeek",
+            "output": "null\ntrue\ntrue\nnull\n59\nnull\nnull\nnull\n87\nfalse\nnull\n53\n9\n9\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\nnull\n51\nnull\nfalse\nfalse\nnull\nnull\n86"
+        },
+        {
+            "input": "MyQueue\npush 28\npop\npush 76\nempty\npush 48\npush 48\npop\npop\npeek\npush 100\npush 56\npop\npush 35\nempty\npeek\npop\npush 57\npeek\npop",
+            "output": "null\nnull\n28\nnull\nfalse\nnull\nnull\n76\n48\n48\nnull\nnull\n48\nnull\nfalse\n100\n100\nnull\n56\n56"
+        },
+        {
+            "input": "MyQueue\npush 20\npush 81\npush 17\npop\npush 84\npush 71\npush 32\npush 12\npop\npop\npush 69\npeek\npop\npush 68\npush 79\nempty\npop\nempty\npush 68\npush 91\npeek\npush 47",
+            "output": "null\nnull\nnull\nnull\n20\nnull\nnull\nnull\nnull\n81\n17\nnull\n84\n84\nnull\nnull\nfalse\n71\nfalse\nnull\nnull\n32\nnull"
+        },
+        {
+            "input": "MyQueue\npush 89\npush 53\npush 52\npop\npush 90\npush 23\npush 55\npush 94\npush 6\npush 48\npush 10\npeek\npeek\npeek\nempty\npeek\npush 21",
+            "output": "null\nnull\nnull\nnull\n89\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n53\n53\n53\nfalse\n53\nnull"
+        },
+        {
+            "input": "MyQueue\npush 47\npush 14\npush 91\npeek\nempty\nempty\npush 33\npush 32\npop\npop\npop\npush 36\npush 81\npeek\npush 68\npush 53\npush 47\npush 34\nempty\nempty\npush 38\npush 100\npush 51\nempty\nempty\npeek",
+            "output": "null\nnull\nnull\nnull\n47\nfalse\nfalse\nnull\nnull\n47\n14\n91\nnull\nnull\n33\nnull\nnull\nnull\nnull\nfalse\nfalse\nnull\nnull\nnull\nfalse\nfalse\n33"
+        },
+        {
+            "input": "MyQueue\nempty\npush 26\npop\nempty\nempty\npush 75\nempty\npush 11\nempty\npeek\npush 87\npeek\npeek\nempty\npop\npush 86\npeek\npush 31\npush 5",
+            "output": "null\ntrue\nnull\n26\ntrue\ntrue\nnull\nfalse\nnull\nfalse\n75\nnull\n75\n75\nfalse\n75\nnull\n11\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 52\npush 48\npeek\npush 2\nempty\npeek\npush 79\npeek\npush 5\npush 63\npeek\npeek\npeek\npeek\npush 72\npop\npush 87\npush 7\npush 42\npeek\npop",
+            "output": "null\ntrue\nnull\nnull\n52\nnull\nfalse\n52\nnull\n52\nnull\nnull\n52\n52\n52\n52\nnull\n52\nnull\nnull\nnull\n48\n48"
+        },
+        {
+            "input": "MyQueue\nempty\npush 64\nempty\npush 40\npeek\npush 34\npeek\npeek\npush 49\npush 49\npeek",
+            "output": "null\ntrue\nnull\nfalse\nnull\n64\nnull\n64\n64\nnull\nnull\n64"
+        },
+        {
+            "input": "MyQueue\nempty\npush 3\nempty\npush 40\npush 8\nempty\npush 24\npeek\npush 20\npush 64\npush 29\npop\npop\nempty\npeek\nempty\npush 3\npush 81\npop\npush 47\npush 57\npop\npop\npop\npush 73\npeek\npop",
+            "output": "null\ntrue\nnull\nfalse\nnull\nnull\nfalse\nnull\n3\nnull\nnull\nnull\n3\n40\nfalse\n8\nfalse\nnull\nnull\n8\nnull\nnull\n24\n20\n64\nnull\n29\n29"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 68\npush 79\npeek\npop\npush 92\npush 33\npeek\npush 46\npush 28\nempty\nempty\npeek\npush 9\npush 69\npush 33\npop\npush 71\npush 94",
+            "output": "null\ntrue\ntrue\nnull\nnull\n68\n68\nnull\nnull\n79\nnull\nnull\nfalse\nfalse\n79\nnull\nnull\nnull\n79\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 9\nempty\npush 88\npush 5\npush 17\nempty\npop\npush 67\npush 89\npush 54\npeek\npop\npush 74\nempty\npush 38\npeek\npush 51\npush 70\nempty\npush 19\npush 85\npush 78\npop\nempty\npop\npop\npop\npop\npush 15",
+            "output": "null\nnull\nfalse\nnull\nnull\nnull\nfalse\n9\nnull\nnull\nnull\n88\n88\nnull\nfalse\nnull\n5\nnull\nnull\nfalse\nnull\nnull\nnull\n5\nfalse\n17\n67\n89\n54\nnull"
+        },
+        {
+            "input": "MyQueue\npush 94\npush 45\npush 56\nempty\npush 31\npush 59\npush 47\npush 42\npush 24\npop\nempty\npeek\npeek\npeek\npush 26\nempty\npush 33",
+            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\n94\nfalse\n45\n45\n45\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\npush 97\npush 66\nempty\npush 63\npush 6\npush 2\nempty\npush 65\npush 48\npop\npop\npeek",
+            "output": "null\nnull\nnull\nfalse\nnull\nnull\nnull\nfalse\nnull\nnull\n97\n66\n63"
+        },
+        {
+            "input": "MyQueue\npush 33\npop\npush 13\npush 74\nempty\npush 62\npush 92\npush 70\npeek\npush 59\npush 43\npush 61\nempty\npush 66\npeek\npeek\npush 25\npop\npush 62\npush 68\npush 38\npop\npush 15\npop\npop\npeek\npush 48",
+            "output": "null\nnull\n33\nnull\nnull\nfalse\nnull\nnull\nnull\n13\nnull\nnull\nnull\nfalse\nnull\n13\n13\nnull\n13\nnull\nnull\nnull\n74\nnull\n62\n92\n70\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\nempty\npush 83\npush 3\npush 72\npush 4\npush 18\npush 83\npush 18\npush 10\npush 98\nempty\npush 68",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\ntrue\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 49\npush 76\nempty\npeek\npop\nempty\npeek\npush 44\nempty\nempty\npeek\nempty\npop\nempty\npush 49\npush 31\npush 98\npush 13",
+            "output": "null\ntrue\nnull\nnull\nfalse\n49\n49\nfalse\n76\nnull\nfalse\nfalse\n76\nfalse\n76\nfalse\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 66\npeek\nempty\npop\nempty\npush 28\npush 85\npush 15\npush 81\npop\npush 17\nempty\npush 19\npush 26\npush 41\npush 65\npop",
+            "output": "null\ntrue\nnull\n66\nfalse\n66\ntrue\nnull\nnull\nnull\nnull\n28\nnull\nfalse\nnull\nnull\nnull\nnull\n85"
+        },
+        {
+            "input": "MyQueue\npush 72\npop\npush 86\nempty\npop\npush 33\npush 44\npush 28\npop\npop",
+            "output": "null\nnull\n72\nnull\nfalse\n86\nnull\nnull\nnull\n33\n44"
+        },
+        {
+            "input": "MyQueue\npush 76\npush 31\npush 27\npush 94\nempty\npush 4\npush 91\npop\npush 27\npush 71\npeek\nempty\npush 100\npush 80\npush 34\npush 57\npeek\npeek\npush 67\npush 13\npeek\npush 19\npop\nempty\npop\npush 49",
+            "output": "null\nnull\nnull\nnull\nnull\nfalse\nnull\nnull\n76\nnull\nnull\n31\nfalse\nnull\nnull\nnull\nnull\n31\n31\nnull\nnull\n31\nnull\n31\nfalse\n27\nnull"
+        },
+        {
+            "input": "MyQueue\npush 86\npush 20\npop\npeek\npop\nempty\npush 96\npush 22\npush 19\npop\npush 36\npeek\npop\npeek\nempty\nempty\npush 54\npop\nempty\npush 81\npop\npush 45\nempty",
+            "output": "null\nnull\nnull\n86\n20\n20\ntrue\nnull\nnull\nnull\n96\nnull\n22\n22\n19\nfalse\nfalse\nnull\n19\nfalse\nnull\n36\nnull\nfalse"
+        },
+        {
+            "input": "MyQueue\npush 20\nempty\nempty\npush 63\npeek\npush 18\nempty\npush 17\npop\npush 26\npop\npeek\npush 41\npush 52\nempty\npush 55\npush 46\npush 70\nempty\npeek\npop\npeek",
+            "output": "null\nnull\nfalse\nfalse\nnull\n20\nnull\nfalse\nnull\n20\nnull\n63\n18\nnull\nnull\nfalse\nnull\nnull\nnull\nfalse\n18\n18\n17"
+        },
+        {
+            "input": "MyQueue\npush 10\nempty\npush 15\npush 8\npeek\npush 10\npush 56\npush 72\npush 71\npush 11\npeek",
+            "output": "null\nnull\nfalse\nnull\nnull\n10\nnull\nnull\nnull\nnull\nnull\n10"
+        },
+        {
+            "input": "MyQueue\nempty\npush 3\nempty\npop\npush 45\npeek\npeek\npop\npush 17\npop\npush 84\npush 23\npush 67\npush 24\npush 30\npeek\npop\npush 71\npush 8\nempty\npush 5\npeek\npush 66\npop\npop\npeek\npush 77\npush 46\npush 44",
+            "output": "null\ntrue\nnull\nfalse\n3\nnull\n45\n45\n45\nnull\n17\nnull\nnull\nnull\nnull\nnull\n84\n84\nnull\nnull\nfalse\nnull\n23\nnull\n23\n67\n24\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\npush 39\npeek\npush 12\npush 37\npeek\nempty\npush 74\npush 5\nempty\npush 49\npush 23",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\nnull\n39\nnull\nnull\n39\nfalse\nnull\nnull\nfalse\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 74\npeek\nempty\npush 59\npush 54\npop\nempty\nempty\npop\npush 100",
+            "output": "null\ntrue\nnull\n74\nfalse\nnull\nnull\n74\nfalse\nfalse\n59\nnull"
+        },
+        {
+            "input": "MyQueue\npush 37\npush 95\npush 72\npush 79\npush 34\nempty\nempty\npeek\npeek\npush 39\npush 61\nempty\npush 30\npush 2\npush 29\nempty\npop\npush 70\nempty\npush 57\npush 18\npush 74\npush 58",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nfalse\nfalse\n37\n37\nnull\nnull\nfalse\nnull\nnull\nnull\nfalse\n37\nnull\nfalse\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\npush 62\npop\nempty\npush 43\nempty\npop\npush 40\npop\npush 3\npush 54\npeek\npop\npush 75\npop\npush 92\nempty\npeek\npush 93\npush 68\npop",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\nnull\n62\ntrue\nnull\nfalse\n43\nnull\n40\nnull\nnull\n3\n3\nnull\n54\nnull\nfalse\n75\nnull\nnull\n75"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 32\npush 5\npush 85\npop\npop\npop\nempty\nempty\npush 9\npush 65\npush 82\npop\npush 60\npop\npeek\npush 38\npeek\npop\npop\npush 53\nempty\npop\npeek\npop\npush 2\npush 6",
+            "output": "null\ntrue\ntrue\nnull\nnull\nnull\n32\n5\n85\ntrue\ntrue\nnull\nnull\nnull\n9\nnull\n65\n82\nnull\n82\n82\n60\nnull\nfalse\n38\n53\n53\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\npush 66\npop\nempty\nempty\nempty\npush 42\npush 26\npush 71\npush 1\nempty\npop\npop\npush 86\npush 75",
+            "output": "null\ntrue\ntrue\ntrue\nnull\n66\ntrue\ntrue\ntrue\nnull\nnull\nnull\nnull\nfalse\n42\n26\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 37\npush 38\npush 3\npush 66\npeek\nempty\npop\nempty\npop\npush 15\npush 12",
+            "output": "null\nnull\nnull\nnull\nnull\n37\nfalse\n37\nfalse\n38\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 17\npush 74\npush 81\npeek\npush 71\npush 1\npeek\npush 6\npush 18\npush 65\npeek\npeek\npeek",
+            "output": "null\ntrue\ntrue\nnull\nnull\nnull\n17\nnull\nnull\n17\nnull\nnull\nnull\n17\n17\n17"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 11\npush 86\npush 19\npeek\npop\npush 53\npeek\npeek\nempty\npush 64\npop\nempty\npush 70\npush 53\npush 87\npeek\npeek\nempty\npush 81",
+            "output": "null\ntrue\ntrue\nnull\nnull\nnull\n11\n11\nnull\n86\n86\nfalse\nnull\n86\nfalse\nnull\nnull\nnull\n19\n19\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 46\npush 9\npop\npush 49\npop\npeek\npush 91\npeek\npush 89\npush 68\npush 69\nempty\npush 49\npeek\npeek\npop\npush 6\npeek\npush 14\nempty",
+            "output": "null\ntrue\ntrue\nnull\nnull\n46\nnull\n9\n49\nnull\n49\nnull\nnull\nnull\nfalse\nnull\n49\n49\n49\nnull\n91\nnull\nfalse"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\npush 86\npeek\npeek\nempty\npeek\npush 83\npeek\npush 99\npop\nempty\npush 89\npop\npush 41",
+            "output": "null\ntrue\ntrue\ntrue\nnull\n86\n86\nfalse\n86\nnull\n86\nnull\n86\nfalse\nnull\n83\nnull"
+        },
+        {
+            "input": "MyQueue\npush 92\nempty\nempty\npush 71\npeek\npush 97\npop\npop\npush 39\npop\npush 79\npeek\nempty\npush 67\npush 79\npush 47\npush 56\npush 64\npop\npeek\npush 33\npeek\npeek\npop\npush 67\npush 1\npush 100\npeek",
+            "output": "null\nnull\nfalse\nfalse\nnull\n92\nnull\n92\n71\nnull\n97\nnull\n39\nfalse\nnull\nnull\nnull\nnull\nnull\n39\n79\nnull\n79\n79\n79\nnull\nnull\nnull\n67"
+        },
+        {
+            "input": "MyQueue\nempty\npush 3\npop\npush 80\npush 28\npush 86\nempty\npush 39\nempty\npush 37\npeek\npush 5\npush 51\npeek",
+            "output": "null\ntrue\nnull\n3\nnull\nnull\nnull\nfalse\nnull\nfalse\nnull\n80\nnull\nnull\n80"
+        },
+        {
+            "input": "MyQueue\nempty\npush 77\npush 91\npop\npop\nempty\nempty\nempty\nempty\nempty\npush 61\npop\npush 73\npush 5\npop\npush 68\npop\npop\nempty\nempty",
+            "output": "null\ntrue\nnull\nnull\n77\n91\ntrue\ntrue\ntrue\ntrue\ntrue\nnull\n61\nnull\nnull\n73\nnull\n5\n68\ntrue\ntrue"
+        },
+        {
+            "input": "MyQueue\nempty\npush 93\npush 96\npush 43\npush 11\npush 95\npop\npush 68\npush 22\npush 42\npush 73\npush 21\npush 36\npush 34\nempty\npeek\npush 84",
+            "output": "null\ntrue\nnull\nnull\nnull\nnull\nnull\n93\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\n96\nnull"
+        },
+        {
+            "input": "MyQueue\npush 74\npush 88\npeek\npop\npush 28\npop\npush 24\npush 32\npop\npush 14\npush 42\npush 91\npop\npop\npop\nempty\npush 11\npop\npush 84\npush 54\nempty\npush 40\npush 35\npush 97\npush 98\npop",
+            "output": "null\nnull\nnull\n74\n74\nnull\n88\nnull\nnull\n28\nnull\nnull\nnull\n24\n32\n14\nfalse\nnull\n42\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\n91"
+        },
+        {
+            "input": "MyQueue\npush 82\npush 24\npush 36\npop\npop\nempty\npush 96\npop\npush 27\npop\npush 33\npush 41",
+            "output": "null\nnull\nnull\nnull\n82\n24\nfalse\nnull\n36\nnull\n96\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 23\npush 23\nempty\npush 52\npop\nempty\npop\npush 8\npeek\npeek\npush 51\nempty\npush 3\npush 57\nempty\npush 86",
+            "output": "null\nnull\nnull\nfalse\nnull\n23\nfalse\n23\nnull\n52\n52\nnull\nfalse\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 96\npush 65\nempty\nempty\npop\npeek\npeek\npush 62\npush 97\npush 21\npeek\npush 50\npush 68\npush 47\npush 2",
+            "output": "null\ntrue\nnull\nnull\nfalse\nfalse\n96\n65\n65\nnull\nnull\nnull\n65\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 79\npush 65\npush 82\npush 52\npush 31\npush 54\npop\npush 10\npush 6\nempty\npush 74\npop\npush 84\nempty\nempty",
+            "output": "null\ntrue\nnull\nnull\nnull\nnull\nnull\nnull\n79\nnull\nnull\nfalse\nnull\n65\nnull\nfalse\nfalse"
+        },
+        {
+            "input": "MyQueue\npush 94\npush 91\npush 39\npop\npop\npush 2\npush 18\npush 59\nempty\npop\npush 8\npop\npeek\npush 56\npop\npush 19",
+            "output": "null\nnull\nnull\nnull\n94\n91\nnull\nnull\nnull\nfalse\n39\nnull\n2\n18\nnull\n18\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 83\npop\npush 22\npop\npush 42\npush 75\nempty\npush 1\npop\npush 65\npush 19\npop\npush 96\nempty\npush 89\nempty\npop\npush 40\npush 39",
+            "output": "null\ntrue\nnull\n83\nnull\n22\nnull\nnull\nfalse\nnull\n42\nnull\nnull\n75\nnull\nfalse\nnull\nfalse\n1\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 9\npeek\npop\npush 79\nempty\npush 35\npush 6\npush 87\nempty\npeek\npush 37\nempty\npeek",
+            "output": "null\ntrue\nnull\n9\n9\nnull\nfalse\nnull\nnull\nnull\nfalse\n79\nnull\nfalse\n79"
+        },
+        {
+            "input": "MyQueue\npush 24\npop\nempty\npush 61\npop\npush 55\npush 60\npop\npeek\npop\npush 64\npush 38\nempty\npush 21\npop\npush 75\npush 17\npop\npush 58\npeek\npop\npop\npush 15",
+            "output": "null\nnull\n24\ntrue\nnull\n61\nnull\nnull\n55\n60\n60\nnull\nnull\nfalse\nnull\n64\nnull\nnull\n38\nnull\n21\n21\n75\nnull"
+        },
+        {
+            "input": "MyQueue\npush 36\npush 20\npeek\nempty\npush 40\npop\npush 15\npush 63\npush 35\npush 68\npush 94\nempty\npop\nempty\nempty\nempty\npush 20\nempty\npop\npop\npush 59\npush 85\npush 61\npush 88\npush 37\npop\npop\npeek",
+            "output": "null\nnull\nnull\n36\nfalse\nnull\n36\nnull\nnull\nnull\nnull\nnull\nfalse\n20\nfalse\nfalse\nfalse\nnull\nfalse\n40\n15\nnull\nnull\nnull\nnull\nnull\n63\n35\n68"
+        },
+        {
+            "input": "MyQueue\npush 86\nempty\npush 56\npeek\npop\nempty\nempty\npush 10\npop\npush 60\npush 13\npeek\npeek\npop\nempty\npush 19",
+            "output": "null\nnull\nfalse\nnull\n86\n86\nfalse\nfalse\nnull\n56\nnull\nnull\n10\n10\n10\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 55\npush 17\npop\npush 28\npeek\npop\npush 80\npush 74\npush 20\npop\npush 87\nempty\nempty\npush 42\npop",
+            "output": "null\ntrue\ntrue\nnull\nnull\n55\nnull\n17\n17\nnull\nnull\nnull\n28\nnull\nfalse\nfalse\nnull\n80"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\npush 66\npush 92\npeek\npush 3\npush 12\npeek\npush 89\npop\nempty\nempty\npush 14\npush 68\npush 46\npush 31\npeek\npeek\npeek\npush 48\npop\nempty\npush 22\npush 19\npeek\nempty\npush 96\npush 34",
+            "output": "null\ntrue\ntrue\ntrue\nnull\nnull\n66\nnull\nnull\n66\nnull\n66\nfalse\nfalse\nnull\nnull\nnull\nnull\n92\n92\n92\nnull\n92\nfalse\nnull\nnull\n3\nfalse\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 55\nempty\npush 76\npop\npop\nempty\npush 47\npeek\nempty\npop\nempty\nempty\nempty\npush 90\npop\npush 91\npush 84\npush 86\npop\npeek\npush 60\npop\nempty\npop\npush 85",
+            "output": "null\nnull\nfalse\nnull\n55\n76\ntrue\nnull\n47\nfalse\n47\ntrue\ntrue\ntrue\nnull\n90\nnull\nnull\nnull\n91\n84\nnull\n84\nfalse\n86\nnull"
+        },
+        {
+            "input": "MyQueue\npush 67\npop\nempty\nempty\npush 77\npush 44\npush 41\npeek\npush 55\npush 40\npop\npop\npush 78",
+            "output": "null\nnull\n67\ntrue\ntrue\nnull\nnull\nnull\n77\nnull\nnull\n77\n44\nnull"
+        },
+        {
+            "input": "MyQueue\npush 71\npush 82\npop\npeek\nempty\npeek\npush 6\npush 15\npeek\npush 8\nempty",
+            "output": "null\nnull\nnull\n71\n82\nfalse\n82\nnull\nnull\n82\nnull\nfalse"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\npush 9\npush 31\npush 40\npop\npush 42\nempty\npop\npop\npeek\npop\npush 70\npush 81\npeek\npush 52\npeek\npop\npush 41\nempty\nempty\npush 69\npeek\npush 60\npush 40\npush 35",
+            "output": "null\ntrue\ntrue\ntrue\nnull\nnull\nnull\n9\nnull\nfalse\n31\n40\n42\n42\nnull\nnull\n70\nnull\n70\n70\nnull\nfalse\nfalse\nnull\n81\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 27\npeek\npush 80\npush 4\nempty\npush 57\npush 5\npush 31\npush 88\npush 48\npop\npop\npush 63\npop\npush 60\npush 54\npush 66\npop\npush 71\npush 58\npush 38\npush 37\npeek",
+            "output": "null\nnull\n27\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\n27\n80\nnull\n4\nnull\nnull\nnull\n57\nnull\nnull\nnull\nnull\n5"
+        },
+        {
+            "input": "MyQueue\nempty\npush 6\nempty\npush 42\npeek\npush 54\npush 96\npop\nempty\npush 81\npush 31",
+            "output": "null\ntrue\nnull\nfalse\nnull\n6\nnull\nnull\n6\nfalse\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 51\npush 78\nempty\npush 99\npop\npeek\npop\nempty\npeek\npush 43\npeek\npop\npush 86\npop\npush 8\npush 92\nempty\nempty\nempty\npop",
+            "output": "null\nnull\nnull\nfalse\nnull\n51\n78\n78\nfalse\n99\nnull\n99\n99\nnull\n43\nnull\nnull\nfalse\nfalse\nfalse\n86"
+        },
+        {
+            "input": "MyQueue\nempty\npush 72\npush 53\npush 16\npeek\npop\npush 23\npeek\npush 99\npush 68\npop",
+            "output": "null\ntrue\nnull\nnull\nnull\n72\n72\nnull\n53\nnull\nnull\n53"
+        },
+        {
+            "input": "MyQueue\nempty\npush 28\npush 80\npush 15\npush 48\nempty\npeek\nempty\npop\npush 84\npop\npop\npush 16\npop\npush 47\nempty\npop\npush 54",
+            "output": "null\ntrue\nnull\nnull\nnull\nnull\nfalse\n28\nfalse\n28\nnull\n80\n15\nnull\n48\nnull\nfalse\n84\nnull"
+        },
+        {
+            "input": "MyQueue\npush 59\npush 78\nempty\npeek\nempty\npeek\nempty\npush 5\npush 84\nempty\npush 98\npush 2\npush 65\npush 93\nempty\npush 4\npop\npop\npush 19\nempty\npop",
+            "output": "null\nnull\nnull\nfalse\n59\nfalse\n59\nfalse\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nfalse\nnull\n59\n78\nnull\nfalse\n5"
+        },
+        {
+            "input": "MyQueue\npush 7\npush 37\npush 66\nempty\npush 85\npush 46\npush 56\npop\npop\npush 95\npop\npop\npop\nempty\npeek\npeek\npush 54\nempty\npush 61\nempty\npush 7\npush 82\npop\nempty\npush 10\npush 90\npush 95\nempty\npush 40",
+            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\n7\n37\nnull\n66\n85\n46\nfalse\n56\n56\nnull\nfalse\nnull\nfalse\nnull\nnull\n56\nfalse\nnull\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\npush 79\npush 92\nempty\npush 30\npeek\npop\npush 8\npop\npush 9\nempty\nempty\nempty\nempty\npush 72\npop\nempty\npush 23\npop\npush 9",
+            "output": "null\nnull\nnull\nfalse\nnull\n79\n79\nnull\n92\nnull\nfalse\nfalse\nfalse\nfalse\nnull\n30\nfalse\nnull\n8\nnull"
+        },
+        {
+            "input": "MyQueue\npush 7\npush 42\npeek\npush 38\npop\npush 34\npeek\npush 47\nempty\npush 5\npush 47\npush 42\npeek\nempty\nempty\npeek\npush 78\npop\npop",
+            "output": "null\nnull\nnull\n7\nnull\n7\nnull\n42\nnull\nfalse\nnull\nnull\nnull\n42\nfalse\nfalse\n42\nnull\n42\n38"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 26\npeek\npop\nempty\nempty\npush 18\npush 59\npop\npush 67\npop\npush 84\npush 38\npop\npush 55\nempty\npush 25\npush 5\nempty\npeek\nempty\npush 58\npop\nempty\npop\npush 10\npush 97",
+            "output": "null\ntrue\ntrue\nnull\n26\n26\ntrue\ntrue\nnull\nnull\n18\nnull\n59\nnull\nnull\n67\nnull\nfalse\nnull\nnull\nfalse\n84\nfalse\nnull\n84\nfalse\n38\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 43\npop\npush 32\npeek\nempty\nempty\npush 42\npush 88\npeek\npush 95\npush 43\npush 68\nempty\npeek\nempty\npeek\npush 47\nempty\npeek\nempty\nempty\nempty\npop\npush 62",
+            "output": "null\nnull\n43\nnull\n32\nfalse\nfalse\nnull\nnull\n32\nnull\nnull\nnull\nfalse\n32\nfalse\n32\nnull\nfalse\n32\nfalse\nfalse\nfalse\n32\nnull"
+        },
+        {
+            "input": "MyQueue\npush 88\npush 21\npush 87\npush 84\npop\npush 25\npush 39\npeek\npop\npop\nempty\npop\nempty\npeek",
+            "output": "null\nnull\nnull\nnull\nnull\n88\nnull\nnull\n21\n21\n87\nfalse\n84\nfalse\n25"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\npush 15\npush 8\npush 67\nempty\npush 77\npush 9\npush 26",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\nnull\nnull\nnull\nfalse\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 93\npush 11\npush 66\nempty\npush 56\npush 54\npop\npush 6\npeek\npush 83\npush 60\npop\npop\npeek\npush 29\npeek",
+            "output": "null\nnull\nnull\nnull\nfalse\nnull\nnull\n93\nnull\n11\nnull\nnull\n11\n66\n56\nnull\n56"
+        },
+        {
+            "input": "MyQueue\nempty\npush 8\npush 56\npush 73\npop\npush 39\npop\npeek\npeek\nempty\npush 57\npop\npeek\npush 20\nempty\npeek\npush 44\npop\npush 19\npush 30\npop\npush 33\npush 60\npop\npeek\npeek",
+            "output": "null\ntrue\nnull\nnull\nnull\n8\nnull\n56\n73\n73\nfalse\nnull\n73\n39\nnull\nfalse\n39\nnull\n39\nnull\nnull\n57\nnull\nnull\n20\n44\n44"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 55\npush 62\npop\npush 41\npush 84\npush 40\npeek\npush 7\npush 90\nempty\npeek\npush 54\npush 49\npush 94\npeek\npush 6\nempty\npop\npop\npeek\npop\npop\nempty\npeek\npush 73\npush 43\nempty\npush 37",
+            "output": "null\ntrue\ntrue\nnull\nnull\n55\nnull\nnull\nnull\n62\nnull\nnull\nfalse\n62\nnull\nnull\nnull\n62\nnull\nfalse\n62\n41\n84\n84\n40\nfalse\n7\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\npush 69\npush 56\npush 52\nempty\npeek\npop\npush 55\npeek\npush 34\npop\npeek\npop\nempty\npush 48\npeek\npush 23\npush 63\npush 41\nempty\npush 10\npush 33\npush 27\npush 94\npush 25\npush 66",
+            "output": "null\nnull\nnull\nnull\nfalse\n69\n69\nnull\n56\nnull\n56\n52\n52\nfalse\nnull\n55\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 36\npush 77\nempty\npush 58\nempty\npush 90\npeek\npush 95\npeek\npush 78\npush 81\npush 9\npeek\npop\npeek",
+            "output": "null\nnull\nnull\nfalse\nnull\nfalse\nnull\n36\nnull\n36\nnull\nnull\nnull\n36\n36\n77"
+        },
+        {
+            "input": "MyQueue\npush 45\npush 95\npush 32\npush 18\npeek\nempty\npush 1\npush 19\npush 35\npop\npush 54\npush 23\npop\npush 18\npush 21\npop\nempty",
+            "output": "null\nnull\nnull\nnull\nnull\n45\nfalse\nnull\nnull\nnull\n45\nnull\nnull\n95\nnull\nnull\n32\nfalse"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 36\npeek\npush 26\npush 15\npush 49\npush 100\npush 29\nempty\npush 19",
+            "output": "null\ntrue\ntrue\nnull\n36\nnull\nnull\nnull\nnull\nnull\nfalse\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\npush 90\npush 73\npush 26\npeek\npop\npush 56\npush 3\npush 86\npeek\npeek\nempty\nempty\npop\npush 69\npush 18\npop\npeek\npush 14\nempty\npush 86\npeek\npush 10\npeek\npush 22\npush 55",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\nnull\nnull\nnull\n90\n90\nnull\nnull\nnull\n73\n73\nfalse\nfalse\n73\nnull\nnull\n26\n56\nnull\nfalse\nnull\n56\nnull\n56\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 84\npush 41\npop\nempty\npush 12\npush 68\npush 84\npop\npush 94\npush 47\npush 6\npush 85\npush 98\npush 93\nempty",
+            "output": "null\nnull\nnull\n84\nfalse\nnull\nnull\nnull\n41\nnull\nnull\nnull\nnull\nnull\nnull\nfalse"
+        },
+        {
+            "input": "MyQueue\npush 8\npush 22\npush 48\npush 42\npush 91\npush 1\nempty\npop\npop\npush 59\npop\npush 6\npush 18\npop\npeek\npush 63\npush 3",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\n8\n22\nnull\n48\nnull\nnull\n42\n91\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 48\npush 30\nempty\npop\npush 29\npop\npush 57\nempty\npush 59\npush 22\npop\npop\npush 10\npush 24\npush 64\npeek",
+            "output": "null\nnull\nnull\nfalse\n48\nnull\n30\nnull\nfalse\nnull\nnull\n29\n57\nnull\nnull\nnull\n59"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\npush 99\npush 48\npop\npop\npush 24\npeek\npush 82\npush 7\npush 47\npush 56\npush 31\npush 97\nempty\npush 9\npush 17\npop\npeek\npush 59",
+            "output": "null\ntrue\ntrue\ntrue\nnull\nnull\n99\n48\nnull\n24\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\nnull\nnull\n24\n82\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 63\npush 41\npush 7\npeek\nempty\npush 88\nempty\npeek\npush 87\npush 2\npush 41\npush 67\npush 85\npop\npeek",
+            "output": "null\ntrue\nnull\nnull\nnull\n63\nfalse\nnull\nfalse\n63\nnull\nnull\nnull\nnull\nnull\n63\n41"
+        },
+        {
+            "input": "MyQueue\npush 90\npush 82\nempty\npush 39\npeek\npush 27\npop\npush 40\npush 15\npush 13\npush 80\npush 48\npush 57\npop\npeek",
+            "output": "null\nnull\nnull\nfalse\nnull\n90\nnull\n90\nnull\nnull\nnull\nnull\nnull\nnull\n82\n39"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\npush 49\npush 38\npush 34\nempty\npush 94\npush 79\npop\npush 21\npush 36\npop\npush 81\nempty\npop\npush 36\npush 10\npush 5\nempty\npush 51\npush 26\npush 45\npop\nempty\npop",
+            "output": "null\ntrue\ntrue\nnull\nnull\nnull\nfalse\nnull\nnull\n49\nnull\nnull\n38\nnull\nfalse\n34\nnull\nnull\nnull\nfalse\nnull\nnull\nnull\n94\nfalse\n79"
+        },
+        {
+            "input": "MyQueue\npush 44\npop\npush 81\npop\npush 92\npush 17\npop\npop\nempty\npush 9\npush 23\npush 71\npeek\npush 56\npush 17\npush 49\npush 98\npop\npush 37",
+            "output": "null\nnull\n44\nnull\n81\nnull\nnull\n92\n17\ntrue\nnull\nnull\nnull\n9\nnull\nnull\nnull\nnull\n9\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 72\npop\npush 28\nempty\npop\npush 89\npush 67\npeek\nempty\npush 37\npush 96\npush 49\npop\npush 69\npeek\nempty\npush 40\npush 92\npush 63\npush 6\npush 26\npush 35\npeek\npeek\nempty\npush 36\npop",
+            "output": "null\ntrue\nnull\n72\nnull\nfalse\n28\nnull\nnull\n89\nfalse\nnull\nnull\nnull\n89\nnull\n67\nfalse\nnull\nnull\nnull\nnull\nnull\nnull\n67\n67\nfalse\nnull\n67"
+        },
+        {
+            "input": "MyQueue\nempty\npush 95\nempty\npush 66\npop\npush 95\npop\npush 2\npush 93\npop\npush 97\nempty\npop\npop\npop\npush 16\npeek\npop",
+            "output": "null\ntrue\nnull\nfalse\nnull\n95\nnull\n66\nnull\nnull\n95\nnull\nfalse\n2\n93\n97\nnull\n16\n16"
+        },
+        {
+            "input": "MyQueue\nempty\npush 9\npush 59\nempty\npush 28\npush 94\npop\npop\nempty\nempty\npush 45\npush 76\npop\npeek\npeek\npop\npush 15\npop\npush 13\npush 37",
+            "output": "null\ntrue\nnull\nnull\nfalse\nnull\nnull\n9\n59\nfalse\nfalse\nnull\nnull\n28\n94\n94\n94\nnull\n45\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 3\npush 52\npush 79\npush 10\npush 4\npush 19\npush 51\npush 14\nempty\npush 61\nempty\npeek\npush 67\npush 94\npush 63",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nfalse\nnull\nfalse\n3\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 1\nempty\npush 37\npop\npush 94\npush 87\nempty\npop\npeek\nempty\npeek\npush 78\npeek\npush 14\npeek",
+            "output": "null\nnull\nfalse\nnull\n1\nnull\nnull\nfalse\n37\n94\nfalse\n94\nnull\n94\nnull\n94"
+        },
+        {
+            "input": "MyQueue\nempty\npush 82\npush 88\npop\npush 1\npeek\npush 20\npop\npush 45\npop\nempty\npush 82\npush 40\npush 61\npush 87\npush 52",
+            "output": "null\ntrue\nnull\nnull\n82\nnull\n88\nnull\n88\nnull\n1\nfalse\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\npush 85\npeek\npush 21\npush 63\npush 19\npush 63\nempty\npush 1\npop\npop\npush 19\npush 56\npush 81\npush 39\npush 33\npush 87\npop\nempty\npush 78\npop\npush 100\npush 22",
+            "output": "null\nnull\n85\nnull\nnull\nnull\nnull\nfalse\nnull\n85\n21\nnull\nnull\nnull\nnull\nnull\nnull\n63\nfalse\nnull\n19\nnull\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\npush 76\npush 24\npop\nempty\npush 54\npop\npeek\npush 56\npush 30\npush 13\npush 64\npeek\npeek\npush 58\npop\npop\nempty\npush 53\nempty\npush 85\nempty\npeek\npush 99",
+            "output": "null\ntrue\nnull\nnull\n76\nfalse\nnull\n24\n54\nnull\nnull\nnull\nnull\n54\n54\nnull\n54\n56\nfalse\nnull\nfalse\nnull\nfalse\n30\nnull"
+        },
+        {
+            "input": "MyQueue\nempty\nempty\nempty\nempty\nempty\npush 61\npush 44\npeek\nempty\npush 72\npop\npush 42\npush 66\npeek\npush 53\npush 56\npush 24\npop\npush 70\nempty\npeek\npop\npush 17\nempty\nempty\npop",
+            "output": "null\ntrue\ntrue\ntrue\ntrue\ntrue\nnull\nnull\n61\nfalse\nnull\n61\nnull\nnull\n44\nnull\nnull\nnull\n44\nnull\nfalse\n72\n72\nnull\nfalse\nfalse\n42"
+        },
+        {
+            "input": "MyQueue\nempty\npush 50\npeek\npush 11\npeek\npeek\npush 95\npeek\npop\npop\npeek\npop\npush 45\npush 59\npush 34\npush 91\npush 67\npush 12\npush 20\npush 64\npush 30\npush 48",
+            "output": "null\ntrue\nnull\n50\nnull\n50\n50\nnull\n50\n50\n11\n95\n95\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        }
+    ]
+}

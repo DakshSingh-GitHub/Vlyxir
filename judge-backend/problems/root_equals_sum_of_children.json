@@ -1,0 +1,425 @@
+{
+    "id": "root_equals_sum_of_children",
+    "title": "Root Equals Sum of Children",
+    "description": "You are given the root of a binary tree that consists of exactly 3 nodes: the root, its left child, and its right child. Return true if the value of the root is equal to the sum of the values of its two children, or false otherwise.",
+    "input_format": "Three space-separated integers: root, left, right.",
+    "output_format": "'true' or 'false'.",
+    "constraints": {
+        "val": "-100 <= val <= 100"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "10 4 6",
+            "output": "true"
+        },
+        {
+            "input": "5 3 1",
+            "output": "false"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "165 54 19",
+            "output": "false"
+        },
+        {
+            "input": "102 57 20",
+            "output": "false"
+        },
+        {
+            "input": "22 10 25",
+            "output": "false"
+        },
+        {
+            "input": "101 14 11",
+            "output": "false"
+        },
+        {
+            "input": "156 98 58",
+            "output": "true"
+        },
+        {
+            "input": "164 93 50",
+            "output": "false"
+        },
+        {
+            "input": "147 81 66",
+            "output": "true"
+        },
+        {
+            "input": "174 51 66",
+            "output": "false"
+        },
+        {
+            "input": "190 28 79",
+            "output": "false"
+        },
+        {
+            "input": "68 5 63",
+            "output": "true"
+        },
+        {
+            "input": "65 100 68",
+            "output": "false"
+        },
+        {
+            "input": "133 92 41",
+            "output": "true"
+        },
+        {
+            "input": "40 90 97",
+            "output": "false"
+        },
+        {
+            "input": "27 36 11",
+            "output": "false"
+        },
+        {
+            "input": "66 3 72",
+            "output": "false"
+        },
+        {
+            "input": "193 68 12",
+            "output": "false"
+        },
+        {
+            "input": "98 1 34",
+            "output": "false"
+        },
+        {
+            "input": "85 22 32",
+            "output": "false"
+        },
+        {
+            "input": "20 80 86",
+            "output": "false"
+        },
+        {
+            "input": "26 78 86",
+            "output": "false"
+        },
+        {
+            "input": "13 95 24",
+            "output": "false"
+        },
+        {
+            "input": "36 38 55",
+            "output": "false"
+        },
+        {
+            "input": "105 38 52",
+            "output": "false"
+        },
+        {
+            "input": "55 18 37",
+            "output": "true"
+        },
+        {
+            "input": "130 72 58",
+            "output": "true"
+        },
+        {
+            "input": "5 14 55",
+            "output": "false"
+        },
+        {
+            "input": "59 26 33",
+            "output": "true"
+        },
+        {
+            "input": "150 80 70",
+            "output": "true"
+        },
+        {
+            "input": "40 57 20",
+            "output": "false"
+        },
+        {
+            "input": "75 41 67",
+            "output": "false"
+        },
+        {
+            "input": "54 53 38",
+            "output": "false"
+        },
+        {
+            "input": "120 11 1",
+            "output": "false"
+        },
+        {
+            "input": "76 30 46",
+            "output": "true"
+        },
+        {
+            "input": "115 94 21",
+            "output": "true"
+        },
+        {
+            "input": "62 30 5",
+            "output": "false"
+        },
+        {
+            "input": "101 55 46",
+            "output": "true"
+        },
+        {
+            "input": "13 46 10",
+            "output": "false"
+        },
+        {
+            "input": "1 49 38",
+            "output": "false"
+        },
+        {
+            "input": "63 56 7",
+            "output": "true"
+        },
+        {
+            "input": "58 19 91",
+            "output": "false"
+        },
+        {
+            "input": "40 26 14",
+            "output": "true"
+        },
+        {
+            "input": "16 83 15",
+            "output": "false"
+        },
+        {
+            "input": "139 46 93",
+            "output": "true"
+        },
+        {
+            "input": "92 39 53",
+            "output": "true"
+        },
+        {
+            "input": "118 55 63",
+            "output": "true"
+        },
+        {
+            "input": "158 60 98",
+            "output": "true"
+        },
+        {
+            "input": "147 21 10",
+            "output": "false"
+        },
+        {
+            "input": "88 23 65",
+            "output": "true"
+        },
+        {
+            "input": "147 98 68",
+            "output": "false"
+        },
+        {
+            "input": "61 20 41",
+            "output": "true"
+        },
+        {
+            "input": "10 17 95",
+            "output": "false"
+        },
+        {
+            "input": "35 3 22",
+            "output": "false"
+        },
+        {
+            "input": "76 77 53",
+            "output": "false"
+        },
+        {
+            "input": "176 7 89",
+            "output": "false"
+        },
+        {
+            "input": "67 48 19",
+            "output": "true"
+        },
+        {
+            "input": "104 11 93",
+            "output": "true"
+        },
+        {
+            "input": "115 63 55",
+            "output": "false"
+        },
+        {
+            "input": "124 71 53",
+            "output": "true"
+        },
+        {
+            "input": "135 84 51",
+            "output": "true"
+        },
+        {
+            "input": "86 95 96",
+            "output": "false"
+        },
+        {
+            "input": "91 66 25",
+            "output": "true"
+        },
+        {
+            "input": "13 44 48",
+            "output": "false"
+        },
+        {
+            "input": "51 10 41",
+            "output": "true"
+        },
+        {
+            "input": "83 66 87",
+            "output": "false"
+        },
+        {
+            "input": "107 100 7",
+            "output": "true"
+        },
+        {
+            "input": "178 89 89",
+            "output": "true"
+        },
+        {
+            "input": "43 18 25",
+            "output": "true"
+        },
+        {
+            "input": "164 29 95",
+            "output": "false"
+        },
+        {
+            "input": "25 87 7",
+            "output": "false"
+        },
+        {
+            "input": "91 64 27",
+            "output": "true"
+        },
+        {
+            "input": "22 36 36",
+            "output": "false"
+        },
+        {
+            "input": "73 37 36",
+            "output": "true"
+        },
+        {
+            "input": "76 62 64",
+            "output": "false"
+        },
+        {
+            "input": "138 45 93",
+            "output": "true"
+        },
+        {
+            "input": "184 93 91",
+            "output": "true"
+        },
+        {
+            "input": "130 51 22",
+            "output": "false"
+        },
+        {
+            "input": "4 21 57",
+            "output": "false"
+        },
+        {
+            "input": "113 86 27",
+            "output": "true"
+        },
+        {
+            "input": "79 25 54",
+            "output": "true"
+        },
+        {
+            "input": "73 29 44",
+            "output": "true"
+        },
+        {
+            "input": "44 40 55",
+            "output": "false"
+        },
+        {
+            "input": "148 83 65",
+            "output": "true"
+        },
+        {
+            "input": "34 5 53",
+            "output": "false"
+        },
+        {
+            "input": "144 95 52",
+            "output": "false"
+        },
+        {
+            "input": "159 8 43",
+            "output": "false"
+        },
+        {
+            "input": "145 75 70",
+            "output": "true"
+        },
+        {
+            "input": "114 83 31",
+            "output": "true"
+        },
+        {
+            "input": "98 7 91",
+            "output": "true"
+        },
+        {
+            "input": "15 10 5",
+            "output": "true"
+        },
+        {
+            "input": "58 11 10",
+            "output": "false"
+        },
+        {
+            "input": "173 71 85",
+            "output": "false"
+        },
+        {
+            "input": "82 52 30",
+            "output": "true"
+        },
+        {
+            "input": "79 53 26",
+            "output": "true"
+        },
+        {
+            "input": "171 79 92",
+            "output": "true"
+        },
+        {
+            "input": "138 51 91",
+            "output": "false"
+        },
+        {
+            "input": "166 87 71",
+            "output": "false"
+        },
+        {
+            "input": "98 78 20",
+            "output": "true"
+        },
+        {
+            "input": "97 9 88",
+            "output": "true"
+        },
+        {
+            "input": "181 7 32",
+            "output": "false"
+        },
+        {
+            "input": "93 80 13",
+            "output": "true"
+        }
+    ]
+}

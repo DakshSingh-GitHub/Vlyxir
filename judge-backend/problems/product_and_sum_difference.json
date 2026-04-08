@@ -1,0 +1,425 @@
+{
+    "id": "product_and_sum_difference",
+    "title": "Subtract the Product and Sum of Digits of an Integer",
+    "description": "Given an integer number n, return the difference between the product of its digits and the sum of its digits.",
+    "input_format": "An integer.",
+    "output_format": "An integer.",
+    "constraints": {
+        "n": "1 <= n <= 10^5"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "234",
+            "output": "15"
+        },
+        {
+            "input": "4421",
+            "output": "21"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "77751",
+            "output": "1688"
+        },
+        {
+            "input": "97340",
+            "output": "-23"
+        },
+        {
+            "input": "64482",
+            "output": "1512"
+        },
+        {
+            "input": "41873",
+            "output": "649"
+        },
+        {
+            "input": "91947",
+            "output": "2238"
+        },
+        {
+            "input": "31349",
+            "output": "304"
+        },
+        {
+            "input": "69025",
+            "output": "-22"
+        },
+        {
+            "input": "77124",
+            "output": "371"
+        },
+        {
+            "input": "77660",
+            "output": "-26"
+        },
+        {
+            "input": "14143",
+            "output": "35"
+        },
+        {
+            "input": "20472",
+            "output": "-15"
+        },
+        {
+            "input": "67149",
+            "output": "1485"
+        },
+        {
+            "input": "81032",
+            "output": "-14"
+        },
+        {
+            "input": "6183",
+            "output": "126"
+        },
+        {
+            "input": "88820",
+            "output": "-26"
+        },
+        {
+            "input": "97561",
+            "output": "1862"
+        },
+        {
+            "input": "38164",
+            "output": "554"
+        },
+        {
+            "input": "23397",
+            "output": "1110"
+        },
+        {
+            "input": "85084",
+            "output": "-25"
+        },
+        {
+            "input": "79756",
+            "output": "13196"
+        },
+        {
+            "input": "92795",
+            "output": "5638"
+        },
+        {
+            "input": "85584",
+            "output": "6370"
+        },
+        {
+            "input": "43870",
+            "output": "-22"
+        },
+        {
+            "input": "92495",
+            "output": "3211"
+        },
+        {
+            "input": "43027",
+            "output": "-16"
+        },
+        {
+            "input": "34425",
+            "output": "462"
+        },
+        {
+            "input": "8824",
+            "output": "490"
+        },
+        {
+            "input": "50720",
+            "output": "-14"
+        },
+        {
+            "input": "51197",
+            "output": "292"
+        },
+        {
+            "input": "72739",
+            "output": "2618"
+        },
+        {
+            "input": "94851",
+            "output": "1413"
+        },
+        {
+            "input": "65916",
+            "output": "1593"
+        },
+        {
+            "input": "2221",
+            "output": "1"
+        },
+        {
+            "input": "75158",
+            "output": "1374"
+        },
+        {
+            "input": "55548",
+            "output": "3973"
+        },
+        {
+            "input": "31526",
+            "output": "163"
+        },
+        {
+            "input": "38395",
+            "output": "3212"
+        },
+        {
+            "input": "2062",
+            "output": "-10"
+        },
+        {
+            "input": "95060",
+            "output": "-20"
+        },
+        {
+            "input": "3796",
+            "output": "1109"
+        },
+        {
+            "input": "37678",
+            "output": "7025"
+        },
+        {
+            "input": "21153",
+            "output": "18"
+        },
+        {
+            "input": "68884",
+            "output": "12254"
+        },
+        {
+            "input": "93514",
+            "output": "518"
+        },
+        {
+            "input": "59996",
+            "output": "21832"
+        },
+        {
+            "input": "91576",
+            "output": "1862"
+        },
+        {
+            "input": "66041",
+            "output": "-17"
+        },
+        {
+            "input": "85911",
+            "output": "336"
+        },
+        {
+            "input": "45787",
+            "output": "7809"
+        },
+        {
+            "input": "28092",
+            "output": "-21"
+        },
+        {
+            "input": "56180",
+            "output": "-20"
+        },
+        {
+            "input": "93364",
+            "output": "1919"
+        },
+        {
+            "input": "73955",
+            "output": "4696"
+        },
+        {
+            "input": "68336",
+            "output": "2566"
+        },
+        {
+            "input": "90916",
+            "output": "-25"
+        },
+        {
+            "input": "72311",
+            "output": "28"
+        },
+        {
+            "input": "8069",
+            "output": "-23"
+        },
+        {
+            "input": "69063",
+            "output": "-24"
+        },
+        {
+            "input": "95806",
+            "output": "-28"
+        },
+        {
+            "input": "89313",
+            "output": "624"
+        },
+        {
+            "input": "21220",
+            "output": "-7"
+        },
+        {
+            "input": "3873",
+            "output": "483"
+        },
+        {
+            "input": "56883",
+            "output": "5730"
+        },
+        {
+            "input": "4505",
+            "output": "-14"
+        },
+        {
+            "input": "53298",
+            "output": "2133"
+        },
+        {
+            "input": "62480",
+            "output": "-20"
+        },
+        {
+            "input": "87581",
+            "output": "2211"
+        },
+        {
+            "input": "77846",
+            "output": "9376"
+        },
+        {
+            "input": "23104",
+            "output": "-10"
+        },
+        {
+            "input": "78929",
+            "output": "9037"
+        },
+        {
+            "input": "62884",
+            "output": "3044"
+        },
+        {
+            "input": "46566",
+            "output": "4293"
+        },
+        {
+            "input": "25013",
+            "output": "-11"
+        },
+        {
+            "input": "54844",
+            "output": "2535"
+        },
+        {
+            "input": "65668",
+            "output": "8609"
+        },
+        {
+            "input": "91607",
+            "output": "-23"
+        },
+        {
+            "input": "58580",
+            "output": "-26"
+        },
+        {
+            "input": "4848",
+            "output": "1000"
+        },
+        {
+            "input": "34636",
+            "output": "1274"
+        },
+        {
+            "input": "28360",
+            "output": "-19"
+        },
+        {
+            "input": "73660",
+            "output": "-22"
+        },
+        {
+            "input": "34995",
+            "output": "4830"
+        },
+        {
+            "input": "87267",
+            "output": "4674"
+        },
+        {
+            "input": "29113",
+            "output": "38"
+        },
+        {
+            "input": "87202",
+            "output": "-19"
+        },
+        {
+            "input": "51186",
+            "output": "219"
+        },
+        {
+            "input": "42416",
+            "output": "175"
+        },
+        {
+            "input": "90450",
+            "output": "-18"
+        },
+        {
+            "input": "56362",
+            "output": "1058"
+        },
+        {
+            "input": "95459",
+            "output": "8068"
+        },
+        {
+            "input": "55793",
+            "output": "4696"
+        },
+        {
+            "input": "13897",
+            "output": "1484"
+        },
+        {
+            "input": "18984",
+            "output": "2274"
+        },
+        {
+            "input": "19365",
+            "output": "786"
+        },
+        {
+            "input": "27271",
+            "output": "177"
+        },
+        {
+            "input": "7938",
+            "output": "1485"
+        },
+        {
+            "input": "38873",
+            "output": "4003"
+        },
+        {
+            "input": "34576",
+            "output": "2495"
+        },
+        {
+            "input": "34380",
+            "output": "-18"
+        },
+        {
+            "input": "23562",
+            "output": "342"
+        }
+    ]
+}

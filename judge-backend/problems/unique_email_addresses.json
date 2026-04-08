@@ -1,0 +1,421 @@
+{
+    "id": "unique_email_addresses",
+    "title": "Unique Email Addresses",
+    "description": "Every valid email consists of a local name and a domain name, separated by the '@' sign. Besides lowercase letters, the email may contain one or more '.' or '+'.\n\nIf you add periods '.' between some characters in the local name part of an email address, mail sent there will be forwarded to the same address without dots in the local name. For example, \"alice.z@leetcode.com\" and \"alicez@leetcode.com\" forward to the same email address.\n\nIf you add a plus '+' in the local name, everything after the first plus sign will be ignored. This allows certain emails to be filtered. For example, \"m.y+name@email.com\" will be forwarded to \"my@email.com\".\n\nIt is possible to use both of these rules at the same time.\n\nGiven an array of strings emails where we send one email to each emails[i], return the number of different addresses that actually receive mails.",
+    "input_format": "Space-separated email strings.",
+    "output_format": "An integer.",
+    "constraints": {
+        "emails": "1 <= emails.length <= 100"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "test.email+alex@leetcode.com test.e.mail+bob.cathy@leetcode.com testemail+david@lee.tcode.com",
+            "output": "2"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "fafefefc@dbdd.cf.com c+eccba@ac.eb.ea.com cf+bf+..d+@.beabdeff.com +e+cf@bdbbcaebf.com ebccead..+@fbaefb.com d+cb+d@df.afabc.com",
+            "output": "6"
+        },
+        {
+            "input": "fcfbd+@aeacdfacbe.com d+f+cb@dbcec.com be.cf+c++@ccccbeead.com",
+            "output": "3"
+        },
+        {
+            "input": "b.beeeafb@adeaefefc.com ++dde.+a@fedecbccf.com fbeff..ee@.dcbace.com fc+fccdbe+@acdaceeb.com f+.+ec@c.babcfdbe.com +ffffa.fe@dfce.cfafb.com",
+            "output": "6"
+        },
+        {
+            "input": "faac+a+@.be..cbc.com",
+            "output": "1"
+        },
+        {
+            "input": "ebfd.eff.e@cddd..com decff@cfdbf.com ae+ef.a+aa@.ca..a.com c+cecc+@ddebfdc..com .f+fadbbe@dacf.fd..d.com",
+            "output": "5"
+        },
+        {
+            "input": "+e+d+.eaba@daabc.com .b.de+e.ec@eefdaecbac.com ef+b+ec@abfcf.c.com",
+            "output": "3"
+        },
+        {
+            "input": "cfdbce@.b.ca.com +afe+f@.aebd.com decebcbbf@fbbbadd.com ecefdad@efec.fcdcf.com fef.c++c+a@a..a.fde.com +c+bb..@.cea.b.ee.com aae++cbad@afdadc.com eb+.f.ab@.d.ebbf.com ++e+e@c.eaf..com",
+            "output": "9"
+        },
+        {
+            "input": ".ad++ffa@bbedb.com d+++++d@deacde.ec.com f.fae+ac@bdefbafa.com cccad.dbfb@aeaab..com cc+b..@dbefc.dcea.com +bf.ede@bbbfcab.com .+acbd@aaadcdcabd.com f.++de+@dbadafc.com ddcb.++@fc.bc.fc.com dcaad+bf+a@adebcdb.com",
+            "output": "10"
+        },
+        {
+            "input": "ebc+.e+cf+@a.bbe.f.com +ecf+b.d@e.dec.cd.com",
+            "output": "2"
+        },
+        {
+            "input": "b+fb+ec.+e@bcbeab.com a.b..de.@b..ebbec.com",
+            "output": "2"
+        },
+        {
+            "input": "eaebfebf@.cdefc.com beffd@aeafda.cbb.com db..+@fcfcbcffbd.com e.+ccad@eab.cbf.com f.dae+.@b.ceeede..com",
+            "output": "5"
+        },
+        {
+            "input": "a+bb+eff+@dbac.aaee.com cfdaf@.f.e..e.e.com ccde.a++e@ebafedafcd.com",
+            "output": "3"
+        },
+        {
+            "input": "cab+cb.ba+@.bd..de.com ccffe+b.af@.aaa..com a.dce+@fa.fed.com e+bff@bafeabe..c.com",
+            "output": "4"
+        },
+        {
+            "input": "cbabe+c@..bfbd.com faffbe@eb.fcadd.com cbc+b.f@efeae.com +b+ba@fdefafa.com a.fcd.@ddee.deceb.com .fccc@ecdbdfe.com d+++.bcea@acebcafcc.com caffe+@ebcaa.com",
+            "output": "8"
+        },
+        {
+            "input": "de.eb@bcedebd.com f+afcd+af@dfbc.b.com .bbeedf@cbffc.com +e+fa@.e.aebae.com",
+            "output": "4"
+        },
+        {
+            "input": "f.+fc+@ddebec.com +cc++fcaa@ffb.bd.com ++eddc@aa.ff.f..e.com",
+            "output": "3"
+        },
+        {
+            "input": ".b+ebae+ae@cdcade.com fb+c+bbda@febcc.com deb.cdf+f+@efccdf.d..com cc.ffb.b@acb.a.com bddaecbedc@edbbf.com fc++da.b@bbe.f.com e.cd++@dabee.com fad++fae@bfdafeceba.com",
+            "output": "8"
+        },
+        {
+            "input": "edafb.aef@bdaf.f.a.com .dbbef@fefeacd.com cdaadbff@af.edc.com b+b++fc+e+@dbcac.com a+fdb@dbdcadfdf.com adbf+@ecbaaeefdd.com +aadefbd@aadaedeafd.com bf+.a@fede...com +cfad.@f.dbbd.com +fd+d@f.cabf.com",
+            "output": "10"
+        },
+        {
+            "input": "f+.fe.fa@.b.fdc.f.com dd+ae+f+.@cb.eeddbdc.com fd+d.@aedebfbee.com +aad+df@df.abd.com +de+ed.eba@e.abf.dcdd.com .deea+@aafabf.com ef..fa@bda.e.com cceb+@a.fcbaff.com eaca+fd@befbbfecb.com",
+            "output": "9"
+        },
+        {
+            "input": "f+abe@cdbbdce.com",
+            "output": "1"
+        },
+        {
+            "input": "fdcfded@dfbdf.com b+ccc++b@.faee..com bf+e+e@eafbfa.com",
+            "output": "3"
+        },
+        {
+            "input": "beaac+@f.cbcc.com d..+df+c@cfae..com",
+            "output": "2"
+        },
+        {
+            "input": "ffdcbb.c@efbfeddac.com +ff.c+++@f.cebace.com cfbfdcdb@d.ff.a.com bce+a+@b.fadd.com ce.dc@cbbbfb.com c+d.++.fff@d.e.bfb.com +.+.a.@ed.bcdde.com",
+            "output": "7"
+        },
+        {
+            "input": "+e++b++fb@bcabcc.dee.com .bce.cb+@..bfda.b.com cabbdcc@eedfddefb.com fe.f+ac+a+@fc.eb.a.com +cdf+e.+@aca.e..com",
+            "output": "5"
+        },
+        {
+            "input": "eedbc@.ebe.ce.com f.dbe.d@aebefffee.com +bddad.@fcedecad..com c+dfd+bf@a.beda.com +.bcbdcc.+@dcdacdcda.com b+dbbc+@aabcbebb.com b+bb.e+e@.ebffacde.com",
+            "output": "7"
+        },
+        {
+            "input": "eceb+.@fefc..bcbb.com +fde++++ef@bdbcbbecea.com .ffaffb@ddac.ed.com f.+e.ebffe@badeaecae.com .aeff.b+@eacbc.cf.com c+cb+a@ceb.f.com ++affaeab@afbddc..fd.com",
+            "output": "7"
+        },
+        {
+            "input": "+d+.adfe@cf.cceff.e.com ad+debecfc@.befcc.com +abce@abeab.dacf.com af+dacfff@.aaeaab.f.com .bd.+bcdd@efdbdc.com ++cbcebf@.dcfdbbff.com .cd+++ee@dfdceeeafd.com +e+a+a++@fbb.c.ad.com f+f+edf@.facc.ff.com .fca+bcfd@fcade.com",
+            "output": "10"
+        },
+        {
+            "input": "+e+bd+@c.aac.bd.com e+cca+fbca@fbcbe.com befd+ee+b@afbda.dfd.com",
+            "output": "3"
+        },
+        {
+            "input": "+c+acf@.cd..afd..com ff+.++d@dbefddeb.com becdff.fce@.e.fdef.com dedd+a.bb@fccca.com dd.+c.+@.faebbc.com abf++eda.@f.d.bffeda.com ++...a++fc@aac.eacda.com",
+            "output": "7"
+        },
+        {
+            "input": "+ddefd@caaacdfdef.com abb.cddd+b@db.da.com af+ba+d..@.c.e.bd.com af+bc@fb.febeea.com e.fac@dfafd.bc.com d.fceeb@ebaeebfc.com f+eb+@acde.bab.com +a.fbe+bd@f.dfddf.com",
+            "output": "8"
+        },
+        {
+            "input": "b+faae@ebafbfdd.d.com defbcd@abfcadfceb.com bb++.++@.bfced.ea.com ++bb+deedb@bffbc.dc.com +aadfa@ebbafb..com dbc+db++@dabfd.com +bce.@bcaaecefdf.com",
+            "output": "7"
+        },
+        {
+            "input": "a+da+dbace@e.ebae.com aadd+@.adefd.com d+c+cbfea@ecebbccf.com",
+            "output": "3"
+        },
+        {
+            "input": "ecfbbc.@abe.fcff.com",
+            "output": "1"
+        },
+        {
+            "input": "+eecdd++@bfdccbcffb.com e++c+a.+@abeadba.com +edcd@efafae.c.com ffe+ceb@aceb...a.com f+e+.e+d@b.fbb.a.com ++.+c@afeeddcf..com +++f+@dcbfa.com",
+            "output": "7"
+        },
+        {
+            "input": "bdbdb@ddccc.com cada.+@ccebdba.ee.com",
+            "output": "2"
+        },
+        {
+            "input": "+ec+adeb.e@.cfdcfefa.com adfedba.+@bfecb..f.com adbfbc@cdeaedc..com bcc.+@cfabc.com +ab.b+ace+@fcbafec..com fb+ce.@....bf.f.com +ca+bd@caaceda.com af+c.e@.ebaac.com",
+            "output": "8"
+        },
+        {
+            "input": "+e.acf@dcbefcc.com b+e+ccb.@ffefde..com a+d+.c@c.def.com .ac+.cc@daaecf.com ++.+a@ddafef.com",
+            "output": "5"
+        },
+        {
+            "input": "+e.edaebb@bbbba...com +fc.fc@caaeeafa.com +b.edc@abdbfe.com +dfeee@..affe.com ff+fb.f+bb@add.efa.com",
+            "output": "5"
+        },
+        {
+            "input": "eeef+@fb.bd.com ebcefc++f+@d.de.d..com .abab+d@eec.a.com",
+            "output": "3"
+        },
+        {
+            "input": "dd+e++@deeedd.com .af.eabcf@cfaed.com",
+            "output": "2"
+        },
+        {
+            "input": ".+cdfb.b@acaede.eb.com b+++e+++@.bcfd.com ++cf+d+cb@.a.abde.com +eefbbfa..@debdc.com cd+b+f@ce.eaa.com dcdcadc@cba.cd.com f+ddbf@ea.ccf.com ++ea..dfb+@a.aaeea.com",
+            "output": "8"
+        },
+        {
+            "input": "aac.+ad.@cceb.c.com ++dccd@ffadacfcca.com",
+            "output": "2"
+        },
+        {
+            "input": "d.ceaf+@d.abba.com +cdd+b+db@cd.bc..com edbefca+++@edfcab.com",
+            "output": "3"
+        },
+        {
+            "input": "ccbde.++cd@eafbbcc..com e+adecac@dafadf.com +a+cbfa+@aaeaed.edf.com bfecdd.e@acdfaa.efb.com bddac+@.cebd.cab.com",
+            "output": "5"
+        },
+        {
+            "input": "faa+d+@aabbfbebc.com +fbccf.d+@fea.c.com bdbafea@bf.df.db.com edfac+dae@aceffffb.com",
+            "output": "4"
+        },
+        {
+            "input": "d+.f.@deabc.com +aa++ac+f.@bebffcca.com",
+            "output": "2"
+        },
+        {
+            "input": "d.bd+f+@cdeccdcde.com dfdabaedec@be.ac.com afc+c@caffd.cd.com",
+            "output": "3"
+        },
+        {
+            "input": "a+e+.dd@baadebea.com dcabb.e.ce@.ddafca.com aeeee@dcaad.com fc.fa.@acc.d.ffa.com +bdae+++ea@dfdc.ae.com eefd+b+f@dddcd.com f+ae+.bab+@ffd..adbe.com +e+d.cfd@cabde.com cee+aa.@ebfde.com",
+            "output": "9"
+        },
+        {
+            "input": "+a+ab@caf.ccffe.com e++a++..@fbede..com",
+            "output": "2"
+        },
+        {
+            "input": "++ed.+eef@eebac.a.com c.aeeede@c..bfec.cf.com .effb+@.bbceef.com +ffbcdaffc@fcce..com +ec.ec.+@f.d.ef.com ab+acbf+d@eedcb.com bcbb+af@deafaafe.com",
+            "output": "7"
+        },
+        {
+            "input": "feaace@afebcd.com +aafdff@..abffd.com ab.e.c@fdaaffeb.com +e++.+be.@fafd.bbefe.com +dfaeee@aecae.cde.com +e.e+a+@deaecfbeea.com dea.b+d.ed@db..ccff.b.com fae+ddd@ecadc.ce.com",
+            "output": "8"
+        },
+        {
+            "input": "c+edd@.eaab.com +b+aa.dd++@ab.fcfefa.com +bdbe.@fcf.cf.com cb+b+f@dffc.d..b.com c.dcabf+.@e.cfd.com +c.+++@e.fcceff..com d+f+eeca@b.eb.aade.com",
+            "output": "7"
+        },
+        {
+            "input": "eccdf+cd@cc.a..com dee.c@aaebabeb.com c+effe+ff@daabbcbcdb.com b++.c@cadcffdcb.com cbaabfc@ddacca.com ae++ad@afcade.com b+adc++a@edaffadd.d.com .+e.a+..d@aeb.ef.com",
+            "output": "8"
+        },
+        {
+            "input": "+de.a+++d@b..eaead.com af.++a.+@cdabbf.ec.com c+c+.c@fddcddd.com ++cfe.@eeffe.com d+cb+b+edd@ab.ead.com cc++d@feddaecbf.com .fde++@ceca..feaf.com bfffbaddd@fab.bad.com dffdbc.@ffcbd.com",
+            "output": "9"
+        },
+        {
+            "input": "b++.+e@f.afdcfdaa.com ++dbaca+@e.a..a.com",
+            "output": "2"
+        },
+        {
+            "input": "b+d++abcf+@.abdab...com d+++ac@fccbdbc.com +f++eeff+.@.afcbb.com add+c+@ecbfba.com +dd.cdc@ffcfee.com dcb+ae+ca+@ccc.f.ef..com afcae.@.acdeeae.com +f+fe+a@d.fece.bd.com",
+            "output": "8"
+        },
+        {
+            "input": "cfdeacec@ebdfbfabeb.com +aaae@fb.fbbcc.com ..cc.b@ea.bb.com .eb+.ec.+@ebd.e.e.com ecebdbf+cd@e.acff.e.com cddceaddaa@ff.bdb..com",
+            "output": "6"
+        },
+        {
+            "input": "ce+.c@e.df.ffe.com f+beb.aede@cafbfc.com +ef.be+a@fad.f.bb.com f+cdce@edebde..com f+d+d@abdeae.com .a+.d+dde.@f..fddb.com .bb.ffae@fcd.ae.e.com",
+            "output": "7"
+        },
+        {
+            "input": "dd.fb@bedda.com .+bdf@b.eadce.com b+e+ca@df.acacae.com a+ccdc@faba.d.com eafe+@fecef.bf.com .ea+fdec@bcb.ccf.com",
+            "output": "6"
+        },
+        {
+            "input": "+e.+.c+a.+@ede.d.com aaadee.@bd.dfb.edf.com +ebe+c.@dcbd.efaca.com .+.++@aefbeeeeba.com",
+            "output": "4"
+        },
+        {
+            "input": "e++...d@ccdff.com d.de.ae@eafeced.d.com daafc@e.ccb.com +.ab+b.fa+@fe.c.dab.com a+ccea.@bb.eb.f.d.com ca+bb.adc@daeabaccb..com dbf+f+fc@.bcabaab.com",
+            "output": "7"
+        },
+        {
+            "input": "bcf+.f+@adaab.fd.com",
+            "output": "1"
+        },
+        {
+            "input": "+..cd@bbae..com bcbf+@eaddcafe.com baedd@.edeed.bb.com .ad.+c.a+a@efbdeeae.com c++a.d.@ffcbfcaf.com af+aac+@fcefe.com +d+.a.e@e.f.fd.b.e.com dae+b+f.a@..bbeecf.com +badb+.bfc@bbcdd.com",
+            "output": "9"
+        },
+        {
+            "input": "f.ddacc@bef.bacdae.com b+fae@cfaeac.com df.efbfed+@deab..bea.com dcedf@dacebf.com dbdfbbecb@badbb...com debeead@.daeed..com bf.f.ba+@daede.com feace@ecddccbaa..com e.a+.d.+@cedecdb.com .cdfea+d+@bdbe.e.com",
+            "output": "10"
+        },
+        {
+            "input": "ffecd@febecb.com ac+b+fc.+d@.acde..com f+.e+...@.eacacece.com +acafd++bd@fe.bccb.com +cd+c+@adae.a.dc.com",
+            "output": "5"
+        },
+        {
+            "input": "+.+bd.b+.@cbfeeda.com f++ec+c+@.efcaedb.com .+be+..@daacfaffab.com ec.ebc.dee@dcdde.cdb.com",
+            "output": "4"
+        },
+        {
+            "input": "cd++c.b++f@fbfac.com +c+b+.d+.@edafce.e..com f.fc+cac@edfbf..fa.com",
+            "output": "3"
+        },
+        {
+            "input": "abac+a@b.fbc.com fdead.e@.bbfcbffa.com",
+            "output": "2"
+        },
+        {
+            "input": "+d++cab+d@cdacfbcca.com b+.dfbf+ba@fbcafcc.d.com bbcbf@.a..fe.d.com .++bea@cc.edbe.com +bf.fe@faeaeda.com +dfcaca.e@abedc.com a+cfbaebe@deadaab.com aedb+e+a@bdfcad.com d+aaeafe+c@ffecdf.db.com c+.e+e..be@.ceedeaece.com",
+            "output": "10"
+        },
+        {
+            "input": ".ec+cabd+f@fadc.d.com a+e++bfb@.ddddc.com +cabcd+++@ef.bcefaf.com",
+            "output": "3"
+        },
+        {
+            "input": "efbfbc@.bf.fef.e.com .dfad.+e.d@e.d.ffed.d.com bc..eae.+@da.f.c..ea.com +f++.e+c+@cffba.com .+fa+acf@adeed.ea.com +.d+dc.f@dfdedfbb.com",
+            "output": "6"
+        },
+        {
+            "input": "a..c.@fbe.fe.com c+dad.b.a.@eca.ced.com ace+bd+eae@ce.dc.com ad.aaa++a@.deaeba.com .e+ec++c@.ea.b.com ++ef+fdf@beacdec.com ecadd+ffd+@abdbabee.com .+ba+db+@.acccd.com dd.aaefc@acbefcc.com bc+bfdcc.@dcbede.com",
+            "output": "10"
+        },
+        {
+            "input": "ebd++eb@cb.fcebfd.com bafda++cb@.edecdebae.com",
+            "output": "2"
+        },
+        {
+            "input": "c+fb.f+@be.cafcffe.com c++bafcfe@ad...cac.com",
+            "output": "2"
+        },
+        {
+            "input": "c+ea+f.@..eeaeda.com e+eac+@fdaabceec.com cfde+ba@.aedcfe.com +bb+c@fbd.ec.com dd++d++++@faecf.ebaf.com",
+            "output": "5"
+        },
+        {
+            "input": "d+fa+cb@bafcad.com ef.beeb+d@d.bc.eba..com c+b+b+bdb@baebc.com cef+.@bd.fafcfa.com f...dc@feafcf..com e++f+cfbea@deea..cbef.com dd.e+be@bc.bd.com adb+e+@eaadd.fda.com",
+            "output": "8"
+        },
+        {
+            "input": "+abe++@fbbfeac.com ea+dde+.@fbaab.com bede++f@b.ceaddce.com ecdabce+e+@acbfecb.com fd++efe@.edaa.fa.com a+.da.@afecb.d.com +ffcc@cdfda.com +bbbfcac@aaeb.ad.com +b.c+cba@bebfbad.com fd+aac@eebde.bbdf.com",
+            "output": "10"
+        },
+        {
+            "input": "+cca++@fe.f.aba.com +dc++e@aebccbc.com",
+            "output": "2"
+        },
+        {
+            "input": "+fb.+.d@.adaaacb.com .db+db@ccc.abba.f.com a+fe+db+@b.fefafe.com ++bac+a@bfcdff.com ff.b+@cbcdb..fdc.com ae+bcbff@eadea.eeee.com",
+            "output": "6"
+        },
+        {
+            "input": "b+ef+@f..ffb.com de+dabe@caaaaecfe.com cffdb@.fbabc.com dca+f.+eb@.baeaecee.com a..+a.@..beefee..com bf.bfef+@febdb...com .b.+d@cafbcdec.com .a+aa+@.ffc..com f.+bbc@c.efca.com",
+            "output": "9"
+        },
+        {
+            "input": "++.bd@b.fc..com +.adada@fdbfb.eb.com e+e++..+@fabbbcbcab.com ebafa+b@fdefacbaa.com bfc+eea++@abcfbacc..com add.bf.+c@fef..f.com .ab.fd+f+@bca.cdd.com +.ccf@fbef.f.com +aabedc@aadacacac.com ecd.ab.@fbecd.com",
+            "output": "10"
+        },
+        {
+            "input": "++ab.afcf+@fcdfd.com f.+ae+a@babce.com c+abebf@acbbafc.com a.edf+.d+@.ec.b.com +b++f+++a@e.bceb..a.com f+d+++@bd.dbeced.com +c.f.d@abebe..c.com fad++a+db+@bccadd..com +ddb.ab@fcdfcfb.com +aca+f@bcdce..com",
+            "output": "10"
+        },
+        {
+            "input": "+e.c++.+@bcbbc.com fefdb@afcdbefc.com f.f+a+b@cbdbe.com c.c+b@faadddbe.com dbf+.eaec@faadee.d.com efffaeb@eee.f.com b+.bfd+@cdafecee.com",
+            "output": "7"
+        },
+        {
+            "input": "+d+ce.bdd+@fc.aaefcf.com a+.cf+.ed+@df..e.com fab+cfd+ca@b..fcc..com +++cb@caafc.com bbdbaadc@bdcbd.com b.f+d+@ffebbaeef..com bbd.baffa@a.eda.com a+c+b+d+f@fafbccef.com",
+            "output": "8"
+        },
+        {
+            "input": "+bd.++e@ecd.dd.com a+a+dddf+@befbef.com fbfcfebff@caddbadb.com +cca+@afe.a.badf.com .+++ac@abeddbad.com .ef+e.++@..fca.com",
+            "output": "6"
+        },
+        {
+            "input": "f.+cbcf.d+@bcc.cd.com",
+            "output": "1"
+        },
+        {
+            "input": "e.fc..@.cfee.com cbd++@eaabbddc.f.com cdbebccc@abeccfc.com +eccc.@adeedefae.com d..cefaade@bddac..com .+ccfee@fdf.aaff.com",
+            "output": "6"
+        },
+        {
+            "input": "+d.ebf@fb.fdcfd.com .+b.fa.fc@addcdf.com ..cf+..b@ddbacfee.com fefaaacfd@ea..c.com f.da.fdad@ddbffbe.com a.+.fd.@eebcf.com",
+            "output": "6"
+        },
+        {
+            "input": "fd+.e@daadfcac.com dd+ad@a..ed.com acfc+@ddbfd.cfa..com a.+.e.afa@bedffea.com ++da+a+@aeadfa.eea.com ed++e.f.@.eec..com acd+bfa@faccbbfd.com .+fcaed@.abde.com",
+            "output": "8"
+        },
+        {
+            "input": "+.eba@ad.c..f.com d+f++@ffff.ff.com .baecaed@.cbeabb.com",
+            "output": "3"
+        },
+        {
+            "input": "d+fd+dd+c@.aadbfc.c.com e.cb+.+bd.@.bc..a.c.com +.+be+bbd+@.afdecb.a.com dd++.ab@dbe.f...com",
+            "output": "4"
+        },
+        {
+            "input": "bac..bd+@.dfcbadc.b.com fc+ca@affcbc..com",
+            "output": "2"
+        },
+        {
+            "input": "d.c++cd+@ea.ddeba.com db+.++cee.@fcaab.fef.com d+acafec+a@a.cecea.f.com dadc++b@ec..bec.com e++++.df@dee.....com ce+a+a@a...d.com +dbd+e@.badaeb.com +bfbbad++@bbeaae.com cf+fd@afbb.bc.com +bdcce+@fcfadb.com",
+            "output": "10"
+        },
+        {
+            "input": "+abfe@beb.fde.com .dbca@acddbcddbc.com cb+edc++f@cef.b.c.com +e.bb++b@efccdeebe.com .+f+e@effeaccbf.com ff++a.ddc@b.fcaee.com a+++ea+@eefbd.b.com .+.a.++dcf@adbccbca.com dfec+fbea@cfdfd.com",
+            "output": "9"
+        },
+        {
+            "input": "c++ed.b@abbafa.com bc+dee.bee@.dfa.a.aad.com +.bda+edb.@adefbdde.com d+ceaa@bdebcbacdb.com .ddcb.e@f.bebf.com bacbabda+@bfbccaedb.com",
+            "output": "6"
+        },
+        {
+            "input": "b++b+@baace.cebe.com",
+            "output": "1"
+        },
+        {
+            "input": "+b.++d@.a.adda..com c+fefacb@f.aaed.com bd.+e+@dcaecd.com",
+            "output": "3"
+        },
+        {
+            "input": "efcda+daf.@.b.dbba.com f+ce+fecd@fdfdfacade.com +fa+bf@ac...dedbd.com cceb.bc+d@adcbbec.com",
+            "output": "4"
+        },
+        {
+            "input": "a.e+f.@ebface.fbb.com .eddddea@eedefede..com beaeed.ba.@af.bfead.com fdddbc+d@deeddcae...com e+a+fd.dfb@fd.ebf.com +bcfeba+f@b.abbefa.com",
+            "output": "6"
+        },
+        {
+            "input": ".cccc+++@fdf..baffe.com bcad+fb@accbeee.com ++++f@afceb.com bdaa+a+d@f.fbffd.com bb++f@ffbcad.ec..com e++.d.be@.decbfbdbe.com dfedee++@fcffbea.com af+.a@aee.a.com ++adaeefac@efa.adb.b.com",
+            "output": "9"
+        }
+    ]
+}

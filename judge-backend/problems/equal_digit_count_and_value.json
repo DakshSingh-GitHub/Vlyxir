@@ -1,0 +1,425 @@
+{
+    "id": "equal_digit_count_and_value",
+    "title": "Check if Number Has Equal Digit Count and Digit Value",
+    "description": "You are given a 0-indexed string num of length n consisting of digits. Return true if for every index i in the range 0 <= i < n, the digit i occurs num[i] times in num, otherwise return false.",
+    "input_format": "A string of digits.",
+    "output_format": "'true' or 'false'.",
+    "constraints": {
+        "n": "1 <= num.length <= 10"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1210",
+            "output": "true"
+        },
+        {
+            "input": "030",
+            "output": "false"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "31",
+            "output": "false"
+        },
+        {
+            "input": "122",
+            "output": "false"
+        },
+        {
+            "input": "11101",
+            "output": "false"
+        },
+        {
+            "input": "3",
+            "output": "false"
+        },
+        {
+            "input": "022",
+            "output": "false"
+        },
+        {
+            "input": "03",
+            "output": "false"
+        },
+        {
+            "input": "2112",
+            "output": "false"
+        },
+        {
+            "input": "013",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "00232",
+            "output": "false"
+        },
+        {
+            "input": "30",
+            "output": "false"
+        },
+        {
+            "input": "03012",
+            "output": "false"
+        },
+        {
+            "input": "2222",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "false"
+        },
+        {
+            "input": "03300",
+            "output": "false"
+        },
+        {
+            "input": "1322",
+            "output": "false"
+        },
+        {
+            "input": "033",
+            "output": "false"
+        },
+        {
+            "input": "330",
+            "output": "false"
+        },
+        {
+            "input": "231",
+            "output": "false"
+        },
+        {
+            "input": "00",
+            "output": "false"
+        },
+        {
+            "input": "012",
+            "output": "false"
+        },
+        {
+            "input": "10332",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "223",
+            "output": "false"
+        },
+        {
+            "input": "1201",
+            "output": "false"
+        },
+        {
+            "input": "12123",
+            "output": "false"
+        },
+        {
+            "input": "21",
+            "output": "false"
+        },
+        {
+            "input": "0",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "0332",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "false"
+        },
+        {
+            "input": "000",
+            "output": "false"
+        },
+        {
+            "input": "2121",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "10",
+            "output": "false"
+        },
+        {
+            "input": "13330",
+            "output": "false"
+        },
+        {
+            "input": "013",
+            "output": "false"
+        },
+        {
+            "input": "12",
+            "output": "false"
+        },
+        {
+            "input": "110",
+            "output": "false"
+        },
+        {
+            "input": "113",
+            "output": "false"
+        },
+        {
+            "input": "131",
+            "output": "false"
+        },
+        {
+            "input": "111",
+            "output": "false"
+        },
+        {
+            "input": "322",
+            "output": "false"
+        },
+        {
+            "input": "22",
+            "output": "false"
+        },
+        {
+            "input": "20300",
+            "output": "false"
+        },
+        {
+            "input": "31303",
+            "output": "false"
+        },
+        {
+            "input": "33212",
+            "output": "false"
+        },
+        {
+            "input": "23100",
+            "output": "false"
+        },
+        {
+            "input": "0323",
+            "output": "false"
+        },
+        {
+            "input": "23212",
+            "output": "false"
+        },
+        {
+            "input": "3333",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "11",
+            "output": "false"
+        },
+        {
+            "input": "1023",
+            "output": "false"
+        },
+        {
+            "input": "21332",
+            "output": "false"
+        },
+        {
+            "input": "200",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "2201",
+            "output": "false"
+        },
+        {
+            "input": "112",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "0120",
+            "output": "false"
+        },
+        {
+            "input": "1202",
+            "output": "false"
+        },
+        {
+            "input": "3210",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "2213",
+            "output": "false"
+        },
+        {
+            "input": "1013",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "30010",
+            "output": "false"
+        },
+        {
+            "input": "31",
+            "output": "false"
+        },
+        {
+            "input": "3032",
+            "output": "false"
+        },
+        {
+            "input": "3001",
+            "output": "false"
+        },
+        {
+            "input": "2102",
+            "output": "false"
+        },
+        {
+            "input": "00",
+            "output": "false"
+        },
+        {
+            "input": "1130",
+            "output": "false"
+        },
+        {
+            "input": "12201",
+            "output": "false"
+        },
+        {
+            "input": "3",
+            "output": "false"
+        },
+        {
+            "input": "32100",
+            "output": "false"
+        },
+        {
+            "input": "03302",
+            "output": "false"
+        },
+        {
+            "input": "2311",
+            "output": "false"
+        },
+        {
+            "input": "23323",
+            "output": "false"
+        },
+        {
+            "input": "0010",
+            "output": "false"
+        },
+        {
+            "input": "0",
+            "output": "false"
+        },
+        {
+            "input": "32",
+            "output": "false"
+        },
+        {
+            "input": "333",
+            "output": "false"
+        },
+        {
+            "input": "2",
+            "output": "false"
+        },
+        {
+            "input": "23",
+            "output": "false"
+        },
+        {
+            "input": "11",
+            "output": "false"
+        },
+        {
+            "input": "321",
+            "output": "false"
+        },
+        {
+            "input": "0",
+            "output": "false"
+        },
+        {
+            "input": "00130",
+            "output": "false"
+        },
+        {
+            "input": "00",
+            "output": "false"
+        },
+        {
+            "input": "1130",
+            "output": "false"
+        },
+        {
+            "input": "01",
+            "output": "false"
+        },
+        {
+            "input": "300",
+            "output": "false"
+        },
+        {
+            "input": "21000",
+            "output": "false"
+        }
+    ]
+}

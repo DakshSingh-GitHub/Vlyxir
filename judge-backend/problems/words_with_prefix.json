@@ -1,0 +1,425 @@
+{
+    "id": "words_with_prefix",
+    "title": "Count Prefixes of a Given String",
+    "description": "You are given an array of strings words and a string s. Return the count of strings in words that are a prefix of s.",
+    "input_format": "First line: space-separated words. Second line: prefix string.",
+    "output_format": "An integer.",
+    "constraints": {
+        "words": "1 <= words.length <= 1000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "pay attention practice attend\nat",
+            "output": "2"
+        },
+        {
+            "input": "leetcode win loops success\ncode",
+            "output": "0"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "caba ba ab baacb b bbb bcb\nbc",
+            "output": "1"
+        },
+        {
+            "input": "cbb ca bbcbb a aac ba cbba cbab bcbba ccaca\ncab",
+            "output": "0"
+        },
+        {
+            "input": "b abca\naa",
+            "output": "0"
+        },
+        {
+            "input": "acbc abbcb cc b abcbc bb\nccb",
+            "output": "0"
+        },
+        {
+            "input": "abba ac cc acac aca abca\naa",
+            "output": "0"
+        },
+        {
+            "input": "aca a acacb\ncca",
+            "output": "0"
+        },
+        {
+            "input": "ba acbc abc ccbc c cb\naa",
+            "output": "0"
+        },
+        {
+            "input": "cb bbcac bbc cbb c b bbcb a\ncb",
+            "output": "2"
+        },
+        {
+            "input": "a cccb bccab caac baaaa\na",
+            "output": "1"
+        },
+        {
+            "input": "b aa\nca",
+            "output": "0"
+        },
+        {
+            "input": "cbbc caaa caaaa ab bac ccaab cac\ncc",
+            "output": "1"
+        },
+        {
+            "input": "cbc bbb abaaa ac cab c ccccb baaaa\nbc",
+            "output": "0"
+        },
+        {
+            "input": "c bccba\naac",
+            "output": "0"
+        },
+        {
+            "input": "aacc bbcbc cab ca cbabb\nbca",
+            "output": "0"
+        },
+        {
+            "input": "aacc acb caabc cccb\nbab",
+            "output": "0"
+        },
+        {
+            "input": "cb bb abca c cacab acb cabaa ccc ab abc\ncc",
+            "output": "1"
+        },
+        {
+            "input": "c\nacb",
+            "output": "0"
+        },
+        {
+            "input": "bcabc caa bcaa bbba cbcba\ncac",
+            "output": "0"
+        },
+        {
+            "input": "b acba ac bbaca bca ba aab\ncb",
+            "output": "0"
+        },
+        {
+            "input": "ccabb bcbbb\nb",
+            "output": "1"
+        },
+        {
+            "input": "caab b\naaa",
+            "output": "0"
+        },
+        {
+            "input": "babca a cccb c\nc",
+            "output": "2"
+        },
+        {
+            "input": "ac a aca accc baaac caa\nc",
+            "output": "1"
+        },
+        {
+            "input": "cccb\nac",
+            "output": "0"
+        },
+        {
+            "input": "bbccb ccaa\nbc",
+            "output": "0"
+        },
+        {
+            "input": "cacc aa ca bac cacba aacac\na",
+            "output": "2"
+        },
+        {
+            "input": "ccbba\naac",
+            "output": "0"
+        },
+        {
+            "input": "cab ba cbacc ac\naa",
+            "output": "0"
+        },
+        {
+            "input": "cbcbc cab cb baac caa baac bccac\ncb",
+            "output": "2"
+        },
+        {
+            "input": "a c bcca\nccc",
+            "output": "0"
+        },
+        {
+            "input": "ca cbaca ccba cac\nbb",
+            "output": "0"
+        },
+        {
+            "input": "baa b\na",
+            "output": "0"
+        },
+        {
+            "input": "b b bc bbbc c\naa",
+            "output": "0"
+        },
+        {
+            "input": "cc aaac\nab",
+            "output": "0"
+        },
+        {
+            "input": "abac aaa bbaac bca bca abba abb\nb",
+            "output": "3"
+        },
+        {
+            "input": "c acba b abca aa bca cbbab b\nca",
+            "output": "0"
+        },
+        {
+            "input": "abca cb c cccc accb b cacc aba\ncc",
+            "output": "1"
+        },
+        {
+            "input": "aba cbbb\naba",
+            "output": "1"
+        },
+        {
+            "input": "bcb bccca ccba\ncbb",
+            "output": "0"
+        },
+        {
+            "input": "c bcc aab c c accaa c c c\nac",
+            "output": "1"
+        },
+        {
+            "input": "ccb a c baaab cbabc bbbc aac cc ba\nbc",
+            "output": "0"
+        },
+        {
+            "input": "baac acaa c c aaca abaca c\nbbc",
+            "output": "0"
+        },
+        {
+            "input": "cccc caac a c b abbbc abaca bbbcb c caaba\nac",
+            "output": "0"
+        },
+        {
+            "input": "b c a a\nbb",
+            "output": "0"
+        },
+        {
+            "input": "cabaa b ab ba cc\nc",
+            "output": "2"
+        },
+        {
+            "input": "a cbbac cba bcbaa bacb bab a bc\nb",
+            "output": "4"
+        },
+        {
+            "input": "aa\ncac",
+            "output": "0"
+        },
+        {
+            "input": "c a cacb babb a\ncbb",
+            "output": "0"
+        },
+        {
+            "input": "cbacb ababc c\naa",
+            "output": "0"
+        },
+        {
+            "input": "ba acbc abbaa aaa b c cbbbb\nb",
+            "output": "2"
+        },
+        {
+            "input": "c ac abaab caacb cc caaaa acbbb caa bab\nb",
+            "output": "1"
+        },
+        {
+            "input": "babba cacba acb bbaa\nca",
+            "output": "1"
+        },
+        {
+            "input": "ca bba bbbb\nbba",
+            "output": "1"
+        },
+        {
+            "input": "bcaba a acc cccb bb ccaac cbbbc\nbac",
+            "output": "0"
+        },
+        {
+            "input": "cacbc bbbb\na",
+            "output": "0"
+        },
+        {
+            "input": "cbaa ca\nbba",
+            "output": "0"
+        },
+        {
+            "input": "ccbb aa cb ac abccb cbcc cca aa aca\nc",
+            "output": "4"
+        },
+        {
+            "input": "bcc bb abab\nacb",
+            "output": "0"
+        },
+        {
+            "input": "cbcba cb\nac",
+            "output": "0"
+        },
+        {
+            "input": "c aaca abaa\naba",
+            "output": "1"
+        },
+        {
+            "input": "bbaac acbbc cca abba abc\nbab",
+            "output": "0"
+        },
+        {
+            "input": "ca baccb ac c ba abb a acbba bcab\nac",
+            "output": "2"
+        },
+        {
+            "input": "cc bacba b bbb cb bbaab acb abca\naa",
+            "output": "0"
+        },
+        {
+            "input": "bb cbaac acaab accbb ab\nba",
+            "output": "0"
+        },
+        {
+            "input": "bba cc bbab ccc a\nac",
+            "output": "0"
+        },
+        {
+            "input": "aab ac\na",
+            "output": "2"
+        },
+        {
+            "input": "cc\nc",
+            "output": "1"
+        },
+        {
+            "input": "cbcb bcacb acc c\ncac",
+            "output": "0"
+        },
+        {
+            "input": "bba cb\na",
+            "output": "0"
+        },
+        {
+            "input": "bb baba cccbc\ncaa",
+            "output": "0"
+        },
+        {
+            "input": "cabab ca caabb\nca",
+            "output": "3"
+        },
+        {
+            "input": "cbcba bb bbb aab abb c aac bc bbcac\nb",
+            "output": "4"
+        },
+        {
+            "input": "bbc babc aabac bcac\ncb",
+            "output": "0"
+        },
+        {
+            "input": "b ac abc bbb cc a\nb",
+            "output": "2"
+        },
+        {
+            "input": "bbaab ccbc\nb",
+            "output": "1"
+        },
+        {
+            "input": "bbca bacc ccbc aab bbac c\nba",
+            "output": "1"
+        },
+        {
+            "input": "baacb cab a caba cac ab baa\nba",
+            "output": "2"
+        },
+        {
+            "input": "bc cb bcacb\nacb",
+            "output": "0"
+        },
+        {
+            "input": "b a acbca b cbbb abbc b cacca ac\nc",
+            "output": "2"
+        },
+        {
+            "input": "ab ab\ncb",
+            "output": "0"
+        },
+        {
+            "input": "ca bc bcbbb a\naba",
+            "output": "0"
+        },
+        {
+            "input": "aacac cac bc bcacb\nc",
+            "output": "1"
+        },
+        {
+            "input": "acbb c bca\na",
+            "output": "1"
+        },
+        {
+            "input": "aa a ccc b c bcac aacb aaa baab cabbb\nab",
+            "output": "0"
+        },
+        {
+            "input": "bbbba c a a c a cba ba ccab\nab",
+            "output": "0"
+        },
+        {
+            "input": "bac c ba a acb abb b\nb",
+            "output": "3"
+        },
+        {
+            "input": "aac baab bbbbc bcc aaa acaa bbcbb ab a\nb",
+            "output": "4"
+        },
+        {
+            "input": "bcaba caca a a bbcac cb b bba\nb",
+            "output": "4"
+        },
+        {
+            "input": "b aabb bbb bc abb bbcab abc aaaa cacc baa\nc",
+            "output": "1"
+        },
+        {
+            "input": "cabab bc bbc a ab bbbbb c\ncba",
+            "output": "0"
+        },
+        {
+            "input": "cbcb bcb b a baaa abcc\naa",
+            "output": "0"
+        },
+        {
+            "input": "bbba cbaa\nba",
+            "output": "0"
+        },
+        {
+            "input": "cb c\nbba",
+            "output": "0"
+        },
+        {
+            "input": "bba aabbc cbb ccacc acc b a\ncc",
+            "output": "1"
+        },
+        {
+            "input": "acaab\nb",
+            "output": "0"
+        },
+        {
+            "input": "aacb\na",
+            "output": "1"
+        },
+        {
+            "input": "abaac a babac bab\na",
+            "output": "2"
+        },
+        {
+            "input": "cbcba baca cb cc\nab",
+            "output": "0"
+        },
+        {
+            "input": "bca bc bac aca aca ccbca\nbbb",
+            "output": "0"
+        },
+        {
+            "input": "bbc abc cc ba aaac a cacb b ba\nbab",
+            "output": "0"
+        }
+    ]
+}

@@ -1,0 +1,429 @@
+{
+    "id": "backspace_string_compare",
+    "title": "Backspace String Compare",
+    "description": "Given two strings s and t, return true if they are equal when both are typed into empty text editors. '#' means a backspace character.",
+    "input_format": "Two lines, each containing a string.",
+    "output_format": "'true' or 'false'.",
+    "constraints": {
+        "length": "1 <= s.length, t.length <= 200"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "ab#c\nad#c",
+            "output": "true"
+        },
+        {
+            "input": "ab##\nc#d#",
+            "output": "true"
+        },
+        {
+            "input": "a#c\nb",
+            "output": "false"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "a\nc#c##acaa#c#a",
+            "output": "false"
+        },
+        {
+            "input": "ab#aa\na#b",
+            "output": "false"
+        },
+        {
+            "input": "ccbac#c\nab#c#####cba",
+            "output": "false"
+        },
+        {
+            "input": "abc\nb#a#####c#b",
+            "output": "false"
+        },
+        {
+            "input": "cacb#cbcb##b\n##",
+            "output": "false"
+        },
+        {
+            "input": "bbccabb\na##aba",
+            "output": "false"
+        },
+        {
+            "input": "c#bbbaacba#a\nabbcaaca",
+            "output": "false"
+        },
+        {
+            "input": "b#b\na#a#ab#aac#b",
+            "output": "false"
+        },
+        {
+            "input": "a##bb#ac#b#aa\ncca",
+            "output": "false"
+        },
+        {
+            "input": "c\naccababb#a#bbcc",
+            "output": "false"
+        },
+        {
+            "input": "aacb##aabbb\nbccbaaa",
+            "output": "false"
+        },
+        {
+            "input": "cab\n###aac#",
+            "output": "false"
+        },
+        {
+            "input": "a####ac#ac##bc\nbbcabc#ac",
+            "output": "false"
+        },
+        {
+            "input": "ac##c#c\nababcc",
+            "output": "false"
+        },
+        {
+            "input": "cba#cb\ncc#bb#c",
+            "output": "false"
+        },
+        {
+            "input": "a##bbc#ba#ba##b\n#a",
+            "output": "false"
+        },
+        {
+            "input": "bcccabacabca#ba\nbbb#cabac#cb#",
+            "output": "false"
+        },
+        {
+            "input": "ba#cbb\ncaaacbcabb#",
+            "output": "false"
+        },
+        {
+            "input": "caa#ab##\ncabcbab#ab#c",
+            "output": "false"
+        },
+        {
+            "input": "a#c\n#cc#cba#",
+            "output": "false"
+        },
+        {
+            "input": "ca\ncc#aa#abbba#bba",
+            "output": "false"
+        },
+        {
+            "input": "c##a#aacc###c\nbcabc#",
+            "output": "false"
+        },
+        {
+            "input": "c#acabac\nbb##",
+            "output": "false"
+        },
+        {
+            "input": "bbb#c#ccabccc\nb##",
+            "output": "false"
+        },
+        {
+            "input": "#b#ababc#\nbabcbc",
+            "output": "false"
+        },
+        {
+            "input": "c#cbbc###\nb#a#bb",
+            "output": "false"
+        },
+        {
+            "input": "baaaa#bcc\naab#bcaababb",
+            "output": "false"
+        },
+        {
+            "input": "a#abcaa\nca##b#b",
+            "output": "false"
+        },
+        {
+            "input": "cacaca#\nc##",
+            "output": "false"
+        },
+        {
+            "input": "bc#ac##aacacbbb\n#abacb##",
+            "output": "false"
+        },
+        {
+            "input": "b##b#cb\nacbb#b#bcb#abc",
+            "output": "false"
+        },
+        {
+            "input": "abccbbab#\n#b###a",
+            "output": "false"
+        },
+        {
+            "input": "cbcbacaaccaa\nccb#a##ba#",
+            "output": "false"
+        },
+        {
+            "input": "ccccbca#accac\naacbcba#ab#a",
+            "output": "false"
+        },
+        {
+            "input": "bba#\na#bcaca##aaa",
+            "output": "false"
+        },
+        {
+            "input": "ba#\naacaa##aaa",
+            "output": "false"
+        },
+        {
+            "input": "ca#aa#bc#\nb#bcaca#aac#ac",
+            "output": "false"
+        },
+        {
+            "input": "acababcc#bca\nbcbcaa#abaaa#",
+            "output": "false"
+        },
+        {
+            "input": "bc##aabcabc\n#c#ba",
+            "output": "false"
+        },
+        {
+            "input": "cc#a\nabaab#c##cbabbc",
+            "output": "false"
+        },
+        {
+            "input": "bcca##b\nb#acc",
+            "output": "false"
+        },
+        {
+            "input": "a###ba#ccb\ncc#c#b",
+            "output": "false"
+        },
+        {
+            "input": "b#a#\nbcaaca#",
+            "output": "false"
+        },
+        {
+            "input": "#ab##aabc###b\n#acacaba#c",
+            "output": "false"
+        },
+        {
+            "input": "a#bbcac#a\ncb#bcca#ca#bba#",
+            "output": "false"
+        },
+        {
+            "input": "b#b\nb",
+            "output": "true"
+        },
+        {
+            "input": "#b##\n#bbac##a",
+            "output": "false"
+        },
+        {
+            "input": "##\nbabb##bb",
+            "output": "false"
+        },
+        {
+            "input": "b#bbc\n#b",
+            "output": "false"
+        },
+        {
+            "input": "ca\naabb#",
+            "output": "false"
+        },
+        {
+            "input": "#c#a#b\nba###bba#acb",
+            "output": "false"
+        },
+        {
+            "input": "cbcbbc#bbcbcc\naccc",
+            "output": "false"
+        },
+        {
+            "input": "cccaab\nbc##b",
+            "output": "false"
+        },
+        {
+            "input": "#aa\ncbca",
+            "output": "false"
+        },
+        {
+            "input": "aa#abc#c###ccc\nb##bb#aba",
+            "output": "false"
+        },
+        {
+            "input": "c#\nbaaab##b#b",
+            "output": "false"
+        },
+        {
+            "input": "#bcaac\ncbc##aabbcb#bc",
+            "output": "false"
+        },
+        {
+            "input": "baaa\n#a#cccbb#a",
+            "output": "false"
+        },
+        {
+            "input": "a#bacbb#b\nc",
+            "output": "false"
+        },
+        {
+            "input": "bc#c#ba\na",
+            "output": "false"
+        },
+        {
+            "input": "abbcb##a#ccbcaa\nab#ca#cc",
+            "output": "false"
+        },
+        {
+            "input": "acbcabcabc\ncbcbbbccc#a",
+            "output": "false"
+        },
+        {
+            "input": "c\na",
+            "output": "false"
+        },
+        {
+            "input": "a#\n#",
+            "output": "true"
+        },
+        {
+            "input": "ca#abb#bbbcac#\ncaa",
+            "output": "false"
+        },
+        {
+            "input": "bbbaabbabb#\ncc##b#bb#ab",
+            "output": "false"
+        },
+        {
+            "input": "ca#a#ab#cbbab#c\nc##bacc#",
+            "output": "false"
+        },
+        {
+            "input": "a#b#a\nbcbbb#bbc##ac",
+            "output": "false"
+        },
+        {
+            "input": "baaab\nbabbcabababaa",
+            "output": "false"
+        },
+        {
+            "input": "babcbabba#cbbb#\naa#",
+            "output": "false"
+        },
+        {
+            "input": "acabccc##bc#\n##b#cbbcaaca###",
+            "output": "false"
+        },
+        {
+            "input": "b\n#ab#cb#a#c#b",
+            "output": "false"
+        },
+        {
+            "input": "b#ab\naacbb",
+            "output": "false"
+        },
+        {
+            "input": "b#\ncacbb##a#abcac",
+            "output": "false"
+        },
+        {
+            "input": "abb#caaabb\nbcc#b#cc#",
+            "output": "false"
+        },
+        {
+            "input": "c\n#",
+            "output": "false"
+        },
+        {
+            "input": "a#cc##a#\nbb",
+            "output": "false"
+        },
+        {
+            "input": "##ab####ac#\n##bcc",
+            "output": "false"
+        },
+        {
+            "input": "acb#aabab\naabbba#c#b#cb#",
+            "output": "false"
+        },
+        {
+            "input": "cc#bb\n#ab#cba#",
+            "output": "false"
+        },
+        {
+            "input": "cc#ba\n#bacca#cacbcb#c",
+            "output": "false"
+        },
+        {
+            "input": "#bc\ncc",
+            "output": "false"
+        },
+        {
+            "input": "c#a\n###b",
+            "output": "false"
+        },
+        {
+            "input": "cbb###ca##ba\naacc#bcbc##",
+            "output": "false"
+        },
+        {
+            "input": "#b#aa\naaaa#",
+            "output": "false"
+        },
+        {
+            "input": "a#\nb###bcabc",
+            "output": "false"
+        },
+        {
+            "input": "bc#aaa#aca#a\ncbab",
+            "output": "false"
+        },
+        {
+            "input": "ac###ababca#abc\nac#b##bc",
+            "output": "false"
+        },
+        {
+            "input": "#abb#abb\ncbacb",
+            "output": "false"
+        },
+        {
+            "input": "##aba#\nabac##bbaaabcbc",
+            "output": "false"
+        },
+        {
+            "input": "#c#a##acb#b\n##cbcba#aab#",
+            "output": "false"
+        },
+        {
+            "input": "#\ncaaa",
+            "output": "false"
+        },
+        {
+            "input": "a#ab#bbbb\n#ba",
+            "output": "false"
+        },
+        {
+            "input": "cbcb#a##c##a#b\ncabb#cbc#",
+            "output": "false"
+        },
+        {
+            "input": "acc#bca\nccb",
+            "output": "false"
+        },
+        {
+            "input": "cc#c#a#cb\nbaca##cbb#c",
+            "output": "false"
+        },
+        {
+            "input": "abba###ac\ncac#cc",
+            "output": "false"
+        },
+        {
+            "input": "aa\nba",
+            "output": "false"
+        },
+        {
+            "input": "bbab\nacbb#a###bcaa",
+            "output": "false"
+        },
+        {
+            "input": "bcbba###bbbac#\n#ccb",
+            "output": "false"
+        }
+    ]
+}

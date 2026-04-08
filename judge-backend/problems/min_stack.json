@@ -1,0 +1,421 @@
+{
+    "id": "min_stack",
+    "title": "Min Stack",
+    "description": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the MinStack class:\n- MinStack() initializes the stack object.\n- void push(int val) pushes the element val onto the stack.\n- void pop() removes the element on the top of the stack.\n- int top() gets the top element of the stack.\n- int getMin() retrieves the minimum element in the stack.",
+    "input_format": "Commands separated by newline: 'MinStack', 'push <val>', 'pop', 'top', 'getMin'.",
+    "output_format": "Result of each command separated by newline ('null' for void functions).",
+    "constraints": {
+        "val": "-2^31 <= val <= 2^31 - 1"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "MinStack\npush -2\npush 0\npush -3\ngetMin\npop\ntop\ngetMin",
+            "output": "null\nnull\nnull\nnull\n-3\nnull\n0\n-2"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "MinStack\npush 86\npush -69\ntop\npush -30\npush 98\npush -2\npush 49\ntop\ngetMin\npush 29\ngetMin\npush -24",
+            "output": "null\nnull\nnull\n-69\nnull\nnull\nnull\nnull\n49\n-69\nnull\n-69\nnull"
+        },
+        {
+            "input": "MinStack\npush 5\npush -6\ngetMin\ngetMin\npush 52\npush -95\npush 80\npop\npop\ngetMin\ngetMin\ntop\npop\ntop\npush -16\npush -94\ntop\ngetMin\npop\ntop\npop\ntop\ngetMin\npop\ngetMin\npop\npush -36",
+            "output": "null\nnull\nnull\n-6\n-6\nnull\nnull\nnull\nnull\nnull\n-6\n-6\n52\nnull\n-6\nnull\nnull\n-94\n-94\nnull\n-16\nnull\n-6\n-6\nnull\n5\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 17\npop\npush -32\npush 18\npush 66\npush -60\npush 35\ngetMin\npop\npop\ngetMin\ngetMin\npush -74\npop\ngetMin\npush -46\npush -72\npush 50\npush 41\npop\npush 98\npop\npush 99\npush 71\npush -5\npop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-60\nnull\nnull\n-32\n-32\nnull\nnull\n-32\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -43\npush 52\ngetMin\npush 99\npush 49\npush 63\npush 21\npop\npush -43\npush 26\npush -50\ngetMin\npush 26\npush 95\npush -75\npush -50",
+            "output": "null\nnull\nnull\n-43\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-50\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 3\npush 11\ntop\npush 61\ntop\ntop\npush -25\npop\npush 4\npush -16\npush 12\npush 57",
+            "output": "null\nnull\nnull\n11\nnull\n61\n61\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -73\npush -67\npop\npush -89\ntop\ntop\ngetMin\npop\ntop\ngetMin\npush -95\ntop\npop\ntop\npush 92\npush -90\ntop\npop\ngetMin\npop\npush -89",
+            "output": "null\nnull\nnull\nnull\nnull\n-89\n-89\n-89\nnull\n-73\n-73\nnull\n-95\nnull\n-73\nnull\nnull\n-90\nnull\n-73\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 58\npush 28\ngetMin\npush 37\npop\npop\ntop\ntop\ntop\ntop\ngetMin\npush -9\npop\ngetMin\npush 16\ngetMin\npush 64\npush 78\npop\ntop\npush -13\npop\npush 27\ntop\npop\npush 81\npop\ntop\ntop\ntop",
+            "output": "null\nnull\nnull\n28\nnull\nnull\nnull\n58\n58\n58\n58\n58\nnull\nnull\n58\nnull\n16\nnull\nnull\nnull\n64\nnull\nnull\nnull\n27\nnull\nnull\nnull\n64\n64\n64"
+        },
+        {
+            "input": "MinStack\npush -48\npop\npush -59\npush 4\npush 57\npush -54\ntop\npush -67\npush 26\ngetMin\npop\ngetMin\npush 82\ngetMin\npop\ngetMin\npop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n-54\nnull\nnull\n-67\nnull\n-67\nnull\n-67\nnull\n-67\nnull"
+        },
+        {
+            "input": "MinStack\npush -43\ntop\npush -92\npush 71\ntop\npush 25\npush -74\npush -71\npush 86\npush 5\npush -90\npop\npush 88\npush 61\npush -12\npush 64",
+            "output": "null\nnull\n-43\nnull\nnull\n71\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 77\ntop\ngetMin\npop\npush 91\npush -36\npush 26\ntop\ntop\npop\ngetMin\npush -83\npush -36\npush -95\ngetMin\ntop\npush 17\npush 2\ntop\npush -61\npush 19\ngetMin",
+            "output": "null\nnull\n77\n77\nnull\nnull\nnull\nnull\n26\n26\nnull\n-36\nnull\nnull\nnull\n-95\n-95\nnull\nnull\n2\nnull\nnull\n-95"
+        },
+        {
+            "input": "MinStack\npush -90\npush 2\npush -7\npop\npop\ntop\npush -58\ntop\ngetMin\npop\npush -46\ngetMin\npush -64\npush 5\npush -83\npush -77\npop\ngetMin\npush 25",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n-90\nnull\n-58\n-90\nnull\nnull\n-90\nnull\nnull\nnull\nnull\nnull\n-90\nnull"
+        },
+        {
+            "input": "MinStack\npush -25\npop\npush 35\npop\npush -12\npush 85\npush 61\ntop\ngetMin\ntop\npush 26",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n61\n-12\n61\nnull"
+        },
+        {
+            "input": "MinStack\npush 66\ngetMin\ntop\ntop\npop\npush -82\ntop\npush 69\npush -100\ngetMin\npush -77\ntop\npop\ngetMin\npop\ngetMin\npush 67\ntop\ngetMin\npush -28\ntop\ngetMin\npush -32\ngetMin\ngetMin",
+            "output": "null\nnull\n66\n66\n66\nnull\nnull\n-82\nnull\nnull\n-100\nnull\n-77\nnull\n-100\nnull\n-82\nnull\n67\n-82\nnull\n-28\n-82\nnull\n-82\n-82"
+        },
+        {
+            "input": "MinStack\npush 17\npop\npush -76\ntop\npop\npush 14\npush 27\npush -51\npop\ntop\ntop\ngetMin\npush 12\npush 27\ngetMin\npush -81",
+            "output": "null\nnull\nnull\nnull\n-76\nnull\nnull\nnull\nnull\nnull\n27\n27\n14\nnull\nnull\n12\nnull"
+        },
+        {
+            "input": "MinStack\npush -78\npush 82\npush -94\ngetMin\npush -92\npush -11\npush 65\ngetMin\ntop\npush -67\npush -49\npop\ngetMin\npush -41\npush -81\npop\npush 1\ntop\ngetMin\npush -1",
+            "output": "null\nnull\nnull\nnull\n-94\nnull\nnull\nnull\n-94\n65\nnull\nnull\nnull\n-94\nnull\nnull\nnull\nnull\n1\n-94\nnull"
+        },
+        {
+            "input": "MinStack\npush 72\npop\npush -28\ngetMin\ngetMin\npop\npush 34\npush 69\npush -34\npop\ntop\npush 23",
+            "output": "null\nnull\nnull\nnull\n-28\n-28\nnull\nnull\nnull\nnull\nnull\n69\nnull"
+        },
+        {
+            "input": "MinStack\npush -11\ngetMin\ngetMin\ntop\npush -30\ntop\npush -12\npop\ntop\npush -25\ngetMin\ntop",
+            "output": "null\nnull\n-11\n-11\n-11\nnull\n-30\nnull\nnull\n-30\nnull\n-30\n-25"
+        },
+        {
+            "input": "MinStack\npush -73\npush 6\ngetMin\ngetMin\ntop\npop\npush -91\npush 69\npush 88\npop\npush 78\npop\npush -49\npop\npush -31\ntop\npush 86\ntop\ntop\npush -5\ngetMin\npush 31",
+            "output": "null\nnull\nnull\n-73\n-73\n6\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-31\nnull\n86\n86\nnull\n-91\nnull"
+        },
+        {
+            "input": "MinStack\npush -16\npush -63\ngetMin\npop\npop\npush -98\ngetMin\npop\npush -30\npush 94\npush 12\ntop\npush 90\npush -62\ngetMin\ntop\npush -32\ntop\npush 16\npop\npop\ntop\npush -37\npop\npush -34",
+            "output": "null\nnull\nnull\n-63\nnull\nnull\nnull\n-98\nnull\nnull\nnull\nnull\n12\nnull\nnull\n-62\n-62\nnull\n-32\nnull\nnull\nnull\n-62\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -51\ntop\npush -54\npush 59\npush 77\npush 11\npush 38\npop\ntop\npush -21\ntop\npush -62\npush 100\npop\npush -35",
+            "output": "null\nnull\n-51\nnull\nnull\nnull\nnull\nnull\nnull\n11\nnull\n-21\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 51\ntop\npush -4\npush -93\npush -89\npush -39\ntop\npush 46\npush -28\ngetMin\ngetMin\npush -53\ntop\npop\ntop",
+            "output": "null\nnull\n51\nnull\nnull\nnull\nnull\n-39\nnull\nnull\n-93\n-93\nnull\n-53\nnull\n-28"
+        },
+        {
+            "input": "MinStack\npush 81\ntop\ntop\npush 43\ngetMin\npush 30\npush -64\npush -61\npop\npop\npush -48\npop\npush -49\npush -31\npush -56\ngetMin\npop\ngetMin\ntop\npush 38\npop\npush -53\npop\ngetMin\npush -3\npush -23\ntop",
+            "output": "null\nnull\n81\n81\nnull\n43\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-56\nnull\n-49\n-31\nnull\nnull\nnull\nnull\n-49\nnull\nnull\n-23"
+        },
+        {
+            "input": "MinStack\npush 59\npush 49\npush -54\npush -77\npop\npush 4\npop\npop\npush 41\npush -93\npush 36\npush -77\npush -22\npush -69\npush -22\ngetMin\ngetMin\npop\npop\npush -69",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-93\n-93\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -94\ntop\npop\npush -70\npop\npush 45\npop\npush 28\npush -87\ngetMin\ntop\ngetMin\ntop\npush -59\ntop\npush -98\npush 11\ngetMin\npush 12\ngetMin\npush -7\npush -94\npush 24\npush 58",
+            "output": "null\nnull\n-94\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-87\n-87\n-87\n-87\nnull\n-59\nnull\nnull\n-98\nnull\n-98\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -90\npush 2\npop\npop\npush -37\npush 9\npush -47\npush 30\npush -56\npush -78\npush 6\ngetMin\ntop\npush -64\ntop\npush 80\npush -26\ngetMin\npush 94\ntop\npop\npush -90\npop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-78\n6\nnull\n-64\nnull\nnull\n-78\nnull\n94\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 94\npop\npush 28\npush -6\npush -87\npush 27\npop\npop\npush 34\npush 95\npush 18\ntop\npush -66\npush 50\npush -56\npop\npop\npush -75\ngetMin\npush 58\npush 64\npop\npush -22",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n18\nnull\nnull\nnull\nnull\nnull\nnull\n-75\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 84\npush -7\npush 15\ntop\npush 31\ntop\npush 31\ntop\npush -95\npop\ngetMin\ntop\ntop\npop\ngetMin\ngetMin\npop\ntop\ntop\npush -69\ntop\npush 2\npop",
+            "output": "null\nnull\nnull\nnull\n15\nnull\n31\nnull\n31\nnull\nnull\n-7\n31\n31\nnull\n-7\n-7\nnull\n15\n15\nnull\n-69\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -16\ngetMin\ntop\npush -60\npush -34\npush 92\npop\npush 26\ngetMin\npush -28\npush -30\npush -70\npop\npush 99\npush -74\npop\npop\npush 46",
+            "output": "null\nnull\n-16\n-16\nnull\nnull\nnull\nnull\nnull\n-60\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 95\ntop\ntop\ntop\npush 89\npush -5\npop\npush -35\npop\npush 17\ngetMin\ntop\ngetMin\ngetMin\ntop\npop\npush -23\ngetMin\npop\npush -22\npush 34\npush -55\ngetMin\npop",
+            "output": "null\nnull\n95\n95\n95\nnull\nnull\nnull\nnull\nnull\nnull\n17\n17\n17\n17\n17\nnull\nnull\n-23\nnull\nnull\nnull\nnull\n-55\nnull"
+        },
+        {
+            "input": "MinStack\npush -22\ngetMin\npush -8\npush 99\ntop\ngetMin\npush 60\npush -92\npush -50\ngetMin\ntop\ngetMin\npop\ngetMin\npush -29",
+            "output": "null\nnull\n-22\nnull\nnull\n99\n-22\nnull\nnull\nnull\n-92\n-50\n-92\nnull\n-92\nnull"
+        },
+        {
+            "input": "MinStack\npush -63\npush -98\npush 52\npush 69\ntop\npush 43\npop\npush -43\npush 58\ngetMin\npush -57\ngetMin\npush 20\npush -59\ntop\npush 99\npush 70\ngetMin\ngetMin\ntop\ntop\npush 9",
+            "output": "null\nnull\nnull\nnull\nnull\n69\nnull\nnull\nnull\nnull\n-98\nnull\n-98\nnull\nnull\n-59\nnull\nnull\n-98\n-98\n70\n70\nnull"
+        },
+        {
+            "input": "MinStack\npush -70\ntop\ntop\npop\npush 74\ngetMin\npush -20\npush 30\npop\ngetMin\npush -20\ngetMin\ntop\ngetMin\npush 64\npush 85\ntop\npush -13\npush 5\npush 68\npop\npush 8\npush 98\npop\npush -6\ngetMin",
+            "output": "null\nnull\n-70\n-70\nnull\nnull\n74\nnull\nnull\nnull\n-20\nnull\n-20\n-20\n-20\nnull\nnull\n85\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-20"
+        },
+        {
+            "input": "MinStack\npush -31\npush 36\ngetMin\npop\ngetMin\npush -54\npop\npush -14\ntop\npush 30\ngetMin\ngetMin\npop\npop\npush -46\ntop\ntop\npop\ntop\npush 70\npush 97\npop",
+            "output": "null\nnull\nnull\n-31\nnull\n-31\nnull\nnull\nnull\n-14\nnull\n-31\n-31\nnull\nnull\nnull\n-46\n-46\nnull\n-31\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 32\ntop\npush -70\ntop\npop\ngetMin\npush 79\npush 27\npush -39\ntop\ngetMin\npush 55\npush 58\npop\npush 2\ntop\npop\npush -21\ntop\npop\npush 5\npop\npush -84\npush -55\npop\npush -95",
+            "output": "null\nnull\n32\nnull\n-70\nnull\n32\nnull\nnull\nnull\n-39\n-39\nnull\nnull\nnull\nnull\n2\nnull\nnull\n-21\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -22\npush -57\npop\npush 10\npop\npush 63\npush 36\npush -51\npop\ntop\ntop\npush -91\npush 23\npush -17\npush -65\npush 28\npush -54\npush -14\ngetMin\ntop\ngetMin\ngetMin\npush 79",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n36\n36\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-91\n-14\n-91\n-91\nnull"
+        },
+        {
+            "input": "MinStack\npush 27\npush -90\npush 4\npop\npush -86\ngetMin\npush -79\npush -16\ngetMin\npush -8\npush 31\ngetMin\ngetMin\npush -79\npop\npush 48\npush -30\ntop\npush -53\npush 61\npush -72\ngetMin\npush -33\npop\npush 70\ntop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n-90\nnull\nnull\n-90\nnull\nnull\n-90\n-90\nnull\nnull\nnull\nnull\n-30\nnull\nnull\nnull\n-90\nnull\nnull\nnull\n70"
+        },
+        {
+            "input": "MinStack\npush 33\ntop\npush 21\ngetMin\ngetMin\npop\npush 23\ntop\npush 5\npop\ntop\ntop\npop\npush -24\ntop\ntop\npush -85\ntop\npush 41\ngetMin\npush 66\npush 65\npush 37\npush -63\npop",
+            "output": "null\nnull\n33\nnull\n21\n21\nnull\nnull\n23\nnull\nnull\n23\n23\nnull\nnull\n-24\n-24\nnull\n-85\nnull\n-85\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -64\npush 62\npop\npush -69\npush -48\npush 74\npush 55\npush 92\ntop\ngetMin\ngetMin\ngetMin\npop\npush -95\npop\ntop\npop\ntop\ntop\npop\ngetMin\npush 4\npush 37\npush -50\ngetMin",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n92\n-69\n-69\n-69\nnull\nnull\nnull\n55\nnull\n74\n74\nnull\n-69\nnull\nnull\nnull\n-69"
+        },
+        {
+            "input": "MinStack\npush -49\ntop\npop\npush -94\npush 25\ntop\npush 54\npush 35\npush -54\npop\npush -19\npush 87\npush 35\npush -56\npush -48",
+            "output": "null\nnull\n-49\nnull\nnull\nnull\n25\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 65\npush -47\ngetMin\npop\ngetMin\ngetMin\ngetMin\npop\npush -17\npop\npush 36\npush -45\npush 42\ntop\npush -43\npush 52\ntop\ntop",
+            "output": "null\nnull\nnull\n-47\nnull\n65\n65\n65\nnull\nnull\nnull\nnull\nnull\nnull\n42\nnull\nnull\n52\n52"
+        },
+        {
+            "input": "MinStack\npush -97\ntop\ngetMin\ngetMin\npop\npush -92\npush 78\npush -8\npop\npop\npop\npush -23\npop\npush 80\ntop\npush -17",
+            "output": "null\nnull\n-97\n-97\n-97\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n80\nnull"
+        },
+        {
+            "input": "MinStack\npush -12\npush -18\ntop\npush 36\npop\npush -16\ntop\npush 55\ntop\npush -29\npush -46\npush 16\npush 87\npush -66\npop\ngetMin\ntop\ntop\npush 54",
+            "output": "null\nnull\nnull\n-18\nnull\nnull\nnull\n-16\nnull\n55\nnull\nnull\nnull\nnull\nnull\nnull\n-46\n87\n87\nnull"
+        },
+        {
+            "input": "MinStack\npush -62\npush -14\ngetMin\ntop\npush -51\npush 13\npush -51\ntop\npush 55\npop\npush -9\ntop\ntop\ntop\npop\npop\npush -95\ntop\npush 12\npush -84\npush -12",
+            "output": "null\nnull\nnull\n-62\n-14\nnull\nnull\nnull\n-51\nnull\nnull\nnull\n-9\n-9\n-9\nnull\nnull\nnull\n-95\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -28\ngetMin\npush -9\ngetMin\npush -36\npush 44\ntop\npop\npush -37\ntop\npop\npush -13",
+            "output": "null\nnull\n-28\nnull\n-28\nnull\nnull\n44\nnull\nnull\n-37\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 36\npush -17\ntop\ntop\npush -94\npush -85\npush 92\npop\npop\npush 99\npush 6\ntop\ntop\npop\ngetMin\npop\npop\npush 99\npop\npop\npop",
+            "output": "null\nnull\nnull\n-17\n-17\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n6\n6\nnull\n-94\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -95\npush 44\npush 66\npush 75\npush 47\npush -18\npop\ntop\ntop\ngetMin\npush 80\npop\ngetMin\npop\npop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n47\n47\n-95\nnull\nnull\n-95\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -63\npop\npush -95\npush -77\ntop\npush -67\npop\ngetMin\ntop\ntop\ngetMin\ntop\ntop\npush 10\npush -31\npush -46\npop",
+            "output": "null\nnull\nnull\nnull\nnull\n-77\nnull\nnull\n-95\n-77\n-77\n-95\n-77\n-77\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 37\npush -90\npop\npush 3\ngetMin\npop\ngetMin\npush -100\npop\ngetMin\npop\npush 3\npush 36\npush -58\ngetMin\ngetMin\ngetMin\npush 64\npush -41",
+            "output": "null\nnull\nnull\nnull\nnull\n3\nnull\n37\nnull\nnull\n37\nnull\nnull\nnull\nnull\n-58\n-58\n-58\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -72\ngetMin\npush -77\npop\npush 67\npush -33\ntop\npush -49\ntop\ntop\ngetMin\npush 80\npush 69\npush 77\ngetMin\npop\ntop\npush -30\npop\npush 33\npush -33\ntop\ngetMin\ngetMin\npush -51\npop\ntop\npush 45\npush -61",
+            "output": "null\nnull\n-72\nnull\nnull\nnull\nnull\n-33\nnull\n-49\n-49\n-72\nnull\nnull\nnull\n-72\nnull\n69\nnull\nnull\nnull\nnull\n-33\n-72\n-72\nnull\nnull\n-33\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -13\ngetMin\npush 70\npush 23\npush -94\npush -33\npush -90\ngetMin\npush 33\npush -74\ntop\npush 23\ntop\ngetMin\ntop\ntop\npush -86\ngetMin\ngetMin",
+            "output": "null\nnull\n-13\nnull\nnull\nnull\nnull\nnull\n-94\nnull\nnull\n-74\nnull\n23\n-94\n23\n23\nnull\n-94\n-94"
+        },
+        {
+            "input": "MinStack\npush 61\npush 30\npush 5\npop\ngetMin\ngetMin\npush -57\ngetMin\ntop\npush 75\npush 22\npush 54\npush 73\npush -3\npush -79\ngetMin\ngetMin\npush 35\npush -54",
+            "output": "null\nnull\nnull\nnull\nnull\n30\n30\nnull\n-57\n-57\nnull\nnull\nnull\nnull\nnull\nnull\n-79\n-79\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -38\npush 93\npush -61\npush 84\ntop\ngetMin\npush -74\ngetMin\npush 22\ntop\ngetMin\npush -99\npop\npop\npush -78\ngetMin\npush 8\npop\ntop\npush 42\ntop\ntop\ngetMin\npush 4\npush 0\npop\ntop\ngetMin",
+            "output": "null\nnull\nnull\nnull\nnull\n84\n-61\nnull\n-74\nnull\n22\n-74\nnull\nnull\nnull\nnull\n-78\nnull\nnull\n-78\nnull\n42\n42\n-78\nnull\nnull\nnull\n4\n-78"
+        },
+        {
+            "input": "MinStack\npush -71\npop\npush 87\npop\npush 91\ntop\npop\npush -22\npush -59\npush 91\npush -12\npop\ntop\npush -47\ngetMin",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n91\nnull\nnull\nnull\nnull\nnull\nnull\n91\nnull\n-59"
+        },
+        {
+            "input": "MinStack\npush -67\npush 69\npop\npop\npush 50\ngetMin\npop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n50\nnull"
+        },
+        {
+            "input": "MinStack\npush -25\npush 58\npush -56\ngetMin\npush -72\ngetMin\ntop\npush -66\npush 30\ntop\ngetMin\npush 44",
+            "output": "null\nnull\nnull\nnull\n-56\nnull\n-72\n-72\nnull\nnull\n30\n-72\nnull"
+        },
+        {
+            "input": "MinStack\npush -49\ngetMin\ntop\npush -27\npop\npush -93\npush -9\npush -59\npush -13\ngetMin\npush 61\ntop\ntop\ntop\ngetMin\npop\npop\npush -11\npush -62\ntop\npush -34",
+            "output": "null\nnull\n-49\n-49\nnull\nnull\nnull\nnull\nnull\nnull\n-93\nnull\n61\n61\n61\n-93\nnull\nnull\nnull\nnull\n-62\nnull"
+        },
+        {
+            "input": "MinStack\npush 13\npush 49\ntop\npush 99\npush -80\ntop\npush -67\npush 37\npop\npush -26\ntop",
+            "output": "null\nnull\nnull\n49\nnull\nnull\n-80\nnull\nnull\nnull\nnull\n-26"
+        },
+        {
+            "input": "MinStack\npush -40\npop\npush 23\npush 34\npop\npush 1\ngetMin\npush 77\npop\npush 66\npush 17\npush -40\npush -36\ntop\npop\npush -63\npush -24\npush -73\npush 5\ngetMin\ngetMin\npop\npush -24\ngetMin",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n1\nnull\nnull\nnull\nnull\nnull\nnull\n-36\nnull\nnull\nnull\nnull\nnull\n-73\n-73\nnull\nnull\n-73"
+        },
+        {
+            "input": "MinStack\npush -24\npop\npush 86\npush -77\npop\npush -48\npush 7\npush 81\npush -68\npop\npush 30\ngetMin\npush 36\ntop\npush 25\npop\npush -3\ngetMin\npush -26",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-48\nnull\n36\nnull\nnull\nnull\n-48\nnull"
+        },
+        {
+            "input": "MinStack\npush -74\ngetMin\npush 71\ntop\npush -38\npop\ntop\ngetMin\ntop\npush 90\npush -70\npush -30",
+            "output": "null\nnull\n-74\nnull\n71\nnull\nnull\n71\n-74\n71\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 53\npop\npush 10\ntop\npush -99\npush 83\npush 41\npush 76\npop\ngetMin\npush -62\npush 21\ntop\npush 29\npush 72\npush -63\ntop\ntop\npush -36\ngetMin\ngetMin\npop\npush -8\ntop",
+            "output": "null\nnull\nnull\nnull\n10\nnull\nnull\nnull\nnull\nnull\n-99\nnull\nnull\n21\nnull\nnull\nnull\n-63\n-63\nnull\n-99\n-99\nnull\nnull\n-8"
+        },
+        {
+            "input": "MinStack\npush -60\npush -43\npush -28\ntop\npop\npop\ntop\ntop\npop\npush -82\npush 86\ntop\ntop",
+            "output": "null\nnull\nnull\nnull\n-28\nnull\nnull\n-60\n-60\nnull\nnull\nnull\n86\n86"
+        },
+        {
+            "input": "MinStack\npush -27\npop\npush 82\npop\npush 52\npush -1\npop\npush 8\npop\npush 41\npop\npush -9\npush -4\ntop",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-4"
+        },
+        {
+            "input": "MinStack\npush -24\ngetMin\ngetMin\ngetMin\npush 74\npush 0\ngetMin\ntop\npush 0\ngetMin",
+            "output": "null\nnull\n-24\n-24\n-24\nnull\nnull\n-24\n0\nnull\n-24"
+        },
+        {
+            "input": "MinStack\npush 71\ntop\npop\npush -63\npop\npush 8\ngetMin\npop\npush 50\npush 42\npush 97\ntop\npop\ngetMin\npush -34\npush -81\npush -36\npush 12",
+            "output": "null\nnull\n71\nnull\nnull\nnull\nnull\n8\nnull\nnull\nnull\nnull\n97\nnull\n42\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 38\ngetMin\npop\npush 56\ntop\npop\npush -75\npush 42\npush -73\npush 58\ntop",
+            "output": "null\nnull\n38\nnull\nnull\n56\nnull\nnull\nnull\nnull\nnull\n58"
+        },
+        {
+            "input": "MinStack\npush 76\npush -26\npop\npush 17\ntop\npop\npush -1\npop\ntop\ntop\npush 40\npush -12\npop",
+            "output": "null\nnull\nnull\nnull\nnull\n17\nnull\nnull\nnull\n76\n76\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 54\ngetMin\npush 87\npush 1\npush -65\npop\ntop\ntop\npush 71\ngetMin\ntop\npush 53\npush 48\npush 85\ngetMin\npush 71\npush 88\npop\npush -78",
+            "output": "null\nnull\n54\nnull\nnull\nnull\nnull\n1\n1\nnull\n1\n71\nnull\nnull\nnull\n1\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -60\npush -51\ngetMin\npush -19\npop\npush 59\npush -2",
+            "output": "null\nnull\nnull\n-60\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -11\npush 94\npush 2\npop\npush -2\npop\npop\npush 20\npop\npush 90\ngetMin",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-11"
+        },
+        {
+            "input": "MinStack\npush -49\ntop\npush 29\npush 59\ngetMin\ngetMin\ntop\npush -72\npush -72\npush 21\ngetMin\npop\npush 11\ngetMin\npush -41\ntop\ngetMin\npush 12",
+            "output": "null\nnull\n-49\nnull\nnull\n-49\n-49\n59\nnull\nnull\nnull\n-72\nnull\nnull\n-72\nnull\n-41\n-72\nnull"
+        },
+        {
+            "input": "MinStack\npush -23\ngetMin\ngetMin\npush -27\npop\ngetMin\npush -72\ntop\npush -81\npush 7\npush -50\npush -41\npop\npop\ngetMin\npush 92\ngetMin\npush 98\npush 57\npop\npush 52",
+            "output": "null\nnull\n-23\n-23\nnull\nnull\n-23\nnull\n-72\nnull\nnull\nnull\nnull\nnull\nnull\n-81\nnull\n-81\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 52\ngetMin\npush 64\npush 89\npush -83\npush 25\npush -11\npush -76\npush -27\ngetMin\npop",
+            "output": "null\nnull\n52\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-83\nnull"
+        },
+        {
+            "input": "MinStack\npush -45\ntop\npush -81\npop\ntop\ntop\npush 82\ntop\npop\npop\npush -84\npush -32\npush -17\npop\npush -38\ngetMin\npush -25\ntop\npush 13\npush 88\npush -4\npop\ntop\npush -61\npush -36\npush 77\npop",
+            "output": "null\nnull\n-45\nnull\nnull\n-45\n-45\nnull\n82\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-84\nnull\n-25\nnull\nnull\nnull\nnull\n88\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 96\npop\npush 80\npop\npush 76\npush -23\ntop\npush -48\ntop\npush 37\npush -4\ngetMin\npush 16\npush -54",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n-23\nnull\n-48\nnull\nnull\n-48\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 44\ngetMin\npush -45\ngetMin\npush 47\npush 71\npush -48\npop\npop\npush 82\npop\ngetMin\npush -73\npush -40\npop\npop\npush -4",
+            "output": "null\nnull\n44\nnull\n-45\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-45\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 92\npush 70\npop\npush 80\npush 92\ntop\ntop\npush -43\npush 90\npush -53\npush -90\ntop\ntop\npush 65\npush -96",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\n92\n92\nnull\nnull\nnull\nnull\n-90\n-90\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -49\ntop\npop\npush -47\npop\npush 99\npop\npush -12\npush -95\npop\npush -61\npush -87\npush -39\npush -51\npop\npop\npush 19\npush 17\npush 15",
+            "output": "null\nnull\n-49\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -24\npush 30\npop\ntop\npush 84\npush 15\npush 25\npush -61\npush 6\ntop\ngetMin\npush -78\npop\npush 94\npop\ntop\ntop\npush -72\npush 70\npush 17\npop\ntop",
+            "output": "null\nnull\nnull\nnull\n-24\nnull\nnull\nnull\nnull\nnull\n6\n-61\nnull\nnull\nnull\nnull\n6\n6\nnull\nnull\nnull\nnull\n70"
+        },
+        {
+            "input": "MinStack\npush 28\ngetMin\npush 90\npush -5\npush 15\ngetMin\npush -78\npush 40\ngetMin\ngetMin\ngetMin\ntop\npush 38\npush -92",
+            "output": "null\nnull\n28\nnull\nnull\nnull\n-5\nnull\nnull\n-78\n-78\n-78\n40\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 79\ntop\ngetMin\ntop\ntop\npush -25\ngetMin\ngetMin\npush 87\npush -80\npop\ngetMin\npush 48\npush 57\ntop\npush -18\npop\ntop",
+            "output": "null\nnull\n79\n79\n79\n79\nnull\n-25\n-25\nnull\nnull\nnull\n-25\nnull\nnull\n57\nnull\nnull\n57"
+        },
+        {
+            "input": "MinStack\npush -69\npop\npush 39\npush -78\ngetMin\npush -31\npush -77\npop\npush -39\npush -41\npush 26\ntop\npush -61\npush -64\ngetMin\npush -88\ntop",
+            "output": "null\nnull\nnull\nnull\nnull\n-78\nnull\nnull\nnull\nnull\nnull\nnull\n26\nnull\nnull\n-78\nnull\n-88"
+        },
+        {
+            "input": "MinStack\npush -28\npush -18\ntop\npush 58\ngetMin\npush 85\ntop\npush 86\ngetMin\npush -10\npush -1\npush -33\npush -42\npop\npush 46\npush -81\npush 82\npush 6\npush 84\npush 63\npush 37\npop\ngetMin",
+            "output": "null\nnull\nnull\n-18\nnull\n-28\nnull\n85\nnull\n-28\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-81"
+        },
+        {
+            "input": "MinStack\npush -90\npush 65\npop\ngetMin\ntop\npop\npush -42\npush -85\npop\npush 26\npush -68\ngetMin",
+            "output": "null\nnull\nnull\nnull\n-90\n-90\nnull\nnull\nnull\nnull\nnull\nnull\n-68"
+        },
+        {
+            "input": "MinStack\npush -67\npush 24\npush -43\ngetMin\ngetMin\ntop\npush 42\npop\npush 47\npush 66\npop\npush 55\npop\npush -96\ngetMin\ntop\npop\npop\ngetMin",
+            "output": "null\nnull\nnull\nnull\n-67\n-67\n-43\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-96\n-96\nnull\nnull\n-67"
+        },
+        {
+            "input": "MinStack\npush 26\npush 48\npush -49\ntop\npop\npop\npush 87\npush 43\ngetMin\ntop\ngetMin\ntop\ntop\npush -61",
+            "output": "null\nnull\nnull\nnull\n-49\nnull\nnull\nnull\nnull\n26\n43\n26\n43\n43\nnull"
+        },
+        {
+            "input": "MinStack\npush -73\ntop\npush 2\npop\npush 89\npush -71\ngetMin\ntop\npop\npop\ngetMin\ntop\npop\npush 9\npush -87\ngetMin\ntop\npop\npush -9\npop\ntop\npop\npush -63\npush -69\npush -45\npush 59",
+            "output": "null\nnull\n-73\nnull\nnull\nnull\nnull\n-73\n-71\nnull\nnull\n-73\n-73\nnull\nnull\nnull\n-87\n-87\nnull\nnull\nnull\n9\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 68\ntop\npush 73\ntop\npop\npop\npush -47\npush 6\npop\ngetMin\npush -25\npop\npush 99\ngetMin\npush 78\npush 23\npush -11\ntop\npush 6\ngetMin",
+            "output": "null\nnull\n68\nnull\n73\nnull\nnull\nnull\nnull\nnull\n-47\nnull\nnull\nnull\n-47\nnull\nnull\nnull\n-11\nnull\n-47"
+        },
+        {
+            "input": "MinStack\npush -70\ntop\npush -3\npush 83\npop\npop\npop\npush 36\ntop\ntop\ngetMin\npush -9\npush 56\npop\npop\ntop\ntop\ntop\ngetMin\npop\npush -35\ngetMin\npush 77",
+            "output": "null\nnull\n-70\nnull\nnull\nnull\nnull\nnull\nnull\n36\n36\n36\nnull\nnull\nnull\nnull\n36\n36\n36\n36\nnull\nnull\n-35\nnull"
+        },
+        {
+            "input": "MinStack\npush -2\npop\npush 88\ntop\ngetMin\npush -14\npush 93\npush -70\npush -51\npush 13\npush 74\npush 82\npop\npush 24\npush 56",
+            "output": "null\nnull\nnull\nnull\n88\n88\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -99\npush 66\npop\npush -61\ngetMin\npop\npush -4\ngetMin\ntop\npush 98\ntop\npush -13",
+            "output": "null\nnull\nnull\nnull\nnull\n-99\nnull\nnull\n-99\n-4\nnull\n98\nnull"
+        },
+        {
+            "input": "MinStack\npush -40\ngetMin\ntop\ntop\npop\npush 27\ntop\ntop\ngetMin\npop\npush -34\npush -63\npush -87",
+            "output": "null\nnull\n-40\n-40\n-40\nnull\nnull\n27\n27\n27\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -48\npush -20\ntop\ntop\ngetMin\ngetMin\npush -26\npush -36\ngetMin\npop\npop\npush 59\ngetMin\npush 85\ngetMin\npush 33\npush -19\ngetMin\npop",
+            "output": "null\nnull\nnull\n-20\n-20\n-48\n-48\nnull\nnull\n-48\nnull\nnull\nnull\n-48\nnull\n-48\nnull\nnull\n-48\nnull"
+        },
+        {
+            "input": "MinStack\npush 12\npush 38\npush -70\ntop\npop\npush -48\ntop\npush -26\npop\npop\npop\npush 26\ntop\ngetMin\npush 23\npush -5\ngetMin\npush 36\npush -87",
+            "output": "null\nnull\nnull\nnull\n-70\nnull\nnull\n-48\nnull\nnull\nnull\nnull\nnull\n26\n12\nnull\nnull\n-5\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush -8\npush -96\ntop\npush 38\npush -30\npush -32\npush -15\npush -48\npop\ntop\npush 37\npop\npop\npush -87\npush 46\npush 81\npush -78\npush -29\ngetMin",
+            "output": "null\nnull\nnull\n-96\nnull\nnull\nnull\nnull\nnull\nnull\n-15\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n-96"
+        },
+        {
+            "input": "MinStack\npush 15\npop\npush -19\npop\npush 34\npush -50\npush -41\npop\npush 42\npop\npop\ngetMin\ntop\npush -9\npush 97\npush -44\npush -97\npush -57\ngetMin\npop\ntop\npush -47",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n34\n34\nnull\nnull\nnull\nnull\nnull\n-97\nnull\n-97\nnull"
+        },
+        {
+            "input": "MinStack\npush -40\npush -66\ntop\npop\npop\npush 0\npush 58\npop\ntop\npush 17\npush -5\npop\npush 23\npop\npop",
+            "output": "null\nnull\nnull\n-66\nnull\nnull\nnull\nnull\nnull\n0\nnull\nnull\nnull\nnull\nnull\nnull"
+        },
+        {
+            "input": "MinStack\npush 18\ntop\npush 98\npop\npop\npush -60\npush -74\npush 16\ntop\npush -57\ngetMin\npop\npush -51\npop\ntop\ntop\npush 41\npop\npush 48\npush -50\ntop\ntop\ngetMin\ntop\ngetMin\ntop\ngetMin",
+            "output": "null\nnull\n18\nnull\nnull\nnull\nnull\nnull\nnull\n16\nnull\n-74\nnull\nnull\nnull\n16\n16\nnull\nnull\nnull\nnull\n-50\n-50\n-74\n-50\n-74\n-50\n-74"
+        },
+        {
+            "input": "MinStack\npush -83\npush -90\ntop\npush 96\npush 51\npush 54\npop\ntop\npush -46\ngetMin\npush 25\ngetMin\npush -82\ngetMin\ngetMin\npush 70\ntop\ntop\ngetMin\npush -21\npop\npush -39\ngetMin",
+            "output": "null\nnull\nnull\n-90\nnull\nnull\nnull\nnull\n51\nnull\n-90\nnull\n-90\nnull\n-90\n-90\nnull\n70\n70\n-90\nnull\nnull\nnull\n-90"
+        },
+        {
+            "input": "MinStack\npush -100\npop\npush 59\npush 0\npush -44\npush -42\ngetMin\npop\npop\npop\npush -99\npop\npush 25\ngetMin\npop\ntop\npush 47",
+            "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n-44\nnull\nnull\nnull\nnull\nnull\nnull\n25\nnull\n59\nnull"
+        }
+    ]
+}

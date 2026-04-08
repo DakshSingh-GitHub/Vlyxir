@@ -1,0 +1,425 @@
+{
+    "id": "steps_to_reduce_to_zero",
+    "title": "Number of Steps to Reduce a Number to Zero",
+    "description": "Given an integer num, return the number of steps to reduce it to zero.\n\nIn one step, if the current number is even, you have to divide it by 2, otherwise, you have to subtract 1 from it.",
+    "input_format": "An integer.",
+    "output_format": "An integer.",
+    "constraints": {
+        "num": "0 <= num <= 10^6"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "14",
+            "output": "6"
+        },
+        {
+            "input": "8",
+            "output": "4"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "273",
+            "output": "11"
+        },
+        {
+            "input": "254",
+            "output": "14"
+        },
+        {
+            "input": "246",
+            "output": "13"
+        },
+        {
+            "input": "360",
+            "output": "12"
+        },
+        {
+            "input": "327",
+            "output": "13"
+        },
+        {
+            "input": "86",
+            "output": "10"
+        },
+        {
+            "input": "822",
+            "output": "15"
+        },
+        {
+            "input": "148",
+            "output": "10"
+        },
+        {
+            "input": "551",
+            "output": "14"
+        },
+        {
+            "input": "290",
+            "output": "11"
+        },
+        {
+            "input": "673",
+            "output": "13"
+        },
+        {
+            "input": "606",
+            "output": "15"
+        },
+        {
+            "input": "935",
+            "output": "16"
+        },
+        {
+            "input": "570",
+            "output": "14"
+        },
+        {
+            "input": "118",
+            "output": "11"
+        },
+        {
+            "input": "770",
+            "output": "12"
+        },
+        {
+            "input": "996",
+            "output": "15"
+        },
+        {
+            "input": "946",
+            "output": "15"
+        },
+        {
+            "input": "514",
+            "output": "11"
+        },
+        {
+            "input": "710",
+            "output": "14"
+        },
+        {
+            "input": "744",
+            "output": "14"
+        },
+        {
+            "input": "52",
+            "output": "8"
+        },
+        {
+            "input": "273",
+            "output": "11"
+        },
+        {
+            "input": "92",
+            "output": "10"
+        },
+        {
+            "input": "297",
+            "output": "12"
+        },
+        {
+            "input": "955",
+            "output": "17"
+        },
+        {
+            "input": "328",
+            "output": "11"
+        },
+        {
+            "input": "549",
+            "output": "13"
+        },
+        {
+            "input": "370",
+            "output": "13"
+        },
+        {
+            "input": "16",
+            "output": "5"
+        },
+        {
+            "input": "554",
+            "output": "13"
+        },
+        {
+            "input": "370",
+            "output": "13"
+        },
+        {
+            "input": "290",
+            "output": "11"
+        },
+        {
+            "input": "91",
+            "output": "11"
+        },
+        {
+            "input": "93",
+            "output": "11"
+        },
+        {
+            "input": "916",
+            "output": "14"
+        },
+        {
+            "input": "946",
+            "output": "15"
+        },
+        {
+            "input": "715",
+            "output": "15"
+        },
+        {
+            "input": "665",
+            "output": "14"
+        },
+        {
+            "input": "60",
+            "output": "9"
+        },
+        {
+            "input": "427",
+            "output": "14"
+        },
+        {
+            "input": "385",
+            "output": "11"
+        },
+        {
+            "input": "946",
+            "output": "15"
+        },
+        {
+            "input": "675",
+            "output": "14"
+        },
+        {
+            "input": "758",
+            "output": "16"
+        },
+        {
+            "input": "645",
+            "output": "13"
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "229",
+            "output": "12"
+        },
+        {
+            "input": "372",
+            "output": "13"
+        },
+        {
+            "input": "92",
+            "output": "10"
+        },
+        {
+            "input": "707",
+            "output": "14"
+        },
+        {
+            "input": "236",
+            "output": "12"
+        },
+        {
+            "input": "216",
+            "output": "11"
+        },
+        {
+            "input": "296",
+            "output": "11"
+        },
+        {
+            "input": "555",
+            "output": "14"
+        },
+        {
+            "input": "91",
+            "output": "11"
+        },
+        {
+            "input": "305",
+            "output": "12"
+        },
+        {
+            "input": "599",
+            "output": "15"
+        },
+        {
+            "input": "44",
+            "output": "8"
+        },
+        {
+            "input": "200",
+            "output": "10"
+        },
+        {
+            "input": "462",
+            "output": "14"
+        },
+        {
+            "input": "489",
+            "output": "14"
+        },
+        {
+            "input": "748",
+            "output": "15"
+        },
+        {
+            "input": "473",
+            "output": "14"
+        },
+        {
+            "input": "306",
+            "output": "12"
+        },
+        {
+            "input": "235",
+            "output": "13"
+        },
+        {
+            "input": "653",
+            "output": "14"
+        },
+        {
+            "input": "102",
+            "output": "10"
+        },
+        {
+            "input": "637",
+            "output": "16"
+        },
+        {
+            "input": "322",
+            "output": "11"
+        },
+        {
+            "input": "309",
+            "output": "13"
+        },
+        {
+            "input": "906",
+            "output": "14"
+        },
+        {
+            "input": "96",
+            "output": "8"
+        },
+        {
+            "input": "415",
+            "output": "15"
+        },
+        {
+            "input": "597",
+            "output": "14"
+        },
+        {
+            "input": "725",
+            "output": "15"
+        },
+        {
+            "input": "258",
+            "output": "10"
+        },
+        {
+            "input": "919",
+            "output": "16"
+        },
+        {
+            "input": "608",
+            "output": "12"
+        },
+        {
+            "input": "780",
+            "output": "13"
+        },
+        {
+            "input": "655",
+            "output": "15"
+        },
+        {
+            "input": "884",
+            "output": "15"
+        },
+        {
+            "input": "195",
+            "output": "11"
+        },
+        {
+            "input": "941",
+            "output": "16"
+        },
+        {
+            "input": "847",
+            "output": "16"
+        },
+        {
+            "input": "659",
+            "output": "14"
+        },
+        {
+            "input": "538",
+            "output": "13"
+        },
+        {
+            "input": "634",
+            "output": "15"
+        },
+        {
+            "input": "136",
+            "output": "9"
+        },
+        {
+            "input": "276",
+            "output": "11"
+        },
+        {
+            "input": "160",
+            "output": "9"
+        },
+        {
+            "input": "519",
+            "output": "13"
+        },
+        {
+            "input": "796",
+            "output": "14"
+        },
+        {
+            "input": "743",
+            "output": "16"
+        },
+        {
+            "input": "614",
+            "output": "14"
+        },
+        {
+            "input": "937",
+            "output": "15"
+        },
+        {
+            "input": "286",
+            "output": "13"
+        },
+        {
+            "input": "964",
+            "output": "14"
+        },
+        {
+            "input": "862",
+            "output": "16"
+        },
+        {
+            "input": "461",
+            "output": "14"
+        }
+    ]
+}
