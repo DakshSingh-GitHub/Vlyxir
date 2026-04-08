@@ -30,6 +30,28 @@ export default function AccountSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const shellClass = isDark
+    ? "relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100"
+    : "relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900";
+  const ambientClass = isDark
+    ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
+    : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]";
+  const glowTopClass = isDark ? "bg-slate-900/40" : "bg-white/60";
+  const glowBottomClass = isDark ? "bg-slate-800/40" : "bg-sky-200/40";
+  const surfaceClass = isDark
+    ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] text-slate-100 shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
+    : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-900 shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
+  const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
+  const labelClass = isDark ? "text-slate-300" : "text-slate-600";
+  const inputClass = isDark
+    ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600 focus:border-indigo-500"
+    : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500";
+  const readOnlyClass = isDark
+    ? "border-slate-700/70 bg-slate-900/60 text-slate-200"
+    : "border-slate-200 bg-slate-50 text-slate-700";
+  const skeletonBar = isDark ? "bg-slate-700/80" : "bg-slate-200";
+  const skeletonCard = isDark ? "border-slate-700/70 bg-slate-950/60" : "border-slate-200 bg-white/90";
+
   useEffect(() => {
     if (!user) {
       setProfile(null);
@@ -98,9 +120,148 @@ export default function AccountSettingsPage() {
 
   if (isAuthLoading || (user && isLoadingProfile)) {
     return (
-      <div className={`flex min-h-0 flex-1 items-center justify-center px-4 py-10 ${isDark ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100" : "bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900"}`}>
-        <div className={`rounded-3xl border px-6 py-4 text-sm font-medium shadow-lg ${isDark ? "border-slate-700/70 bg-slate-950/80 text-slate-200" : "border-slate-200 bg-white text-slate-700"}`}>
-          Loading account details...
+      <div className={shellClass}>
+        <div className={ambientClass} />
+        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
+        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
+          <div className={`rounded-4xl border p-5 md:p-6 backdrop-blur-2xl ${surfaceClass}`}>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`h-10 w-24 rounded-2xl ${skeletonBar} animate-pulse`} />
+                <div className="space-y-2">
+                  <div className={`h-3 w-32 rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`h-5 w-52 rounded-full ${skeletonBar} animate-pulse`} />
+                </div>
+              </div>
+              <div className={`h-9 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
+            <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className={`h-3 w-36 rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`h-6 w-48 rounded-full ${skeletonBar} animate-pulse`} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className={`h-12 w-36 rounded-2xl ${skeletonBar} animate-pulse`} />
+                  <div className={`h-14 w-14 rounded-2xl ${skeletonBar} animate-pulse`} />
+                </div>
+              </div>
+
+              <div className="space-y-5">
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className={`h-3 w-14 rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`min-h-40 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                </div>
+
+                <div className="space-y-2">
+                  <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className={`rounded-2xl border p-4 ${skeletonCard}`}>
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className={`h-4 w-4 rounded-full ${skeletonBar} animate-pulse`} />
+                      <div className={`h-3 w-14 rounded-full ${skeletonBar} animate-pulse`} />
+                    </div>
+                    <div className={`h-4 w-full rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`mt-3 h-3 w-4/5 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className={`rounded-2xl border p-4 ${skeletonCard}`}>
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className={`h-4 w-4 rounded-full ${skeletonBar} animate-pulse`} />
+                      <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
+                    </div>
+                    <div className={`h-4 w-2/3 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`mt-3 h-3 w-11/12 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+
+                <div className={`h-4 w-72 rounded-full ${skeletonBar} animate-pulse`} />
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+                <div className="mb-5 flex items-center gap-3">
+                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
+                  <div className="space-y-2">
+                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className={`h-3 w-12 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-36 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-40 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-3 w-8 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-48 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-32 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
+                  <div className="space-y-2">
+                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-4 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+                <div className="mb-3 flex items-center gap-3">
+                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
+                  <div className="space-y-2">
+                    <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
+                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className={`h-4 w-full rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`h-4 w-11/12 rounded-full ${skeletonBar} animate-pulse`} />
+                  <div className={`h-4 w-5/6 rounded-full ${skeletonBar} animate-pulse`} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -120,23 +281,11 @@ export default function AccountSettingsPage() {
     );
   }
 
-  const surfaceClass = isDark
-    ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] text-slate-100 shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
-    : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-900 shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
-  const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
-  const labelClass = isDark ? "text-slate-300" : "text-slate-600";
-  const inputClass = isDark
-    ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600 focus:border-indigo-500"
-    : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500";
-  const readOnlyClass = isDark
-    ? "border-slate-700/70 bg-slate-900/60 text-slate-200"
-    : "border-slate-200 bg-slate-50 text-slate-700";
-
   return (
-    <div className={`relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans ${isDark ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100" : "bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900"}`}>
-      <div className={`pointer-events-none absolute inset-0 ${isDark ? "bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]"}`} />
-      <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${isDark ? "bg-slate-900/40" : "bg-white/60"}`} />
-      <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-slate-800/40" : "bg-sky-200/40"}`} />
+    <div className={shellClass}>
+      <div className={ambientClass} />
+      <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
+      <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
         <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
