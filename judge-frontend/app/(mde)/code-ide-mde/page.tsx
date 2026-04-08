@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { anime } from "../../lib/anime";
 import { useAppContext } from "../../lib/context";
 import { runCode } from "../../lib/api";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History } from "lucide-react";
 
 import CodeEditor from "../../../components/Editor/CodeEditor";
@@ -161,6 +162,7 @@ export default function CodeTestPage() {
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleMouseDownMain = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -326,7 +328,7 @@ export default function CodeTestPage() {
     );
 
     const editorPanel = (
-        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden ${isDark
+        <div className={`h-full min-h-0 flex flex-col rounded-4xl border backdrop-blur-2xl overflow-hidden ${isDark
             ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
             : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
             }`}>
@@ -391,7 +393,7 @@ export default function CodeTestPage() {
     );
 
     const inputPanel = (
-        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-indigo-500/10 ${isDark
+        <div className={`h-full min-h-0 flex flex-col rounded-4xl border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-indigo-500/10 ${isDark
             ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
             : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
             }`}>
@@ -410,7 +412,7 @@ export default function CodeTestPage() {
 
     const outputPanel = (
         isAuthLoading ? (
-            <div className={`h-full min-h-0 flex flex-col items-center justify-center rounded-[2rem] border ${isDark
+            <div className={`h-full min-h-0 flex flex-col items-center justify-center rounded-4xl border ${isDark
                 ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] text-slate-400"
                 : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-500"
                 }`}>
@@ -423,7 +425,7 @@ export default function CodeTestPage() {
                 nextPath={pathname}
             />
         ) : (
-        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/10 ${isDark
+        <div className={`h-full min-h-0 flex flex-col rounded-4xl border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/10 ${isDark
             ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
             : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
             }`}>
@@ -618,7 +620,7 @@ export default function CodeTestPage() {
                                 className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/60" : "bg-black/40"}`}
                                 aria-label="Close layout selector"
                             />
-                            <div className={`relative z-10 w-full max-w-md rounded-[2rem] border backdrop-blur-2xl p-5 ${isDark
+                            <div className={`relative z-10 w-full max-w-md rounded-4xl border backdrop-blur-2xl p-5 ${isDark
                                 ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
                                 : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.14)]"
                                 }`}>
