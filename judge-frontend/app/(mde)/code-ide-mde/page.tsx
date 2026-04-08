@@ -318,26 +318,29 @@ export default function CodeTestPage() {
 
     const titlePanel = (
         <div className="flex flex-col gap-1 px-4">
-            <h1 className="text-3xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
-                Code <span className="text-indigo-600 dark:text-indigo-400">IDE</span>
+            <h1 className={`text-3xl font-black tracking-tighter leading-none bg-clip-text text-transparent bg-linear-to-r ${isDark ? "from-white via-slate-300 to-slate-500" : "from-slate-900 via-slate-700 to-slate-500"}`}>
+                Code <span className={isDark ? "text-indigo-400" : "text-indigo-600"}>IDE</span>
             </h1>
-            <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.25em]">Think, build, and prototype</p>
+            <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Think, build, and prototype</p>
         </div>
     );
 
     const editorPanel = (
-        <div className="h-full min-h-0 flex flex-col rounded-[2rem] border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)] overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/40">
+        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden ${isDark
+            ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
+            : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+            }`}>
+            <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-700/70 bg-slate-900/40" : "border-slate-100 bg-slate-50/70"}`}>
                 <div className="flex items-center gap-4">
                     <div className="flex gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80 shadow-[0_0_10px_rgba(244,63,94,0.3)]" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80 shadow-[0_0_10px_rgba(245,158,11,0.3)]" />
-                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
+                        <div className={`w-2.5 h-2.5 rounded-full ${isDark ? "bg-rose-500/80 shadow-[0_0_10px_rgba(244,63,94,0.3)]" : "bg-rose-400 shadow-sm"}`} />
+                        <div className={`w-2.5 h-2.5 rounded-full ${isDark ? "bg-amber-500/80 shadow-[0_0_10px_rgba(245,158,11,0.3)]" : "bg-amber-400 shadow-sm"}`} />
+                        <div className={`w-2.5 h-2.5 rounded-full ${isDark ? "bg-emerald-500/80 shadow-[0_0_10px_rgba(16,185,129,0.3)]" : "bg-emerald-400 shadow-sm"}`} />
                     </div>
-                    <div className="h-4 w-px bg-slate-700/70" />
+                    <div className={`h-4 w-px ${isDark ? "bg-slate-700/70" : "bg-slate-200"}`} />
                     <div className="flex items-center gap-2">
-                        <div className="p-1 px-2 rounded-md bg-indigo-500/10 text-[10px] font-black text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">PY</div>
-                        <span className="text-xs font-bold text-slate-300 tracking-tight">playground.py</span>
+                        <div className={`p-1 px-2 rounded-md text-[10px] font-black border uppercase tracking-wider ${isDark ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" : "bg-indigo-50 text-indigo-600 border-indigo-100"}`}>PY</div>
+                        <span className={`text-xs font-bold tracking-tight ${isDark ? "text-slate-300" : "text-slate-500"}`}>playground.py</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -345,7 +348,10 @@ export default function CodeTestPage() {
                         onClick={handleReset}
                         disabled={isLoading}
                         title="Reset IDE"
-                        className="p-2 rounded-xl transition-all duration-200 bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/30 active:scale-95"
+                        className={`p-2 rounded-xl transition-all duration-200 active:scale-95 ${isDark
+                            ? "bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/30"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm"
+                            }`}
                     >
                         <RotateCcw className="w-4 h-4" />
                     </button>
@@ -353,11 +359,15 @@ export default function CodeTestPage() {
                         onClick={handleRun}
                         disabled={isLoading || isAuthLoading || !user}
                         title="Run Code"
-                        className={`group relative p-2.5 rounded-xl transition-all duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.3)] overflow-hidden active:scale-95 ${isLoading
-                            ? "bg-slate-700 text-slate-500"
+                        className={`group relative p-2.5 rounded-xl transition-all duration-200 overflow-hidden active:scale-95 ${isLoading
+                            ? isDark
+                                ? "bg-slate-700 text-slate-500"
+                                : "bg-slate-100 text-slate-400"
                             : isAuthLoading || !user
-                            ? "bg-slate-800 text-slate-500 cursor-not-allowed"
-                            : "bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white hover:brightness-110"
+                                ? isDark
+                                    ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+                                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                : "bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white hover:brightness-110 shadow-[0_8px_20px_rgba(79,70,229,0.25)]"
                             }`}
                     >
                         <div className="relative z-10 flex items-center justify-center">
@@ -381,15 +391,18 @@ export default function CodeTestPage() {
     );
 
     const inputPanel = (
-        <div className="h-full min-h-0 flex flex-col rounded-[2rem] border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)] overflow-hidden transition-all duration-300 hover:shadow-indigo-500/10">
-            <div className="px-6 py-4 border-b border-slate-700/70 flex items-center gap-2 bg-slate-900/40">
-                <MessageSquare className="w-4 h-4 text-indigo-400" />
-                <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Input Stream</h2>
+        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-indigo-500/10 ${isDark
+            ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
+            : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+            }`}>
+            <div className={`px-6 py-4 border-b flex items-center gap-2 ${isDark ? "border-slate-700/70 bg-slate-900/40" : "border-slate-100 bg-slate-50/70"}`}>
+                <MessageSquare className={`w-4 h-4 ${isDark ? "text-indigo-400" : "text-indigo-500"}`} />
+                <h2 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Input Stream</h2>
             </div>
             <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="flex-1 p-6 bg-transparent outline-none resize-none font-mono text-sm text-slate-200 placeholder:text-slate-600 border-none selection:bg-indigo-500/30"
+                className={`flex-1 p-6 bg-transparent outline-none resize-none font-mono text-sm border-none ${isDark ? "text-slate-200 placeholder:text-slate-600 selection:bg-indigo-500/30" : "text-slate-700 placeholder:text-slate-400 selection:bg-indigo-500/20"}`}
                 placeholder="Write input here..."
             />
         </div>
@@ -397,7 +410,10 @@ export default function CodeTestPage() {
 
     const outputPanel = (
         isAuthLoading ? (
-            <div className="h-full min-h-0 flex flex-col items-center justify-center rounded-[2rem] border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] text-slate-400">
+            <div className={`h-full min-h-0 flex flex-col items-center justify-center rounded-[2rem] border ${isDark
+                ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] text-slate-400"
+                : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-500"
+                }`}>
                 Checking login state...
             </div>
         ) : !user ? (
@@ -407,16 +423,19 @@ export default function CodeTestPage() {
                 nextPath={pathname}
             />
         ) : (
-        <div className="h-full min-h-0 flex flex-col rounded-[2rem] border border-slate-300/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.32)] dark:border-slate-700/70 dark:bg-[linear-gradient(180deg,rgba(12,18,30,0.95),rgba(10,15,26,0.9))] dark:shadow-[0_18px_48px_rgba(2,6,23,0.4)] overflow-hidden transition-all duration-300 hover:shadow-purple-500/10">
-            <div className="px-6 py-4 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/40">
+        <div className={`h-full min-h-0 flex flex-col rounded-[2rem] border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/10 ${isDark
+            ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
+            : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+            }`}>
+            <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-700/70 bg-slate-900/40" : "border-slate-100 bg-slate-50/70"}`}>
                 <div className="flex items-center gap-2">
-                    <Cpu className="w-4 h-4 text-purple-400" />
-                    <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Output Sink</h2>
+                    <Cpu className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-500"}`} />
+                    <h2 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Output Sink</h2>
                 </div>
 
                 {output && (
                     <div className="flex items-center gap-2">
-                        <div className="px-2 py-1 rounded-lg bg-slate-800/80 text-[10px] font-bold text-slate-400 border border-slate-700/50">
+                        <div className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${isDark ? "bg-slate-800/80 text-slate-400 border-slate-700/50" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
                             {output.duration < 1 ? `${(output.duration * 1000).toFixed(0)}ms` : `${output.duration.toFixed(2)}s`}
                         </div>
                         <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${output.status === "Success"
@@ -429,46 +448,46 @@ export default function CodeTestPage() {
                 )}
             </div>
 
-            <div className="flex-1 p-6 relative flex flex-col min-h-0 bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.05),transparent_70%)]">
+            <div className={`flex-1 p-6 relative flex flex-col min-h-0 ${isDark ? "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.05),transparent_70%)]" : "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.06),transparent_70%)]"}`}>
                 {!output && !isLoading ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 overflow-hidden">
-                        <div className="w-12 h-12 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-4 border border-slate-700/50">
-                            <Terminal className="w-6 h-6 text-slate-400" />
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border ${isDark ? "bg-slate-800/50 border-slate-700/50" : "bg-slate-100 border-slate-200"}`}>
+                            <Terminal className={`w-6 h-6 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
                         </div>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Waiting for Run</p>
+                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${isDark ? "text-slate-500" : "text-slate-400"}`}>Waiting for Run</p>
                     </div>
                 ) : isLoading ? (
                     <div className="flex-1 flex flex-col items-center justify-center space-y-4">
                         <div className="w-10 h-10 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.2)]" />
-                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.3em] animate-pulse">Running...</p>
+                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Running...</p>
                     </div>
                 ) : (
                     <div ref={outputRef} className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                        <div className="flex-1 overflow-auto rounded-2xl bg-slate-950/40 border border-slate-700/30 p-5 font-mono text-sm leading-relaxed text-slate-200 custom-scrollbar">
+                        <div className={`flex-1 overflow-auto rounded-2xl border p-5 font-mono text-sm leading-relaxed custom-scrollbar ${isDark ? "bg-slate-950/40 border-slate-700/30 text-slate-200" : "bg-slate-50 border-slate-100 text-slate-800"}`}>
                             {output?.stdout && (
                                 <div className="whitespace-pre-wrap selection:bg-indigo-500/30">{output.stdout}</div>
                             )}
                             {output?.stderr && (
-                                <div className="text-rose-400 whitespace-pre-wrap mt-2 p-4 rounded-xl bg-rose-500/5 border border-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]">
-                                    <div className="flex items-center gap-2 mb-2 text-[10px] font-black uppercase text-rose-500/60 tracking-widest">
+                                <div className={`whitespace-pre-wrap mt-2 p-4 rounded-xl border ${isDark ? "text-rose-400 bg-rose-500/5 border-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]" : "text-rose-600 bg-rose-50 border-rose-100"}`}>
+                                    <div className={`flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest ${isDark ? "text-rose-500/60" : "text-rose-500"}`}>
                                         <AlertCircle className="w-3 h-3" /> Error Stream
                                     </div>
                                     {output.stderr}
                                 </div>
                             )}
                             {!output?.stdout && !output?.stderr && (
-                                <div className="text-slate-500 italic text-xs">No output returned.</div>
+                                <div className={`italic text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>No output returned.</div>
                             )}
                         </div>
                     </div>
                 )}
 
-                <div className="mt-4 pt-4 border-t border-slate-800/50 flex items-center justify-between opacity-50 flex-none">
+                <div className={`mt-4 pt-4 flex items-center justify-between opacity-50 flex-none ${isDark ? "border-t border-slate-800/50" : "border-t border-slate-100"}`}>
                     <div className="flex items-center gap-2 font-mono text-[10px]">
                         <span className="text-emerald-500">➜</span>
-                        <span className="text-slate-400">{user ? "python runtime" : "login required"}</span>
+                        <span className={isDark ? "text-slate-400" : "text-slate-500"}>{user ? "python runtime" : "login required"}</span>
                     </div>
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">UTF-8</div>
+                    <div className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>UTF-8</div>
                 </div>
             </div>
         </div>
@@ -489,26 +508,32 @@ export default function CodeTestPage() {
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] dark:bg-[#07111d] text-slate-100 relative overflow-hidden font-sans selection:bg-slate-300/30`}>
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]" />
-            <div className="pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full bg-indigo-900/20 blur-[130px]" />
-            <div className="pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full bg-purple-900/20 blur-[150px]" />
-            <div className="pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full bg-slate-700/10 blur-[140px]" />
+        <div className={`flex-1 flex flex-col min-h-0 relative overflow-hidden font-sans ${isDark
+            ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100 selection:bg-slate-300/30"
+            : "bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] text-slate-900 selection:bg-indigo-500/20"
+            }`}>
+            <div className={`pointer-events-none absolute inset-0 ${isDark
+                ? "bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
+                : "bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.12),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.55),transparent_36%,rgba(224,231,255,0.8)_100%)]"
+                }`} />
+            <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${isDark ? "bg-indigo-900/20" : "bg-indigo-200/60"}`} />
+            <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-purple-900/20" : "bg-purple-200/60"}`} />
+            <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${isDark ? "bg-slate-700/10" : "bg-slate-200/70"}`} />
 
             {!isMounted ? (
-                <div className="flex-1 flex flex-col items-center justify-center bg-slate-950/70 dark:bg-[#07111d] z-50">
+                <div className={`flex-1 flex flex-col items-center justify-center z-50 ${isDark ? "bg-slate-950/70" : "bg-white/80"}`}>
                     <div
                         ref={loaderTitleRef}
-                        className="text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white via-slate-300 to-slate-500"
+                        className={`text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r ${isDark ? "from-white via-slate-300 to-slate-500" : "from-slate-900 via-slate-700 to-slate-500"}`}
                     >
                         {typeof TITLE === 'string' ? TITLE : "Code Judge"} IDE
                     </div>
                     <div
-                        className="h-1 bg-slate-700 rounded-full mt-4 overflow-hidden w-48"
+                        className={`h-1 rounded-full mt-4 overflow-hidden w-48 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}
                     >
                         <div
                             ref={loaderBarRef}
-                            className="w-full h-full bg-white/30"
+                            className={`w-full h-full ${isDark ? "bg-white/30" : "bg-indigo-500/30"}`}
                         />
                     </div>
                 </div>
@@ -516,10 +541,10 @@ export default function CodeTestPage() {
                 <>
                     <div className={`relative z-10 flex-1 flex flex-col p-4 md:p-6 lg:p-8 xl:p-10 ${isMobile && mobileTab === "output" ? "pb-20" : "pb-20"} md:pb-20 lg:pb-8 xl:pb-10 w-full min-h-0 h-full overflow-hidden`}>
                         <div className="lg:hidden flex flex-col gap-1 px-2 mb-4 shrink-0">
-                            <h1 className="text-2xl font-black tracking-tighter leading-none text-white">
-                                Code <span className="text-indigo-400">IDE</span>
+                            <h1 className={`text-2xl font-black tracking-tighter leading-none ${isDark ? "text-white" : "text-slate-900"}`}>
+                                Code <span className={isDark ? "text-indigo-400" : "text-indigo-600"}>IDE</span>
                             </h1>
-                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.25em]">Think, build, and prototype</p>
+                            <p className={`text-[10px] font-bold uppercase tracking-[0.25em] ${isDark ? "text-slate-500" : "text-slate-500"}`}>Think, build, and prototype</p>
                         </div>
 
                         {isMobile ? (
@@ -553,12 +578,16 @@ export default function CodeTestPage() {
                                 : "translate-x-[-50%] translate-y-24 opacity-0 pointer-events-none"
                                 }`}
                         >
-                            <div className="flex items-center gap-2 p-1.5 rounded-full bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))] backdrop-blur-3xl border border-slate-700/70 shadow-[0_18px_42px_rgba(2,6,23,0.35)]">
+                            <div className={`flex items-center gap-2 p-1.5 rounded-full backdrop-blur-3xl border ${isDark ? "bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))] border-slate-700/70 shadow-[0_18px_42px_rgba(2,6,23,0.35)]" : "bg-white/90 border-slate-200 shadow-[0_18px_42px_rgba(15,23,42,0.12)]"}`}>
                                 <button
                                     onClick={() => setMobileTab("code")}
                                     className={`relative px-4 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "code"
-                                        ? "bg-slate-800/70 text-white"
-                                        : "text-slate-400 hover:bg-slate-800/60"
+                                        ? isDark
+                                            ? "bg-slate-800/70 text-white"
+                                            : "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500/50"
+                                        : isDark
+                                            ? "text-slate-400 hover:bg-slate-800/60"
+                                            : "text-slate-500 hover:bg-slate-100"
                                         }`}
                                 >
                                     <Code2 className={`w-5 h-5 ${mobileTab === "code" ? "stroke-[2.5px]" : "stroke-2"}`} />
@@ -567,8 +596,12 @@ export default function CodeTestPage() {
                                 <button
                                     onClick={() => setMobileTab("output")}
                                     className={`relative px-4 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "output"
-                                        ? "bg-slate-800/70 text-white"
-                                        : "text-slate-400 hover:bg-slate-800/60"
+                                        ? isDark
+                                            ? "bg-slate-800/70 text-white"
+                                            : "bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-500/50"
+                                        : isDark
+                                            ? "text-slate-400 hover:bg-slate-800/60"
+                                            : "text-slate-500 hover:bg-slate-100"
                                         }`}
                                 >
                                     <Terminal className={`w-5 h-5 ${mobileTab === "output" ? "stroke-[2.5px]" : "stroke-2"}`} />
@@ -582,21 +615,24 @@ export default function CodeTestPage() {
                         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                             <button
                                 onClick={() => setIsLayoutModalOpen(false)}
-                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                                className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/60" : "bg-black/40"}`}
                                 aria-label="Close layout selector"
                             />
-                            <div className="relative z-10 w-full max-w-md rounded-[2rem] border border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] backdrop-blur-2xl shadow-[0_18px_48px_rgba(2,6,23,0.35)] p-5">
+                            <div className={`relative z-10 w-full max-w-md rounded-[2rem] border backdrop-blur-2xl p-5 ${isDark
+                                ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
+                                : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.14)]"
+                                }`}>
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-white">Select UI Grid</h3>
-                                        <p className="text-sm text-slate-400">Choose a layout for the Code IDE workspace.</p>
+                                        <h3 className={`text-lg font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>Select UI Grid</h3>
+                                        <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>Choose a layout for the Code IDE workspace.</p>
                                     </div>
                                     <button
                                         onClick={() => setIsLayoutModalOpen(false)}
-                                        className="p-2 rounded-full hover:bg-slate-800/70 transition-colors"
+                                        className={`p-2 rounded-full transition-colors ${isDark ? "hover:bg-slate-800/70" : "hover:bg-slate-100"}`}
                                         aria-label="Close"
                                     >
-                                        <X className="w-4 h-4 text-slate-300" />
+                                        <X className={`w-4 h-4 ${isDark ? "text-slate-300" : "text-slate-600"}`} />
                                     </button>
                                 </div>
                                 <div className="space-y-3">
@@ -609,15 +645,19 @@ export default function CodeTestPage() {
                                                 setIsLayoutModalOpen(false);
                                             }}
                                             className={`w-full text-left rounded-[1.35rem] border px-4 py-3 transition-all duration-200 ${selectedLayout === option.id
-                                                ? "border-slate-600/70 bg-slate-800/70"
-                                                : "border-slate-700/70 hover:border-slate-500/70 hover:bg-slate-800/60"
+                                                ? isDark
+                                                    ? "border-slate-600/70 bg-slate-800/70"
+                                                    : "border-indigo-500 bg-indigo-50"
+                                                : isDark
+                                                    ? "border-slate-700/70 hover:border-slate-500/70 hover:bg-slate-800/60"
+                                                    : "border-slate-200 hover:border-indigo-400/60 hover:bg-slate-50"
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <span className="font-semibold text-sm text-white">{option.label}</span>
-                                                {selectedLayout === option.id && <PanelTop className="w-4 h-4 text-indigo-400" />}
+                                                <span className={`font-semibold text-sm ${isDark ? "text-white" : "text-slate-900"}`}>{option.label}</span>
+                                                {selectedLayout === option.id && <PanelTop className={`w-4 h-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />}
                                             </div>
-                                            <p className="mt-1 text-xs text-slate-400">{option.description}</p>
+                                            <p className={`mt-1 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{option.description}</p>
                                         </button>
                                     ))}
                                 </div>
