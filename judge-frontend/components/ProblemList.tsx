@@ -185,6 +185,29 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
         }
     };
 
+    const loadingSkeleton = (
+        <div className="space-y-3 p-3 pb-24">
+            {Array.from({ length: 8 }).map((_, index) => (
+                <div
+                    key={`problem-skeleton-${index}`}
+                    className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-3 py-4 opacity-90"
+                >
+                    <div className="flex items-center gap-4 overflow-hidden">
+                        <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-slate-700/80 animate-pulse" />
+                        <div className="min-w-0 space-y-2">
+                            <div className="h-3.5 w-44 max-w-[70%] rounded-full bg-slate-700/80 animate-pulse" />
+                            <div className="h-2.5 w-24 rounded-full bg-slate-700/70 animate-pulse" />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="h-5 w-5 rounded-full bg-slate-700/70 animate-pulse" />
+                        <div className="h-6 w-14 rounded-full bg-slate-700/70 animate-pulse" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
     return (
         <div className="h-full flex flex-col bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/20 dark:border-gray-800 rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/5">
             <div className="p-5 border-b border-gray-100/50 dark:border-gray-800/50">
@@ -249,11 +272,7 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden">
                 {isLoading ? (
-                    <div className="flex items-center justify-center h-32 text-gray-500 dark:text-gray-400">
-                        <div
-                            className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"
-                        />
-                    </div>
+                    loadingSkeleton
                 ) : filteredProblems.length === 0 ? (
                     <div
                         className="flex items-center justify-center h-32 text-gray-500 dark:text-gray-400 transition-opacity duration-300"

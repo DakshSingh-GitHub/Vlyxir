@@ -437,7 +437,6 @@ export default function Home() {
     const progressPercent = totalCount > 0
         ? Math.max(0, Math.min(100, (passedCount / totalCount) * 100))
         : 0;
-
     const problemDescriptionPanel = (
         <div className={`h-full min-h-0 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden flex flex-col border border-white/20 dark:border-gray-800/50 ${isMobile && mobileTab !== "description" ? "hidden" : "flex"}`}>
             <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
@@ -501,7 +500,7 @@ export default function Home() {
                     ref={mobileCodeRef}
                     className={`flex-1 min-h-0 flex flex-col gap-4 ${(activeTab === "editor" && !isMobile) || (isMobile && mobileTab === "code") ? "flex" : "hidden"}`}
                 >
-                    <div className="flex-1 min-h-0 w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
+                    <div className="relative flex-1 min-h-0 w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                         <CodeEditor
                             code={code}
                             setCode={setCode}
@@ -545,7 +544,7 @@ export default function Home() {
                                 {isSubmitting ? "Judging..." : (!user ? "Log in to Submit" : "Submit")}
                             </button>
                         </div>
-                        <div className="w-full md:w-3/4 h-full">
+                        <div className="relative w-full md:w-3/4 h-full">
                             <div className="p-3 rounded-xl bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 h-full overflow-y-auto border border-gray-200 dark:border-gray-700 shadow-2xl custom-scrollbar transition-all duration-300">
                                 {!result ? (
                                     <div
