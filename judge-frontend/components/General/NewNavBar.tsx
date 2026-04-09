@@ -204,7 +204,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                     <div className={`mx-2 my-1 h-px ${isDark ? "bg-slate-600/50" : "bg-slate-200"}`} />
 
                                                     <button
-                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        onClick={() => { router.push('/account-controls'); setIsProfileOpen(false); }}
                                                         className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
                                                     >
                                                         <Shield className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />

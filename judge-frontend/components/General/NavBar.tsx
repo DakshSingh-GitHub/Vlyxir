@@ -182,7 +182,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                     <div className="my-1 h-px bg-gray-100 dark:bg-gray-800 mx-2" />
 
                                                     <button
-                                                        onClick={() => { router.push('/'); setIsProfileOpen(false); }}
+                                                        onClick={() => { router.push('/account-controls'); setIsProfileOpen(false); }}
                                                         className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
                                                     >
                                                         <Shield className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
