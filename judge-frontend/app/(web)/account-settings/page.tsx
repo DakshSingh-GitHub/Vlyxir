@@ -297,6 +297,13 @@ export default function AccountSettingsPage() {
               <ArrowLeft className="h-4 w-4" />
               Back
             </button>
+            <button
+              onClick={() => router.push("/")}
+              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+            >
+              <Sparkles className="h-4 w-4" />
+              Home
+            </button>
             <div>
               <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account settings</p>
               <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your profile</h1>
@@ -321,17 +328,25 @@ export default function AccountSettingsPage() {
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
           <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Profile details</p>
-                <h2 className="mt-1 text-xl font-bold">Edit your account</h2>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  type="submit"
-                  form="account-settings-form"
-                  disabled={isSaving}
-                  className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"} ${isSaving ? "cursor-not-allowed opacity-70" : ""}`}
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Profile details</p>
+                  <h2 className="mt-1 text-xl font-bold">Edit your account</h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/")}
+                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition active:scale-[0.98] ${isDark ? "border border-slate-700/70 bg-slate-900/70 text-slate-200 hover:bg-slate-800/80" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
+                  >
+                    <Sparkles className="h-4 w-4 text-indigo-500" />
+                    Home
+                  </button>
+                  <button
+                    type="submit"
+                    form="account-settings-form"
+                    disabled={isSaving}
+                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"} ${isSaving ? "cursor-not-allowed opacity-70" : ""}`}
                 >
                   <Save className="h-4 w-4" />
                   {isSaving ? "Saving..." : "Save changes"}
@@ -414,6 +429,16 @@ export default function AccountSettingsPage() {
               <div className="flex items-center gap-2 pt-2 text-xs">
                 <BadgeInfo className="h-4 w-4" />
                 <span className={mutedClass}>Full name, username, bio, and country can be updated here.</span>
+              </div>
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => router.push("/")}
+                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Go Home
+                </button>
               </div>
             </form>
           </div>

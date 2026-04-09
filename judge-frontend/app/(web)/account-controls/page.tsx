@@ -236,6 +236,13 @@ export default function AccountControlsPage() {
               <ArrowLeft className="h-4 w-4" />
               Account settings
             </button>
+            <button
+              onClick={() => router.push("/")}
+              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+            >
+              <Sparkles className="h-4 w-4" />
+              Home
+            </button>
             <div>
               <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account controls</p>
               <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your session</h1>
@@ -402,6 +409,13 @@ export default function AccountControlsPage() {
                 This page intentionally keeps to safe session controls. It does not delete accounts or modify authentication
                 credentials directly.
               </p>
+              <button
+                onClick={() => router.push("/")}
+                className={`mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+              >
+                <Sparkles className="h-4 w-4" />
+                Go Home
+              </button>
             </div>
           </div>
         </div>
