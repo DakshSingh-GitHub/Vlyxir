@@ -12,6 +12,7 @@ import {
     Send,
     Sparkles,
     X,
+    Settings,
 } from "lucide-react";
 import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
@@ -30,14 +31,18 @@ export default function CreatePostPage() {
     const [tagInput, setTagInput] = useState("");
     const [isPublishing, setIsPublishing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
+    const [isLoadingChannels, setIsLoadingChannels] = useState(true);
 
     useEffect(() => {
         async function loadChannels() {
+            setIsLoadingChannels(true);
             const data = await fetchChannels();
             setChannels(data);
             if (data.length > 0) {
                 setSelectedChannelId(data[0].id);
             }
+            setIsLoadingChannels(false);
         }
 
         loadChannels();
@@ -88,211 +93,250 @@ export default function CreatePostPage() {
         if (publishError) {
             setError(publishError.message || "A cosmic interference occurred. Please try again.");
         } else {
+            router.refresh();
             router.push("/forum");
         }
     };
 
     const wordCount = body.trim() ? body.trim().split(/\s+/).filter(Boolean).length : 0;
     const readTime = wordCount === 0 ? 0 : Math.ceil(wordCount / 220);
-    const paragraphCount = body
-        .split(/\n+/)
-        .map((segment) => segment.trim())
-        .filter(Boolean).length;
 
-    const shellClass = isDark
-        ? "border-white/8 bg-slate-950/65 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
-        : "border-slate-200/80 bg-white/88 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.10)]";
-    const mutedTextClass = isDark ? "text-slate-400" : "text-slate-500";
-    const subtlePanelClass = isDark
-        ? "border-white/8 bg-slate-900/55"
-        : "border-slate-200/80 bg-white/92";
+    const renderSimpleMarkdown = (text: string) => {
+        let html = text
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") 
+            .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2 text-inherit">$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-5 mb-3 text-inherit">$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-black mt-6 mb-4 text-inherit">$1</h1>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-inherit">$1</strong>')
+            .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
+            .replace(/```([\s\S]*?)```/gim, `<pre class="p-4 rounded-xl my-4 overflow-x-auto text-sm ${isDark ? 'bg-slate-950 text-slate-300 border border-slate-800' : 'bg-slate-100 text-slate-800 border border-slate-200'}"><code>$1</code></pre>`)
+            .replace(/`(.*?)`/gim, `<code class="px-1.5 py-0.5 rounded-md text-sm ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}">$1</code>`)
+            .replace(/^\- (.*$)/gim, '<li class="ml-6 list-disc mb-1">$1</li>')
+            .replace(/\n\s*\n/g, '</p><p class="mb-4">')
+            .replace(/\n/g, '<br/>');
+        return `<div class="mb-4 leading-relaxed">${html}</div>`;
+    };
+
+    // Styling constants mapped to Slate/Midnight palette explicitly
+    const bgApp = isDark ? "bg-[#0a0f18] text-slate-50" : "bg-slate-50 text-slate-900";
+    const bgCard = isDark ? "bg-slate-900/40 backdrop-blur-2xl border-slate-800 shadow-[0_8px_32px_rgba(0,0,0,0.4)]" : "bg-white border-slate-200 shadow-sm";
     const inputClass = isDark
-        ? "border-white/8 bg-slate-950/80 text-slate-100 placeholder:text-slate-500"
-        : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400";
+        ? "bg-slate-950/50 border-slate-800 text-slate-50 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:bg-slate-900/80 placeholder:text-slate-600"
+        : "bg-slate-50 border-slate-200 text-slate-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder:text-slate-400";
+    const mutedTextClass = isDark ? "text-slate-400" : "text-slate-500";
+    const labelClass = `text-[11px] font-bold uppercase tracking-[0.15em] ${mutedTextClass}`;
 
     return (
-        <div className={`relative flex h-full min-h-0 flex-1 overflow-hidden ${isDark ? "bg-[#0b1020] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
-            <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className={`absolute left-[-10%] top-[-12%] h-80 w-80 rounded-full blur-3xl ${isDark ? "bg-cyan-500/12" : "bg-cyan-300/30"}`} />
-                <div className={`absolute right-[-8%] top-[8%] h-96 w-96 rounded-full blur-3xl ${isDark ? "bg-indigo-500/14" : "bg-indigo-300/35"}`} />
-                <div className={`absolute bottom-[-8%] left-[20%] h-80 w-80 rounded-full blur-3xl ${isDark ? "bg-fuchsia-500/10" : "bg-violet-300/30"}`} />
-            </div>
+        <div className={`flex min-h-screen flex-col font-sans selection:bg-indigo-500/30 ${bgApp}`}>
+            <div className="mx-auto w-full max-w-[1400px] px-6 py-12 flex-1 flex flex-col gap-8">
 
-            <div className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-[1760px] flex-col px-4 pt-4 pb-8 md:px-6 md:pt-5 md:pb-10 xl:px-8 xl:pb-12">
-                <header className={`mb-4 flex-shrink-0 rounded-[1.75rem] border p-5 md:p-6 backdrop-blur-xl ${shellClass}`}>
-                    <div className="mb-2 flex flex-wrap items-center gap-3">
-                        <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] ${isDark ? "bg-white/5 text-cyan-300" : "bg-cyan-50 text-cyan-700"}`}>
-                            <Sparkles className="h-3.5 w-3.5" />
-                            Forum Composer
-                        </span>
-                        <span className={`text-xs font-medium ${mutedTextClass}`}>
-                            Build a post that is easy to scan, helpful, and worth replying to.
-                        </span>
+                <header className="flex flex-col w-full relative">
+                    <div className="absolute -top-8 left-0">
+                        <Link
+                            href="/forum"
+                            className={`flex items-center text-sm font-semibold transition-colors ${
+                                isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
+                            }`}
+                        >
+                            <ChevronLeft className="h-4 w-4 mr-1.5" />
+                            Back to forum
+                        </Link>
                     </div>
-
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                        <div className="max-w-4xl space-y-2">
+                    
+                    <div className="flex flex-col md:flex-row md:items-center justify-between w-full mt-2 gap-6 md:gap-0">
+                        <h1 className={`text-3xl font-black tracking-tight leading-none ${isDark ? "text-slate-50" : "text-slate-900"}`}>
+                            Create a post
+                        </h1>
+                        <div className="flex items-center gap-4">
                             <Link
                                 href="/forum"
-                                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${isDark ? "bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"}`}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                                Back to forum
-                            </Link>
-                            <div>
-                                <h1 className="text-2xl font-black tracking-tight md:text-3xl">Create a post</h1>
-                                <p className={`mt-1 max-w-2xl text-sm ${mutedTextClass}`}>
-                                    Full-canvas composer with a fixed page layout and a wider workspace.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-shrink-0 items-center gap-3">
-                            <Link
-                                href="/forum"
-                                className={`inline-flex items-center justify-center rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all ${isDark ? "border border-white/10 bg-white/5 text-slate-200 hover:bg-white/10" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-100"}`}
+                                className={`px-6 py-2 rounded-xl border text-sm font-bold transition-all ${
+                                    isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-50" : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                                }`}
                             >
                                 Cancel
                             </Link>
                             <button
                                 onClick={handlePublish}
-                                disabled={isPublishing || !title.trim() || !body.trim()}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                                disabled={isPublishing}
+                                className="flex items-center gap-2 px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-lg shadow-indigo-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-indigo-600 disabled:active:scale-100"
                             >
                                 {isPublishing ? (
-                                    <>
-                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                        Publishing...
-                                    </>
+                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                                 ) : (
-                                    <>
-                                        <Send className="h-4 w-4" />
-                                        Publish post
-                                    </>
+                                    <Send className="h-4 w-4" />
                                 )}
+                                Publish
                             </button>
                         </div>
                     </div>
                 </header>
 
                 {error && (
-                    <div className="mb-4 flex-shrink-0">
-                        <div className="flex items-start gap-3 rounded-[1.25rem] border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300 backdrop-blur-sm">
-                            <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                            <span>{error}</span>
-                        </div>
+                    <div className={`mt-2 flex items-start gap-4 rounded-2xl border p-4 text-sm font-semibold ${isDark ? "border-red-900/50 bg-red-950/30 text-red-400" : "border-red-200 bg-red-50 text-red-800"}`}>
+                        <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <span>{error}</span>
                     </div>
                 )}
 
-                <div className="grid flex-1 min-h-0 items-stretch gap-5 lg:grid-cols-[minmax(0,1.35fr)_400px] xl:grid-cols-[minmax(0,1.45fr)_430px]">
-                    <section className="flex min-h-0 flex-col gap-4 self-stretch">
-                        <div className={`flex-shrink-0 rounded-[1.75rem] border p-4 md:p-5 backdrop-blur-xl ${subtlePanelClass}`}>
-                            <label className={`mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] ${mutedTextClass}`}>
-                                <PenSquare className="h-4 w-4" />
-                                Title
-                            </label>
+                <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8 items-stretch">
+                    
+                    {/* Main Composer (Left Column) */}
+                    <div className="flex flex-col gap-6">
+                        
+                        <div className={`p-6 border rounded-2xl ${bgCard}`}>
+                            <div className="flex items-center gap-2 mb-2">
+                                <PenSquare className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                                <label className={`${labelClass} leading-none m-0`}>Title</label>
+                            </div>
                             <input
                                 type="text"
                                 placeholder="What do you want to discuss?"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                className={`w-full rounded-[1.4rem] border px-5 py-3.5 text-2xl font-black tracking-tight outline-none transition focus:border-indigo-500/40 focus:ring-4 focus:ring-indigo-500/10 md:text-3xl ${inputClass}`}
+                                className={`w-full rounded-xl border p-4 text-xl font-bold outline-none transition-all ${inputClass}`}
                             />
                         </div>
 
-                        <div className={`flex flex-1 min-h-[34rem] flex-col rounded-[2rem] border backdrop-blur-xl ${shellClass}`}>
-                            <div className={`flex flex-shrink-0 flex-wrap items-center justify-between gap-3 border-b px-5 py-4 ${isDark ? "border-white/8" : "border-slate-200/80"}`}>
-                                <div>
-                                    <div className="flex items-center gap-2 text-sm font-semibold">
-                                        <FileText className="h-4 w-4 text-indigo-400" />
-                                        Write your post
+                        <div className={`flex flex-col relative border rounded-2xl min-h-[480px] overflow-hidden ${bgCard}`}>
+                            <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <FileText className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                                        <h3 className={`${labelClass} leading-none m-0`}>Write your post</h3>
                                     </div>
-                                    <p className={`mt-1 text-xs ${mutedTextClass}`}>
-                                        The page stays fixed; only the editor scrolls if your draft grows longer.
-                                    </p>
-                                </div>
-
-                                <div className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ${isDark ? "bg-white/5 text-slate-300" : "bg-slate-100 text-slate-600"}`}>
-                                    <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-                                    Markdown-ready
+                                    <div className={`flex items-center p-1 rounded-lg ${isDark ? "bg-slate-950 border border-slate-800" : "bg-slate-100 border border-slate-200"}`}>
+                                        <button 
+                                            onClick={() => setActiveTab('write')}
+                                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'write' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
+                                        >
+                                            Write
+                                        </button>
+                                        <button 
+                                            onClick={() => setActiveTab('preview')}
+                                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'preview' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
+                                        >
+                                            Preview
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="flex min-h-0 flex-1 flex-col p-4 md:p-5">
+                            
+                            {activeTab === 'write' ? (
                                 <textarea
                                     placeholder={"Start with the problem, the idea, or the question.\n\nExample:\n## What I tried\n- Explain the setup\n- Share the bug or result\n- Ask for the specific help you need"}
                                     value={body}
                                     onChange={(e) => setBody(e.target.value)}
-                                    className={`h-full min-h-[24rem] w-full resize-none rounded-[1.6rem] border px-5 py-4 text-base leading-7 outline-none transition focus:border-indigo-500/40 focus:ring-4 focus:ring-indigo-500/10 md:min-h-[28rem] md:px-6 md:py-5 md:text-lg lg:min-h-[32rem] ${inputClass}`}
+                                    className={`flex-1 w-full bg-transparent p-6 pb-20 text-base leading-relaxed outline-none resize-y transition-all ${
+                                        isDark ? "text-slate-100 placeholder:text-slate-600 focus:bg-slate-900/30" : "text-slate-900 placeholder:text-slate-400 focus:bg-slate-50/30"
+                                    }`}
                                 />
-                            </div>
+                            ) : (
+                                <div className={`flex-1 w-full p-6 pb-20 overflow-y-auto ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                                    {body.trim() ? (
+                                        <div dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(body) }} />
+                                    ) : (
+                                        <div className="h-full flex items-center justify-center text-sm font-medium opacity-50">
+                                            Nothing to preview yet.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
-                            <div className={`flex flex-shrink-0 flex-wrap items-center gap-3 border-t px-5 py-3.5 ${isDark ? "border-white/8" : "border-slate-200/80"}`}>
-                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isDark ? "bg-white/5 text-slate-300" : "bg-slate-100 text-slate-600"}`}>
+                            <div className="absolute bottom-4 left-4 flex gap-2 pointer-events-none">
+                                <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
+                                    isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
+                                }`}>
                                     {wordCount} words
                                 </span>
-                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isDark ? "bg-white/5 text-slate-300" : "bg-slate-100 text-slate-600"}`}>
-                                    {paragraphCount} paragraphs
-                                </span>
-                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${isDark ? "bg-white/5 text-slate-300" : "bg-slate-100 text-slate-600"}`}>
+                                <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
+                                    isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
+                                }`}>
                                     {readTime} min read
                                 </span>
                             </div>
                         </div>
-                    </section>
 
-                    <aside className="flex min-h-0 flex-col gap-4 self-stretch">
-                        <div className={`flex-shrink-0 rounded-[1.75rem] border p-4 md:p-5 backdrop-blur-xl ${subtlePanelClass}`}>
-                            <div className="mb-4 flex items-center gap-2">
-                                <Sparkles className="h-4 w-4 text-indigo-400" />
-                                <h3 className="text-sm font-bold uppercase tracking-[0.18em]">Quick tips</h3>
+                    </div>
+
+                    {/* Sidebar (Right Column) */}
+                    <div className="flex flex-col gap-6 h-full">
+
+                        <div className={`p-6 border rounded-2xl ${bgCard}`}>
+                            <div className="flex items-center gap-2 mb-6">
+                                <Sparkles className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                                <h3 className={`${labelClass} leading-none m-0`}>Quick tips</h3>
                             </div>
-                            <ul className={`space-y-2.5 text-sm ${mutedTextClass}`}>
-                                <li>Lead with the exact problem, insight, or question.</li>
-                                <li>Use headings to separate context, attempts, and results.</li>
-                                <li>Add tags that help the right readers find your post.</li>
+                            <ul className={`space-y-4 text-sm font-medium leading-relaxed ${mutedTextClass}`}>
+                                <li className="flex items-start gap-3">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                    Lead with the exact problem, insight, or question.
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                    Use headings to separate context, attempts, and results.
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                    Add tags that help the right readers find your post.
+                                </li>
                             </ul>
                         </div>
 
-                        <div className={`flex-shrink-0 rounded-[1.75rem] border p-4 md:p-5 backdrop-blur-xl ${shellClass}`}>
-                            <div className="mb-4">
-                                <h2 className="text-base font-bold">Post settings</h2>
-                                <p className={`mt-1 text-xs ${mutedTextClass}`}>
-                                    Choose a channel, add tags, then publish when the draft feels ready.
-                                </p>
+                        <div className={`p-6 border rounded-2xl flex flex-col flex-1 ${bgCard}`}>
+                            <div className="flex items-center gap-2 mb-8">
+                                <Settings className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                                <h2 className={`${labelClass} leading-none m-0`}>Post settings</h2>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="flex flex-col gap-8">
                                 <div>
-                                    <label className={`mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${mutedTextClass}`}>
-                                        <Hash className="h-4 w-4" />
+                                    <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
+                                        <Hash className="h-3.5 w-3.5" />
                                         Channel
                                     </label>
-                                    <select
-                                        value={selectedChannelId}
-                                        onChange={(e) => setSelectedChannelId(e.target.value)}
-                                        className={`w-full rounded-[1.15rem] border px-4 py-3 text-sm font-semibold outline-none transition focus:border-indigo-500/40 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                                    >
-                                        {channels.length === 0 && <option disabled>Loading channels...</option>}
-                                        {channels.map((channel) => (
-                                            <option key={channel.id} value={channel.id}>
-                                                {channel.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            value={selectedChannelId}
+                                            onChange={(e) => setSelectedChannelId(e.target.value)}
+                                            className={`w-full rounded-xl border p-4 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
+                                            disabled={isLoadingChannels}
+                                        >
+                                            {isLoadingChannels ? (
+                                                <option disabled className={isDark ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}>
+                                                    Loading channels...
+                                                </option>
+                                            ) : (
+                                                channels.map((channel) => (
+                                                    <option 
+                                                        key={channel.id} 
+                                                        value={channel.id}
+                                                        className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-900"}
+                                                    >
+                                                        {channel.name}
+                                                    </option>
+                                                ))
+                                            )}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <ChevronLeft className="w-4 h-4 text-slate-500 -rotate-90" />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <label className={`mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${mutedTextClass}`}>
-                                        <Hash className="h-4 w-4" />
+                                    <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
+                                        <Hash className="h-3.5 w-3.5" />
                                         Tags
                                     </label>
-                                    <div className={`rounded-[1.35rem] border p-3 ${inputClass}`}>
-                                        <div className="mb-3 flex min-h-[32px] flex-wrap gap-2">
+                                    <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass}`}>
+                                        <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
                                             {tags.map((tag) => (
                                                 <span
                                                     key={tag}
-                                                    className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${isDark ? "bg-indigo-500/12 text-indigo-300" : "bg-indigo-50 text-indigo-700"}`}
+                                                    className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
+                                                        isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                                    }`}
                                                 >
                                                     #{tag}
                                                     <button
@@ -305,22 +349,23 @@ export default function CreatePostPage() {
                                                 </span>
                                             ))}
                                         </div>
-
                                         <input
                                             type="text"
-                                            placeholder="Type a tag and press Enter"
+                                            placeholder={tags.length === 0 ? "Type a tag and press Enter" : "Add another tag"}
                                             value={tagInput}
                                             onChange={(e) => setTagInput(e.target.value)}
                                             onKeyDown={handleAddTag}
-                                            className={`w-full bg-transparent text-sm font-medium outline-none ${isDark ? "text-slate-100 placeholder:text-slate-500" : "text-slate-900 placeholder:text-slate-400"}`}
+                                            className="w-full bg-transparent text-sm font-bold outline-none placeholder-inherit"
                                         />
                                     </div>
                                 </div>
+                            </div>
 
+                            <div className="mt-auto pt-8">
                                 <button
                                     onClick={handlePublish}
-                                    disabled={isPublishing || !title.trim() || !body.trim()}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-[1.25rem] bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                                    disabled={isPublishing}
+                                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 p-4 text-sm font-bold tracking-widest uppercase text-white shadow-[0_8px_24px_rgba(79,70,229,0.25)] transition-all hover:bg-indigo-500 hover:shadow-[0_8px_32px_rgba(79,70,229,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none"
                                 >
                                     {isPublishing ? (
                                         <>
@@ -334,16 +379,18 @@ export default function CreatePostPage() {
                                         </>
                                     )}
                                 </button>
-
+                                
                                 {!user && (
-                                    <p className={`text-xs ${mutedTextClass}`}>
+                                    <p className={`mt-4 text-center text-xs font-semibold ${mutedTextClass}`}>
                                         Sign in to publish this draft.
                                     </p>
                                 )}
                             </div>
                         </div>
-                    </aside>
+
+                    </div>
                 </div>
+
             </div>
         </div>
     );

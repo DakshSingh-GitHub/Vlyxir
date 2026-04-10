@@ -50,11 +50,22 @@ export function parseForumId(forumId: string): { username: string; uid: string }
 // Data Fetching Stubs
 export async function fetchChannels(): Promise<ForumChannel[]> {
   const { data, error } = await supabase.from('forum_channels').select('*').order('created_at', { ascending: true });
-  if (error) {
-    console.error("Error fetching channels:", error);
-    return [];
+  
+  if (error || !data || data.length === 0) {
+    if (error) console.error("Error fetching channels:", error);
+    // Failover: provide a default channel so users aren't blocked from posting
+    return [
+      {
+        id: "default-general",
+        name: "General",
+        slug: "general",
+        description: "General discussion",
+        is_starred: true,
+        created_at: new Date().toISOString()
+      }
+    ];
   }
-  return data || [];
+  return data;
 }
 
 export async function fetchPosts(): Promise<ForumPost[]> {

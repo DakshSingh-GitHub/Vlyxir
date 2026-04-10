@@ -4,6 +4,8 @@ import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home } from 'lucide-react
 import { useAppContext } from '../../app/lib/context';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { fetchChannels, ForumChannel } from '../../app/forum/forum-helper/helper';
 
 interface ForumSidebarProps {
     activeTab: string;
@@ -12,6 +14,18 @@ interface ForumSidebarProps {
 
 export default function ForumSidebar({ activeTab, setActiveTab }: ForumSidebarProps) {
     const { isDark } = useAppContext();
+    const [channels, setChannels] = useState<ForumChannel[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadChannels() {
+            setIsLoading(true);
+            const data = await fetchChannels();
+            setChannels(data);
+            setIsLoading(false);
+        }
+        loadChannels();
+    }, []);
 
     const navItems = [
         { icon: <LayoutList className="w-4 h-4" />, label: "All Posts" },
@@ -66,10 +80,28 @@ export default function ForumSidebar({ activeTab, setActiveTab }: ForumSidebarPr
 
                 <div className={`text-xs font-bold uppercase tracking-wider mb-3 px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Channels</div>
                 <div className="space-y-1">
-                    <button className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium ${isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}>
-                        <Globe className="w-4 h-4 text-indigo-500" />
-                        Public
-                    </button>
+                    {isLoading ? (
+                        Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className={`h-9 w-full rounded-xl animate-pulse ${isDark ? 'bg-slate-800/50' : 'bg-slate-100'}`} />
+                        ))
+                    ) : (
+                        channels.map((channel) => {
+                            const isActive = activeTab === channel.name;
+                            return (
+                                <button 
+                                    key={channel.id}
+                                    onClick={() => setActiveTab(channel.name)}
+                                    className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium transition-all ${isActive
+                                        ? (isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600')
+                                        : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
+                                    }`}
+                                >
+                                    <Globe className={`w-4 h-4 ${isActive ? 'text-indigo-400' : 'text-indigo-500'}`} />
+                                    {channel.name}
+                                </button>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </aside>

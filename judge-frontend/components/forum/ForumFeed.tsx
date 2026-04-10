@@ -1,8 +1,9 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, MessagesSquare } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useEffect, useState } from "react";
+import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
 
 interface ForumFeedProps {
     activeTab: string;
@@ -11,28 +12,39 @@ interface ForumFeedProps {
 
 export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
     const { isDark } = useAppContext();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [posts, setPosts] = useState<ForumPost[]>([]);
 
     const tabs = ['All Posts', 'Trending', 'New', 'Fast Growing'];
 
-    // Simulate loading when tab changes
+    // Fetch posts from database
     useEffect(() => {
-        setIsLoading(true);
-        const timer = setTimeout(() => setIsLoading(false), 350);
-        return () => clearTimeout(timer);
+        let isMounted = true;
+        
+        async function loadPosts() {
+            setIsLoading(true);
+            try {
+                const data = await fetchPosts();
+                if (isMounted) {
+                    // At some point you may filter based on activeTab, but for now we'll set all
+                    setPosts(data || []);
+                }
+            } catch (error) {
+                console.error("Failed to load posts", error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
+        }
+        loadPosts();
+        
+        return () => {
+            isMounted = false;
+        };
     }, [activeTab]);
 
-    // Determine skeleton count based on tab to "show" change
-    const getSkeletonCount = () => {
-        const normalizedTab = activeTab?.trim();
-        if (normalizedTab === 'All Posts') return 4;
-        if (normalizedTab === 'Trending') return 3;
-        if (normalizedTab === 'New') return 5;
-        if (normalizedTab === 'Fast Growing') return 2;
-        return 3;
-    };
-
-    const skeletonCount = getSkeletonCount();
+    const skeletonCount = 4;
 
     return (
         <main className="flex-1 flex flex-col min-w-0 overflow-y-auto px-4 py-6 md:px-8">
@@ -78,12 +90,6 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
             {/* Feed Content */}
             <div className="space-y-4">
                 {isLoading ? (
-                    // Quick loading skeleton
-                    <div className="animate-pulse space-y-4">
-                        <div className={`h-32 rounded-2xl ${isDark ? 'bg-slate-800/50' : 'bg-slate-100'}`} />
-                        <div className={`h-32 rounded-2xl ${isDark ? 'bg-slate-800/50' : 'bg-slate-100'}`} />
-                    </div>
-                ) : (
                     // Skeleton Cards
                     Array.from({ length: skeletonCount }).map((_, i) => (
                         <div key={i} className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} shadow-sm transition-all duration-300`}>
@@ -99,9 +105,56 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
                             </div>
                         </div>
                     ))
+                ) : posts.length === 0 ? (
+                    // Beautiful Empty State
+                    <div className={`mt-8 flex flex-col items-center justify-center p-12 text-center rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-300'}`}>
+                        <div className={`p-5 rounded-3xl mb-5 shadow-lg ${isDark ? 'bg-slate-800/80 text-indigo-400 shadow-black/20' : 'bg-white text-indigo-500 shadow-indigo-500/10'}`}>
+                            <MessagesSquare className="w-8 h-8" />
+                        </div>
+                        <h3 className={`text-xl md:text-2xl font-black mb-2 tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                            No forums here
+                        </h3>
+                        <p className={`text-sm md:text-base max-w-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            It looks quiet in here. There are no posts in the database yet. Be the first one to start the conversation!
+                        </p>
+                    </div>
+                ) : (
+                    // Real Cards
+                    posts.map((post) => (
+                        <div key={post.id} className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 hover:border-slate-300'} shadow-sm transition-all duration-300 cursor-pointer`}>
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs shadow-sm ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}`}>
+                                    {post.author_username?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                                <div className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                    {post.author_username || 'Anonymous'}
+                                </div>
+                                <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    • {new Date(post.created_at).toLocaleDateString()}
+                                </div>
+                            </div>
+                            <h3 className={`text-lg font-bold mb-2 tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                                {post.title}
+                            </h3>
+                            <p className={`text-sm line-clamp-2 mb-4 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                {post.body}
+                            </p>
+                            <div className="flex items-center gap-3">
+                                {post.tags?.slice(0, 3).map((tag, i) => (
+                                    <span key={i} className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border ${isDark ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                                        #{tag}
+                                    </span>
+                                ))}
+                                {post.read_time_minutes > 0 && (
+                                    <span className={`text-[11px] font-semibold ml-auto ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        {post.read_time_minutes} min read
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ))
                 )}
             </div>
         </main>
     );
 }
-
