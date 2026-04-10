@@ -68,7 +68,7 @@ export default function CodeAnalysisPage() {
     const [error, setError] = useState<string | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
-    const { user, isLoading: authLoading } = useAuth();
+    const { session, user, isLoading: authLoading } = useAuth();
     const [plan, setPlan] = useState<string | null>(null);
     const [isFetchingPlan, setIsFetchingPlan] = useState(true);
     const [records, setRecords] = useState<AnalysisRecord[]>([]);
@@ -365,7 +365,8 @@ export default function CodeAnalysisPage() {
             const response = await fetch("/api/code-analysis", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    ...(session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {})
                 },
                 body: JSON.stringify({ code })
             });
