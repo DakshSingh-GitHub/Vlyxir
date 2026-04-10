@@ -2,9 +2,11 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2 } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/context';
+import { useAuth } from '../../lib/auth-context';
+import { supabase } from '../../lib/supabase/client';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -64,11 +66,9 @@ export default function CodeAnalysisPage() {
     const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
-    const [isAuthorized, setIsAuthorized] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [authError, setAuthError] = useState<string | null>(null);
-    const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const { user, isLoading: authLoading } = useAuth();
+    const [plan, setPlan] = useState<string | null>(null);
+    const [isFetchingPlan, setIsFetchingPlan] = useState(true);
     const [records, setRecords] = useState<AnalysisRecord[]>([]);
     const [isRecordsModalOpen, setIsRecordsModalOpen] = useState(false);
     const [isRecordsModalVisible, setIsRecordsModalVisible] = useState(false);
@@ -103,11 +103,6 @@ export default function CodeAnalysisPage() {
     }, []);
 
     useEffect(() => {
-        const unlocked = sessionStorage.getItem("code-analysis-unlocked") === "1";
-        if (unlocked) {
-            setIsAuthorized(true);
-        }
-
         const stored = localStorage.getItem(ANALYSIS_RECORDS_KEY);
         const parsed = parseStoredRecords(stored);
         setRecords(parsed);
@@ -120,6 +115,48 @@ export default function CodeAnalysisPage() {
 
         setIsHydrated(true);
     }, []);
+
+    useEffect(() => {
+        if (authLoading) return;
+
+        if (!user) {
+            setPlan(null);
+            setIsFetchingPlan(false);
+            return;
+        }
+
+        let mounted = true;
+        setIsFetchingPlan(true);
+
+        const fetchPlan = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from("profiles")
+                    .select("plan")
+                    .eq("id", user.id)
+                    .single();
+                
+                if (mounted) {
+                    if (data && data.plan) {
+                        setPlan(data.plan);
+                    } else {
+                        setPlan("free");
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching plan:", err);
+                if (mounted) setPlan("free");
+            } finally {
+                if (mounted) setIsFetchingPlan(false);
+            }
+        };
+
+        fetchPlan();
+
+        return () => {
+            mounted = false;
+        };
+    }, [user, authLoading]);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -222,34 +259,7 @@ export default function CodeAnalysisPage() {
         };
     }, [isRecordsModalOpen]);
 
-    const handleUnlock = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setAuthError(null);
-        setIsAuthenticating(true);
 
-        try {
-            const response = await fetch("/api/code-analysis/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            const payload = await response.json();
-            if (!response.ok || !payload?.ok) {
-                throw new Error(payload?.error || "Access denied.");
-            }
-
-            sessionStorage.setItem("code-analysis-unlocked", "1");
-            setIsAuthorized(true);
-            setPassword("");
-        } catch (err) {
-            setAuthError(err instanceof Error ? err.message : "Authentication failed.");
-        } finally {
-            setIsAuthenticating(false);
-        }
-    };
 
     const handleAnalyze = async () => {
         setError(null);
@@ -296,76 +306,35 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    if (!isHydrated) {
+    if (!isHydrated || authLoading || isFetchingPlan) {
         return (
             <div className="h-screen w-full bg-gray-50 dark:bg-gray-950" />
         );
     }
 
-    if (!isAuthorized) {
+    if (plan !== "pro") {
         return (
             <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
                 <div className="absolute top-[-20%] left-[-10%] w-lg h-128 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
                 <div className="absolute bottom-[-20%] right-[-10%] w-md h-112 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="z-10 flex-1 flex items-center justify-center">
-                    <div className="w-full max-w-lg rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white/75 dark:bg-gray-900/70 backdrop-blur-2xl shadow-2xl p-6 sm:p-8">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 rounded-xl bg-indigo-500/15 border border-indigo-500/25">
-                                <Lock className="w-5 h-5 text-indigo-500" />
+                    <div className="w-full max-w-lg rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white/75 dark:bg-gray-900/70 backdrop-blur-2xl shadow-2xl p-6 sm:p-8 text-center">
+                        <div className="flex items-center justify-center mb-6">
+                            <div className="p-4 rounded-2xl bg-indigo-500/15 border border-indigo-500/25">
+                                <Construction className="w-8 h-8 text-indigo-500" />
                             </div>
-                            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Secure Code Analysis</h1>
                         </div>
-                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-6">
-                            Enter your credentials to access the AI analysis workspace.
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">Feature Under Development</h1>
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-8">
+                            Code Analysis is currently under development and works exclusively for Pro users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
                         </p>
-
-                        <form onSubmit={handleUnlock} className="space-y-4">
-                            <div>
-                                <label className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 block">Username</label>
-                                <div className="relative">
-                                    <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                    <input
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        autoComplete="username"
-                                        required
-                                        className="w-full pl-10 pr-3 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500"
-                                        placeholder="Enter username"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5 block">Password</label>
-                                <div className="relative">
-                                    <KeyRound className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        autoComplete="current-password"
-                                        required
-                                        className="w-full pl-10 pr-3 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-950/50 text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500"
-                                        placeholder="Enter password"
-                                    />
-                                </div>
-                            </div>
-
-                            {authError ? (
-                                <div className="rounded-xl border border-rose-300/50 dark:border-rose-500/30 bg-rose-50/70 dark:bg-rose-900/15 p-3">
-                                    <p className="text-sm text-rose-700 dark:text-rose-300">{authError}</p>
-                                </div>
-                            ) : null}
-
-                            <button
-                                type="submit"
-                                disabled={isAuthenticating}
-                                className="w-full mt-2 py-3 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition-all active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
-                            >
-                                {isAuthenticating ? "Checking..." : "Unlock Analysis"}
-                            </button>
-                        </form>
+                        <button
+                            onClick={() => router.push("/")}
+                            className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition-all active:scale-[0.99]"
+                        >
+                            Return to Dashboard
+                        </button>
                     </div>
                 </div>
             </div>

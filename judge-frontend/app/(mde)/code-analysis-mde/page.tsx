@@ -3,9 +3,11 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { anime } from '../../lib/anime';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/context';
+import { useAuth } from '../../lib/auth-context';
+import { supabase } from '../../lib/supabase/client';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -66,11 +68,9 @@ export default function CodeAnalysisPage() {
     const [error, setError] = useState<string | null>(null);
     const [isHydrated, setIsHydrated] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
-    const [isAuthorized, setIsAuthorized] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [authError, setAuthError] = useState<string | null>(null);
-    const [isAuthenticating, setIsAuthenticating] = useState(false);
+    const { user, isLoading: authLoading } = useAuth();
+    const [plan, setPlan] = useState<string | null>(null);
+    const [isFetchingPlan, setIsFetchingPlan] = useState(true);
     const [records, setRecords] = useState<AnalysisRecord[]>([]);
     const [isRecordsModalOpen, setIsRecordsModalOpen] = useState(false);
     const [isRecordsModalVisible, setIsRecordsModalVisible] = useState(false);
@@ -198,11 +198,6 @@ export default function CodeAnalysisPage() {
     }, [isMounted]);
 
     useEffect(() => {
-        const unlocked = sessionStorage.getItem("code-analysis-unlocked") === "1";
-        if (unlocked) {
-            setIsAuthorized(true);
-        }
-
         const stored = localStorage.getItem(ANALYSIS_RECORDS_KEY);
         const parsed = parseStoredRecords(stored);
         setRecords(parsed);
@@ -215,6 +210,48 @@ export default function CodeAnalysisPage() {
 
         setIsHydrated(true);
     }, []);
+
+    useEffect(() => {
+        if (authLoading) return;
+
+        if (!user) {
+            setPlan(null);
+            setIsFetchingPlan(false);
+            return;
+        }
+
+        let mounted = true;
+        setIsFetchingPlan(true);
+
+        const fetchPlan = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from("profiles")
+                    .select("plan")
+                    .eq("id", user.id)
+                    .single();
+                
+                if (mounted) {
+                    if (data && data.plan) {
+                        setPlan(data.plan);
+                    } else {
+                        setPlan("free");
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching plan:", err);
+                if (mounted) setPlan("free");
+            } finally {
+                if (mounted) setIsFetchingPlan(false);
+            }
+        };
+
+        fetchPlan();
+
+        return () => {
+            mounted = false;
+        };
+    }, [user, authLoading]);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -317,35 +354,6 @@ export default function CodeAnalysisPage() {
         };
     }, [isRecordsModalOpen]);
 
-    const handleUnlock = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setAuthError(null);
-        setIsAuthenticating(true);
-
-        try {
-            const response = await fetch("/api/code-analysis/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            const payload = await response.json();
-            if (!response.ok || !payload?.ok) {
-                throw new Error(payload?.error || "Access denied.");
-            }
-
-            sessionStorage.setItem("code-analysis-unlocked", "1");
-            setIsAuthorized(true);
-            setPassword("");
-        } catch (err) {
-            setAuthError(err instanceof Error ? err.message : "Authentication failed.");
-        } finally {
-            setIsAuthenticating(false);
-        }
-    };
-
     const handleAnalyze = async () => {
         setError(null);
         setAnalysisResult(null);
@@ -391,13 +399,13 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    if (!isHydrated) {
+    if (!isHydrated || authLoading || isFetchingPlan) {
         return (
             <div className={shellBaseClass} />
         );
     }
 
-    if (!isAuthorized) {
+    if (plan !== "pro") {
         return (
             <div className={shellClass}>
                 <div className={ambientClass} />
@@ -405,69 +413,22 @@ export default function CodeAnalysisPage() {
                 <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowRightClass}`} />
 
                 <div className="relative z-10 flex-1 flex items-center justify-center p-4">
-                    <div className={`w-full max-w-md rounded-[2.5rem] border backdrop-blur-2xl p-8 ${surfaceClass}`}>
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className={`p-3 rounded-2xl border ${isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-indigo-50 border-indigo-100"}`}>
-                                <Lock className="w-6 h-6 text-indigo-400" />
-                            </div>
-                            <div>
-                                <h1 className={`text-2xl font-black tracking-tight ${titleClass}`}>Secure Access</h1>
-                                <p className={`text-[10px] font-bold uppercase tracking-widest ${mutedClass}`}>Authorized Personnel Only</p>
+                    <div className={`w-full max-w-md rounded-[2.5rem] border backdrop-blur-2xl p-8 text-center ${surfaceClass}`}>
+                        <div className="flex items-center justify-center mb-6">
+                            <div className={`p-4 rounded-2xl border ${isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-indigo-50 border-indigo-100"}`}>
+                                <Construction className="w-8 h-8 text-indigo-400" />
                             </div>
                         </div>
-
-                        <form onSubmit={handleUnlock} className="space-y-5">
-                            <div className="space-y-2">
-                                <label className={`text-[10px] font-black uppercase tracking-widest ml-1 ${mutedClass}`}>Username</label>
-                                <div className="relative group">
-                                    <User className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-indigo-400" />
-                                    <input
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        autoComplete="username"
-                                        required
-                                        className={`w-full pl-11 pr-4 py-3.5 rounded-2xl border outline-none transition-all focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 ${isDark ? "border-slate-700/50 bg-slate-900/50 text-white placeholder:text-slate-600" : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"}`}
-                                        placeholder="Enter your handle"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className={`text-[10px] font-black uppercase tracking-widest ml-1 ${mutedClass}`}>Secure Key</label>
-                                <div className="relative group">
-                                    <KeyRound className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 transition-colors group-focus-within:text-indigo-400" />
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        autoComplete="current-password"
-                                        required
-                                        className={`w-full pl-11 pr-4 py-3.5 rounded-2xl border outline-none transition-all focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 ${isDark ? "border-slate-700/50 bg-slate-900/50 text-white placeholder:text-slate-600" : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"}`}
-                                        placeholder="••••••••"
-                                    />
-                                </div>
-                            </div>
-
-                            {authError && (
-                                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-3">
-                                    <TriangleAlert className="w-4 h-4 text-rose-400 shrink-0" />
-                                    <p className="text-xs font-bold text-rose-400 uppercase tracking-tight">{authError}</p>
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                disabled={isAuthenticating}
-                                className="w-full py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-sm uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50"
-                            >
-                                {isAuthenticating ? (
-                                    <div className="flex items-center justify-center gap-2">
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        <span>Authenticating</span>
-                                    </div>
-                                ) : "Unlock Analysis"}
-                            </button>
-                        </form>
+                        <h1 className={`text-2xl font-black tracking-tight mb-3 ${titleClass}`}>Feature Under Development</h1>
+                        <p className={`text-sm leading-relaxed mb-8 ${mutedClass}`}>
+                            Code Analysis is currently under development and works exclusively for Pro users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
+                        </p>
+                        <button
+                            onClick={() => router.push("/")}
+                            className="w-full py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-xs uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all"
+                        >
+                            Return to Dashboard
+                        </button>
                     </div>
                 </div>
             </div>
