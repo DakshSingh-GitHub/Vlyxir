@@ -44,10 +44,10 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
                 <input
                     type="text"
                     placeholder="Search posts..."
-                    className={`w-full py-2.5 px-10 rounded-2xl text-sm transition-all text-center focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
+                    className={`w-full py-2.5 px-10 rounded-2xl text-sm transition-all text-center focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-[0_0_15px_rgba(99,102,241,0.15)] ${
                         isDark 
-                        ? 'bg-slate-800/50 text-slate-200 border-slate-700 placeholder:text-slate-500' 
-                        : 'bg-white text-slate-800 border-slate-200 placeholder:text-slate-400 border'
+                        ? 'bg-slate-800/50 text-slate-200 border-slate-700 placeholder:text-slate-400' 
+                        : 'bg-white text-slate-800 border-slate-200 placeholder:text-slate-500 border'
                     }`}
                 />
             </div>

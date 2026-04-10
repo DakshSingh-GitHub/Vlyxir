@@ -4,16 +4,18 @@ import React from 'react';
 import { useAppContext } from '../../app/lib/context';
 import { Plus, User } from 'lucide-react';
 
+import Link from 'next/link';
+
 export default function ForumRightPanel() {
     const { isDark } = useAppContext();
     
     return (
         <aside className={`w-80 flex-shrink-0 hidden lg:flex flex-col py-6 px-6 border-l ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} overflow-y-auto`}>
             <div className="mb-10 space-y-3">
-                <button className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+                <Link href="/forum/create-post" className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
                     <Plus className="w-4 h-4" />
                     Create New Post
-                </button>
+                </Link>
                 <button className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border ${isDark ? 'border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-200' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'} text-sm font-semibold transition-all active:scale-95`}>
                     <User className="w-4 h-4" />
                     Your Contents

@@ -3,6 +3,7 @@
 import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home } from 'lucide-react';
 import { useAppContext } from '../../app/lib/context';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ForumSidebarProps {
     activeTab: string;
@@ -21,7 +22,22 @@ export default function ForumSidebar({ activeTab, setActiveTab }: ForumSidebarPr
 
     return (
         <aside className={`w-64 flex-shrink-0 border-r hidden md:flex flex-col ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} py-6 px-4`}>
-            <Link 
+            <div className="flex items-center gap-3 px-3 mb-8">
+                <div className="w-8 h-8 relative rounded-xl overflow-hidden bg-indigo-600 flex items-center justify-center p-1.5 shadow-lg shadow-indigo-500/20">
+                    <Image
+                        src="/icons/icon-192x192.png"
+                        alt="CodeJudge Logo"
+                        width={32}
+                        height={32}
+                        className="object-contain"
+                    />
+                </div>
+                <span className={`font-bold text-xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    Code<span className="text-indigo-500">Judge</span>
+                </span>
+            </div>
+
+            <Link
                 href="/"
                 className={`flex items-center gap-3 px-3 py-2 rounded-xl mb-6 text-sm font-medium transition-all ${isDark ? 'text-slate-400 hover:bg-slate-800 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}
             >
@@ -37,18 +53,17 @@ export default function ForumSidebar({ activeTab, setActiveTab }: ForumSidebarPr
                         <button
                             key={idx}
                             onClick={() => setActiveTab(item.label)}
-                            className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                activeTab === item.label
-                                ? (isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600')
-                                : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
-                            }`}
+                            className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === item.label
+                                    ? (isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600')
+                                    : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
+                                }`}
                         >
                             {item.icon}
                             {item.label}
                         </button>
                     ))}
                 </nav>
-                
+
                 <div className={`text-xs font-bold uppercase tracking-wider mb-3 px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Channels</div>
                 <div className="space-y-1">
                     <button className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium ${isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}`}>
