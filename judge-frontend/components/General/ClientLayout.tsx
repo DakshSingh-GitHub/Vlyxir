@@ -13,12 +13,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const pathname = usePathname();
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
     const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register']
-    const isHomePage = excludedPaths.includes(pathname);
+    const isNavExcluded = excludedPaths.includes(pathname) || pathname.startsWith('/forum');
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 
     return (
         <main className="flex h-screen flex-col">
-            {!isHomePage && (
+            {!isNavExcluded && (
                 <NavComponent
                     isSidebarOpen={isSidebarOpen}
                     setIsSidebarOpen={setIsSidebarOpen}
