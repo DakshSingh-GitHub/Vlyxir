@@ -26,8 +26,18 @@ export default function ForumFeed({
     const { isDark } = useAppContext();
     const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState<ForumPost[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
     const tabs = ['All Posts', 'Trending', 'New', 'Fast Growing'];
+
+    // Debouncing search query
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     // Fetch posts from database
     useEffect(() => {
@@ -41,7 +51,7 @@ export default function ForumFeed({
                 const navTabs = ['All Posts', 'Trending', 'New', 'Fast Growing'];
                 const currentSort = navTabs.includes(activeTab) ? activeTab : 'All Posts';
                 
-                const data = await fetchPosts(activeChannelId || undefined, currentSort);
+                const data = await fetchPosts(activeChannelId || undefined, currentSort, debouncedSearchQuery);
                 if (isMounted) {
                     setPosts(data || []);
                 }
@@ -58,7 +68,7 @@ export default function ForumFeed({
         return () => {
             isMounted = false;
         };
-    }, [activeTab, activeChannelId]);
+    }, [activeTab, activeChannelId, debouncedSearchQuery]);
 
     const skeletonCount = 4;
 
@@ -72,6 +82,8 @@ export default function ForumFeed({
                 <input
                     type="text"
                     placeholder="Search posts..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className={`w-full py-2.5 px-10 rounded-2xl text-sm transition-all text-center focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:shadow-[0_0_15px_rgba(99,102,241,0.15)] ${
                         isDark 
                         ? 'bg-slate-800/50 text-slate-200 border-slate-700 placeholder:text-slate-400' 

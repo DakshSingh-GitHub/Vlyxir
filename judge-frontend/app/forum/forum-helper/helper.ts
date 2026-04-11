@@ -68,11 +68,15 @@ export async function fetchChannels(): Promise<ForumChannel[]> {
   return data;
 }
 
-export async function fetchPosts(channelId?: string, tab: string = 'All Posts'): Promise<ForumPost[]> {
+export async function fetchPosts(channelId?: string, tab: string = 'All Posts', searchQuery?: string): Promise<ForumPost[]> {
   let query = supabase.from('forum_posts').select('*');
   
   if (channelId) {
     query = query.eq('channel_id', channelId);
+  }
+
+  if (searchQuery) {
+    query = query.or(`title.ilike.%${searchQuery}%,body.ilike.%${searchQuery}%`);
   }
 
   // Handle sorting based on tab

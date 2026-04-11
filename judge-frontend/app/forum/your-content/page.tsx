@@ -123,13 +123,25 @@ export default function YourContentPage() {
             
             <main className="flex-1 flex flex-col min-w-0 overflow-y-auto px-4 py-6 md:px-8">
                 {/* Header */}
-                <div className="mb-10">
-                    <h1 className={`text-3xl font-black tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        Your Content
-                    </h1>
-                    <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Manage your contributions to the community.
-                    </p>
+                <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                        <h1 className={`text-3xl font-black tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            Your Content
+                        </h1>
+                        <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            Manage your contributions to the community.
+                        </p>
+                    </div>
+                    <Link 
+                        href="/forum" 
+                        className={`px-6 py-2.5 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${
+                            isDark 
+                            ? 'bg-slate-950 border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-white' 
+                            : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900 shadow-sm'
+                        }`}
+                    >
+                        Forums
+                    </Link>
                 </div>
 
                 {/* Posts List */}

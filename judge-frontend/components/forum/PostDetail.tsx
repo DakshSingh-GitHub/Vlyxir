@@ -39,9 +39,26 @@ export default function PostDetail({ post }: PostDetailProps) {
                     </div>
                 </div>
 
-                <h1 className={`text-3xl md:text-5xl font-black mb-10 tracking-tighter leading-[1.1] ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <h1 className={`text-3xl md:text-5xl font-black mb-6 tracking-tighter leading-[1.1] ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {post.title}
                 </h1>
+
+                {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-10">
+                        {post.tags.map((tag, i) => (
+                            <span 
+                                key={i} 
+                                className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border shadow-sm transition-all hover:scale-105 cursor-default ${
+                                    isDark 
+                                    ? 'bg-slate-950 border-slate-800 text-slate-400' 
+                                    : 'bg-slate-50 border-slate-200 text-slate-500'
+                                }`}
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
 
                 <div className={`prose-forum max-w-none ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>

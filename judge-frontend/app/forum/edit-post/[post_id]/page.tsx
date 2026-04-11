@@ -33,7 +33,8 @@ interface EditPostPageProps {
 }
 
 export default function EditPostPage({ params }: EditPostPageProps) {
-    const { post_id } = use(params);
+    const paramsDecoded = use(params);
+    const post_id = decodeURIComponent(paramsDecoded.post_id);
     const { isDark } = useAppContext();
     const { user } = useAuth();
     const router = useRouter();
