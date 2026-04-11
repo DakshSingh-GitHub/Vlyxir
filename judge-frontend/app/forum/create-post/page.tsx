@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +18,15 @@ import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
 import { fetchChannels, publishPost, ForumChannel } from "../forum-helper/helper";
 
+const COMMON_TAGS = [
+    "bug", "feature-request", "question", "discussion", "help-wanted", "solved", "tutorial", "announcement",
+    "python", "javascript", "typescript", "cpp", "java", "rust", "go", "swift", "kotlin", "csharp",
+    "react", "nextjs", "vue", "angular", "svelte", "tailwind", "node", "express", "django", "flask", "fastapi", "spring", "laravel",
+    "database", "sql", "nosql", "mongodb", "postgresql", "redis", "prisma", "supabase",
+    "frontend", "backend", "fullstack", "mobile", "devops", "ai", "ml", "security", "performance",
+    "leetcode", "algorithms", "data-structures", "interview-prep"
+];
+
 export default function CreatePostPage() {
     const { isDark } = useAppContext();
     const { user } = useAuth();
@@ -33,6 +42,20 @@ export default function CreatePostPage() {
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
     const [isLoadingChannels, setIsLoadingChannels] = useState(true);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [filteredTags, setFilteredTags] = useState<string[]>([]);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     useEffect(() => {
         async function loadChannels() {
@@ -48,14 +71,50 @@ export default function CreatePostPage() {
         loadChannels();
     }, []);
 
-    const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" || e.key === ",") {
-            e.preventDefault();
-            const newTag = tagInput.trim().replace(/^#/, "");
-            if (newTag && !tags.includes(newTag)) {
-                setTags([...tags, newTag]);
+    const handleAddTag = (tagToAdd: string) => {
+        const newTag = tagToAdd.trim().replace(/^#/, "");
+        if (newTag && !tags.includes(newTag)) {
+            setTags([...tags, newTag]);
+        }
+        setTagInput("");
+        setShowDropdown(false);
+    };
+
+    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setTagInput(value);
+
+        if (value.trim()) {
+            const search = value.trim().toLowerCase().replace(/^#/, "");
+            const filtered = COMMON_TAGS.filter(tag => 
+                tag.toLowerCase().includes(search) && !tags.includes(tag)
+            ).slice(0, 8); // Limit to 8 suggestions
+            
+            setFilteredTags(filtered);
+            setShowDropdown(filtered.length > 0);
+            setActiveIndex(0);
+        } else {
+            setShowDropdown(false);
+        }
+    };
+
+    const onTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (showDropdown && filteredTags.length > 0) {
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setActiveIndex((prev) => (prev + 1) % filteredTags.length);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setActiveIndex((prev) => (prev - 1 + filteredTags.length) % filteredTags.length);
+            } else if (e.key === "Enter" || e.key === "Tab") {
+                e.preventDefault();
+                handleAddTag(filteredTags[activeIndex]);
+            } else if (e.key === "Escape") {
+                setShowDropdown(false);
             }
-            setTagInput("");
+        } else if (e.key === "Enter" || e.key === ",") {
+            e.preventDefault();
+            handleAddTag(tagInput);
         }
     };
 
@@ -329,34 +388,61 @@ export default function CreatePostPage() {
                                         <Hash className="h-3.5 w-3.5" />
                                         Tags
                                     </label>
-                                    <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass}`}>
-                                        <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
-                                            {tags.map((tag) => (
-                                                <span
-                                                    key={tag}
-                                                    className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
-                                                        isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
-                                                    }`}
-                                                >
-                                                    #{tag}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeTag(tag)}
-                                                        className="opacity-60 transition hover:opacity-100"
+                                    <div className="relative" ref={dropdownRef}>
+                                        <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass} ${showDropdown ? "ring-1 ring-indigo-500 border-indigo-500" : ""}`}>
+                                            <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
+                                                {tags.map((tag) => (
+                                                    <span
+                                                        key={tag}
+                                                        className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
+                                                            isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                                        }`}
                                                     >
-                                                        <X className="h-3.5 w-3.5" />
-                                                    </button>
-                                                </span>
-                                            ))}
+                                                        #{tag}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeTag(tag)}
+                                                            className="opacity-60 transition hover:opacity-100"
+                                                        >
+                                                            <X className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder={tags.length === 0 ? "Type a tag and press Enter" : "Add another tag"}
+                                                value={tagInput}
+                                                onChange={handleTagInputChange}
+                                                onKeyDown={onTagInputKeyDown}
+                                                onFocus={() => tagInput.trim() && setShowDropdown(true)}
+                                                className="w-full bg-transparent text-sm font-bold outline-none placeholder-inherit"
+                                            />
                                         </div>
-                                        <input
-                                            type="text"
-                                            placeholder={tags.length === 0 ? "Type a tag and press Enter" : "Add another tag"}
-                                            value={tagInput}
-                                            onChange={(e) => setTagInput(e.target.value)}
-                                            onKeyDown={handleAddTag}
-                                            className="w-full bg-transparent text-sm font-bold outline-none placeholder-inherit"
-                                        />
+
+                                        {showDropdown && (
+                                            <div className={`absolute z-50 w-full mt-2 rounded-xl border shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${
+                                                isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+                                            }`}>
+                                                <div className="p-2">
+                                                    {filteredTags.map((tag, index) => (
+                                                        <button
+                                                            key={tag}
+                                                            onClick={() => handleAddTag(tag)}
+                                                            onMouseEnter={() => setActiveIndex(index)}
+                                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-between ${
+                                                                index === activeIndex 
+                                                                    ? (isDark ? "bg-indigo-500/20 text-indigo-300" : "bg-indigo-50 text-indigo-600") 
+                                                                    : (isDark ? "text-slate-400 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-50")
+                                                            }`}
+                                                        >
+                                                            <span>#{tag}</span>
+                                                            {index === activeIndex && <Sparkles className="h-3.5 w-3.5 opacity-50" />}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
