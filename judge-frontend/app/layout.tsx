@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppWrapper } from "./lib/context";
 import { AuthProvider } from "./lib/auth-context";
 import ClientLayout from "../components/General/ClientLayout";
+import { ThemeScript } from "../components/General/ThemeScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,55 +64,19 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const themeScript = `
-    (function() {
-      var themeMode = localStorage.getItem('theme_mode');
-      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      var shouldUseDark = false;
-
-      if (themeMode === 'dark') {
-        shouldUseDark = true;
-      } else if (themeMode === 'light') {
-        shouldUseDark = false;
-      } else if (themeMode === 'system') {
-        shouldUseDark = prefersDark;
-      } else {
-        shouldUseDark =
-          localStorage.theme === 'dark' ||
-          (!('theme' in localStorage) && prefersDark);
-      }
-
-      if (
-        shouldUseDark
-      ) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      var hardwareAccelerationSetting = localStorage.getItem('hardware_accel_theme_animations');
-      var shouldUseHardwareAcceleration = hardwareAccelerationSetting === null || hardwareAccelerationSetting === '1';
-      if (shouldUseHardwareAcceleration) {
-        document.documentElement.classList.add('theme-gpu');
-      } else {
-        document.documentElement.classList.remove('theme-gpu');
-      }
-    })();
-  `;
-
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased select-none`}
       >
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <AppWrapper>
           <AuthProvider>
             <ClientLayout>

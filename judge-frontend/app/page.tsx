@@ -224,7 +224,7 @@ export default function Home() {
                         </motion.div>
                     </Link>
 
-                    <Link href="/meet-developer" className="group">
+                    <Link href="/forum" className="group">
                         <motion.div
                             variants={itemVariants}
                             className={`${cardShellClassName} hover:border-amber-500/50`}
@@ -236,12 +236,12 @@ export default function Home() {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${isDark ? "bg-amber-600 shadow-amber-600/20" : "bg-amber-50 shadow-amber-500/10 border border-amber-100"}`}>
                                     <Coffee className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className={cardTitleClassName}>Meet Developer</h3>
+                                <h3 className={cardTitleClassName}>Forums</h3>
                                 <p className={cardBodyClassName}>
-                                    Let&apos;s have a cup of coffee together...:)
+                                    Let&apos;s have some discussion together...with a cup of coffee ofcourse!
                                 </p>
                                 <div className={`mt-auto flex items-center gap-2 font-bold ${isDark ? "text-amber-400" : "text-amber-600"}`}>
-                                    Get to know me.. <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    Visit Forums <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </motion.div>

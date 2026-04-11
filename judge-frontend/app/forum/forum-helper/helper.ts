@@ -196,3 +196,54 @@ export async function publishComment(
   return { data, error };
 }
 
+export async function fetchUserPosts(userId: string): Promise<ForumPost[]> {
+  const { data, error } = await supabase
+    .from('forum_posts')
+    .select('*')
+    .eq('author_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching user posts:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function deletePost(postId: string): Promise<{ error: Error | null }> {
+  // Note: RLS should handle permissions, but we expect only the author to call this.
+  const { error } = await supabase
+    .from('forum_posts')
+    .delete()
+    .eq('id', postId);
+
+  return { error };
+}
+
+export async function updatePost(
+  id: string,
+  title: string,
+  body: string,
+  channel_id: string,
+  tags: string[]
+): Promise<{ data: ForumPost | null; error: Error | null }> {
+  // estimate read time (rough estimate: 200 words per minute)
+  const wordCount = body.trim().split(/\s+/).length;
+  const read_time_minutes = Math.max(1, Math.ceil(wordCount / 200));
+
+  const { data, error } = await supabase
+    .from('forum_posts')
+    .update({
+      title,
+      body,
+      channel_id,
+      tags,
+      read_time_minutes,
+    })
+    .eq('id', id)
+    .select('*')
+    .single();
+
+  return { data, error };
+}
+

@@ -1,11 +1,12 @@
 "use client";
 
-import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home } from 'lucide-react';
+import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home, PenSquare } from 'lucide-react';
 import { useAppContext } from '../../app/lib/context';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { fetchChannels, ForumChannel } from '../../app/forum/forum-helper/helper';
+import React from 'react';
 
 interface ForumSidebarProps {
     activeTab: string;
@@ -36,10 +37,11 @@ export default function ForumSidebar({
     }, []);
 
     const navItems = [
-        { icon: <LayoutList className="w-4 h-4" />, label: "All Posts" },
-        { icon: <TrendingUp className="w-4 h-4" />, label: "Trending" },
-        { icon: <Sparkles className="w-4 h-4" />, label: "New" },
-        { icon: <Zap className="w-4 h-4" />, label: "Fast Growing" },
+        { icon: <LayoutList className="w-4 h-4" />, label: "All Posts", href: "/forum" },
+        { icon: <TrendingUp className="w-4 h-4" />, label: "Trending", href: "/forum" },
+        { icon: <Sparkles className="w-4 h-4" />, label: "New", href: "/forum" },
+        { icon: <Zap className="w-4 h-4" />, label: "Fast Growing", href: "/forum" },
+        { icon: <PenSquare className="w-4 h-4" />, label: "Your Content", href: "/forum/your-content" },
     ];
 
     return (
@@ -71,22 +73,34 @@ export default function ForumSidebar({
             <div className="flex-1 overflow-y-auto">
                 <div className={`text-xs font-bold uppercase tracking-wider mb-3 px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Navigation</div>
                 <nav className="space-y-1 mb-8">
-                    {navItems.map((item, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => {
-                                setActiveTab(item.label);
-                                setActiveChannelId(null);
-                            }}
-                            className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === item.label && !activeChannelId
-                                    ? (isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600')
-                                    : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
-                                }`}
-                        >
-                            {item.icon}
-                            {item.label}
-                        </button>
-                    ))}
+                    {navItems.map((item, idx) => {
+                        const isActive = activeTab === item.label && !activeChannelId;
+                        const content = (
+                            <button
+                                onClick={() => {
+                                    setActiveTab(item.label);
+                                    setActiveChannelId(null);
+                                }}
+                                className={`flex items-center gap-3 w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors ${isActive
+                                        ? (isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600')
+                                        : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
+                                    }`}
+                            >
+                                {item.icon}
+                                {item.label}
+                            </button>
+                        );
+
+                        if (item.href) {
+                            return (
+                                <Link key={idx} href={item.href} className="block">
+                                    {content}
+                                </Link>
+                            );
+                        }
+
+                        return <React.Fragment key={idx}>{content}</React.Fragment>;
+                    })}
                 </nav>
 
                 <div className={`text-xs font-bold uppercase tracking-wider mb-3 px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Channels</div>

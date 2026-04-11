@@ -16,10 +16,10 @@ export default function ForumRightPanel() {
                     <Plus className="w-4 h-4" />
                     Create New Post
                 </Link>
-                <button className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border ${isDark ? 'border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-200' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'} text-sm font-semibold transition-all active:scale-95`}>
+                <Link href="/forum/your-content" className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border ${isDark ? 'border-slate-700 bg-slate-800/50 hover:bg-slate-800 text-slate-200' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'} text-sm font-semibold transition-all active:scale-95`}>
                     <User className="w-4 h-4" />
                     Your Contents
-                </button>
+                </Link>
             </div>
 
             <div className="mb-8">
