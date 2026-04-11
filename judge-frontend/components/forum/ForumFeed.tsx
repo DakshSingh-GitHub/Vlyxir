@@ -4,13 +4,25 @@ import { Search, MessagesSquare } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Link from "next/link";
+
 
 interface ForumFeedProps {
     activeTab: string;
     setActiveTab: (tab: string) => void;
+    activeChannelId: string | null;
+    setActiveChannelId: (id: string | null) => void;
 }
 
-export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
+export default function ForumFeed({ 
+    activeTab, 
+    setActiveTab, 
+    activeChannelId, 
+    setActiveChannelId 
+}: ForumFeedProps) {
+
     const { isDark } = useAppContext();
     const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState<ForumPost[]>([]);
@@ -24,9 +36,13 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
         async function loadPosts() {
             setIsLoading(true);
             try {
-                const data = await fetchPosts();
+                // Determine if we are using a navigation tab or a channel-specific sort
+                // If activeChannelId is set, and activeTab is one of the nav tabs, use it for sorting
+                const navTabs = ['All Posts', 'Trending', 'New', 'Fast Growing'];
+                const currentSort = navTabs.includes(activeTab) ? activeTab : 'All Posts';
+                
+                const data = await fetchPosts(activeChannelId || undefined, currentSort);
                 if (isMounted) {
-                    // At some point you may filter based on activeTab, but for now we'll set all
                     setPosts(data || []);
                 }
             } catch (error) {
@@ -42,7 +58,7 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
         return () => {
             isMounted = false;
         };
-    }, [activeTab]);
+    }, [activeTab, activeChannelId]);
 
     const skeletonCount = 4;
 
@@ -67,7 +83,11 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
             {/* Tabs Header - Always Visible */}
             <div className={`flex gap-6 mb-8 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} overflow-x-auto no-scrollbar min-h-[48px]`}>
                 {tabs.map((tab) => {
-                    const isActive = activeTab?.trim() === tab.trim();
+                    // A tab is active if activeTab matches it, 
+                    // OR if activeChannelId is set and this is the default tab ('All Posts') and activeTab is the channel name
+                    const isTabInNav = tabs.includes(activeTab);
+                    const isActive = activeTab === tab || (!isTabInNav && tab === 'All Posts');
+                    
                     return (
                         <button
                             key={tab}
@@ -121,38 +141,43 @@ export default function ForumFeed({ activeTab, setActiveTab }: ForumFeedProps) {
                 ) : (
                     // Real Cards
                     posts.map((post) => (
-                        <div key={post.id} className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 hover:border-slate-300'} shadow-sm transition-all duration-300 cursor-pointer`}>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs shadow-sm ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}`}>
-                                    {post.author_username?.charAt(0).toUpperCase() || 'U'}
+                        <Link key={post.id} href={`/forum/${post.id}`}>
+                            <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 hover:border-slate-300'} shadow-sm transition-all duration-300 cursor-pointer mb-4 last:mb-0`}>
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs shadow-sm ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}`}>
+                                        {post.author_username?.charAt(0).toUpperCase() || 'U'}
+                                    </div>
+                                    <div className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                        {post.author_username || 'Anonymous'}
+                                    </div>
+                                    <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        • {new Date(post.created_at).toLocaleDateString()}
+                                    </div>
                                 </div>
-                                <div className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                                    {post.author_username || 'Anonymous'}
-                                </div>
-                                <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    • {new Date(post.created_at).toLocaleDateString()}
+                                <h3 className={`text-lg font-bold mb-2 tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                                    {post.title}
+                                </h3>
+                                 <div className={`prose-forum line-clamp-2 mb-4 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                         {post.body}
+                                     </ReactMarkdown>
+                                 </div>
+                                <div className="flex items-center gap-3">
+                                    {post.tags?.slice(0, 3).map((tag, i) => (
+                                        <span key={i} className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border ${isDark ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                                            #{tag}
+                                        </span>
+                                    ))}
+                                    {post.read_time_minutes > 0 && (
+                                        <span className={`text-[11px] font-semibold ml-auto ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            {post.read_time_minutes} min read
+                                        </span>
+                                    )}
                                 </div>
                             </div>
-                            <h3 className={`text-lg font-bold mb-2 tracking-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
-                                {post.title}
-                            </h3>
-                            <p className={`text-sm line-clamp-2 mb-4 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                {post.body}
-                            </p>
-                            <div className="flex items-center gap-3">
-                                {post.tags?.slice(0, 3).map((tag, i) => (
-                                    <span key={i} className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md border ${isDark ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
-                                        #{tag}
-                                    </span>
-                                ))}
-                                {post.read_time_minutes > 0 && (
-                                    <span className={`text-[11px] font-semibold ml-auto ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                        {post.read_time_minutes} min read
-                                    </span>
-                                )}
-                            </div>
-                        </div>
+                        </Link>
                     ))
+
                 )}
             </div>
         </main>

@@ -68,14 +68,29 @@ export async function fetchChannels(): Promise<ForumChannel[]> {
   return data;
 }
 
-export async function fetchPosts(): Promise<ForumPost[]> {
-  const { data, error } = await supabase.from('forum_posts').select('*').order('created_at', { ascending: false });
+export async function fetchPosts(channelId?: string, tab: string = 'All Posts'): Promise<ForumPost[]> {
+  let query = supabase.from('forum_posts').select('*');
+  
+  if (channelId) {
+    query = query.eq('channel_id', channelId);
+  }
+
+  // Handle sorting based on tab
+  if (tab === 'Trending' || tab === 'Fast Growing') {
+    query = query.order('upvotes', { ascending: false });
+  } else {
+    // Default to 'New' or 'All Posts' which is newest first
+    query = query.order('created_at', { ascending: false });
+  }
+
+  const { data, error } = await query;
   if (error) {
     console.error("Error fetching posts:", error);
     return [];
   }
   return data || [];
 }
+
 
 // Add further stubs like createPost, createComment, votePost down the road.
 
@@ -122,3 +137,62 @@ export async function publishPost(
 
   return { data, error };
 }
+
+export async function fetchPostById(id: string): Promise<ForumPost | null> {
+  const { data, error } = await supabase
+    .from('forum_posts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching post by ID:", error);
+    return null;
+  }
+  return data;
+}
+
+export async function fetchComments(postId: string): Promise<ForumComment[]> {
+  const { data, error } = await supabase
+    .from('forum_comments')
+    .select('*')
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function publishComment(
+  postId: string,
+  body: string,
+  user: any,
+  parentId?: string
+): Promise<{ data: ForumComment | null; error: Error | null }> {
+  if (!user || !user.id) {
+    return { data: null, error: new Error("User must be logged in to comment.") };
+  }
+
+  const rawUsername = user.user_metadata?.username || user.email?.split('@')[0] || "user";
+  const safeUsername = rawUsername.replace(/:/g, '');
+
+  const commentPayload = {
+    post_id: postId,
+    author_id: user.id,
+    author_username: safeUsername,
+    body,
+    parent_id: parentId || null,
+  };
+
+  const { data, error } = await supabase
+    .from('forum_comments')
+    .insert([commentPayload])
+    .select('*')
+    .single();
+
+  return { data, error };
+}
+

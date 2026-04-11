@@ -133,3 +133,65 @@ html:not(.dark) {
 html.dark {
   cursor: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9jAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAEAAAAAAXqg+kAAABzSURBVDhPY2AgF2ARsWNgYGFgYGFhbm5uYmBgYGFgYGDg4+Pj4+fn5+bm5uZmZmaOjo6Ojo6+vr7+/v7+/v7+/v7+/v7+/v7+/v7+/gD+CjIyMoAqMDDQ0dHR0dHR0dHRAVKBhYUFQgYGBgYWBgaGAAMxAKjYAAQAKp9d9q/5lQAAAABJRU5ErkJggg==") 8 8, auto;
 }
+
+/* Forum Markdown Styling */
+.prose-forum {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.prose-forum h1, .prose-forum h2, .prose-forum h3, .prose-forum h4 {
+  font-weight: 800;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+  color: inherit;
+  letter-spacing: -0.01em;
+}
+
+.prose-forum h1 { font-size: 1.25rem; }
+.prose-forum h2 { font-size: 1.1rem; }
+.prose-forum h3 { font-size: 1rem; }
+.prose-forum h4 { font-size: 0.875rem; }
+
+.prose-forum p {
+  margin-bottom: 0.75rem;
+}
+
+.prose-forum p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-forum strong {
+  font-weight: 700;
+  color: inherit;
+}
+
+.prose-forum code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 0.15em 0.35em;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.dark .prose-forum code {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.prose-forum ul, .prose-forum ol {
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-forum ul { list-style-type: disc; }
+.prose-forum ol { list-style-type: decimal; }
+
+.prose-forum blockquote {
+  border-left: 4px solid #6366f1;
+  padding-left: 1rem;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+  opacity: 0.8;
+}
