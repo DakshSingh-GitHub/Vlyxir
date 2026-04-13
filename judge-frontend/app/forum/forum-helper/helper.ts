@@ -360,4 +360,13 @@ export async function toggleCommentLike(commentId: string, userId: string): Prom
   }
 }
 
+export async function deleteComment(commentId: string): Promise<{ error: Error | null }> {
+  const { error } = await supabase
+    .from('forum_comments')
+    .delete()
+    .eq('id', commentId);
+
+  return { error };
+}
+
 

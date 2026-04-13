@@ -1,10 +1,9 @@
-"use client";
-
 import { useState } from "react";
-import { Reply, User, Send, Loader2, X, ThumbsUp } from "lucide-react";
-import { ForumComment, toggleCommentLike } from "../../app/forum/forum-helper/helper";
+import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2 } from "lucide-react";
+import { ForumComment, toggleCommentLike, deleteComment } from "../../app/forum/forum-helper/helper";
 import { useAppContext } from "../../app/lib/context";
 import { useAuth } from "../../app/lib/auth-context";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface CommentThreadProps {
     comments: ForumComment[];
@@ -13,11 +12,14 @@ interface CommentThreadProps {
     replyingTo?: string | null;
     onSubmitReply?: (parentId: string, body: string) => Promise<void>;
     onCancelReply?: () => void;
+    postOwnerId: string;
+    onDeleteComment?: () => void;
 }
 
 interface CommentItemProps {
     comment: ForumComment;
     isDark: boolean;
+    postOwnerId: string;
     onReply?: (parentId: string) => void;
     replyingTo?: string | null;
     replyBody: string;
@@ -26,12 +28,14 @@ interface CommentItemProps {
     setIsSubmitting: (val: boolean) => void;
     onSubmitReply?: (parentId: string, body: string) => Promise<void>;
     onCancelReply?: () => void;
+    onDeleteComment?: () => void;
     comments: ForumComment[];
 }
 
 function CommentItem({ 
     comment, 
     isDark, 
+    postOwnerId,
     onReply, 
     replyingTo, 
     replyBody, 
@@ -40,13 +44,32 @@ function CommentItem({
     setIsSubmitting,
     onSubmitReply,
     onCancelReply,
+    onDeleteComment,
     comments
 }: CommentItemProps) {
     const { user } = useAuth();
     const [likes, setLikes] = useState(comment.likes_count || 0);
     const [hasLiked, setHasLiked] = useState(!!comment.has_liked);
     const [isLiking, setIsLiking] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+    const isAuthor = user?.id === comment.author_id;
+    const isPostOwner = user?.id === postOwnerId;
+    const canDelete = isAuthor || isPostOwner;
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        const { error } = await deleteComment(comment.id);
+        if (error) {
+            alert("Failed to delete comment. Please try again.");
+            setIsDeleting(false);
+            setIsDeleteModalOpen(false);
+        } else {
+            onDeleteComment?.();
+            setIsDeleteModalOpen(false);
+        }
+    };
     const handleLike = async () => {
         if (!user) {
             window.location.href = '/login';
@@ -103,6 +126,22 @@ function CommentItem({
                             <Reply className="w-3.5 h-3.5" />
                             REPLY
                         </button>
+
+                        {canDelete && (
+                            <button 
+                                onClick={() => setIsDeleteModalOpen(true)}
+                                disabled={isDeleting}
+                                title={isPostOwner && !isAuthor ? "Delete as Post Owner" : "Delete Comment"}
+                                className={`flex items-center gap-1.5 text-[11px] font-bold tracking-tight transition-colors hover:text-red-500 ml-auto ${isDark ? 'text-slate-600' : 'text-slate-400'}`}
+                            >
+                                {isDeleting ? (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                ) : (
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                )}
+                                DELETE
+                            </button>
+                        )}
                     </div>
 
                     {replyingTo === comment.id && (
@@ -148,10 +187,19 @@ function CommentItem({
             <CommentThread 
                 comments={comments} 
                 parentId={comment.id} 
+                postOwnerId={postOwnerId}
                 onReply={onReply}
                 replyingTo={replyingTo}
                 onSubmitReply={onSubmitReply}
                 onCancelReply={onCancelReply}
+                onDeleteComment={onDeleteComment}
+            />
+
+            <DeleteConfirmationModal 
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                isDeleting={isDeleting}
             />
         </div>
     );
@@ -163,7 +211,9 @@ export default function CommentThread({
     onReply,
     replyingTo,
     onSubmitReply,
-    onCancelReply
+    onCancelReply,
+    postOwnerId,
+    onDeleteComment
 }: CommentThreadProps) {
     const { isDark } = useAppContext();
     const [replyBody, setReplyBody] = useState("");
@@ -181,6 +231,7 @@ export default function CommentThread({
                     key={comment.id}
                     comment={comment}
                     isDark={isDark}
+                    postOwnerId={postOwnerId}
                     onReply={onReply}
                     replyingTo={replyingTo}
                     replyBody={replyBody}
@@ -189,6 +240,7 @@ export default function CommentThread({
                     setIsSubmitting={setIsSubmitting}
                     onSubmitReply={onSubmitReply}
                     onCancelReply={onCancelReply}
+                    onDeleteComment={onDeleteComment}
                     comments={comments}
                 />
             ))}

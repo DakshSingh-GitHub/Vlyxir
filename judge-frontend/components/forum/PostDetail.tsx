@@ -129,7 +129,7 @@ export default function PostDetail({ post }: PostDetailProps) {
                     </div>
                 </div>
                 
-                <CommentSection postId={post.id} />
+                <CommentSection postId={post.id} postOwnerId={post.author_id} />
             </article>
         </div>
     );

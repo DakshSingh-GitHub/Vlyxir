@@ -9,9 +9,10 @@ import CommentThread from "./CommentThread";
 
 interface CommentSectionProps {
     postId: string;
+    postOwnerId: string;
 }
 
-export default function CommentSection({ postId }: CommentSectionProps) {
+export default function CommentSection({ postId, postOwnerId }: CommentSectionProps) {
     const { isDark } = useAppContext();
     const { user } = useAuth();
 
@@ -95,9 +96,11 @@ export default function CommentSection({ postId }: CommentSectionProps) {
                     <CommentThread 
                         comments={comments} 
                         replyingTo={replyingTo}
+                        postOwnerId={postOwnerId}
                         onReply={(id) => setReplyingTo(id)}
                         onCancelReply={() => setReplyingTo(null)}
                         onSubmitReply={handleReplySubmit}
+                        onDeleteComment={loadComments}
                     />
                 </div>
             ) : (
