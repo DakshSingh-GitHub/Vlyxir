@@ -14,6 +14,9 @@ export type ForumPost = {
   read_time_minutes: number;
   is_pinned: boolean;
   created_at: string;
+  comment_count?: number;
+  upvotes_count?: number;
+  has_upvoted?: boolean;
 };
 
 export type ForumChannel = {
@@ -34,6 +37,8 @@ export type ForumComment = {
   body: string;
   parent_id?: string;
   created_at: string;
+  likes_count?: number;
+  has_liked?: boolean;
 };
 
 // ID Formatting
@@ -68,9 +73,25 @@ export async function fetchChannels(): Promise<ForumChannel[]> {
   return data;
 }
 
-export async function fetchPosts(channelId?: string, tab: string = 'All Posts', searchQuery?: string): Promise<ForumPost[]> {
-  let query = supabase.from('forum_posts').select('*');
+export async function fetchPosts(
+  channelId?: string, 
+  tab: string = 'All Posts', 
+  searchQuery?: string,
+  currentUserId?: string
+): Promise<ForumPost[]> {
+  let query = supabase.from('forum_posts').select(`
+    *,
+    forum_comments(count),
+    forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
+  `);
   
+  if (currentUserId) {
+    // Note: We'll filter the user_vote join to ONLY the current user in the mapping step 
+    // because Supabase simple relational selects don't easily support cross-filtering in a single select query 
+    // without complex JSON logic OR separate calls. 
+    // For this context, fetching the upvote count and checking status is best.
+  }
+
   if (channelId) {
     query = query.eq('channel_id', channelId);
   }
@@ -83,16 +104,28 @@ export async function fetchPosts(channelId?: string, tab: string = 'All Posts', 
   if (tab === 'Trending' || tab === 'Fast Growing') {
     query = query.order('upvotes', { ascending: false });
   } else {
-    // Default to 'New' or 'All Posts' which is newest first
+  // Default to 'New' or 'All Posts' which is newest first
     query = query.order('created_at', { ascending: false });
   }
+
+  // Include comment counts (re-applying just in case query was reset)
+  // query = query.select('*, forum_comments(count), forum_post_upvotes(count)');
 
   const { data, error } = await query;
   if (error) {
     console.error("Error fetching posts:", error);
     return [];
   }
-  return data || [];
+  
+  return (data || []).map((post: any) => {
+    if (!post) return null;
+    return {
+      ...post,
+      comment_count: post.forum_comments?.[0]?.count || 0,
+      upvotes_count: post.forum_post_upvotes?.[0]?.count || 0,
+      has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false
+    };
+  }).filter(Boolean) as ForumPost[];
 }
 
 
@@ -142,24 +175,37 @@ export async function publishPost(
   return { data, error };
 }
 
-export async function fetchPostById(id: string): Promise<ForumPost | null> {
+export async function fetchPostById(id: string, currentUserId?: string): Promise<ForumPost | null> {
   const { data, error } = await supabase
     .from('forum_posts')
-    .select('*')
+    .select(`
+      *, 
+      forum_comments(count), 
+      forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
+    `)
     .eq('id', id)
     .single();
 
-  if (error) {
-    console.error("Error fetching post by ID:", error);
+  if (error || !data) {
+    if (error) console.error("Error fetching post by ID:", error);
     return null;
   }
-  return data;
+  
+  return {
+    ...(data as any),
+    comment_count: (data as any).forum_comments?.[0]?.count || 0,
+    upvotes_count: (data as any).forum_post_upvotes?.[0]?.count || 0,
+    has_upvoted: currentUserId ? ((data as any).user_vote || []).some((v: any) => v.user_id === currentUserId) : false
+  } as ForumPost;
 }
 
-export async function fetchComments(postId: string): Promise<ForumComment[]> {
+export async function fetchComments(postId: string, currentUserId?: string): Promise<ForumComment[]> {
   const { data, error } = await supabase
     .from('forum_comments')
-    .select('*')
+    .select(`
+      *,
+      forum_comment_likes(count)${currentUserId ? `, user_like:forum_comment_likes(comment_id, user_id)` : ''}
+    `)
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
@@ -167,7 +213,12 @@ export async function fetchComments(postId: string): Promise<ForumComment[]> {
     console.error("Error fetching comments:", error);
     return [];
   }
-  return data || [];
+  
+  return (data || []).map((comment: any) => ({
+    ...comment,
+    likes_count: comment.forum_comment_likes?.[0]?.count || 0,
+    has_liked: currentUserId ? (comment.user_like || []).some((l: any) => l.user_id === currentUserId) : false
+  })) as ForumComment[];
 }
 
 export async function publishComment(
@@ -203,7 +254,7 @@ export async function publishComment(
 export async function fetchUserPosts(userId: string): Promise<ForumPost[]> {
   const { data, error } = await supabase
     .from('forum_posts')
-    .select('*')
+    .select('*, forum_comments(count), forum_post_upvotes(count)')
     .eq('author_id', userId)
     .order('created_at', { ascending: false });
 
@@ -211,7 +262,15 @@ export async function fetchUserPosts(userId: string): Promise<ForumPost[]> {
     console.error("Error fetching user posts:", error);
     return [];
   }
-  return data || [];
+  
+  return (data || []).map((post: any) => {
+    if (!post) return null;
+    return {
+      ...post,
+      comment_count: post.forum_comments?.[0]?.count || 0,
+      upvotes_count: post.forum_post_upvotes?.[0]?.count || 0
+    };
+  }).filter(Boolean) as ForumPost[];
 }
 
 export async function deletePost(postId: string): Promise<{ error: Error | null }> {
@@ -250,4 +309,55 @@ export async function updatePost(
 
   return { data, error };
 }
+
+export async function toggleUpvote(postId: string, userId: string): Promise<{ error: Error | null }> {
+  // Check if vote exists
+  const { data: existingVote } = await supabase
+    .from('forum_post_upvotes')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existingVote) {
+    // Remove vote
+    const { error } = await supabase
+      .from('forum_post_upvotes')
+      .delete()
+      .eq('id', existingVote.id);
+    return { error };
+  } else {
+    // Add vote
+    const { error } = await supabase
+      .from('forum_post_upvotes')
+      .insert([{ post_id: postId, user_id: userId }]);
+    return { error };
+  }
+}
+
+export async function toggleCommentLike(commentId: string, userId: string): Promise<{ error: Error | null }> {
+  // Check if like exists
+  const { data: existingLike } = await supabase
+    .from('forum_comment_likes')
+    .select('id')
+    .eq('comment_id', commentId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existingLike) {
+    // Remove like
+    const { error } = await supabase
+      .from('forum_comment_likes')
+      .delete()
+      .eq('id', existingLike.id);
+    return { error };
+  } else {
+    // Add like
+    const { error } = await supabase
+      .from('forum_comment_likes')
+      .insert([{ comment_id: commentId, user_id: userId }]);
+    return { error };
+  }
+}
+
 

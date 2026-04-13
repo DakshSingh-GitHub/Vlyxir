@@ -9,6 +9,7 @@ import { fetchPostById, ForumPost } from '../forum-helper/helper';
 import { useRouter } from 'next/navigation';
 import { Loader2, Globe } from 'lucide-react';
 import { useAppContext } from '../../lib/context';
+import { useAuth } from '../../lib/auth-context';
 
 export default function ForumIDPage({
     params,
@@ -19,6 +20,7 @@ export default function ForumIDPage({
 
     const router = useRouter();
     const { isDark } = useAppContext();
+    const { user } = useAuth();
     const [post, setPost] = useState<ForumPost | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -30,14 +32,14 @@ export default function ForumIDPage({
         async function loadPost() {
             setIsLoading(true);
             const decodedId = decodeURIComponent(forum_id);
-            const data = await fetchPostById(decodedId);
+            const data = await fetchPostById(decodedId, user?.id);
             if (data) {
                 setPost(data);
             }
             setIsLoading(false);
         }
         loadPost();
-    }, [forum_id]);
+    }, [forum_id, user?.id]);
 
     // If a channel or tab is clicked in the sidebar, redirect to the main forum page
     const handleSidebarChange = (tab: string, channelId: string | null = null) => {

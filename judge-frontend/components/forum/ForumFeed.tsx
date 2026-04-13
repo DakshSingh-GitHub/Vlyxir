@@ -1,9 +1,10 @@
 "use client";
 
-import { Search, MessagesSquare } from "lucide-react";
+import { Search, MessagesSquare, MessageSquare, ArrowUp } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
+import { useAuth } from "@/app/lib/auth-context";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
@@ -24,6 +25,7 @@ export default function ForumFeed({
 }: ForumFeedProps) {
 
     const { isDark } = useAppContext();
+    const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [posts, setPosts] = useState<ForumPost[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
@@ -51,7 +53,7 @@ export default function ForumFeed({
                 const navTabs = ['All Posts', 'Trending', 'New', 'Fast Growing'];
                 const currentSort = navTabs.includes(activeTab) ? activeTab : 'All Posts';
                 
-                const data = await fetchPosts(activeChannelId || undefined, currentSort, debouncedSearchQuery);
+                const data = await fetchPosts(activeChannelId || undefined, currentSort, debouncedSearchQuery, user?.id);
                 if (isMounted) {
                     setPosts(data || []);
                 }
@@ -68,7 +70,7 @@ export default function ForumFeed({
         return () => {
             isMounted = false;
         };
-    }, [activeTab, activeChannelId, debouncedSearchQuery]);
+    }, [activeTab, activeChannelId, debouncedSearchQuery, user?.id]);
 
     const skeletonCount = 4;
 
@@ -180,11 +182,21 @@ export default function ForumFeed({
                                             #{tag}
                                         </span>
                                     ))}
-                                    {post.read_time_minutes > 0 && (
-                                        <span className={`text-[11px] font-semibold ml-auto ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                            {post.read_time_minutes} min read
-                                        </span>
-                                    )}
+                                    <div className="flex items-center gap-4 ml-auto">
+                                        <div className={`flex items-center gap-1.5 text-[11px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            <ArrowUp className={`w-3.5 h-3.5 ${post.has_upvoted ? 'text-indigo-500' : ''}`} />
+                                            {post.upvotes_count || 0}
+                                        </div>
+                                        <div className={`flex items-center gap-1.5 text-[11px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            <MessageSquare className="w-3.5 h-3.5" />
+                                            {post.comment_count || 0}
+                                        </div>
+                                        {post.read_time_minutes > 0 && (
+                                            <span className={`text-[11px] font-semibold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                                {post.read_time_minutes} min read
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </Link>

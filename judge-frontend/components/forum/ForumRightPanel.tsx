@@ -75,7 +75,7 @@ export default function ForumRightPanel() {
                             <p className={`text-xs font-bold leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                                 Login to participate in discussion and track your impact.
                             </p>
-                            <Link href="/auth/login" className="text-[10px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-400 transition-colors">
+                            <Link href="/login" className="text-[10px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-400 transition-colors">
                                 Sign In →
                             </Link>
                         </div>
