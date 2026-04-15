@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'VLYXIR',
-        short_name: 'VLYXIR',
+        name: 'Vlyxir',
+        short_name: 'Vlyxir',
         description: 'VLYXIR — A platform for online coding challenges and judge.',
         start_url: '/',
         display: 'standalone',

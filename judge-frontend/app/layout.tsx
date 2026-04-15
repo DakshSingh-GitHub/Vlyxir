@@ -17,27 +17,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "VLYXIR",
+  applicationName: "Vlyxir",
   title: {
-    default: "VLYXIR - Next-Gen Coding Platform",
-    template: "%s | VLYXIR",
+    default: "Vlyxir - Next-Gen Coding Platform",
+    template: "%s | Vlyxir",
   },
-  description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
+  description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
   openGraph: {
-    title: "VLYXIR",
-    description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
-    siteName: "VLYXIR",
+    title: "Vlyxir",
+    description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
+    siteName: "Vlyxir",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "VLYXIR",
-    description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
+    title: "Vlyxir",
+    description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "VLYXIR",
+    title: "Vlyxir",
   },
   formatDetection: {
     telephone: false,

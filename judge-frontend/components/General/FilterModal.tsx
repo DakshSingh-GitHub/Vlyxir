@@ -25,6 +25,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
         if (isOpen) {
             document.body.style.overflow = 'hidden';

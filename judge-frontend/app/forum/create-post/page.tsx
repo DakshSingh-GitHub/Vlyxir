@@ -201,7 +201,7 @@ export default function CreatePostPage() {
 
     return (
         <div className={`flex min-h-screen flex-col font-sans selection:bg-indigo-500/30 ${bgApp}`}>
-            <div className="mx-auto w-full max-w-[1400px] px-6 py-12 flex-1 flex flex-col gap-8">
+            <div className="mx-auto w-full max-w-350 px-6 py-12 flex-1 flex flex-col gap-8">
 
                 <header className="flex flex-col w-full relative">
                     <div className="absolute -top-8 left-0">
@@ -264,7 +264,7 @@ export default function CreatePostPage() {
                             />
                         </div>
 
-                        <div className={`flex flex-col relative border rounded-2xl min-h-[480px] overflow-hidden ${bgCard}`}>
+                        <div className={`flex flex-col relative border rounded-2xl min-h-120 overflow-hidden ${bgCard}`}>
                             <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
