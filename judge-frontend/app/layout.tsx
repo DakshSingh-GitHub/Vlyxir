@@ -17,38 +17,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: "CodeJudge",
+  applicationName: "VLYXIR",
   title: {
-    default: "CodeJudge",
-    template: "%s | CodeJudge",
+    default: "VLYXIR",
+    template: "%s | VLYXIR",
   },
-  description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
+  description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
   openGraph: {
-    title: "CodeJudge",
-    description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
-    siteName: "CodeJudge",
+    title: "VLYXIR",
+    description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
+    siteName: "VLYXIR",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "CodeJudge",
-    description: "CodeJudge — a fast, secure platform for coding, execution, and evaluation",
+    title: "VLYXIR",
+    description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "CodeJudge",
+    title: "VLYXIR",
   },
   formatDetection: {
     telephone: false,
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
+      { url: "/favicon.png" },
       { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
       { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
+    shortcut: "/favicon.png",
     apple: "/apple-touch-icon.png",
   },
 };

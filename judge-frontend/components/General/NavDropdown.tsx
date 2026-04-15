@@ -45,7 +45,7 @@ export default function NavDropdown() {
             subtext: "Now look at what you did",
             aliases: [CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH]
         },
-        { name: "Code Home", path: "/", icon: "👋", subtext: "See you here!" }
+        { name: "VLYXIR Home", path: "/", icon: "👋", subtext: "See you here!" }
     ];
 
     const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];

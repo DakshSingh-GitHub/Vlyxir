@@ -115,8 +115,20 @@ export default function Home() {
                         variants={itemVariants}
                         className={heroSubtitleClassName}
                     >
-                        CodeJudge — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
+                        VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
                     </motion.p>
+
+                    <motion.div
+                        variants={itemVariants}
+                        className="flex items-center justify-center gap-4 mb-12 flex-wrap"
+                    >
+                        {['Versatile', 'Logic', 'Yield', 'X-platform', 'Intelligent', 'Runtime'].map((word, i) => (
+                            <span key={word} className={`text-xs font-bold tracking-widest uppercase ${isDark ? "text-slate-500" : "text-slate-400"} flex items-center gap-2`}>
+                                <span className={isDark ? "text-indigo-400" : "text-indigo-600"}>{word[0]}</span>{word.slice(1)}
+                                {i < 5 && <span className="opacity-30">•</span>}
+                            </span>
+                        ))}
+                    </motion.div>
 
                     <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
                         <Link
@@ -135,7 +147,7 @@ export default function Home() {
                                 rel="noopener noreferrer"
                                 className={secondaryButtonClassName}
                             >
-                                <Github className="w-5 h-5" /> GitHub
+                                <Github className="w-5 h-5" /> VLYXIR
                             </Link>
                             <Link
                                 href="/docs"

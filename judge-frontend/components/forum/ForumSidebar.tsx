@@ -57,7 +57,7 @@ export default function ForumSidebar({
                     />
                 </div>
                 <span className={`font-bold text-xl tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Code<span className="text-indigo-500">Judge</span>
+                    VLY<span className="text-indigo-500">XIR</span>
                 </span>
             </div>
 

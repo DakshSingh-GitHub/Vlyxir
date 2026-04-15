@@ -45,7 +45,7 @@ export default function NavDropdown() {
             subtext: "Now look at what you did",
             aliases: [CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH]
         },
-        { name: "Code Home", path: "/", icon: "👋", subtext: "See you here!" }
+        { name: "VLYXIR Home", path: "/", icon: "👋", subtext: "See you here!" }
     ];
 
     const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];
@@ -108,8 +108,12 @@ export default function NavDropdown() {
                     : "bg-white border-slate-200 text-slate-900 shadow-sm hover:shadow-[0_0_12px_rgba(99,102,241,0.18)]"
                     }`}
             >
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-lg group-hover:scale-110 transition-transform ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
-                    {currentRoute.icon}
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center overflow-hidden group-hover:scale-110 transition-transform ${isDark ? "bg-slate-800" : "bg-slate-100"}`}>
+                    {currentRoute.icon === "vlyxir-logo" ? (
+                        <img src="/vlyxir/logo.png" alt="VLYXIR Logo" className="w-full h-full object-contain" />
+                    ) : (
+                        <span className="text-lg">{currentRoute.icon}</span>
+                    )}
                 </div>
                 <span className={`text-xl font-black tracking-tighter ${isDark ? "text-white" : "text-slate-900"}`}>
                     {currentRoute.name}
@@ -148,7 +152,13 @@ export default function NavDropdown() {
                                         : "text-slate-500 hover:text-indigo-600 hover:bg-slate-50")
                                     }`}
                             >
-                                <span className="text-2xl">{route.icon}</span>
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+                                    {route.icon === "vlyxir-logo" ? (
+                                        <img src="/vlyxir/logo.png" alt="VLYXIR Logo" className="w-full h-full object-contain" />
+                                    ) : (
+                                        <span className="text-2xl">{route.icon}</span>
+                                    )}
+                                </div>
                                 <div className="flex flex-col items-start text-left">
                                     <span className="font-bold text-[15px] tracking-tight">{route.name}</span>
                                     <span className={`text-[10px] leading-tight font-medium ${isDark ? "opacity-60" : "opacity-70"}`}>
