@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import {
     ChevronLeft,
     FileText,
@@ -17,7 +18,8 @@ import {
 } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useAuth } from "@/app/lib/auth-context";
-import { fetchChannels, fetchPostById, updatePost, ForumChannel, ForumPost } from "@/app/forum/forum-helper/helper";
+import { fetchChannels, fetchPostById, updatePost, ForumChannel, ForumPost, checkProfanity } from "@/app/forum/forum-helper/helper";
+import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 
 const COMMON_TAGS = [
     "bug", "feature-request", "question", "discussion", "help-wanted", "solved", "tutorial", "announcement",
@@ -27,6 +29,8 @@ const COMMON_TAGS = [
     "frontend", "backend", "fullstack", "mobile", "devops", "ai", "ml", "security", "performance",
     "leetcode", "algorithms", "data-structures", "interview-prep"
 ];
+
+
 
 interface EditPostPageProps {
     params: Promise<{ post_id: string }>;
@@ -52,6 +56,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     const [showDropdown, setShowDropdown] = useState(false);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [showProfanityModal, setShowProfanityModal] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -159,6 +164,10 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         }
         if (!selectedChannelId) {
             setError("Please select a destination channel.");
+            return;
+        }
+        if (checkProfanity(`${title} ${body}`)) {
+            setShowProfanityModal(true);
             return;
         }
 
@@ -425,6 +434,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     </div>
                 </div>
             </div>
+            <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
         </div>
     );
 }

@@ -1,4 +1,6 @@
 import { supabase } from "../../lib/supabase/client";
+import leoProfanity from "leo-profanity";
+
 
 // Types
 export type ForumPost = {
@@ -370,3 +372,11 @@ export async function deleteComment(commentId: string): Promise<{ error: Error |
 }
 
 
+
+
+// Profanity Logic
+leoProfanity.loadDictionary();
+
+export function checkProfanity(text: string): boolean {
+  return leoProfanity.check(text);
+}

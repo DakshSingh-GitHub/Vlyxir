@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2 } from "lucide-react";
-import { ForumComment, toggleCommentLike, deleteComment } from "../../app/forum/forum-helper/helper";
+import { ForumComment, toggleCommentLike, deleteComment, checkProfanity } from "../../app/forum/forum-helper/helper";
+import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
+
 import { useAppContext } from "../../app/lib/context";
 import { useAuth } from "../../app/lib/auth-context";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
@@ -53,6 +55,8 @@ function CommentItem({
     const [isLiking, setIsLiking] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [showProfanityModal, setShowProfanityModal] = useState(false);
+
 
     const isAuthor = user?.id === comment.author_id;
     const isPostOwner = user?.id === postOwnerId;
@@ -167,8 +171,15 @@ function CommentItem({
                                     <button 
                                         onClick={async () => {
                                             if (!replyBody.trim()) return;
+                                            
+                                            if (checkProfanity(replyBody)) {
+                                                setShowProfanityModal(true);
+                                                return;
+                                            }
+
                                             setIsSubmitting(true);
                                             await onSubmitReply?.(comment.id, replyBody.trim());
+
                                             setIsSubmitting(false);
                                             setReplyBody("");
                                         }}
@@ -201,7 +212,9 @@ function CommentItem({
                 onConfirm={handleDelete}
                 isDeleting={isDeleting}
             />
+            <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
         </div>
+
     );
 }
 

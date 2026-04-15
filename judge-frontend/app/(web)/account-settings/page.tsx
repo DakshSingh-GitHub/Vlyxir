@@ -18,6 +18,9 @@ import {
   saveAccountProfile,
   type ProfileRecord,
 } from "./helper/acc_helper";
+import { checkProfanity } from "@/app/forum/forum-helper/helper";
+import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
+
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -29,6 +32,8 @@ export default function AccountSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showProfanityModal, setShowProfanityModal] = useState(false);
+
 
   const shellClass = isDark
     ? "relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100"
@@ -99,7 +104,13 @@ export default function AccountSettingsPage() {
     event.preventDefault();
     if (!user || !profile) return;
 
+    if (checkProfanity(`${formValues.full_name} ${formValues.username} ${formValues.bio}`)) {
+      setShowProfanityModal(true);
+      return;
+    }
+
     setError(null);
+
     setSuccess(null);
     setIsSaving(true);
 
@@ -509,12 +520,13 @@ export default function AccountSettingsPage() {
                 </div>
               </div>
               <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                You can update your full name, username, bio, and country from this page. Email and password remain managed by Supabase authentication.
               </p>
             </div>
           </div>
         </div>
+        <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
       </div>
     </div>
   );
 }
+

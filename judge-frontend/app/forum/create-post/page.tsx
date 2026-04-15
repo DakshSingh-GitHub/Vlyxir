@@ -1,13 +1,14 @@
+/* eslint-disable prefer-const */
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import {
     ChevronLeft,
     FileText,
     Hash,
-    Info,
     PenSquare,
     Send,
     Sparkles,
@@ -16,7 +17,9 @@ import {
 } from "lucide-react";
 import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
-import { fetchChannels, publishPost, ForumChannel } from "../forum-helper/helper";
+import { fetchChannels, publishPost, ForumChannel, checkProfanity } from "../forum-helper/helper";
+import ProfanityModal from "../forum-helper/ProfanityModal";
+import CreatePostErrorModal from "../forum-helper/CreatePostErrorModal";
 
 const COMMON_TAGS = [
     "bug", "feature-request", "question", "discussion", "help-wanted", "solved", "tutorial", "announcement",
@@ -26,6 +29,8 @@ const COMMON_TAGS = [
     "frontend", "backend", "fullstack", "mobile", "devops", "ai", "ml", "security", "performance",
     "leetcode", "algorithms", "data-structures", "interview-prep"
 ];
+
+
 
 export default function CreatePostPage() {
     const { isDark } = useAppContext();
@@ -39,12 +44,14 @@ export default function CreatePostPage() {
     const [tags, setTags] = useState<string[]>([]);
     const [tagInput, setTagInput] = useState("");
     const [isPublishing, setIsPublishing] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
     const [isLoadingChannels, setIsLoadingChannels] = useState(true);
     const [showDropdown, setShowDropdown] = useState(false);
     const [filteredTags, setFilteredTags] = useState<string[]>([]);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [showProfanityModal, setShowProfanityModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -124,20 +131,26 @@ export default function CreatePostPage() {
 
     const handlePublish = async () => {
         if (!title.trim() || !body.trim()) {
-            setError("Title and content are required to illuminate the forum.");
+            setErrorMessage("Title and content are required to illuminate the forum.");
+            setShowErrorModal(true);
             return;
         }
         if (!selectedChannelId) {
-            setError("Please select a destination channel.");
+            setErrorMessage("Please select a destination channel.");
+            setShowErrorModal(true);
             return;
         }
         if (!user) {
-            setError("Authentication required to share your wisdom.");
+            setErrorMessage("Authentication required to share your wisdom.");
+            setShowErrorModal(true);
+            return;
+        }
+        if (checkProfanity(`${title} ${body}`)) {
+            setShowProfanityModal(true);
             return;
         }
 
         setIsPublishing(true);
-        setError(null);
 
         const { error: publishError } = await publishPost(
             title.trim(),
@@ -150,7 +163,8 @@ export default function CreatePostPage() {
         setIsPublishing(false);
 
         if (publishError) {
-            setError(publishError.message || "A cosmic interference occurred. Please try again.");
+            setErrorMessage(publishError.message || "A cosmic interference occurred. Please try again.");
+            setShowErrorModal(true);
         } else {
             router.refresh();
             router.push("/forum");
@@ -230,13 +244,6 @@ export default function CreatePostPage() {
                         </div>
                     </div>
                 </header>
-
-                {error && (
-                    <div className={`mt-2 flex items-start gap-4 rounded-2xl border p-4 text-sm font-semibold ${isDark ? "border-red-900/50 bg-red-950/30 text-red-400" : "border-red-200 bg-red-50 text-red-800"}`}>
-                        <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                        <span>{error}</span>
-                    </div>
-                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8 items-stretch">
                     
@@ -478,6 +485,12 @@ export default function CreatePostPage() {
                 </div>
 
             </div>
+            <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
+            <CreatePostErrorModal
+                isOpen={showErrorModal}
+                message={errorMessage}
+                onClose={() => setShowErrorModal(false)}
+            />
         </div>
     );
 }

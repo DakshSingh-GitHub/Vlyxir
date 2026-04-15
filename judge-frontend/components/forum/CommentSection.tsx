@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { ForumComment, fetchComments, publishComment } from "../../app/forum/forum-helper/helper";
+import { ForumComment, fetchComments, publishComment, checkProfanity } from "../../app/forum/forum-helper/helper";
+import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
+
 import { useAppContext } from "../../app/lib/context";
 import { useAuth } from "../../app/lib/auth-context";
 import { Loader2, Send, MessageSquare, ArrowDown } from "lucide-react";
@@ -21,6 +23,8 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [topLevelBody, setTopLevelBody] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showProfanityModal, setShowProfanityModal] = useState(false);
+
     const inputRef = useRef<HTMLDivElement>(null);
 
     const scrollToInput = () => {
@@ -45,7 +49,14 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
 
     const handleTopLevelSubmit = async () => {
         if (!topLevelBody.trim() || !user) return;
+
+        if (checkProfanity(topLevelBody)) {
+            setShowProfanityModal(true);
+            return;
+        }
+
         setIsSubmitting(true);
+
         const { error } = await publishComment(postId, topLevelBody.trim(), user);
         setIsSubmitting(false);
         if (!error) {
@@ -154,6 +165,8 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
                     </div>
                 )}
             </div>
+            <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
         </div>
+
     );
 }
