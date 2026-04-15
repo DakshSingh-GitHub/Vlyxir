@@ -44,6 +44,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     const router = useRouter();
 
     const [title, setTitle] = useState("");
+    const [authorUsername, setAuthorUsername] = useState("");
     const [body, setBody] = useState("");
     const [channels, setChannels] = useState<ForumChannel[]>([]);
     const [selectedChannelId, setSelectedChannelId] = useState("");
@@ -82,6 +83,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 
                 if (postData) {
                     setTitle(postData.title);
+                    setAuthorUsername(postData.author_username);
                     setBody(postData.body);
                     setSelectedChannelId(postData.channel_id);
                     setTags(postData.tags || []);
@@ -174,12 +176,13 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         setIsSaving(true);
         setError(null);
 
-        const { error: updateError } = await updatePost(
+        const { error: updateError, newId } = await updatePost(
             post_id,
             title.trim(),
             body.trim(),
             selectedChannelId,
-            tags
+            tags,
+            authorUsername
         );
 
         setIsSaving(false);
@@ -188,7 +191,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
             setError(updateError.message || "A cosmic interference occurred. Please try again.");
         } else {
             router.refresh();
-            router.push(`/forum/${post_id}`);
+            router.push(`/forum/${newId || post_id}`);
         }
     };
 

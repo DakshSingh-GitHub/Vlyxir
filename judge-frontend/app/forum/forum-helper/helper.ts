@@ -44,8 +44,24 @@ export type ForumComment = {
 };
 
 // ID Formatting
-export function generateForumId(username: string): string {
+export function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w-]+/g, '')    // Remove all non-word chars
+    .replace(/--+/g, '-')      // Replace multiple - with single -
+    .replace(/^-+/, '')        // Trim - from start of text
+    .replace(/-+$/, '');       // Trim - from end of text
+}
+
+export function generateForumId(username: string, title?: string): string {
   const rand = Math.floor(Math.random() * 1_000_000_000).toString().padStart(9, '0');
+  if (title) {
+    const slug = slugify(title);
+    return slug ? `${username}:${slug}-${rand}` : `${username}:${rand}`;
+  }
   return `${username}:${rand}`;
 }
 
@@ -148,7 +164,7 @@ export async function publishPost(
   const rawUsername = user.user_metadata?.username || user.email?.split('@')[0] || "user";
   // remove any colons to strictly conform to the format
   const safeUsername = rawUsername.replace(/:/g, '');
-  const id = generateForumId(safeUsername);
+  const id = generateForumId(safeUsername, title);
 
   // estimate read time (rough estimate: 200 words per minute)
   const wordCount = body.trim().split(/\s+/).length;
@@ -290,12 +306,40 @@ export async function updatePost(
   title: string,
   body: string,
   channel_id: string,
-  tags: string[]
-): Promise<{ data: ForumPost | null; error: Error | null }> {
+  tags: string[],
+  author_username: string
+): Promise<{ data: ForumPost | null; error: Error | null; newId?: string }> {
   // estimate read time (rough estimate: 200 words per minute)
   const wordCount = body.trim().split(/\s+/).length;
   const read_time_minutes = Math.max(1, Math.ceil(wordCount / 200));
 
+  // Determine if ID needs to change based on the new title
+  const parts = id.split(':');
+  const oldRand = parts.length > 1 ? parts[parts.length - 1].split('-').pop() : Math.floor(Math.random() * 1_000_000_000).toString().padStart(9, '0');
+  const newSlug = slugify(title);
+  const newId = newSlug ? `${author_username}:${newSlug}-${oldRand}` : `${author_username}:${oldRand}`;
+
+  if (newId !== id) {
+    // If ID changed, we perform the update which Cascades to other tables if ON UPDATE CASCADE is set.
+    // If it's not set, this might fail unless handled manually.
+    const { data, error } = await supabase
+      .from('forum_posts')
+      .update({
+        id: newId,
+        title,
+        body,
+        channel_id,
+        tags,
+        read_time_minutes,
+      })
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    return { data, error, newId: error ? undefined : newId };
+  }
+
+  // If ID didn't change, just update the rest
   const { data, error } = await supabase
     .from('forum_posts')
     .update({
