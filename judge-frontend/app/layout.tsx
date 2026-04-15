@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   applicationName: "VLYXIR",
   title: {
-    default: "VLYXIR",
+    default: "VLYXIR - Next-Gen Coding Platform",
     template: "%s | VLYXIR",
   },
   description: "VLYXIR — a fast, secure platform for coding, execution, and evaluation",
