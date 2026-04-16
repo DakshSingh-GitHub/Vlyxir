@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     template: "%s | Vlyxir",
   },
   description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
+  verification: {
+    google: 'xkk6SWB7s8uypKr5DN6f1s9xTs0hZEBxjk-1Z4k_Esc',
+  },
   openGraph: {
     title: "Vlyxir",
     description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",

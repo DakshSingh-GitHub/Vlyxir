@@ -117,6 +117,7 @@ export default function CountryDropdown({
   useEffect(() => {
     if (!isOpen) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery("");
     setActiveIndex(0);
 
@@ -130,6 +131,7 @@ export default function CountryDropdown({
   useEffect(() => {
     if (!value) return;
     const index = filteredOptions.findIndex((option) => option === value);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveIndex(index >= 0 ? index : 0);
   }, [filteredOptions, value]);
 

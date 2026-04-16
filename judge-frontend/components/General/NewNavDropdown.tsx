@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -24,28 +25,28 @@ export default function NavDropdown() {
     const arrowRef = useRef<SVGSVGElement>(null);
 
     const routes: RouteItem[] = [
+        { name: "VLYXIR Home", path: "/", icon: "👋", subtext: "See you here!" },
         {
-            name: "Code Judge",
+            name: "VLYXIR Arena",
             path: codeJudgePath,
-            icon: "⚖️",
+            icon: "⚔️",
             subtext: "Select a problem and start solving!",
             aliases: [CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH]
         },
         {
-            name: "Code IDE",
+            name: "VLYXIR Forge",
             path: codeIdePath,
             icon: "💻",
             subtext: "Think and Build!",
             aliases: [CODE_IDE_PATH, CODE_IDE_MDE_PATH]
         },
         {
-            name: "Code Analysis",
+            name: "VLYXIR Insights",
             path: codeAnalysisPath,
             icon: "📃",
             subtext: "Now look at what you did",
             aliases: [CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH]
         },
-        { name: "VLYXIR Home", path: "/", icon: "👋", subtext: "See you here!" }
     ];
 
     const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];
@@ -133,7 +134,7 @@ export default function NavDropdown() {
             {isOpen && (
                 <div
                     ref={menuRef}
-                    className={`absolute top-full left-0 mt-3 w-80 backdrop-blur-2xl border rounded-[2rem] shadow-2xl p-3 z-50 overflow-hidden opacity-0 ${isDark
+                    className={`absolute top-full left-0 mt-3 w-80 backdrop-blur-2xl border rounded-4xl shadow-2xl p-3 z-50 overflow-hidden opacity-0 ${isDark
                         ? "bg-slate-950/95 border-slate-800"
                         : "bg-white/95 border-slate-200"
                         }`}
