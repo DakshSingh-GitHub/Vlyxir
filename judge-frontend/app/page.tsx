@@ -160,13 +160,13 @@ export default function Home() {
                 </motion.section>
 
                 {/* Platform Selection */}
-                    <motion.section
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        className="grid md:grid-cols-2 gap-8 mb-32"
-                    >
+                <motion.section
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid md:grid-cols-2 gap-8 mb-32"
+                >
                     <Link href={codeJudgePath} className="group">
                         <motion.div
                             variants={itemVariants}
@@ -179,7 +179,7 @@ export default function Home() {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${isDark ? "bg-indigo-600 shadow-indigo-600/20" : "bg-indigo-50 shadow-indigo-500/10 border border-indigo-100"}`}>
                                     <Scale className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className={cardTitleClassName}>Code Judge</h3>
+                                <h3 className={cardTitleClassName}>VLYXIR Arena</h3>
                                 <p className={cardBodyClassName}>
                                     Practice with 50+ hand-picked algorithmic problems. Experience instant evaluation with our industrial-grade sandbox runtime.
                                 </p>
@@ -202,7 +202,7 @@ export default function Home() {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${isDark ? "bg-purple-600 shadow-purple-600/20" : "bg-purple-50 shadow-purple-500/10 border border-purple-100"}`}>
                                     <Code className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className={cardTitleClassName}>Code IDE</h3>
+                                <h3 className={cardTitleClassName}>VLYXIR Forge</h3>
                                 <p className={cardBodyClassName}>
                                     A versatile environment to think, prototype and build. Write code in multiple languages with professional-grade editor features.
                                 </p>
@@ -225,7 +225,7 @@ export default function Home() {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${isDark ? "bg-emerald-600 shadow-emerald-600/20" : "bg-emerald-50 shadow-emerald-500/10 border border-emerald-100"}`}>
                                     <BrainCircuit className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className={cardTitleClassName}>Code Analysis</h3>
+                                <h3 className={cardTitleClassName}>VLYXIR Insight</h3>
                                 <p className={cardBodyClassName}>
                                     A platform integrated for the users to analyse their code, Learn how good your code is and Improve them !
                                 </p>
@@ -292,7 +292,7 @@ export default function Home() {
                     </div>
                 </motion.section>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 }
