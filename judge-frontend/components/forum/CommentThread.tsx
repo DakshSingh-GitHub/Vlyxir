@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2 } from "lucide-react";
 import { ForumComment, toggleCommentLike, deleteComment, checkProfanity } from "../../app/forum/forum-helper/helper";
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
+import Link from "next/link";
 
 import { useAppContext } from "../../app/lib/context";
 import { useAuth } from "../../app/lib/auth-context";
@@ -34,15 +35,15 @@ interface CommentItemProps {
     comments: ForumComment[];
 }
 
-function CommentItem({ 
-    comment, 
-    isDark, 
+function CommentItem({
+    comment,
+    isDark,
     postOwnerId,
-    onReply, 
-    replyingTo, 
-    replyBody, 
-    setReplyBody, 
-    isSubmitting, 
+    onReply,
+    replyingTo,
+    replyBody,
+    setReplyBody,
+    isSubmitting,
     setIsSubmitting,
     onSubmitReply,
     onCancelReply,
@@ -97,14 +98,22 @@ function CommentItem({
     return (
         <div className="group animate-in fade-in slide-in-from-left-2 duration-300">
             <div className="flex gap-3">
-                <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-xs uppercase shadow-sm ${isDark ? 'bg-slate-800 text-indigo-400' : 'bg-slate-100 text-indigo-600'}`}>
-                    {comment.author_username?.charAt(0) || <User className="w-4 h-4" />}
-                </div>
+                <Link
+                    href={`/user/${comment.author_username}`}
+                    className="flex-shrink-0"
+                >
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs uppercase shadow-sm transition-all hover:scale-110 active:scale-95 ${isDark ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'bg-slate-100 text-indigo-600 border border-slate-200'}`}>
+                        {comment.author_username?.charAt(0) || <User className="w-4 h-4" />}
+                    </div>
+                </Link>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-sm font-bold truncate ${isDark ? 'text-slate-200' : 'text-slate-900'}`}>
+                        <Link
+                            href={`/user/${comment.author_username}`}
+                            className={`text-sm font-bold truncate transition-colors hover:text-indigo-500 ${isDark ? 'text-slate-200' : 'text-slate-900'}`}
+                        >
                             {comment.author_username}
-                        </span>
+                        </Link>
                         <span className={`text-[10px] whitespace-nowrap ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                             {new Date(comment.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
@@ -112,9 +121,9 @@ function CommentItem({
                     <p className={`text-sm leading-relaxed break-words ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         {comment.body}
                     </p>
-                    
+
                     <div className="mt-2 flex items-center gap-4">
-                        <button 
+                        <button
                             onClick={handleLike}
                             disabled={isLiking}
                             className={`flex items-center gap-1 text-[11px] font-bold tracking-tight transition-all hover:scale-110 active:scale-90 ${hasLiked ? 'text-indigo-500' : isDark ? 'text-slate-500 hover:text-indigo-400' : 'text-slate-400 hover:text-indigo-600'}`}
@@ -123,7 +132,7 @@ function CommentItem({
                             {likes > 0 ? likes : 'LIKE'}
                         </button>
 
-                        <button 
+                        <button
                             onClick={() => onReply && onReply(comment.id)}
                             className={`flex items-center gap-1.5 text-[11px] font-bold tracking-tight hover:text-indigo-500 transition-colors ${isDark ? 'text-slate-500' : 'text-slate-400'}`}
                         >
@@ -132,7 +141,7 @@ function CommentItem({
                         </button>
 
                         {canDelete && (
-                            <button 
+                            <button
                                 onClick={() => setIsDeleteModalOpen(true)}
                                 disabled={isDeleting}
                                 title={isPostOwner && !isAuthor ? "Delete as Post Owner" : "Delete Comment"}
@@ -159,7 +168,7 @@ function CommentItem({
                                     autoFocus
                                 />
                                 <div className="flex flex-col gap-1 p-1">
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setReplyBody("");
                                             onCancelReply?.();
@@ -168,10 +177,10 @@ function CommentItem({
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={async () => {
                                             if (!replyBody.trim()) return;
-                                            
+
                                             if (checkProfanity(replyBody)) {
                                                 setShowProfanityModal(true);
                                                 return;
@@ -195,9 +204,9 @@ function CommentItem({
                 </div>
             </div>
             {/* Recursive call for replies */}
-            <CommentThread 
-                comments={comments} 
-                parentId={comment.id} 
+            <CommentThread
+                comments={comments}
+                parentId={comment.id}
                 postOwnerId={postOwnerId}
                 onReply={onReply}
                 replyingTo={replyingTo}
@@ -206,7 +215,7 @@ function CommentItem({
                 onDeleteComment={onDeleteComment}
             />
 
-            <DeleteConfirmationModal 
+            <DeleteConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleDelete}
@@ -218,9 +227,9 @@ function CommentItem({
     );
 }
 
-export default function CommentThread({ 
-    comments, 
-    parentId = null, 
+export default function CommentThread({
+    comments,
+    parentId = null,
     onReply,
     replyingTo,
     onSubmitReply,
@@ -231,16 +240,16 @@ export default function CommentThread({
     const { isDark } = useAppContext();
     const [replyBody, setReplyBody] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    
+
     // Filter comments for the current level
     const currentComments = comments.filter(c => c.parent_id === parentId);
-    
+
     if (currentComments.length === 0) return null;
 
     return (
         <div className={`space-y-4 ${parentId ? 'ml-4 md:ml-8 mt-4 border-l-2 pl-4 md:pl-6' : ''} ${isDark ? 'border-slate-800/50' : 'border-slate-100'}`}>
             {currentComments.map((comment) => (
-                <CommentItem 
+                <CommentItem
                     key={comment.id}
                     comment={comment}
                     isDark={isDark}

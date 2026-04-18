@@ -36,9 +36,9 @@ Implement the main profile page component.
 
 ## Open Questions
 
-1. **Public vs Private**: Should this page be accessible to everyone (public) or only logged-in users? (Assuming public for a "profile" page).
-2. **Ranking System**: Do you have a specific formula for "Level" or "Rank"? If not, I'll design a sensible default based on the number of problems solved.
-3. **Avatar**: The `profiles` table doesn't seem to have an `avatar_url` column in the helper. Should I add support for avatars or use generated initials for now?
+1. **Public vs Private**: Should this page be accessible to everyone (public) or only logged-in users? (Assuming public for a "profile" page). -> Only logged in users
+2. **Ranking System**: Do you have a specific formula for "Level" or "Rank"? If not, I'll design a sensible default based on the number of problems solved. -> No level system
+3. **Avatar**: The `profiles` table doesn't seem to have an `avatar_url` column in the helper. Should I add support for avatars or use generated initials for now? -> Use generated initials
 
 ## Verification Plan
 

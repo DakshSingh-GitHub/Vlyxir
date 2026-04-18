@@ -28,7 +28,7 @@ export default function PostDetail({ post }: PostDetailProps) {
             window.location.href = '/login';
             return;
         }
-        
+
         setIsVoting(true);
         // Optimistic update
         const newHasUpvoted = !hasUpvoted;
@@ -47,7 +47,7 @@ export default function PostDetail({ post }: PostDetailProps) {
 
     return (
         <div className="flex-1 flex flex-col min-w-0 overflow-y-auto px-4 py-8 md:px-12">
-            <Link 
+            <Link
                 href="/forum"
                 className={`flex items-center gap-2 mb-8 text-xs font-black tracking-widest transition-all w-fit ${isDark ? 'text-slate-500 hover:text-indigo-400' : 'text-slate-400 hover:text-indigo-600'}`}
             >
@@ -56,19 +56,22 @@ export default function PostDetail({ post }: PostDetailProps) {
             </Link>
 
             <article className="mb-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg ${isDark ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}>
+                <Link
+                    href={`/user/${post.author_username}`}
+                    className="flex items-center gap-3 mb-8 group w-fit"
+                >
+                    <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg transition-all group-hover:scale-110 group-hover:shadow-indigo-500/20 ${isDark ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
                         {post.author_username?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="min-w-0">
-                        <div className={`text-sm font-black truncate ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+                        <div className={`text-sm font-black truncate transition-colors group-hover:text-indigo-400 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
                             {post.author_username}
                         </div>
                         <div className={`text-[11px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                             {new Date(post.created_at).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                     </div>
-                </div>
+                </Link>
 
                 <h1 className={`text-3xl md:text-5xl font-black mb-6 tracking-tighter leading-[1.1] ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     {post.title}
@@ -77,13 +80,12 @@ export default function PostDetail({ post }: PostDetailProps) {
                 {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-10">
                         {post.tags.map((tag, i) => (
-                            <span 
-                                key={i} 
-                                className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border shadow-sm transition-all hover:scale-105 cursor-default ${
-                                    isDark 
-                                    ? 'bg-slate-950 border-slate-800 text-slate-400' 
-                                    : 'bg-slate-50 border-slate-200 text-slate-500'
-                                }`}
+                            <span
+                                key={i}
+                                className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border shadow-sm transition-all hover:scale-105 cursor-default ${isDark
+                                        ? 'bg-slate-950 border-slate-800 text-slate-400'
+                                        : 'bg-slate-50 border-slate-200 text-slate-500'
+                                    }`}
                             >
                                 #{tag}
                             </span>
@@ -102,13 +104,12 @@ export default function PostDetail({ post }: PostDetailProps) {
                     <button
                         onClick={handleVote}
                         disabled={isVoting}
-                        className={`group flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all active:scale-95 ${
-                            hasUpvoted
-                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/30'
-                            : isDark 
-                                ? 'bg-slate-900 border-slate-800 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-400' 
-                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-600'
-                        }`}
+                        className={`group flex items-center gap-3 px-6 py-3 rounded-2xl border transition-all active:scale-95 ${hasUpvoted
+                                ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/30'
+                                : isDark
+                                    ? 'bg-slate-900 border-slate-800 text-slate-400 hover:border-indigo-500/50 hover:text-indigo-400'
+                                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-600'
+                            }`}
                     >
                         {isVoting ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
@@ -128,7 +129,7 @@ export default function PostDetail({ post }: PostDetailProps) {
                         {upvoteCount === 1 ? '1 upvote' : `${upvoteCount} upvotes`}
                     </div>
                 </div>
-                
+
                 <CommentSection postId={post.id} postOwnerId={post.author_id} />
             </article>
         </div>
