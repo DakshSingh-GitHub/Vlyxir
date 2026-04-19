@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import {motion, Variants} from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 import {
     Trophy,
@@ -53,7 +53,7 @@ export default function MeetDeveloper() {
     };
 
     const itemVariants: Variants = {
-        hidden: {y: 20, opacity: 0},
+        hidden: { y: 20, opacity: 0 },
         visible: {
             y: 0,
             opacity: 1,
@@ -69,11 +69,11 @@ export default function MeetDeveloper() {
             className="relative flex-1 overflow-y-auto overflow-x-hidden bg-white dark:bg-gray-950 transition-colors duration-500">
             {/* Ambient Background Elements */}
             <div
-                className="absolute top-0 left-1/4 w-120 h-120 bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none"/>
+                className="absolute top-0 left-1/4 w-120 h-120 bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
             <div
-                className="absolute bottom-1/4 right-0 w-100 h-100 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none"/>
+                className="absolute bottom-1/4 right-0 w-100 h-100 bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
             <div
-                className="absolute top-1/2 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"/>
+                className="absolute top-1/2 left-0 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
 
             {/* Back to Home Button */}
             <motion.div
@@ -92,7 +92,7 @@ export default function MeetDeveloper() {
             </motion.div>
 
 
-            <motion.div 
+            <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -103,22 +103,22 @@ export default function MeetDeveloper() {
                     variants={itemVariants}
                     className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter mb-8 leading-[0.95] md:leading-[0.9] text-center"
                 >
-                    Meet the Developer<br/>
+                    Meet the Developer<br />
                     <span
                         className="bg-clip-text text-transparent bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400">
-                                Daksh Singh
-                            </span>
+                        Daksh Singh
+                    </span>
                 </motion.h1>
                 <motion.p
                     variants={itemVariants}
                     className="text-xl md:text-lg lg:text-xl font-bold mt-10 text-center leading-relaxed"
                 >
-                    Full-stack developer specializing in React, Next.js, and scalable web applications. <br/> Passionate
+                    Full-stack developer specializing in React, Next.js, and scalable web applications. <br /> Passionate
                     about building high-performance digital products.
                 </motion.p>
             </motion.div>
 
-            <motion.div 
+            <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -144,7 +144,7 @@ export default function MeetDeveloper() {
             </motion.div>
 
 
-            <motion.div 
+            <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
@@ -164,22 +164,22 @@ export default function MeetDeveloper() {
                     For any suggestions and improvements you are free to message me or connect to me on the following handles. My messages are always open to good vibes...:)
                 </motion.p>
 
-                <hr className="border"/>
+                <hr className="border" />
 
                 <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
 
                     <Link
-                        href="https://github.com/DakshSingh-GitHub/CodeJudge"
+                        href="https://https://github.com/DakshSingh-GitHub/Vlyxir"
                         className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/25 hover:bg-indigo-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden"
                     >
-                            <span className="relative z-10 flex items-center gap-2">
-                                Github <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </span>
+                        <span className="relative z-10 flex items-center gap-2">
+                            Github <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </span>
                         <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                     </Link>
                     <div className="flex flex-row gap-4">
                         <Link
-                            href="https://github.com/DakshSingh-GitHub/CodeJudge"
+                            href="https://https://github.com/DakshSingh-GitHub/Vlyxir"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-2xl font-bold text-lg border border-gray-200 dark:border-gray-800 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300"
@@ -196,7 +196,7 @@ export default function MeetDeveloper() {
                 </motion.div>
             </motion.div>
 
-            <Footer/>
+            <Footer />
 
         </div>
     );

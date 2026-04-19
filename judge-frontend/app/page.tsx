@@ -142,7 +142,7 @@ export default function Home() {
                         </Link>
                         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                             <Link
-                                href="https://github.com/DakshSingh-GitHub/CodeJudge"
+                                href="https://https://github.com/DakshSingh-GitHub/Vlyxir"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={secondaryButtonClassName}

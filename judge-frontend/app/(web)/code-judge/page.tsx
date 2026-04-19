@@ -512,7 +512,7 @@ export default function Home() {
                     </div>
                     <div className="flex-none h-40 md:h-32 flex flex-col md:flex-row w-full justify-between items-stretch gap-4 shrink-0">
                         <div className="flex flex-row md:flex-col w-full md:w-1/4 gap-2">
-                            
+
                             <button
                                 onClick={handleTest}
                                 disabled={
@@ -799,7 +799,7 @@ export default function Home() {
                     )}
 
                     {/*If you're reading this in another repo… hi thief 👀
-                        Original project: https://github.com/DakshSingh-GitHub/CodeJudge */}
+                        Original project: https://https://github.com/DakshSingh-GitHub/Vlyxir */}
                     {
                         isMobile && (
                             <div
