@@ -73,11 +73,18 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
             className="sticky top-0 z-50 shrink-0 px-3 pt-4 pb-2 opacity-0 md:px-6 md:pt-5 md:pb-3"
         >
             <div className="mx-auto flex max-w-400 justify-center">
-                <div className={`relative w-[90vw] max-w-[90vw] rounded-full px-4 py-3 backdrop-blur-3xl before:pointer-events-none before:absolute before:inset-px before:rounded-full before:content-[''] ${isDark
-                    ? "border border-slate-700/60 bg-[linear-gradient(135deg,rgba(8,12,20,0.98),rgba(15,23,42,0.9))] shadow-[0_22px_60px_rgba(2,6,23,0.5)] before:border before:border-slate-600/40"
-                    : "border border-slate-200 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(241,245,249,0.94))] shadow-[0_22px_60px_rgba(15,23,42,0.12)] before:border before:border-slate-200/70"
+                <div className={`relative w-[90vw] max-w-[90vw] rounded-full px-4 py-3 backdrop-blur-2xl ring-1 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-500 hover:shadow-[0_16px_48px_rgba(0,0,0,0.2)] ${isDark
+                    ? "bg-[#080c14]/30 ring-white/5 hover:ring-white/10 hover:bg-[#080c14]/40"
+                    : "bg-white/40 ring-slate-900/5 hover:ring-slate-900/10 hover:bg-white/50"
                     }`}>
-                    <div className={`pointer-events-none absolute inset-x-[22%] top-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-slate-500/20" : "text-slate-300/80"}`} />
+                    {/* Inner highlight for 3D effect */}
+                    <div className={`pointer-events-none absolute inset-0 rounded-full border-[0.5px] ${isDark ? 'border-white/5' : 'border-white/40'}`} />
+                    
+                    {/* Top glow */}
+                    <div className={`pointer-events-none absolute inset-x-[20%] top-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-white/20" : "text-slate-900/10"}`} />
+                    
+                    {/* Bottom subtle glow */}
+                    <div className={`pointer-events-none absolute inset-x-[15%] bottom-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-cyan-400/20" : "text-indigo-500/10"}`} />
                     <div className="relative flex items-center justify-between gap-3">
                         <div
                             ref={navItemsRef}
@@ -90,8 +97,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 <button
                                     onClick={() => window.dispatchEvent(new CustomEvent("open-code-analysis-records"))}
                                     className={`flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-slate-600/50 bg-slate-900/50 text-slate-200 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white"
-                                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
+                                        : "border-slate-900/5 bg-slate-900/5 text-slate-700 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="Show analysis records"
                                 >
@@ -103,8 +110,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 <button
                                     onClick={() => setIsSubmissionsModalOpen(true)}
                                     className={`group flex items-center justify-center rounded-full border p-2.5 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-slate-600/50 bg-slate-900/50 text-slate-300 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white"
-                                        : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
+                                        : "border-slate-900/5 bg-slate-900/5 text-slate-500 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="See Submissions"
                                 >
@@ -121,8 +128,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                         window.dispatchEvent(new CustomEvent(eventName));
                                     }}
                                     className={`hidden items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] lg:flex ${isDark
-                                        ? "border-slate-600/50 bg-slate-900/50 text-slate-200 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white"
-                                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
+                                        : "border-slate-900/5 bg-slate-900/5 text-slate-700 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="Select UI Grid"
                                 >
@@ -135,8 +142,8 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 <button
                                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                                     className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-full border p-2.5 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-slate-600/50 bg-slate-900/50 text-slate-300 hover:border-slate-500/60 hover:bg-slate-800/70 hover:text-white"
-                                        : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
+                                        : "border-slate-900/5 bg-slate-900/5 text-slate-500 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
                                 >
@@ -153,15 +160,15 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             )}
 
                             {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
-                                <div className={`hidden h-8 w-px md:block ${isDark ? "bg-slate-600/50" : "bg-slate-200"}`} />
+                                <div className={`hidden h-8 w-px md:block ${isDark ? "bg-white/10" : "bg-slate-900/10"}`} />
                             )}
 
                             <div className="relative" ref={profileRef}>
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                                     className={`group flex items-center gap-3 rounded-full border py-1.5 pl-1.5 pr-3 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] active:scale-95 ${isDark
-                                        ? "border-slate-600/50 bg-slate-900/50 text-slate-100 hover:border-slate-500/60 hover:bg-slate-800/70"
-                                        : "border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50"
+                                        ? "border-white/10 bg-white/5 text-slate-100 hover:border-white/20 hover:bg-white/10 backdrop-blur-md"
+                                        : "border-slate-900/5 bg-slate-900/5 text-slate-900 hover:border-slate-900/10 hover:bg-slate-900/10 backdrop-blur-md"
                                         }`}
                                     title="Profile"
                                     aria-label="Profile"
