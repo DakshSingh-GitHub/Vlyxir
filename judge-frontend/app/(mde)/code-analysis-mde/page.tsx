@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { anime } from '../../lib/anime';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction, Trash2 } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/context';
 import { useAuth } from '../../lib/auth-context';
@@ -54,7 +54,6 @@ interface AnalysisRecord {
     result: AnalysisResult;
 }
 
-const ANALYSIS_RECORDS_KEY = "code-analysis-records-v1";
 const MAX_ANALYSIS_RECORDS = 25;
 const RECORDS_MODAL_ANIMATION_MS = 220;
 
@@ -198,9 +197,33 @@ export default function CodeAnalysisPage() {
     }, [isMounted]);
 
     useEffect(() => {
-        const stored = localStorage.getItem(ANALYSIS_RECORDS_KEY);
-        const parsed = parseStoredRecords(stored);
-        setRecords(parsed);
+        const fetchRecords = async () => {
+            if (!user) return;
+            try {
+                const { data, error } = await supabase
+                    .from("code_analysis_records")
+                    .select("*")
+                    .eq("user_id", user.id)
+                    .order("created_at", { ascending: false })
+                    .limit(MAX_ANALYSIS_RECORDS);
+
+                if (data) {
+                    const formattedRecords: AnalysisRecord[] = data.map(dbRecord => ({
+                        id: dbRecord.id,
+                        createdAt: dbRecord.created_at,
+                        code: dbRecord.code,
+                        result: dbRecord.result as AnalysisResult
+                    }));
+                    setRecords(formattedRecords);
+                }
+            } catch (err) {
+                console.error("Error fetching analysis records:", err);
+            }
+        };
+
+        if (user) {
+            fetchRecords();
+        }
 
         const seededCode = sessionStorage.getItem("code-analysis-code");
         if (seededCode && seededCode.trim().length > 0) {
@@ -209,7 +232,7 @@ export default function CodeAnalysisPage() {
         }
 
         setIsHydrated(true);
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (authLoading) return;
@@ -230,7 +253,7 @@ export default function CodeAnalysisPage() {
                     .select("plan")
                     .eq("id", user.id)
                     .single();
-                
+
                 if (mounted) {
                     if (data && data.plan) {
                         setPlan(data.plan);
@@ -379,24 +402,62 @@ export default function CodeAnalysisPage() {
 
             const nextResult = payload.analysis as AnalysisResult;
             setAnalysisResult(nextResult);
-            setRecords((prev) => {
-                const nextRecords = [
-                    {
-                        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-                        createdAt: new Date().toISOString(),
-                        code,
-                        result: nextResult
-                    },
-                    ...prev
-                ].slice(0, MAX_ANALYSIS_RECORDS);
 
-                localStorage.setItem(ANALYSIS_RECORDS_KEY, JSON.stringify(nextRecords));
-                return nextRecords;
-            });
+            if (user) {
+                try {
+                    const { data: insertedData, error: insertError } = await supabase
+                        .from("code_analysis_records")
+                        .insert({
+                            user_id: user.id,
+                            code,
+                            result: nextResult
+                        })
+                        .select()
+                        .single();
+
+                    if (insertedData) {
+                        setRecords(prev => [
+                            {
+                                id: insertedData.id,
+                                createdAt: insertedData.created_at,
+                                code: insertedData.code,
+                                result: insertedData.result as AnalysisResult
+                            },
+                            ...prev
+                        ].slice(0, MAX_ANALYSIS_RECORDS));
+                    }
+                } catch (err) {
+                    console.error("Error saving analysis record:", err);
+                }
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Analysis failed.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleDeleteRecord = async (id: string, event: React.MouseEvent) => {
+        event.stopPropagation();
+        if (!user) return;
+
+        try {
+            const { error: deleteError } = await supabase
+                .from("code_analysis_records")
+                .delete()
+                .eq("id", id)
+                .eq("user_id", user.id);
+
+            if (!deleteError) {
+                setRecords(prev => prev.filter(r => r.id !== id));
+                if (expandedRecordId === id) {
+                    setExpandedRecordId(null);
+                }
+            } else {
+                console.error("Error deleting record:", deleteError);
+            }
+        } catch (err) {
+            console.error("Error deleting record:", err);
         }
     };
 
@@ -711,13 +772,22 @@ export default function CodeAnalysisPage() {
                                                         <div className={`h-3 w-px ${isDark ? "bg-slate-700" : "bg-slate-200"}`} />
                                                         <p className={`text-xs font-bold tracking-tight uppercase ${recordMutedClass}`}>{formatRecordTime(record.createdAt)}</p>
                                                     </div>
-                                                    <button
-                                                        onClick={() => setExpandedRecordId((prev) => prev === record.id ? null : record.id)}
-                                                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30" : "bg-white border-slate-200 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"}`}
-                                                    >
-                                                        {expandedRecordId === record.id ? "Hide Details" : "View Details"}
-                                                        <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${expandedRecordId === record.id ? "rotate-180" : ""}`} />
-                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={(e) => handleDeleteRecord(record.id, e)}
+                                                            className={`flex items-center justify-center p-1.5 rounded-full border transition-all active:scale-95 ${isDark ? "bg-rose-500/10 border-rose-500/20 text-rose-400 hover:bg-rose-500/20" : "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100"}`}
+                                                            title="Delete record"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setExpandedRecordId((prev) => prev === record.id ? null : record.id)}
+                                                            className={`flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ${isDark ? "bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-indigo-500/10 hover:text-indigo-400 hover:border-indigo-500/30" : "bg-white border-slate-200 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200"}`}
+                                                        >
+                                                            {expandedRecordId === record.id ? "Hide Details" : "View Details"}
+                                                            <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${expandedRecordId === record.id ? "rotate-180" : ""}`} />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-6 p-6">
                                                     <section className={recordCodeClass}>
@@ -779,27 +849,7 @@ export default function CodeAnalysisPage() {
 }
 
 function parseStoredRecords(raw: string | null): AnalysisRecord[] {
-    if (!raw) {
-        return [];
-    }
-    try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) {
-            return [];
-        }
-
-        return parsed
-            .filter((item) =>
-                item
-                && typeof item.id === "string"
-                && typeof item.createdAt === "string"
-                && typeof item.code === "string"
-                && item.result
-            )
-            .slice(0, MAX_ANALYSIS_RECORDS) as AnalysisRecord[];
-    } catch {
-        return [];
-    }
+    return [];
 }
 
 function formatRecordTime(isoString: string): string {
