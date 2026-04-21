@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Terminal, ExternalLink, Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Settings from './Settings';
+import { useAppContext } from '../../app/lib/context';
 
 interface ToolbarProps {
     code: string;
@@ -16,16 +17,17 @@ interface ToolbarProps {
 
 const Toolbar = memo(({ code, fontSize, setFontSize, language, setLanguage }: ToolbarProps) => {
     const router = useRouter();
+    const { codeIdePath, codeAnalysisPath } = useAppContext();
 
     const handleTryInCodeIDE = () => {
         sessionStorage.setItem("code-ide-code", code);
-        router.push('/code-ide');
+        router.push(codeIdePath);
     };
 
     const handleAnalyseYourCode = () => {
         sessionStorage.setItem("code-analysis-code", code);
-        router.push('/code-analysis')
-    }
+        router.push(codeAnalysisPath);
+    };
 
     return (
         <div className="bg-gray-900 border-t border-gray-800 py-1.5 md:py-2 flex justify-between items-center gap-4 text-gray-300 text-sm px-4 md:px-5 min-h-11">

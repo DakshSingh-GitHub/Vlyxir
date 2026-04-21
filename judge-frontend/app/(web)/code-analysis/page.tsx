@@ -57,7 +57,7 @@ const MAX_ANALYSIS_RECORDS = 25;
 const RECORDS_MODAL_ANIMATION_MS = 220;
 
 export default function CodeAnalysisPage() {
-    const { isDark, reduceMotion, useNewUi } = useAppContext();
+    const { isDark, reduceMotion, useNewUi, codeAnalysisPath } = useAppContext();
     const pathname = usePathname();
     const router = useRouter();
     const [code, setCode] = useState(DEFAULT_CODE);
@@ -84,9 +84,9 @@ export default function CodeAnalysisPage() {
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-analysis") {
-            router.replace("/code-analysis-mde");
+            router.replace(codeAnalysisPath);
         }
-    }, [pathname, router, useNewUi]);
+    }, [pathname, router, useNewUi, codeAnalysisPath]);
 
     useEffect(() => {
         const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
