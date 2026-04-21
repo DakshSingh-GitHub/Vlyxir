@@ -1,5 +1,5 @@
 import { getCachedProblems, setCachedProblems, getCachedProblemById, setCachedProblemById } from "./cache";
-import { SubmitResponse } from "./types";
+import { SubmitResponse, Problem } from "./types";
 
 const LOCAL_URL = "http://localhost:5000";
 const REMOTE_URL = "https://code-judge-6fm6.vercel.app";
@@ -43,7 +43,7 @@ async function getBaseUrl() {
 	return resolvedBaseUrl;
 }
 
-export async function getProblems(skipCache: boolean = false) {
+export async function getProblems(skipCache: boolean = false, onBackgroundUpdate?: (data: { problems: Problem[] }) => void) {
 	const baseUrl = await getBaseUrl();
 	if (!skipCache) {
 		const cached = getCachedProblems();
@@ -51,7 +51,10 @@ export async function getProblems(skipCache: boolean = false) {
 			// Fetch in background to update cache for next time
 			fetch(`${baseUrl}/problems`)
 				.then(res => res.json())
-				.then(data => setCachedProblems(data))
+				.then(data => {
+					setCachedProblems(data);
+					if (onBackgroundUpdate) onBackgroundUpdate(data);
+				})
 				.catch(console.error);
 			return cached;
 		}
@@ -63,14 +66,17 @@ export async function getProblems(skipCache: boolean = false) {
 	return data;
 }
 
-export async function getProblemById(id: string) {
+export async function getProblemById(id: string, onBackgroundUpdate?: (data: Problem) => void) {
 	const baseUrl = await getBaseUrl();
 	const cached = getCachedProblemById(id);
 	if (cached) {
 		// Fetch in background to update cache
 		fetch(`${baseUrl}/problems/${id}`)
 			.then(res => res.json())
-			.then(data => setCachedProblemById(id, data))
+			.then(data => {
+				setCachedProblemById(id, data);
+				if (onBackgroundUpdate) onBackgroundUpdate(data);
+			})
 			.catch(console.error);
 		return cached;
 	}

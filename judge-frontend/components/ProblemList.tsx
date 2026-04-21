@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, memo } from "react";
+import { useEffect, useState, useRef, memo, useCallback } from "react";
 import { anime, stagger } from "../app/lib/anime";
 import { getProblems } from "../app/lib/api";
 import { Filter, Check, Sparkles, SlidersHorizontal } from "lucide-react";
@@ -48,48 +48,54 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
         return shuffled;
     };
 
-    useEffect(() => {
-        const fetchProblemsData = async () => {
-            const data = await getProblems();
-            const problemList: Problem[] = data.problems || [];
+    const processProblems = useCallback(async (data: { problems: Problem[] }) => {
+        const problemList: Problem[] = data.problems || [];
 
-            // Fetch solved submissions
+        // Fetch solved submissions
+        try {
+            const submissions = await getSubmissions();
+            const solvedIds = new Set(
+                submissions
+                    .filter(s => s.final_status === "Accepted")
+                    .map(s => s.problemId)
+            );
+            setSolvedProblemIds(solvedIds);
+        } catch (err) {
+            console.error("Failed to fetch submissions", err);
+        }
+
+        const sessionOrder = sessionStorage.getItem("problemOrder");
+
+        if (sessionOrder) {
             try {
-                const submissions = await getSubmissions();
-                const solvedIds = new Set(
-                    submissions
-                        .filter(s => s.final_status === "Accepted")
-                        .map(s => s.problemId)
-                );
-                setSolvedProblemIds(solvedIds);
-            } catch (err) {
-                console.error("Failed to fetch submissions", err);
-            }
+                const orderIds: string[] = JSON.parse(sessionOrder);
+                const orderedProblems = orderIds
+                    .map(id => problemList.find(p => p.id === id))
+                    .filter((p): p is Problem => !!p);
 
-            const sessionOrder = sessionStorage.getItem("problemOrder");
-
-            if (sessionOrder) {
-                try {
-                    const orderIds: string[] = JSON.parse(sessionOrder);
-                    const orderedProblems = orderIds
-                        .map(id => problemList.find(p => p.id === id))
-                        .filter((p): p is Problem => !!p);
-
-                    // Add any problems that might be new or not in session storage
-                    const remainingProblems = problemList.filter(p => !orderIds.includes(p.id));
-                    setProblems([...orderedProblems, ...remainingProblems]);
-                } catch (e) {
-                    console.error("Failed to parse session order", e);
-                    const shuffled = shuffleArray(problemList);
-                    sessionStorage.setItem("problemOrder", JSON.stringify(shuffled.map(p => p.id)));
-                    setProblems(shuffled);
-                }
-            } else {
+                // Add any problems that might be new or not in session storage
+                const remainingProblems = problemList.filter(p => !orderIds.includes(p.id));
+                setProblems([...orderedProblems, ...remainingProblems]);
+            } catch (e) {
+                console.error("Failed to parse session order", e);
                 const shuffled = shuffleArray(problemList);
                 sessionStorage.setItem("problemOrder", JSON.stringify(shuffled.map(p => p.id)));
                 setProblems(shuffled);
             }
-            setIsLoading(false);
+        } else {
+            const shuffled = shuffleArray(problemList);
+            sessionStorage.setItem("problemOrder", JSON.stringify(shuffled.map(p => p.id)));
+            setProblems(shuffled);
+        }
+        setIsLoading(false);
+    }, []);
+
+    useEffect(() => {
+        const fetchProblemsData = async () => {
+            const data = await getProblems(false, (newData) => {
+                processProblems(newData);
+            });
+            processProblems(data);
         };
 
         fetchProblemsData();
@@ -108,7 +114,7 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
 
         window.addEventListener('submission-updated', handleSubmissionUpdate);
         return () => window.removeEventListener('submission-updated', handleSubmissionUpdate);
-    }, []);
+    }, [processProblems]);
 
     const filteredProblems = problems.filter((problem) => {
         const matchesSearch = problem.title.toLowerCase().includes(searchQuery.toLowerCase());

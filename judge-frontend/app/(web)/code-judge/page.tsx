@@ -208,7 +208,9 @@ export default function Home() {
         setResult(null);
 
         try {
-            const data = await getProblemById(id);
+            const data = await getProblemById(id, (newData) => {
+                setProblem(newData);
+            });
             setProblem(data);
             const subs = await getSubmissionsByProblemId(id);
             setPastSubmissions(subs);
