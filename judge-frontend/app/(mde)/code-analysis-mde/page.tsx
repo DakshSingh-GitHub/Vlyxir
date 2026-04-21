@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { anime } from '../../lib/anime';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction, Trash2 } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction, Trash2, AlertTriangle } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/context';
 import { useAuth } from '../../lib/auth-context';
@@ -80,6 +80,9 @@ export default function CodeAnalysisPage() {
     const [mobileSwipeDirection, setMobileSwipeDirection] = useState<"left" | "right" | null>(null);
     const codePanelRef = useRef<HTMLDivElement>(null);
     const analysisPanelRef = useRef<HTMLDivElement>(null);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const loaderTitleRef = useRef<HTMLDivElement>(null);
     const loaderBarRef = useRef<HTMLDivElement>(null);
@@ -363,19 +366,24 @@ export default function CodeAnalysisPage() {
     }, []);
 
     useEffect(() => {
-        if (!isRecordsModalOpen) {
+        if (!isRecordsModalOpen && !isDeleteConfirmOpen) {
             return;
         }
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                closeRecordsModal();
+                if (isDeleteConfirmOpen && !isDeleting) {
+                    setIsDeleteConfirmOpen(false);
+                    setRecordIdToDelete(null);
+                } else if (isRecordsModalOpen) {
+                    closeRecordsModal();
+                }
             }
         };
         window.addEventListener("keydown", handleEscape);
         return () => {
             window.removeEventListener("keydown", handleEscape);
         };
-    }, [isRecordsModalOpen]);
+    }, [isRecordsModalOpen, isDeleteConfirmOpen, isDeleting]);
 
     const handleAnalyze = async () => {
         setError(null);
@@ -437,27 +445,37 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    const handleDeleteRecord = async (id: string, event: React.MouseEvent) => {
+    const handleDeleteRecord = (id: string, event: React.MouseEvent) => {
         event.stopPropagation();
-        if (!user) return;
+        setRecordIdToDelete(id);
+        setIsDeleteConfirmOpen(true);
+    };
 
+    const confirmDelete = async () => {
+        if (!user || !recordIdToDelete) return;
+
+        setIsDeleting(true);
         try {
             const { error: deleteError } = await supabase
                 .from("code_analysis_records")
                 .delete()
-                .eq("id", id)
+                .eq("id", recordIdToDelete)
                 .eq("user_id", user.id);
 
             if (!deleteError) {
-                setRecords(prev => prev.filter(r => r.id !== id));
-                if (expandedRecordId === id) {
+                setRecords(prev => prev.filter(r => r.id !== recordIdToDelete));
+                if (expandedRecordId === recordIdToDelete) {
                     setExpandedRecordId(null);
                 }
+                setIsDeleteConfirmOpen(false);
+                setRecordIdToDelete(null);
             } else {
                 console.error("Error deleting record:", deleteError);
             }
         } catch (err) {
             console.error("Error deleting record:", err);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -842,6 +860,57 @@ export default function CodeAnalysisPage() {
                             </div>
                         </div>
                     )}
+
+                    {/* Deletion Confirmation Modal */}
+                    {isDeleteConfirmOpen && (
+                        <div
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+                            onClick={() => !isDeleting && setIsDeleteConfirmOpen(false)}
+                        >
+                            <div
+                                className={`w-full max-w-sm rounded-[2rem] border p-8 animate-in zoom-in-95 duration-200 ${surfaceClass}`}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="flex items-center justify-center mb-6">
+                                    <div className={`p-4 rounded-2xl border ${isDark ? "bg-rose-500/10 border-rose-500/20" : "bg-rose-50 border-rose-100"}`}>
+                                        <AlertTriangle className="w-8 h-8 text-rose-500" />
+                                    </div>
+                                </div>
+
+                                <h3 className={`text-xl font-black tracking-tight text-center mb-2 ${titleClass}`}>Delete Record?</h3>
+                                <p className={`text-xs leading-relaxed text-center mb-8 ${mutedClass}`}>
+                                    This action cannot be undone. This inspection will be permanently removed from your vault.
+                                </p>
+
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setIsDeleteConfirmOpen(false);
+                                            setRecordIdToDelete(null);
+                                        }}
+                                        disabled={isDeleting}
+                                        className={`flex-1 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest transition-all disabled:opacity-50 ${isDark ? "bg-slate-800 text-slate-300 hover:bg-slate-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmDelete}
+                                        disabled={isDeleting}
+                                        className="flex-1 px-6 py-3 rounded-xl bg-rose-600 text-white font-bold text-xs uppercase tracking-widest shadow-lg shadow-rose-600/20 hover:bg-rose-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isDeleting ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span>Deleting...</span>
+                                            </>
+                                        ) : (
+                                            "Delete"
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>
@@ -859,7 +928,6 @@ function formatRecordTime(isoString: string): string {
     }
     return parsed.toLocaleString();
 }
-
 
 interface MetricPillProps {
     label: string;
@@ -892,7 +960,8 @@ function severityClasses(severity: Severity) {
 function AnalysisSection({ icon: Icon, title, overview, findings, color, isDark }: AnalysisCardProps) {
     const colorClasses = {
         cyan: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
-        rose: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+        rose: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+        amber: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
     };
 
     return (
@@ -938,6 +1007,6 @@ interface AnalysisCardProps {
     title: string;
     overview: string;
     findings: AnalysisFinding[];
-    color: 'cyan' | 'rose';
+    color: 'cyan' | 'rose' | 'amber';
     isDark: boolean;
 }

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction, Trash2 } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction, Trash2, AlertTriangle } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/context';
 import { useAuth } from '../../lib/auth-context';
@@ -78,6 +78,9 @@ export default function CodeAnalysisPage() {
     const [mobileSwipeDirection, setMobileSwipeDirection] = useState<"left" | "right" | null>(null);
     const codePanelRef = useRef<HTMLDivElement>(null);
     const analysisPanelRef = useRef<HTMLDivElement>(null);
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+    const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-analysis") {
@@ -268,19 +271,24 @@ export default function CodeAnalysisPage() {
     }, []);
 
     useEffect(() => {
-        if (!isRecordsModalOpen) {
+        if (!isRecordsModalOpen && !isDeleteConfirmOpen) {
             return;
         }
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === "Escape") {
-                closeRecordsModal();
+                if (isDeleteConfirmOpen && !isDeleting) {
+                    setIsDeleteConfirmOpen(false);
+                    setRecordIdToDelete(null);
+                } else if (isRecordsModalOpen) {
+                    closeRecordsModal();
+                }
             }
         };
         window.addEventListener("keydown", handleEscape);
         return () => {
             window.removeEventListener("keydown", handleEscape);
         };
-    }, [isRecordsModalOpen]);
+    }, [isRecordsModalOpen, isDeleteConfirmOpen, isDeleting]);
 
 
 
@@ -344,27 +352,37 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    const handleDeleteRecord = async (id: string, event: React.MouseEvent) => {
+    const handleDeleteRecord = (id: string, event: React.MouseEvent) => {
         event.stopPropagation();
-        if (!user) return;
+        setRecordIdToDelete(id);
+        setIsDeleteConfirmOpen(true);
+    };
 
+    const confirmDelete = async () => {
+        if (!user || !recordIdToDelete) return;
+
+        setIsDeleting(true);
         try {
             const { error: deleteError } = await supabase
                 .from("code_analysis_records")
                 .delete()
-                .eq("id", id)
+                .eq("id", recordIdToDelete)
                 .eq("user_id", user.id);
 
             if (!deleteError) {
-                setRecords(prev => prev.filter(r => r.id !== id));
-                if (expandedRecordId === id) {
+                setRecords(prev => prev.filter(r => r.id !== recordIdToDelete));
+                if (expandedRecordId === recordIdToDelete) {
                     setExpandedRecordId(null);
                 }
+                setIsDeleteConfirmOpen(false);
+                setRecordIdToDelete(null);
             } else {
                 console.error("Error deleting record:", deleteError);
             }
         } catch (err) {
             console.error("Error deleting record:", err);
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -716,6 +734,59 @@ export default function CodeAnalysisPage() {
                                     </article>
                                 ))
                             )}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
+
+            {/* Deletion Confirmation Modal */}
+            {isDeleteConfirmOpen ? (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+                    onClick={() => !isDeleting && setIsDeleteConfirmOpen(false)}
+                    onKeyDown={(e) => e.key === 'Escape' && !isDeleting && setIsDeleteConfirmOpen(false)}
+                    tabIndex={-1}
+                >
+                    <div
+                        className="w-full max-w-md rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white dark:bg-gray-950 shadow-2xl p-8 animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-center mb-6">
+                            <div className="p-4 rounded-2xl bg-rose-500/15 border border-rose-500/25">
+                                <AlertTriangle className="w-8 h-8 text-rose-500" />
+                            </div>
+                        </div>
+
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-2">Delete Record?</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-center mb-8">
+                            This action cannot be undone. This will permanently delete this analysis record from your history.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                                onClick={() => {
+                                    setIsDeleteConfirmOpen(false);
+                                    setRecordIdToDelete(null);
+                                }}
+                                disabled={isDeleting}
+                                className="flex-1 px-6 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-200 dark:hover:bg-gray-800 transition-all disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                                className="flex-1 px-6 py-3 rounded-xl bg-rose-600 text-white font-semibold shadow-lg shadow-rose-600/20 hover:bg-rose-700 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {isDeleting ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    "Delete"
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
