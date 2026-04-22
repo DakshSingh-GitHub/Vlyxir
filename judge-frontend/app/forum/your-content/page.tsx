@@ -115,11 +115,12 @@ export default function YourContentPage() {
     return (
         <ForumLayout>
             <ForumSidebar 
-                activeTab={activeTab} 
-                setActiveTab={setActiveTab} 
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
                 activeChannelId={activeChannelId}
-                setActiveChannelId={setActiveChannelId}
-            />
+                setActiveChannelId={setActiveChannelId} isMobileMenuOpen={false} setIsMobileMenuOpen={function (isOpen: boolean): void {
+                    throw new Error("Function not implemented.");
+                } }            />
             
             <main className="flex-1 flex flex-col min-w-0 overflow-y-auto px-4 py-6 md:px-8">
                 {/* Header */}
