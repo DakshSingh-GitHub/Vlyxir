@@ -1,5 +1,7 @@
 # ⚖️ CodeJudge 🚀
 
+[🚀 Try Vlyxir Live](https://vlyxir.vercel.app)
+
 Welcome to **CodeJudge**, a powerful, modern, and high-performance Online Judge and IDE platform. It's designed to provide a premium LeetCode-style experience with lightning-fast execution and a state-of-the-art user interface.
 
 Built with **FastAPI** 🌶, **Next.js 16** ⚛️, and **Supabase** ⚡, CodeJudge features a sophisticated persistent worker judge system and an optional "Modern Design Experience" (MDE).
