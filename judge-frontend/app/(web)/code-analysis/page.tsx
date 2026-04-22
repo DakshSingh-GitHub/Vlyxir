@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
@@ -104,14 +105,16 @@ export default function CodeAnalysisPage() {
         };
     }, []);
 
+    const userId = user?.id;
+
     useEffect(() => {
         const fetchRecords = async () => {
-            if (!user) return;
+            if (!userId) return;
             try {
                 const { data, error } = await supabase
                     .from("code_analysis_records")
                     .select("*")
-                    .eq("user_id", user.id)
+                    .eq("user_id", userId)
                     .order("created_at", { ascending: false })
                     .limit(MAX_ANALYSIS_RECORDS);
 
@@ -129,23 +132,47 @@ export default function CodeAnalysisPage() {
             }
         };
 
-        if (user) {
+        if (userId) {
             fetchRecords();
         }
+    }, [userId]);
 
+    useEffect(() => {
         const seededCode = sessionStorage.getItem("code-analysis-code");
         if (seededCode && seededCode.trim().length > 0) {
             setCode(seededCode);
             sessionStorage.removeItem("code-analysis-code");
+        } else {
+            const savedStateStr = localStorage.getItem("code-analysis-state");
+            if (savedStateStr) {
+                try {
+                    const savedState = JSON.parse(savedStateStr);
+                    if (savedState.code) setCode(savedState.code);
+                    if (savedState.analysisResult !== undefined) setAnalysisResult(savedState.analysisResult);
+                    if (savedState.error !== undefined) setError(savedState.error);
+                } catch (e) {
+                    console.error("Error parsing saved state", e);
+                }
+            }
         }
 
         setIsHydrated(true);
-    }, [user]);
+    }, []);
+
+    useEffect(() => {
+        if (isHydrated) {
+            localStorage.setItem("code-analysis-state", JSON.stringify({
+                code,
+                analysisResult,
+                error
+            }));
+        }
+    }, [code, analysisResult, error, isHydrated]);
 
     useEffect(() => {
         if (authLoading) return;
 
-        if (!user) {
+        if (!userId) {
             setPlan(null);
             setIsFetchingPlan(false);
             return;
@@ -159,7 +186,7 @@ export default function CodeAnalysisPage() {
                 const { data, error } = await supabase
                     .from("profiles")
                     .select("plan")
-                    .eq("id", user.id)
+                    .eq("id", userId)
                     .single();
 
                 if (mounted) {
@@ -182,7 +209,7 @@ export default function CodeAnalysisPage() {
         return () => {
             mounted = false;
         };
-    }, [user, authLoading]);
+    }, [userId, authLoading]);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -573,7 +600,7 @@ export default function CodeAnalysisPage() {
 
             {isRecordsModalOpen ? (
                 <div
-                    className={`fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm p-4 sm:p-6 transition-opacity duration-200 ${isRecordsModalVisible ? "opacity-100" : "opacity-0"}`}
+                    className={`fixed inset-0 z-70 bg-black/50 backdrop-blur-sm p-4 sm:p-6 transition-opacity duration-200 ${isRecordsModalVisible ? "opacity-100" : "opacity-0"}`}
                     onClick={closeRecordsModal}
                 >
                     <div
@@ -629,7 +656,7 @@ export default function CodeAnalysisPage() {
                                                 <div className="px-4 py-2 border-b border-cyan-200/60 dark:border-cyan-700/40">
                                                     <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Submitted Code</p>
                                                 </div>
-                                                <pre className="max-h-[420px] overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">
+                                                <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
                                                     {record.code}
                                                 </pre>
                                             </section>
@@ -742,7 +769,7 @@ export default function CodeAnalysisPage() {
             {/* Deletion Confirmation Modal */}
             {isDeleteConfirmOpen ? (
                 <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+                    className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
                     onClick={() => !isDeleting && setIsDeleteConfirmOpen(false)}
                     onKeyDown={(e) => e.key === 'Escape' && !isDeleting && setIsDeleteConfirmOpen(false)}
                     tabIndex={-1}

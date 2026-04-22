@@ -199,14 +199,16 @@ export default function CodeAnalysisPage() {
         }
     }, [isMounted]);
 
+    const userId = user?.id;
+
     useEffect(() => {
         const fetchRecords = async () => {
-            if (!user) return;
+            if (!userId) return;
             try {
                 const { data, error } = await supabase
                     .from("code_analysis_records")
                     .select("*")
-                    .eq("user_id", user.id)
+                    .eq("user_id", userId)
                     .order("created_at", { ascending: false })
                     .limit(MAX_ANALYSIS_RECORDS);
 
@@ -224,23 +226,47 @@ export default function CodeAnalysisPage() {
             }
         };
 
-        if (user) {
+        if (userId) {
             fetchRecords();
         }
+    }, [userId]);
 
+    useEffect(() => {
         const seededCode = sessionStorage.getItem("code-analysis-code");
         if (seededCode && seededCode.trim().length > 0) {
             setCode(seededCode);
             sessionStorage.removeItem("code-analysis-code");
+        } else {
+            const savedStateStr = localStorage.getItem("code-analysis-state");
+            if (savedStateStr) {
+                try {
+                    const savedState = JSON.parse(savedStateStr);
+                    if (savedState.code) setCode(savedState.code);
+                    if (savedState.analysisResult !== undefined) setAnalysisResult(savedState.analysisResult);
+                    if (savedState.error !== undefined) setError(savedState.error);
+                } catch (e) {
+                    console.error("Error parsing saved state", e);
+                }
+            }
         }
 
         setIsHydrated(true);
-    }, [user]);
+    }, []);
+
+    useEffect(() => {
+        if (isHydrated) {
+            localStorage.setItem("code-analysis-state", JSON.stringify({
+                code,
+                analysisResult,
+                error
+            }));
+        }
+    }, [code, analysisResult, error, isHydrated]);
 
     useEffect(() => {
         if (authLoading) return;
 
-        if (!user) {
+        if (!userId) {
             setPlan(null);
             setIsFetchingPlan(false);
             return;
@@ -254,7 +280,7 @@ export default function CodeAnalysisPage() {
                 const { data, error } = await supabase
                     .from("profiles")
                     .select("plan")
-                    .eq("id", user.id)
+                    .eq("id", userId)
                     .single();
 
                 if (mounted) {
@@ -277,7 +303,7 @@ export default function CodeAnalysisPage() {
         return () => {
             mounted = false;
         };
-    }, [user, authLoading]);
+    }, [userId, authLoading]);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 1023px)");
