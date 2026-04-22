@@ -19,7 +19,7 @@ export default function ResultModal({ result, onClose }: ResultModalProps) {
     const percentage = total > 0 ? (passed / total) * 100 : 0;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-6">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 sm:px-6">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -37,8 +37,8 @@ export default function ResultModal({ result, onClose }: ResultModalProps) {
                             Submission Details
                         </h2>
                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${isAccepted
-                                ? "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30"
-                                : "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30"
+                            ? "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30"
+                            : "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30"
                             }`}>
                             {result.final_status}
                         </span>
@@ -130,14 +130,14 @@ function TestCaseItem({ tc }: { tc: TestCaseResult }) {
 
     return (
         <div className={`rounded-xl overflow-hidden border transition-all duration-200 ${isPassed
-                ? "bg-white dark:bg-gray-800/40 border-gray-200 dark:border-gray-700/50"
-                : "bg-red-50/50 dark:bg-red-900/10 border-red-200 dark:border-red-800/30"
+            ? "bg-white dark:bg-gray-800/40 border-gray-200 dark:border-gray-700/50"
+            : "bg-red-50/50 dark:bg-red-900/10 border-red-200 dark:border-red-800/30"
             }`}>
             <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
                     <div className={`flex items-center justify-center w-8 h-8 rounded-full ${isPassed
-                            ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
-                            : "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400"
+                        ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400"
+                        : "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400"
                         }`}>
                         {isPassed ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
                     </div>
@@ -146,8 +146,8 @@ function TestCaseItem({ tc }: { tc: TestCaseResult }) {
                             Test Case #{tc.test_case}
                         </div>
                         <div className={`text-xs font-medium ${isPassed
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-red-600 dark:text-red-400"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-red-600 dark:text-red-400"
                             }`}>
                             {tc.status} • {tc.duration ? `${tc.duration.toFixed(3)}s` : "0.000s"}
                         </div>

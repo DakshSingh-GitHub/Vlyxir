@@ -8,6 +8,7 @@ import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission
 import { Problem, SubmitResponse } from "../../lib/types";
 import { useAppContext } from "../../lib/context";
 import { FileText, Code, History, Check, X, PanelTop, List } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
 
 import ClassicLayout from "./layouts/ClassicLayout";
@@ -18,6 +19,7 @@ import ProblemViewer from "../../../components/ProblemViewer";
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import PastSubmissions from "../../../components/Editor/PastSubmissions";
 import ResultModal from "./modals/resultModal";
+import MobileResultPanel from "../../../components/Editor/MobileResultPanel";
 import { useAuth } from "../../lib/auth-context";
 
 const DEFAULT_CODE = "#Write your code here";
@@ -549,8 +551,8 @@ export default function Home() {
                             isDark={isDark}
                         />
                     </div>
-                    <div className="flex-none h-56 md:h-36 flex flex-col md:flex-row w-full justify-between items-stretch gap-4 shrink-0">
-                        <div className="flex flex-row md:flex-col w-full md:w-1/4 gap-2">
+                    <div className="flex-none h-auto md:h-36 flex flex-col md:flex-row w-full justify-between items-stretch gap-4 shrink-0">
+                        <div className="flex flex-row md:flex-col w-full md:w-1/4 gap-2 mb-2 md:mb-0">
                             <button
                                 onClick={handleTest}
                                 disabled={
@@ -578,7 +580,7 @@ export default function Home() {
                                 {isSubmitting ? "Judging..." : (!user ? "Log in to Submit" : "Submit")}
                             </button>
                         </div>
-                        <div className="w-full md:w-3/4 h-full">
+                        <div className={`w-full md:w-3/4 h-full ${isMobile ? 'hidden' : 'block'}`}>
                             <div className={resultCardClass}>
                                 {!result ? (
                                     <div
@@ -766,12 +768,23 @@ export default function Home() {
                                 className="flex-1 min-h-0 overflow-hidden flex flex-col gap-4 transition-all duration-400 ease-[0.4,0,0.2,1]"
                                 style={{ transition: isResizing ? 'none' : undefined }}
                             >
-                                <div ref={mobileDescriptionRef} className={`${mobileTab === "description" ? "flex-1" : "hidden"} min-h-0 min-w-0`}>
-                                    {problemDescriptionPanel}
-                                </div>
-                                <div className={`${mobileTab === "code" || mobileTab === "submissions" ? "flex-1" : "hidden"} min-h-0 min-w-0`}>
-                                    {editorAndSubmissionsPanel}
-                                </div>
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={mobileTab}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="flex-1 min-h-0 flex flex-col gap-4"
+                                    >
+                                        <div ref={mobileDescriptionRef} className={`${mobileTab === "description" ? "flex-1" : "hidden"} min-h-0 min-w-0`}>
+                                            {problemDescriptionPanel}
+                                        </div>
+                                        <div className={`${mobileTab === "code" || mobileTab === "submissions" ? "flex-1" : "hidden"} min-h-0 min-w-0`}>
+                                            {editorAndSubmissionsPanel}
+                                        </div>
+                                    </motion.div>
+                                </AnimatePresence>
                             </div>
                         </div>
                     ) : (
@@ -841,54 +854,66 @@ export default function Home() {
                     {
                         isMobile && (
                             <div
-                                className={`fixed bottom-6 left-1/2 z-50 transition-all duration-300 ease-out ${isMobilePillVisible
+                                className={`fixed bottom-8 left-1/2 z-50 transition-all duration-500 ease-[0.23,1,0.32,1] ${isMobilePillVisible
                                     ? "translate-x-[-50%] translate-y-0 opacity-100"
                                     : "translate-x-[-50%] translate-y-24 opacity-0 pointer-events-none"
                                     }`}
                             >
-                                <div className={`flex items-center gap-2 p-1.5 rounded-full backdrop-blur-3xl border ${mobilePillShellClass}`}>
-                                    <button
-                                        onClick={() => handleMobileTabChange("problem")}
-                                        className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "problem"
-                                            ? mobilePillActiveClass
-                                            : mobilePillInactiveClass
-                                            }`}
-                                    >
-                                        <List className={`w-5 h-5 ${mobileTab === "problem" ? "stroke-[2.5px]" : "stroke-2"}`} />
-                                        <span className="text-[10px] font-bold tracking-wide">Problem</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleMobileTabChange("description")}
-                                        className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "description"
-                                            ? mobilePillActiveClass
-                                            : mobilePillInactiveClass
-                                            }`}
-                                    >
-                                        <FileText className={`w-5 h-5 ${mobileTab === "description" ? "stroke-[2.5px]" : "stroke-2"}`} />
-                                        <span className="text-[10px] font-bold tracking-wide">Description</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleMobileTabChange("code")}
-                                        className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "code"
-                                            ? mobilePillActiveClass
-                                            : mobilePillInactiveClass
-                                            }`}
-                                    >
-                                        <Code className={`w-5 h-5 ${mobileTab === "code" ? "stroke-[2.5px]" : "stroke-2"}`} />
-                                        <span className="text-[10px] font-bold tracking-wide">Code</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleMobileTabChange("submissions")}
-                                        className={`relative px-3 py-2 rounded-full transition-all duration-300 ease-out flex flex-col items-center justify-center gap-0.5 min-w-16 ${mobileTab === "submissions"
-                                            ? mobilePillActiveClass
-                                            : mobilePillInactiveClass
-                                            }`}
-                                    >
-                                        <History className={`w-5 h-5 ${mobileTab === "submissions" ? "stroke-[2.5px]" : "stroke-2"}`} />
-                                        <span className="text-[9px] font-bold tracking-wide whitespace-nowrap">Past submissions</span>
-                                    </button>
+                                <div className={`flex items-center gap-1 p-1.5 rounded-full backdrop-blur-3xl border ${mobilePillShellClass} shadow-[0_20px_50px_rgba(0,0,0,0.3)]`}>
+                                    {(["problem", "description", "code", "submissions"] as const).map((tab) => {
+                                        const isActive = mobileTab === tab;
+                                        const getIcon = () => {
+                                            switch (tab) {
+                                                case "problem": return <List className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />;
+                                                case "description": return <FileText className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />;
+                                                case "code": return <Code className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />;
+                                                case "submissions": return <History className={`w-5 h-5 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />;
+                                            }
+                                        };
+                                        const getLabel = () => {
+                                            switch (tab) {
+                                                case "problem": return "Problem";
+                                                case "description": return "Info";
+                                                case "code": return "Code";
+                                                case "submissions": return "History";
+                                            }
+                                        };
+
+                                        return (
+                                            <button
+                                                key={tab}
+                                                onClick={() => handleMobileTabChange(tab)}
+                                                className={`relative px-4 py-2.5 rounded-full transition-all duration-300 flex flex-col items-center justify-center gap-1 min-w-[72px] ${isActive
+                                                    ? (isDark ? "text-cyan-400" : "text-indigo-600")
+                                                    : (isDark ? "text-slate-400" : "text-slate-500")
+                                                    }`}
+                                            >
+                                                {isActive && (
+                                                    <motion.div
+                                                        layoutId="mobile-pill-bg"
+                                                        className={`absolute inset-0 rounded-full z-0 ${isDark ? 'bg-cyan-500/[0.08] shadow-[inset_0_0_12px_rgba(34,211,238,0.15)]' : 'bg-indigo-50 shadow-sm'}`}
+                                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                    />
+                                                )}
+                                                <div className="relative z-10 flex flex-col items-center gap-0.5">
+                                                    {getIcon()}
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{getLabel()}</span>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
+                        )
+                    }
+                    {
+                        isMobile && result && (
+                            <MobileResultPanel
+                                result={result}
+                                isDark={isDark}
+                                onClose={() => setResult(null)}
+                                onOpenDetails={() => setIsResultModalOpen(true)}
+                            />
                         )
                     }
                 </>
