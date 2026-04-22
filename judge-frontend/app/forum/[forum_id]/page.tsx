@@ -50,11 +50,12 @@ export default function ForumIDPage({
     return (
         <ForumLayout>
             <ForumSidebar 
-                activeTab={activeTab} 
-                setActiveTab={(tab) => handleSidebarChange(tab)} 
+                activeTab={activeTab}
+                setActiveTab={(tab) => handleSidebarChange(tab)}
                 activeChannelId={activeChannelId}
-                setActiveChannelId={(id) => handleSidebarChange(activeTab, id)}
-            />
+                setActiveChannelId={(id) => handleSidebarChange(activeTab, id)} isMobileMenuOpen={false} setIsMobileMenuOpen={function (isOpen: boolean): void {
+                    throw new Error('Function not implemented.');
+                } }            />
             
             {isLoading ? (
                 <div className="flex-1 flex flex-col items-center justify-center">
