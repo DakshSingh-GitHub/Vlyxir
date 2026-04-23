@@ -17,7 +17,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 
     return (
-        <main className="flex h-screen flex-col">
+        <main className="flex min-h-screen flex-col">
             {!isNavExcluded && (
                 <NavComponent
                     isSidebarOpen={isSidebarOpen}

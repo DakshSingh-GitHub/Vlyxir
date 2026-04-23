@@ -179,15 +179,39 @@ export default function UserPage({ params }: PageProps) {
                     return acc;
                 }, {} as Record<string, number>);
 
+                // Calculate new accuracy based on first submissions only
+                const firstSubmissionsMap = new Map();
+                
+                const oldestFirst = [...validSubmissions].sort((a, b) => 
+                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                );
+
+                oldestFirst.forEach(sub => {
+                    if (!firstSubmissionsMap.has(sub.problem_id)) {
+                        firstSubmissionsMap.set(sub.problem_id, sub);
+                    }
+                });
+
+                const firstSubmissions = Array.from(firstSubmissionsMap.values());
+                
+                let totalAccuracyScore = 0;
+                firstSubmissions.forEach(sub => {
+                    if (sub.total > 0) {
+                        totalAccuracyScore += (sub.passed / sub.total);
+                    }
+                });
+                
+                const calculatedAccuracy = firstSubmissions.length > 0 
+                    ? (totalAccuracyScore / firstSubmissions.length) * 100 
+                    : 0;
+
                 setStats({
                     total_solved: solvedProblemIds.size,
                     easy_solved: difficultyCounts['easy'] || 0,
                     medium_solved: difficultyCounts['medium'] || 0,
                     hard_solved: difficultyCounts['hard'] || 0,
                     total_submissions: validSubmissions.length,
-                    accuracy: validSubmissions.length > 0
-                        ? (acceptedSubmissions.length / validSubmissions.length) * 100
-                        : 0
+                    accuracy: calculatedAccuracy
                 });
 
                 setRecentSubmissions(validSubmissions.slice(0, 2));
@@ -209,7 +233,7 @@ export default function UserPage({ params }: PageProps) {
 
     if (!user) {
         return (
-            <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? "bg-[#0B0C15] text-slate-100" : "bg-slate-50 text-slate-900"}`}>
+            <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? "bg-background text-slate-100" : "bg-slate-50 text-slate-900"}`}>
                 <div className="w-full max-w-xl">
                     <LoginPrompt
                         title="Login to view profiles"
@@ -223,7 +247,7 @@ export default function UserPage({ params }: PageProps) {
 
     if (!profile) {
         return (
-            <div className={`flex h-screen items-center justify-center ${isDark ? 'bg-[#0B0C15] text-white' : 'bg-slate-50 text-slate-900'}`}>
+            <div className={`flex h-screen items-center justify-center ${isDark ? 'bg-background text-white' : 'bg-slate-50 text-slate-900'}`}>
                 <h1 className="text-2xl font-bold">User Not Found</h1>
             </div>
         );
@@ -239,7 +263,7 @@ export default function UserPage({ params }: PageProps) {
     };
 
     return (
-        <div className="min-h-screen transition-colors duration-500 p-4 md:p-8 bg-slate-50 text-slate-800 dark:bg-[#0B0C15] dark:text-slate-200">
+        <div className="min-h-screen transition-colors duration-500 p-4 md:p-8 bg-slate-50 text-slate-800 dark:bg-background dark:text-slate-200">
             <div className="max-w-6xl mx-auto space-y-6">
 
                 {/* Back Navigation */}
@@ -471,7 +495,7 @@ function Skeleton({ className }: { className?: string }) {
 
 function ProfileSkeleton() {
     return (
-        <div className="min-h-screen p-4 md:p-8 bg-slate-50 dark:bg-[#0B0C15]">
+        <div className="min-h-screen p-4 md:p-8 bg-slate-50 dark:bg-background">
             <div className="max-w-6xl mx-auto space-y-6">
                 {/* Back Link Skeleton */}
                 <Skeleton className="h-10 w-32 rounded-full" />
