@@ -449,7 +449,7 @@ export default function CodeAnalysisPage() {
     }
 
     return (
-        <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 pb-24 sm:pb-28 lg:pb-8 font-sans relative overflow-hidden">
+        <div className="h-screen w-full flex flex-col p-4 sm:p-6 lg:p-8 pb-24 sm:pb-28 lg:pb-8 font-sans relative overflow-hidden">
             {/* Ambient Background Glows */}
             <div className="absolute top-[-15%] left-[-15%] w-96 h-96 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
             <div className="absolute bottom-[-15%] right-[-15%] w-80 h-80 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[100px] pointer-events-none animate-pulse-slow delay-1000" />

@@ -68,9 +68,9 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="bg-white/70 dark:bg-gray-950/70 backdrop-blur-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:shadow-none border-b border-gray-100 dark:border-gray-800/50 px-4 py-3 md:px-8 md:py-4 transition-colors duration-200 sticky top-0 z-50 shrink-0 opacity-0"
+            className="sticky top-0 z-50 shrink-0 border-b border-white/5 bg-white/70 px-4 py-3 opacity-0 backdrop-blur-2xl transition-all duration-300 dark:border-gray-800/40 dark:bg-[#0B0C15]/80 md:px-8 md:py-4"
         >
-            <div className="max-w-450 mx-auto flex items-center justify-between md:px-10 px-0">
+            <div className="mx-auto flex max-w-450 items-center justify-between px-0 md:px-10">
                 <div
                     ref={navItemsRef}
                     className="flex items-center gap-4 opacity-0"
@@ -82,20 +82,20 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                         {isCodeAnalysis && (
                             <button
                                 onClick={() => window.dispatchEvent(new CustomEvent("open-code-analysis-records"))}
-                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
+                                className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 text-gray-600 shadow-sm transition-all duration-200 hover:border-indigo-100 hover:bg-white hover:text-indigo-600 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-indigo-900 dark:hover:bg-gray-800 dark:hover:text-indigo-400"
                                 title="Show analysis records"
                             >
-                                <span className="text-xs font-medium">Show records</span>
+                                <span className="text-xs font-semibold uppercase tracking-wider">Show records</span>
                             </button>
                         )}
 
                         {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                             <button
                                 onClick={() => setIsSubmissionsModalOpen(true)}
-                                className="flex items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 group shadow-sm hover:shadow-md"
+                                className="group flex items-center justify-center rounded-xl border border-gray-100 bg-gray-50 p-2.5 text-gray-500 shadow-sm transition-all duration-200 hover:border-indigo-100 hover:bg-white hover:text-indigo-600 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:border-indigo-900 dark:hover:bg-gray-800 dark:hover:text-indigo-400"
                                 title="See Submissions"
                             >
-                                <History className="w-5 h-5 group-hover:rotate-[-20deg] transition-transform" />
+                                <History className="h-5 w-5 transition-transform group-hover:rotate-[-20deg]" />
                             </button>
                         )}
                         {(isCodeJudge || isCodeIDE) && (
@@ -106,11 +106,11 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                         : "open-code-ide-ui-grid-modal";
                                     window.dispatchEvent(new CustomEvent(eventName));
                                 }}
-                                className="hidden lg:flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md"
+                                className="hidden items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 text-gray-600 shadow-sm transition-all duration-200 hover:border-indigo-100 hover:bg-white hover:text-indigo-600 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 lg:flex dark:hover:border-indigo-900 dark:hover:bg-gray-800 dark:hover:text-indigo-400"
                                 title="Select UI Grid"
                             >
-                                <LayoutGrid className="w-4 h-4" />
-                                <span className="text-xs font-medium">UI Grid</span>
+                                <LayoutGrid className="h-4 w-4" />
+                                <span className="text-xs font-semibold uppercase tracking-wider">UI Grid</span>
                             </button>
                         )}
 
@@ -119,7 +119,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 onClick={() =>
                                     setIsSidebarOpen(!isSidebarOpen)
                                 }
-                                className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md`}
+                                className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-xl border border-gray-100 bg-gray-50 p-2.5 text-gray-500 shadow-sm transition-all duration-200 hover:bg-white dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800`}
                                 title={
                                     isSidebarOpen
                                         ? "Hide sidebar"
@@ -127,11 +127,11 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 }
                             >
                                 {isSidebarOpen ? (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 ) : (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
                                 )}
@@ -140,23 +140,23 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                     </>
 
                     {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
-                        <div className="h-6 w-px bg-gray-100 dark:bg-gray-800 hidden md:block" />
+                        <div className="hidden h-6 w-px bg-gray-100 dark:bg-gray-800 md:block" />
                     )}
 
                             <div className="relative" ref={profileRef}>
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    className="flex items-center gap-3 pl-1.5 pr-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 border border-gray-100 dark:border-gray-800 hover:border-indigo-100 dark:hover:border-indigo-900 shadow-sm hover:shadow-md active:scale-95 group"
+                                    className="group flex items-center gap-3 rounded-full border border-gray-100 bg-gray-50 py-1.5 pl-1.5 pr-3 shadow-sm transition-all duration-300 hover:border-indigo-200 hover:bg-white hover:shadow-md active:scale-95 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300 dark:hover:border-indigo-900 dark:hover:bg-gray-900"
                                     title="Profile"
                                     aria-label="Profile"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center border border-indigo-200 dark:border-indigo-800 shadow-sm overflow-hidden transition-transform group-hover:scale-105">
-                                        <User className="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
+                                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-indigo-200 bg-indigo-100 shadow-sm transition-transform group-hover:scale-105 dark:border-indigo-800 dark:bg-indigo-900/40">
+                                        <User className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
                                     </div>
-                                    <span className="text-sm font-semibold tracking-tight hidden md:block">
-                                        {isLoading ? "Loading..." : user ? `Hey, ${displayName}` : "Login"}
+                                    <span className="hidden text-sm font-bold tracking-tight md:block">
+                                        {isLoading ? "LOADING..." : user ? `HEY, ${displayName.toUpperCase()}` : "LOGIN"}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {isProfileOpen && (

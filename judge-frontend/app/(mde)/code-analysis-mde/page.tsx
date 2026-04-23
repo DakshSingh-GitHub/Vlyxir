@@ -88,11 +88,11 @@ export default function CodeAnalysisPage() {
     const loaderBarRef = useRef<HTMLDivElement>(null);
 
     const shellClass = isDark
-        ? "flex-1 flex flex-col min-h-0 bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100 relative overflow-hidden font-sans selection:bg-slate-300/30"
-        : "flex-1 flex flex-col min-h-0 bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] text-slate-900 relative overflow-hidden font-sans selection:bg-indigo-500/20";
+        ? "flex-1 flex flex-col min-h-0 text-slate-100 relative overflow-hidden font-sans selection:bg-slate-300/30"
+        : "flex-1 flex flex-col min-h-0 text-slate-900 relative overflow-hidden font-sans selection:bg-indigo-500/20";
     const shellBaseClass = isDark
-        ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100"
-        : "bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] text-slate-900";
+        ? "text-slate-100"
+        : "text-slate-900";
     const ambientClass = isDark
         ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
         : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.12),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.6),transparent_35%,rgba(224,231,255,0.85)_100%)]";

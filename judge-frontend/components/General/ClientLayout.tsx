@@ -7,17 +7,31 @@ import NavBar from './NavBar';
 import NewNavBar from './NewNavBar';
 import SubmissionsModal from './SubmissionsModal';
 import SettingsModal from './SettingsModal';
+import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath } from '@/app/lib/paths';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-    const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi } = useAppContext();
+    const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi, isDark } = useAppContext();
     const pathname = usePathname();
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
     const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard'];
     const isNavExcluded = excludedPaths.includes(pathname) || pathname.startsWith('/forum') || pathname.startsWith('/user/');
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 
+    const isHomePage = pathname === '/';
+    const isSingleScreenPage = isCodeJudgePath(pathname) || isCodeIdePath(pathname) || isCodeAnalysisPath(pathname);
+    const isGradientPage = isHomePage || isSingleScreenPage;
+
+    // Base background classes based on theme and route
+    const mainBgClass = isDark
+        ? (isGradientPage 
+            ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)]" 
+            : "bg-[#0B0C15]")
+        : (isGradientPage 
+            ? "bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)]" 
+            : "bg-white");
+
     return (
-        <main className="flex min-h-screen flex-col">
+        <main className={`flex flex-col transition-colors duration-500 ${isSingleScreenPage ? "h-screen overflow-hidden" : "min-h-screen"} ${mainBgClass}`}>
             {!isNavExcluded && (
                 <NavComponent
                     isSidebarOpen={isSidebarOpen}

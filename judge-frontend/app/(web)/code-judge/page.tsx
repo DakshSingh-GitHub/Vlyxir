@@ -674,7 +674,7 @@ export default function Home() {
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 bg-[#FAFAFA] dark:bg-[#0B0C15] text-gray-900 dark:text-gray-50 relative overflow-hidden font-sans selection:bg-indigo-500/30`}>
+        <div className={`flex-1 flex flex-col min-h-0 text-gray-900 dark:text-gray-50 relative overflow-hidden font-sans selection:bg-indigo-500/30`}>
             {/* Ambient Background Glows - Refined for "Premium" feel */}
             <div className="absolute top-[-20%] right-[-10%] w-200 h-200 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-screen animate-pulse-slow" />
             <div className="absolute bottom-[-20%] left-[-10%] w-150 h-150 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[100px] pointer-events-none mix-blend-multiply dark:mix-blend-screen animate-pulse-slow delay-1000" />

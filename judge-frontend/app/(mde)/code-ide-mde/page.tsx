@@ -511,8 +511,8 @@ export default function CodeTestPage() {
 
     return (
         <div className={`flex-1 flex flex-col min-h-0 relative overflow-hidden font-sans ${isDark
-            ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100 selection:bg-slate-300/30"
-            : "bg-[linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] text-slate-900 selection:bg-indigo-500/20"
+            ? "text-slate-100 selection:bg-slate-300/30"
+            : "text-slate-900 selection:bg-indigo-500/20"
             }`}>
             <div className={`pointer-events-none absolute inset-0 ${isDark
                 ? "bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"

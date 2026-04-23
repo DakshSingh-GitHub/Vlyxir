@@ -70,35 +70,36 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="sticky top-0 z-50 shrink-0 px-3 pt-4 pb-2 opacity-0 md:px-6 md:pt-5 md:pb-3"
+            className="sticky top-0 z-50 shrink-0 px-3 pt-4 pb-2 opacity-0 md:px-6 md:pt-6 md:pb-4"
         >
             <div className="mx-auto flex max-w-400 justify-center">
-                <div className={`relative w-[90vw] max-w-[90vw] rounded-full px-4 py-3 backdrop-blur-2xl ring-1 shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-500 hover:shadow-[0_16px_48px_rgba(0,0,0,0.2)] ${isDark
-                    ? "bg-[#080c14]/30 ring-white/5 hover:ring-white/10 hover:bg-[#080c14]/40"
-                    : "bg-white/40 ring-slate-900/5 hover:ring-slate-900/10 hover:bg-white/50"
+                <div className={`relative w-[92vw] max-w-[92vw] rounded-full px-5 py-3.5 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${isDark
+                    ? "bg-[#0A0F1A]/40 ring-1 ring-white/10 backdrop-blur-3xl hover:bg-[#0A0F1A]/60 hover:ring-white/20"
+                    : "bg-white/60 ring-1 ring-slate-900/10 backdrop-blur-3xl hover:bg-white/80 hover:ring-slate-900/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
                     }`}>
                     {/* Inner highlight for 3D effect */}
-                    <div className={`pointer-events-none absolute inset-0 rounded-full border-[0.5px] ${isDark ? 'border-white/5' : 'border-white/40'}`} />
+                    <div className={`pointer-events-none absolute inset-0 rounded-full border-[0.5px] ${isDark ? 'border-white/10' : 'border-white/60'}`} />
                     
                     {/* Top glow */}
-                    <div className={`pointer-events-none absolute inset-x-[20%] top-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-white/20" : "text-slate-900/10"}`} />
+                    <div className={`pointer-events-none absolute inset-x-[20%] top-0 h-px bg-linear-to-r from-transparent via-current to-transparent transition-opacity duration-500 ${isDark ? "text-cyan-400/30 group-hover:text-cyan-400/50" : "text-indigo-500/20"}`} />
                     
                     {/* Bottom subtle glow */}
-                    <div className={`pointer-events-none absolute inset-x-[15%] bottom-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-cyan-400/20" : "text-indigo-500/10"}`} />
-                    <div className="relative flex items-center justify-between gap-3">
+                    <div className={`pointer-events-none absolute inset-x-[15%] bottom-0 h-px bg-linear-to-r from-transparent via-current to-transparent ${isDark ? "text-indigo-400/20" : "text-purple-500/10"}`} />
+                    
+                    <div className="relative flex items-center justify-between gap-4">
                         <div
                             ref={navItemsRef}
                             className="flex items-center gap-4 opacity-0"
                         >
                             <NewNavDropdown />
                         </div>
-                        <div className="flex items-center gap-2 md:gap-3">
+                        <div className="flex items-center gap-2 md:gap-4">
                             {isCodeAnalysis && (
                                 <button
                                     onClick={() => window.dispatchEvent(new CustomEvent("open-code-analysis-records"))}
-                                    className={`flex items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
-                                        : "border-slate-900/5 bg-slate-900/5 text-slate-700 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
+                                    className={`flex items-center gap-2 rounded-full border px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 ${isDark
+                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/15 hover:text-white backdrop-blur-md shadow-lg shadow-black/20"
+                                        : "border-slate-900/10 bg-slate-900/5 text-slate-700 hover:border-slate-900/20 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="Show analysis records"
                                 >
@@ -109,13 +110,13 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                                 <button
                                     onClick={() => setIsSubmissionsModalOpen(true)}
-                                    className={`group flex items-center justify-center rounded-full border p-2.5 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
-                                        : "border-slate-900/5 bg-slate-900/5 text-slate-500 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
+                                    className={`group flex items-center justify-center rounded-full border p-2.5 transition-all duration-300 hover:scale-110 active:scale-90 ${isDark
+                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/30 hover:bg-white/15 hover:text-white backdrop-blur-md shadow-lg shadow-black/20"
+                                        : "border-slate-900/10 bg-slate-900/5 text-slate-500 hover:border-slate-900/20 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="See Submissions"
                                 >
-                                    <History className="w-5 h-5 transition-transform group-hover:rotate-[-20deg]" />
+                                    <History className="h-5 w-5 transition-transform duration-500 group-hover:rotate-[-20deg]" />
                                 </button>
                             )}
 
@@ -127,13 +128,13 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                             : "open-code-ide-ui-grid-modal";
                                         window.dispatchEvent(new CustomEvent(eventName));
                                     }}
-                                    className={`hidden items-center gap-2 rounded-full border px-4 py-2.5 text-xs font-medium transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] lg:flex ${isDark
-                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
-                                        : "border-slate-900/5 bg-slate-900/5 text-slate-700 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
+                                    className={`hidden items-center gap-2 rounded-full border px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 lg:flex ${isDark
+                                        ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/15 hover:text-white backdrop-blur-md shadow-lg shadow-black/20"
+                                        : "border-slate-900/10 bg-slate-900/5 text-slate-700 hover:border-slate-900/20 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="Select UI Grid"
                                 >
-                                    <LayoutGrid className="w-4 h-4" />
+                                    <LayoutGrid className="h-4 w-4" />
                                     <span>UI Grid</span>
                                 </button>
                             )}
@@ -141,18 +142,18 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                                 <button
                                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                                    className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-full border p-2.5 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] ${isDark
-                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10 hover:text-white backdrop-blur-md"
-                                        : "border-slate-900/5 bg-slate-900/5 text-slate-500 hover:border-slate-900/10 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
+                                    className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-full border p-2.5 transition-all duration-300 hover:scale-110 active:scale-90 ${isDark
+                                        ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/30 hover:bg-white/15 hover:text-white backdrop-blur-md shadow-lg shadow-black/20"
+                                        : "border-slate-900/10 bg-slate-900/5 text-slate-500 hover:border-slate-900/20 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
                                 >
                                     {isSidebarOpen ? (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     ) : (
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                                         </svg>
                                     )}
@@ -166,55 +167,59 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             <div className="relative" ref={profileRef}>
                                 <button
                                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    className={`group flex items-center gap-3 rounded-full border py-1.5 pl-1.5 pr-3 transition-all duration-200 hover:shadow-[0_14px_28px_rgba(2,6,23,0.28)] active:scale-95 ${isDark
-                                        ? "border-white/10 bg-white/5 text-slate-100 hover:border-white/20 hover:bg-white/10 backdrop-blur-md"
-                                        : "border-slate-900/5 bg-slate-900/5 text-slate-900 hover:border-slate-900/10 hover:bg-slate-900/10 backdrop-blur-md"
+                                    className={`group flex items-center gap-3 rounded-full border py-1.5 pl-1.5 pr-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-95 ${isDark
+                                        ? "border-white/10 bg-white/5 text-slate-100 hover:border-white/30 hover:bg-white/10 backdrop-blur-md shadow-lg shadow-black/30"
+                                        : "border-slate-900/10 bg-slate-900/5 text-slate-900 hover:border-slate-900/20 hover:bg-slate-900/10 backdrop-blur-md shadow-md"
                                         }`}
                                     title="Profile"
                                     aria-label="Profile"
                                 >
-                                    <div className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition-transform group-hover:scale-105 ${isDark
-                                        ? "border-slate-600/50 bg-linear-to-br from-slate-700 via-slate-800 to-slate-900"
-                                        : "border-slate-200 bg-linear-to-br from-slate-50 via-white to-slate-100"
+                                    <div className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 ${isDark
+                                        ? "border-white/20 bg-linear-to-br from-indigo-500 via-purple-600 to-pink-600"
+                                        : "border-slate-200 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500"
                                         }`}>
-                                        <User className={`w-4.5 h-4.5 ${isDark ? "text-cyan-100" : "text-slate-600"}`} />
+                                        <User className={`h-4.5 w-4.5 text-white`} />
                                     </div>
-                                    <span className={`hidden text-sm font-medium tracking-[0.18em] md:block ${isDark ? "text-slate-100/90" : "text-slate-700"}`}>
+                                    <span className={`hidden text-[11px] font-black tracking-[0.2em] md:block ${isDark ? "text-slate-100" : "text-slate-800"}`}>
                                         {isLoading ? "LOADING..." : user ? `HEY, ${displayName.toUpperCase()}` : "LOGIN"}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDark ? "text-slate-400" : "text-slate-500"} ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`h-4 w-4 transition-transform duration-500 ${isDark ? "text-slate-400" : "text-slate-500"} ${isProfileOpen ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {isProfileOpen && (
-                                    <div className={`absolute right-0 z-50 mt-3 w-60 overflow-hidden rounded-[1.75rem] border shadow-[0_20px_48px_rgba(2,6,23,0.38)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200 ${isDark
-                                        ? "border-slate-700/60 bg-[linear-gradient(180deg,rgba(8,12,20,0.98),rgba(15,23,42,0.92))]"
-                                        : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))]"
+                                    <div className={`absolute right-0 z-50 mt-4 w-64 overflow-hidden rounded-[2rem] border p-2 shadow-[0_30px_70px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-4 duration-300 ${isDark
+                                        ? "border-white/10 bg-[#0A0F1A]/95"
+                                        : "border-slate-200 bg-white/95"
                                         }`}>
-                                        <div className="space-y-1 p-2">
+                                        <div className="space-y-1">
+                                            <div className={`mb-2 px-4 py-3 border-b ${isDark ? "border-white/5" : "border-slate-100"}`}>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>Logged in as</p>
+                                                <p className={`text-sm font-bold truncate ${isDark ? "text-white" : "text-slate-900"}`}>{user?.email || "Guest"}</p>
+                                            </div>
                                             <button
                                                 onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
-                                                className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
+                                                className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
                                             >
-                                                <Settings className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />
+                                                <Settings className={`h-4 w-4 transition-transform group-hover:rotate-90 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                 General settings
                                             </button>
                                             {user ? (
                                                 <>
                                                     <button
                                                         onClick={() => { router.push('/account-settings'); setIsProfileOpen(false); }}
-                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
                                                     >
-                                                        <User className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />
+                                                        <User className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                         Account settings
                                                     </button>
 
-                                                    <div className={`mx-2 my-1 h-px ${isDark ? "bg-slate-600/50" : "bg-slate-200"}`} />
+                                                    <div className={`mx-4 my-2 h-px ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
 
                                                     <button
                                                         onClick={() => { router.push('/account-controls'); setIsProfileOpen(false); }}
-                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
                                                     >
-                                                        <Shield className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />
+                                                        <Shield className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                         Account controls
                                                     </button>
                                                     <button
@@ -223,18 +228,18 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                             setIsProfileOpen(false);
                                                             router.push('/login');
                                                         }}
-                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-rose-300 hover:bg-rose-500/10" : "text-rose-600 hover:bg-rose-50"}`}
+                                                        className={`group mt-1 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-rose-400 hover:bg-rose-500/20" : "text-rose-600 hover:bg-rose-50"}`}
                                                     >
-                                                        <LogOut className={`w-4 h-4 ${isDark ? "text-rose-300 group-hover:text-rose-200" : "text-rose-500 group-hover:text-rose-600"}`} />
+                                                        <LogOut className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${isDark ? "text-rose-400" : "text-rose-500"}`} />
                                                         Logout
                                                     </button>
                                                 </>
                                             ) : (
                                                 <button
                                                     onClick={() => { router.push('/login'); setIsProfileOpen(false); }}
-                                                    className={`group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors ${isDark ? "text-slate-200 hover:bg-slate-800/80" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
                                                 >
-                                                    <User className={`w-4 h-4 ${isDark ? "text-slate-400 group-hover:text-cyan-200" : "text-slate-400 group-hover:text-indigo-500"}`} />
+                                                    <User className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                     Login
                                                 </button>
                                             )}

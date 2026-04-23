@@ -712,7 +712,7 @@ export default function Home() {
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 relative overflow-hidden font-sans selection:bg-slate-300/30 ${isDark ? "bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] dark:bg-[#07111d] text-gray-100 dark:text-gray-50" : "bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900"}`}>
+        <div className={`flex-1 flex flex-col min-h-0 relative overflow-hidden font-sans selection:bg-slate-300/30 ${isDark ? "text-gray-100 dark:text-gray-50" : "text-slate-900"}`}>
             <div className={`pointer-events-none absolute inset-0 ${isDark ? "bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]" : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]"}`} />
             <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${isDark ? "bg-slate-900/40" : "bg-white/60"}`} />
             <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-slate-800/40" : "bg-sky-200/40"}`} />

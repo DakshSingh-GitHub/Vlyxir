@@ -386,7 +386,7 @@ export default function CodeTestPage() {
     };
 
     return (
-        <div className={`flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-50 relative overflow-x-hidden ${(isMobile && mobileTab === "output") ? "overflow-y-hidden" : "overflow-y-auto"} lg:overflow-hidden font-sans transition-colors duration-200`}>
+        <div className={`flex-1 flex flex-col min-h-0 text-gray-900 dark:text-gray-50 relative overflow-x-hidden ${(isMobile && mobileTab === "output") ? "overflow-y-hidden" : "overflow-y-auto"} lg:overflow-hidden font-sans transition-colors duration-200`}>
             <div className="absolute top-0 right-[-10%] w-125 h-125 bg-indigo-500/10 dark:bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none" />
             <div className="absolute bottom-[-10%] left-[-5%] w-100 h-100 bg-purple-500/10 dark:bg-purple-500/15 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute top-1/2 left-1/4 w-75 h-75 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
