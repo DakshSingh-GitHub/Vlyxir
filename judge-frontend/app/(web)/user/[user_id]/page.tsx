@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 import LoginPrompt from '../../../../components/Auth/LoginPrompt';
 import { useAppContext } from '../../../lib/context';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getProblems } from '../../../lib/api';
 import AllSubmissionsModal from './AllSubmissionsModal';
@@ -71,6 +72,7 @@ interface RecentSubmission {
 
 export default function UserPage({ params }: PageProps) {
     const { user_id } = React.use(params);
+    const router = useRouter();
     const { user, isLoading: authLoading } = useAuth();
     const { isDark } = useAppContext();
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -268,10 +270,13 @@ export default function UserPage({ params }: PageProps) {
 
                 {/* Back Navigation */}
                 <div className="flex items-center">
-                    <Link href="/forum" className="flex items-center gap-2 text-sm font-medium transition-all px-4 py-2 rounded-full glass-morphism outline outline-1 text-slate-600 hover:text-indigo-600 bg-white/70 outline-slate-200 shadow-sm dark:text-slate-400 dark:hover:text-indigo-400 dark:bg-slate-900/50 dark:outline-slate-800 dark:shadow-none">
+                    <button 
+                        onClick={() => router.back()} 
+                        className="flex items-center gap-2 text-sm font-medium transition-all px-4 py-2 rounded-full glass-morphism outline outline-1 text-slate-600 hover:text-indigo-600 bg-white/70 outline-slate-200 shadow-sm dark:text-slate-400 dark:hover:text-indigo-400 dark:bg-slate-900/50 dark:outline-slate-800 dark:shadow-none cursor-pointer"
+                    >
                         <ArrowLeft size={16} />
-                        Back to Forum
-                    </Link>
+                        Go Back
+                    </button>
                 </div>
 
                 {/* Header Section */}
