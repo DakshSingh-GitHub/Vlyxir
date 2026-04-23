@@ -190,7 +190,7 @@ export default function UserPage({ params }: PageProps) {
                         : 0
                 });
 
-                setRecentSubmissions(validSubmissions.slice(0, 10));
+                setRecentSubmissions(validSubmissions.slice(0, 2));
                 setAllSubmissions(validSubmissions);
 
             } catch (error) {
