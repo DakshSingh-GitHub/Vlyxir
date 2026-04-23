@@ -235,7 +235,7 @@ export default function UserPage({ params }: PageProps) {
 
     if (!user) {
         return (
-            <div className={`flex min-h-screen items-center justify-center px-4 py-10 ${isDark ? "bg-background text-slate-100" : "bg-slate-50 text-slate-900"}`}>
+            <div className="flex flex-1 items-center justify-center px-4 py-10">
                 <div className="w-full max-w-xl">
                     <LoginPrompt
                         title="Login to view profiles"
@@ -249,7 +249,7 @@ export default function UserPage({ params }: PageProps) {
 
     if (!profile) {
         return (
-            <div className={`flex h-screen items-center justify-center ${isDark ? 'bg-background text-white' : 'bg-slate-50 text-slate-900'}`}>
+            <div className="flex flex-1 items-center justify-center">
                 <h1 className="text-2xl font-bold">User Not Found</h1>
             </div>
         );
@@ -265,7 +265,7 @@ export default function UserPage({ params }: PageProps) {
     };
 
     return (
-        <div className="min-h-screen transition-colors duration-500 p-4 md:p-8 bg-slate-50 text-slate-800 dark:bg-background dark:text-slate-200">
+        <div className="flex-1 transition-colors duration-500 p-4 md:p-8">
             <div className="max-w-6xl mx-auto space-y-6">
 
                 {/* Back Navigation */}

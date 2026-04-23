@@ -37,9 +37,7 @@ export default function AccountControlsPage() {
   const { user, isLoading: isAuthLoading, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const shellClass = isDark
-    ? "relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-slate-100"
-    : "relative h-full min-h-0 flex-1 overflow-y-auto overflow-x-hidden font-sans bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900";
+  const shellClass = "relative flex-1 font-sans";
   const ambientClass = isDark
     ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
     : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]";
@@ -72,9 +70,11 @@ export default function AccountControlsPage() {
   if (isAuthLoading) {
     return (
       <div className={shellClass}>
-        <div className={ambientClass} />
-        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className={ambientClass} />
+          <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
+          <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+        </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
           <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
@@ -117,9 +117,11 @@ export default function AccountControlsPage() {
   if (!user) {
     return (
       <div className={shellClass}>
-        <div className={ambientClass} />
-        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className={ambientClass} />
+          <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
+          <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+        </div>
 
         <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
           <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
@@ -222,9 +224,11 @@ export default function AccountControlsPage() {
 
   return (
     <div className={shellClass}>
-      <div className={ambientClass} />
-      <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-      <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className={ambientClass} />
+        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
+        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
+      </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
         <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
