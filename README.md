@@ -1,4 +1,4 @@
-# ⚖️ CodeJudge 🚀
+# ⚖️ Vlyxir 🚀
 
 [🚀 Try Vlyxir Live](https://vlyxir.vercel.app)
 
