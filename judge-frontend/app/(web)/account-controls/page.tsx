@@ -20,6 +20,9 @@ import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
 import { formatAccountDate } from "../account-settings/helper/acc_helper";
+import DeleteAccountModal from "../../../components/Account/DeleteAccountModal";
+import { Trash2 } from "lucide-react";
+import { supabase } from "../../lib/supabase/client";
 
 function getDisplayName(user: ReturnType<typeof useAuth>["user"]) {
   return (
@@ -36,6 +39,7 @@ export default function AccountControlsPage() {
   const { isDark } = useAppContext();
   const { user, isLoading: isAuthLoading, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const shellClass = "relative flex-1 font-sans";
   const ambientClass = isDark
@@ -64,6 +68,43 @@ export default function AccountControlsPage() {
       router.replace("/login");
     } finally {
       setIsSigningOut(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    
+    try {
+      // 1. Delete associated data first to avoid foreign key violations
+      const tables = [
+        { name: "forum_comment_likes", col: "user_id" },
+        { name: "forum_post_upvotes", col: "user_id" },
+        { name: "forum_comments", col: "author_id" },
+        { name: "forum_posts", col: "author_id" },
+        { name: "submissions", col: "user_id" }
+      ];
+
+      for (const table of tables) {
+        const { error } = await supabase.from(table.name).delete().eq(table.col, user.id);
+        if (error) {
+          console.warn(`Could not delete from ${table.name}:`, error.message);
+          // We continue anyway as some tables might be empty or have different RLS
+        }
+      }
+
+      // 2. Delete the profile record last
+      const { error: profileError } = await supabase.from("profiles").delete().eq("id", user.id);
+      
+      if (profileError) {
+        throw new Error(`Profile deletion failed: ${profileError.message}`);
+      }
+
+      // 3. Only sign out if deletion was successful
+      await signOut();
+      router.replace("/");
+    } catch (err) {
+      console.error("Deletion error:", err);
+      throw err; // This will be caught by the modal and shown to the user
     }
   };
 
@@ -401,29 +442,36 @@ export default function AccountControlsPage() {
 
             <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
               <div className="mb-3 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <LockKeyhole className="h-5 w-5 text-indigo-500" />
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-rose-500/20 bg-rose-500/10" : "border-rose-200 bg-rose-50"}`}>
+                  <Trash2 className="h-5 w-5 text-rose-500" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Note</p>
-                  <h2 className="text-lg font-bold">What this page does not do</h2>
+                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Danger Zone</p>
+                  <h2 className="text-lg font-bold">Delete your account</h2>
                 </div>
               </div>
               <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                This page intentionally keeps to safe session controls. It does not delete accounts or modify authentication
-                credentials directly.
+                Permanently remove your profile, submissions, and all associated data. This action cannot be undone.
               </p>
               <button
-                onClick={() => router.push("/")}
-                className={`mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+                onClick={() => setIsDeleteModalOpen(true)}
+                className={`mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#e11d48,#9f1239)] shadow-lg shadow-rose-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#e11d48,#be123c)] shadow-lg shadow-rose-500/20 hover:brightness-110"}`}
               >
-                <Sparkles className="h-4 w-4" />
-                Go Home
+                <Trash2 className="h-4 w-4" />
+                Delete Account
               </button>
             </div>
           </div>
         </div>
       </div>
+
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        currentUsername={user?.user_metadata?.username || "confirm"}
+        isDark={isDark}
+      />
     </div>
   );
 }
