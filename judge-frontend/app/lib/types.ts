@@ -43,3 +43,12 @@ export interface User {
     isRoot?: boolean;
     createdAt: number;
 }
+
+export interface LeaderboardUser {
+    id: string;
+    username: string;
+    full_name: string;
+    total_score: number;
+    country?: string;
+    rank?: number;
+}

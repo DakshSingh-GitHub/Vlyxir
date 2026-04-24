@@ -18,14 +18,9 @@ import {
 import { supabase } from '../../lib/supabase/client';
 import { useAppContext } from '../../lib/context';
 import Link from 'next/link';
+import { LeaderboardUser } from '../../lib/types';
+import { getCachedLeaderboard, setCachedLeaderboard } from '../../lib/cache';
 
-interface LeaderboardUser {
-    id: string;
-    username: string;
-    full_name: string;
-    total_score: number;
-    country?: string;
-}
 
 export default function LeaderboardPage() {
     const { isDark } = useAppContext();
@@ -39,8 +34,18 @@ export default function LeaderboardPage() {
     });
 
     useEffect(() => {
+        // Try to load from cache first for instant UI
+        const cached = getCachedLeaderboard();
+        if (cached) {
+            setUsers(cached.users);
+            setStats(cached.stats);
+            setLoading(false);
+        }
+
         async function fetchLeaderboard() {
-            setLoading(true);
+            // Only show loading if we don't have cached data
+            if (!cached) setLoading(true);
+            
             try {
                 const { data, error } = await supabase
                     .from('profiles')
@@ -50,15 +55,25 @@ export default function LeaderboardPage() {
 
                 if (error) throw error;
 
-                const leaderboardData = data || [];
-                setUsers(leaderboardData);
+                const leaderboardData = (data || []).map((user, index) => ({
+                    ...user,
+                    rank: index + 1
+                }));
 
-                // Calculate some stats
                 const totalPoints = leaderboardData.reduce((acc, curr) => acc + (curr.total_score || 0), 0);
-                setStats({
+                const newStats = {
                     totalUsers: leaderboardData.length,
                     totalPoints: totalPoints,
                     avgScore: leaderboardData.length > 0 ? Math.round(totalPoints / leaderboardData.length) : 0
+                };
+
+                setUsers(leaderboardData);
+                setStats(newStats);
+
+                // Update cache with fresh data
+                setCachedLeaderboard({
+                    users: leaderboardData,
+                    stats: newStats
                 });
 
             } catch (err) {
@@ -81,7 +96,7 @@ export default function LeaderboardPage() {
     };
 
     const topThree = users.slice(0, 3);
-    const others = filteredUsers.slice(topThree.length);
+    const tableUsers = searchTerm ? filteredUsers : filteredUsers.slice(3);
 
     if (loading) return <LeaderboardSkeleton />;
 
@@ -227,32 +242,23 @@ export default function LeaderboardPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                                {others.length > 0 ? (
-                                    others.map((user, idx) => (
+                                {tableUsers.length > 0 ? (
+                                    tableUsers.map((user) => (
                                         <RankingRow
                                             key={user.id}
                                             user={user}
-                                            rank={topThree.length + idx + 1}
+                                            rank={user.rank || 0}
                                         />
                                     ))
-                                ) : !searchTerm && users.length > 3 ? (
-                                    <tr className="text-center">
-                                        <td colSpan={5} className="py-12 text-slate-400">Loading more competitors...</td>
-                                    </tr>
-                                ) : searchTerm && filteredUsers.length === 0 ? (
+                                ) : searchTerm ? (
                                     <tr className="text-center">
                                         <td colSpan={5} className="py-12 text-slate-400">No coders found matching your search.</td>
                                     </tr>
-                                ) : (
-                                    // If search matches top 3, they might be here
-                                    filteredUsers.slice(0, 3).map((user, idx) => (
-                                        <RankingRow
-                                            key={user.id}
-                                            user={user}
-                                            rank={idx + 1}
-                                        />
-                                    ))
-                                )}
+                                ) : users.length > 3 ? (
+                                    <tr className="text-center">
+                                        <td colSpan={5} className="py-12 text-slate-400">Loading more competitors...</td>
+                                    </tr>
+                                ) : null}
                             </tbody>
                         </table>
                     </div>

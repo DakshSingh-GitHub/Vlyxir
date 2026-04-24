@@ -43,6 +43,7 @@ interface UserProfile {
     github_username?: string;
     twitter_username?: string;
     created_at: string;
+    total_score?: number;
 }
 
 interface SubmissionStats {
@@ -80,6 +81,7 @@ export default function UserPage({ params }: PageProps) {
     const [recentSubmissions, setRecentSubmissions] = useState<RecentSubmission[]>([]);
     const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [rank, setRank] = useState<number | string>('N/A');
 
     // Modal states
     const [isAllSubmissionsOpen, setIsAllSubmissionsOpen] = useState(false);
@@ -127,6 +129,16 @@ export default function UserPage({ params }: PageProps) {
                     return;
                 }
                 setProfile(profileData);
+
+                // Fetch Rank
+                const { count: rankCount, error: rankError } = await supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true })
+                    .gt('total_score', profileData.total_score || 0);
+
+                if (!rankError) {
+                    setRank((rankCount || 0) + 1);
+                }
 
                 // Fetch Submissions for stats using the resolved profile ID
                 const resolvedUserId = profileData.id;
@@ -341,7 +353,7 @@ export default function UserPage({ params }: PageProps) {
                     <StatCard
                         icon={<Clock className="text-indigo-400" />}
                         label="Rank"
-                        value="N/A"
+                        value={rank}
                         color="indigo"
                         delay={0.4}
                     />
