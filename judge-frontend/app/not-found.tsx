@@ -2,9 +2,12 @@
 
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { ArrowLeft, Home, Terminal } from "lucide-react";
 
 export default function NotFound() {
+  const router = useRouter();
+  const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -150,7 +153,15 @@ export default function NotFound() {
           </Link>
           
           <button 
-            onClick={() => window.history.back()}
+            onClick={() => {
+              if (pathname === '/admin') {
+                router.push('/');
+              } else if (typeof window !== 'undefined' && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push('/');
+              }
+            }}
             className="group flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 transition-all active:scale-95"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
