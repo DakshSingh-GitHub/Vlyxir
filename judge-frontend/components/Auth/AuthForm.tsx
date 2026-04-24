@@ -63,7 +63,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     return { score, label: "Strong", colorClass: "bg-emerald-500", widthClass: "w-full" };
   })();
 
-  const normalizeUsername = (value: string) => value.trim().toLowerCase().replace(/\s+/g, "");
+  const normalizeUsername = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
 
   const checkUsernameAvailability = async (value: string) => {
     const normalized = normalizeUsername(value);
@@ -108,6 +108,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       }
       if (password !== confirmPassword) {
         setError("Passwords do not match.");
+        return;
+      }
+      if (!/^[a-z0-9_-]+$/.test(username)) {
+        setError("Username can only contain lowercase letters, numbers, hyphens, and underscores.");
         return;
       }
     }
@@ -362,7 +366,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             )}
 
             <motion.label className="block" variants={itemVariants}>
-              <span className="mb-2 block text-xs font-black uppercase tracking-[0.2em] text-slate-400">Username</span>
+              <span className="mb-2 flex items-center justify-between text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                <span>Username</span>
+                {mode === "register" && (
+                  <span className="text-[9px] font-medium normal-case tracking-normal text-slate-500">
+                    a-z, 0-9, - and _ only
+                  </span>
+                )}
+              </span>
               {mode === "register" ? (
                 <div className="grid grid-cols-[minmax(0,9fr)_minmax(52px,1fr)] gap-3">
                   <div className="relative">
