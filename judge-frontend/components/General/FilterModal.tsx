@@ -11,8 +11,13 @@ interface FilterModalProps {
     filters: {
         difficulty: string[];
         status: "all" | "solved" | "unsolved";
+        statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
     };
-    setFilters: (filters: { difficulty: string[]; status: "all" | "solved" | "unsolved" }) => void;
+    setFilters: (filters: {
+        difficulty: string[];
+        status: "all" | "solved" | "unsolved";
+        statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
+    }) => void;
 }
 
 type Category = "difficulty" | "status";
@@ -114,7 +119,11 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
     };
 
     const resetFilters = () => {
-        setFilters({ difficulty: [], status: "all" });
+        setFilters({
+            difficulty: [],
+            status: "all",
+            statusSub: { correct: true, incorrect: true, hasOne: false }
+        });
     };
 
     const activeFilterCount = filters.difficulty.length + (filters.status !== "all" ? 1 : 0);
@@ -259,40 +268,105 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                             {activeCategory === "status" && (
                                 <div className="grid grid-cols-1 gap-3 md:gap-4">
                                     {statusOptions.map((opt) => (
-                                        <label
-                                            key={opt.id}
-                                            className={`flex items-center justify-between p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.status === opt.id
-                                                ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/10"
-                                                : "border-gray-50 dark:border-gray-900 hover:border-gray-100 dark:hover:border-gray-800 bg-gray-50/30 dark:bg-gray-900/20"
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-4 md:gap-5">
-                                                <input
-                                                    type="radio"
-                                                    name="status"
-                                                    checked={filters.status === opt.id}
-                                                    onChange={() => setFilters({ ...filters, status: opt.id })}
-                                                    className="hidden"
-                                                />
-                                                <div className="text-xl md:text-3xl w-10 h-10 md:w-14 md:h-14 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform">
-                                                    {opt.icon}
+                                        <div key={opt.id} className="space-y-4">
+                                            <label
+                                                className={`flex items-center justify-between p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.status === opt.id
+                                                    ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/10"
+                                                    : "border-gray-50 dark:border-gray-900 hover:border-gray-100 dark:hover:border-gray-800 bg-gray-50/30 dark:bg-gray-900/20"
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-4 md:gap-5">
+                                                    <input
+                                                        type="radio"
+                                                        name="status"
+                                                        checked={filters.status === opt.id}
+                                                        onChange={() => setFilters({ ...filters, status: opt.id })}
+                                                        className="hidden"
+                                                    />
+                                                    <div className="text-xl md:text-3xl w-10 h-10 md:w-14 md:h-14 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg border border-gray-100 dark:border-gray-700 group-hover:scale-110 transition-transform">
+                                                        {opt.icon}
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-base md:text-lg font-bold text-gray-900 dark:text-white block">
+                                                            {opt.label}
+                                                        </span>
+                                                        <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">
+                                                            {opt.desc}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <span className="text-base md:text-lg font-bold text-gray-900 dark:text-white block">
-                                                        {opt.label}
-                                                    </span>
-                                                    <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">
-                                                        {opt.desc}
-                                                    </span>
+                                                <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-500 ${filters.status === opt.id
+                                                    ? "bg-emerald-600 scale-100 shadow-lg shadow-emerald-600/40"
+                                                    : "bg-gray-200 dark:bg-gray-800 scale-90 opacity-0 md:group-hover:opacity-100"
+                                                    }`}>
+                                                    <Check className="w-3 h-3 md:w-5 md:h-5 text-white stroke-[4.5px]" />
                                                 </div>
-                                            </div>
-                                            <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-500 ${filters.status === opt.id
-                                                ? "bg-emerald-600 scale-100 shadow-lg shadow-emerald-600/40"
-                                                : "bg-gray-200 dark:bg-gray-800 scale-90 opacity-0 md:group-hover:opacity-100"
-                                                }`}>
-                                                <Check className="w-3 h-3 md:w-5 md:h-5 text-white stroke-[4.5px]" />
-                                            </div>
-                                        </label>
+                                            </label>
+
+                                            {opt.id === "solved" && filters.status === "solved" && (
+                                                <div className="ml-4 md:ml-8 p-6 rounded-[2rem] bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800/50 space-y-6 animate-in slide-in-from-top-4 duration-300">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        {[
+                                                            { id: 'correct', label: 'Correct', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+                                                            { id: 'incorrect', label: 'Incorrect', color: 'text-rose-500', bg: 'bg-rose-500/10' }
+                                                        ].map((sub) => (
+                                                            <button
+                                                                key={sub.id}
+                                                                onClick={() => {
+                                                                    const key = sub.id as 'correct' | 'incorrect';
+                                                                    const otherKey = key === 'correct' ? 'incorrect' : 'correct';
+                                                                    // Cannot uncheck both
+                                                                    if (filters.statusSub[key] && !filters.statusSub[otherKey]) return;
+                                                                    
+                                                                    setFilters({
+                                                                        ...filters,
+                                                                        statusSub: {
+                                                                            ...filters.statusSub,
+                                                                            [key]: !filters.statusSub[key]
+                                                                        }
+                                                                    });
+                                                                }}
+                                                                className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                                                                    filters.statusSub[sub.id as 'correct' | 'incorrect']
+                                                                        ? 'border-emerald-500/50 bg-white dark:bg-gray-800 shadow-sm'
+                                                                        : 'border-transparent bg-transparent opacity-60 grayscale'
+                                                                }`}
+                                                            >
+                                                                <div className={`w-8 h-8 rounded-lg ${sub.bg} ${sub.color} flex items-center justify-center`}>
+                                                                    {filters.statusSub[sub.id as 'correct' | 'incorrect'] ? <Check className="w-4 h-4 stroke-[3px]" /> : <div className="w-4 h-4" />}
+                                                                </div>
+                                                                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{sub.label}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-800 to-transparent" />
+
+                                                    <button
+                                                        onClick={() => setFilters({
+                                                            ...filters,
+                                                            statusSub: {
+                                                                ...filters.statusSub,
+                                                                hasOne: !filters.statusSub.hasOne
+                                                            }
+                                                        })}
+                                                        className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${
+                                                            filters.statusSub.hasOne 
+                                                                ? 'bg-emerald-500/10 border-2 border-emerald-500/20' 
+                                                                : 'bg-gray-100/50 dark:bg-gray-800/30 border-2 border-transparent'
+                                                        }`}
+                                                    >
+                                                        <div className="flex flex-col items-start gap-1">
+                                                            <span className="text-sm font-black text-gray-900 dark:text-white">Has One</span>
+                                                            <span className="text-[10px] text-gray-500 dark:text-gray-400">Show if any submission matches</span>
+                                                        </div>
+                                                        <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${filters.statusSub.hasOne ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-700'}`}>
+                                                            <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${filters.statusSub.hasOne ? 'translate-x-6' : 'translate-x-0'}`} />
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
                                     ))}
                                 </div>
                             )}

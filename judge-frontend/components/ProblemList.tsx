@@ -20,13 +20,19 @@ interface ProblemListProps {
 const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSidebarOpen, searchQuery, setSearchQuery }: ProblemListProps) {
     const [problems, setProblems] = useState<Problem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [filters, setFilters] = useState<{ difficulty: string[]; status: "all" | "solved" | "unsolved" }>({
+    const [filters, setFilters] = useState<{
+        difficulty: string[];
+        status: "all" | "solved" | "unsolved";
+        statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
+    }>({
         difficulty: [],
-        status: "all"
+        status: "all",
+        statusSub: { correct: true, incorrect: true, hasOne: false }
     });
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [solvedProblemIds, setSolvedProblemIds] = useState<Set<string>>(new Set());
     const [attemptedProblemIds, setAttemptedProblemIds] = useState<Set<string>>(new Set());
+    const [incorrectProblemIds, setIncorrectProblemIds] = useState<Set<string>>(new Set());
     const filterRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
 
@@ -60,10 +66,16 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                     .filter(s => s.final_status === "Accepted")
                     .map(s => s.problemId)
             );
+            const incorrectIds = new Set(
+                submissions
+                    .filter(s => s.final_status !== "Accepted")
+                    .map(s => s.problemId)
+            );
             const attemptedIds = new Set(
                 submissions.map(s => s.problemId)
             );
             setSolvedProblemIds(solvedIds);
+            setIncorrectProblemIds(incorrectIds);
             setAttemptedProblemIds(attemptedIds);
         } catch (err) {
             console.error("Failed to fetch submissions", err);
@@ -113,10 +125,16 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                         .filter(s => s.final_status === "Accepted")
                         .map(s => s.problemId)
                 );
+                const incorrectIds = new Set(
+                    submissions
+                        .filter(s => s.final_status !== "Accepted")
+                        .map(s => s.problemId)
+                );
                 const attemptedIds = new Set(
                     submissions.map(s => s.problemId)
                 );
                 setSolvedProblemIds(solvedIds);
+                setIncorrectProblemIds(incorrectIds);
                 setAttemptedProblemIds(attemptedIds);
             });
         };
@@ -133,11 +151,30 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
             filters.difficulty.includes((problem.difficulty || "medium").toLowerCase());
 
         // Status Filter
-        const isSolved = solvedProblemIds.has(problem.id);
+        const hasCorrect = solvedProblemIds.has(problem.id);
+        const hasIncorrect = incorrectProblemIds.has(problem.id);
         const isAttempted = attemptedProblemIds.has(problem.id);
-        const matchesStatus = filters.status === "all" ||
-            (filters.status === "solved" && isAttempted) ||
+
+        let matchesStatus = filters.status === "all" ||
             (filters.status === "unsolved" && !isAttempted);
+
+        if (filters.status === "solved") {
+            const { correct, incorrect, hasOne } = filters.statusSub;
+            if (hasOne) {
+                // At least one of the selected types
+                matchesStatus = (correct && hasCorrect) || (incorrect && hasIncorrect);
+            } else {
+                // Strict check when only one is selected
+                if (correct && !incorrect) {
+                    matchesStatus = hasCorrect && !hasIncorrect;
+                } else if (!correct && incorrect) {
+                    matchesStatus = hasIncorrect && !hasCorrect;
+                } else {
+                    // Both selected, hasOne false -> default behavior (all attempted)
+                    matchesStatus = isAttempted;
+                }
+            }
+        }
 
         return matchesSearch && matchesDifficulty && matchesStatus;
     });
