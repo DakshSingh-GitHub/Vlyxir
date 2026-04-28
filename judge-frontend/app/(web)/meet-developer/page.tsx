@@ -169,7 +169,7 @@ export default function MeetDeveloper() {
                 <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
 
                     <Link
-                        href="https://https://github.com/DakshSingh-GitHub/Vlyxir"
+                        href="https://github.com/DakshSingh-GitHub/Vlyxir"
                         className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/25 hover:bg-indigo-700 transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden"
                     >
                         <span className="relative z-10 flex items-center gap-2">
@@ -179,7 +179,7 @@ export default function MeetDeveloper() {
                     </Link>
                     <div className="flex flex-row gap-4">
                         <Link
-                            href="https://https://github.com/DakshSingh-GitHub/Vlyxir"
+                            href="https://github.com/DakshSingh-GitHub/Vlyxir"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-2xl font-bold text-lg border border-gray-200 dark:border-gray-800 hover:border-indigo-500 dark:hover:border-indigo-400 transition-all duration-300"

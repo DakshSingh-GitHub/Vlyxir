@@ -850,7 +850,7 @@ export default function Home() {
                     )}
 
                     {/*If you're reading this in another repo… hi thief 👀
-                        Original project: https://https://github.com/DakshSingh-GitHub/Vlyxir */}
+                        Original project: https://github.com/DakshSingh-GitHub/Vlyxir */}
                     {
                         isMobile && (
                             <div

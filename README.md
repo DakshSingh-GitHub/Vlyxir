@@ -2,9 +2,22 @@
 
 [🚀 Try Vlyxir Live](https://vlyxir.vercel.app)
 
-Welcome to **CodeJudge**, a powerful, modern, and high-performance Online Judge and IDE platform. It's designed to provide a premium LeetCode-style experience with lightning-fast execution and a state-of-the-art user interface.
+Welcome to **Vlyxir**, a powerful, modern, and high-performance Online Judge and IDE platform. Designed to provide a premium LeetCode-style experience, Vlyxir combines lightning-fast execution with a state-of-the-art user interface.
 
-Built with **FastAPI** 🌶, **Next.js 16** ⚛️, and **Supabase** ⚡, CodeJudge features a sophisticated persistent worker judge system and an optional "Modern Design Experience" (MDE).
+Built with **FastAPI** 🌶, **Next.js 16** ⚛️, and **Supabase** ⚡, Vlyxir features a sophisticated persistent worker judge system and an immersive "Modern Design Experience" (MDE).
+
+---
+
+## 🆕 Recent Pushes (What's New)
+
+We've been busy! Here are the latest updates to the platform:
+
+- 🏆 **Global Leaderboard**: A fully integrated competitive ranking system with automated scoring logic (+10 for AC, -5 for WA).
+- 👤 **Dynamic User Profiles**: Real-time rank display directly on user profiles, along with restricted 'Recent Activity' feeds.
+- 🎯 **Accuracy 2.0**: Implemented first-submission-based accuracy calculation for more meaningful performance metrics.
+- 🎨 **Unified Design System**: Centralized background gradients and layout management via a global `ClientLayout` for a seamless, app-like feel.
+- 🛡️ **Secure Identity**: Strict username format restrictions to ensure URL safety and platform consistency.
+- 📱 **App-like UX**: Enforced strict viewport constraints (`h-screen`, `overflow-hidden`) for core tools (IDE, Analysis, Judge) to maximize focus.
 
 ---
 
@@ -16,26 +29,26 @@ Built with **FastAPI** 🌶, **Next.js 16** ⚛️, and **Supabase** ⚡, CodeJu
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-- 🐍 **High-Performance Python Runner**: Uses a persistent **JudgeWorker** pool to eliminate subprocess spawn overhead for faster judging.
-- 🎨 **Modern Design Experience (MDE)**: A premium, highly-animated interface with glassmorphism, dynamic layouts, and smooth transitions (opt-in).
-- 🤖 **AI Code Analysis**: Intelligent code review and suggestions powered by **Groq AI**.
-- 🔐 **Secure Persistence**: User accounts, submission history, and problem stats managed via **Supabase**.
+- 🐍 **High-Performance Python Runner**: Utilizes a persistent **JudgeWorker** pool to eliminate subprocess spawn overhead for sub-millisecond judging.
+- 🎨 **Modern Design Experience (MDE)**: A premium, glassmorphic interface with dynamic layouts, smooth transitions, and GPU-accelerated animations.
+- 🤖 **AI Code Analysis**: Intelligent code review, time complexity estimation, and optimization suggestions powered by **Groq AI**.
+- 🔐 **Secure Persistence**: Enterprise-grade user accounts, submission history, and problem stats managed via **Supabase**.
 - 🛠 **Customizable IDE**: Monaco-based editor (VS Code's engine) with draggable panels, layout presets (Classic/Wide), and theme support.
-- 🎯 **Comprehensive Problem Bank**: **295+ coding challenges** with 100-120 test cases each.
+- 🎯 **Comprehensive Problem Bank**: **295+ coding challenges** with deep test coverage (100-120 test cases each).
 - 🚦 **Advanced Verdict System**:
   - 🟢 **AC (Accepted)** — Perfect solution!
   - 🔴 **WA (Wrong Answer)** — Output mismatch.
   - ⚠️ **RE (Runtime Error)** — Code crashed during execution.
   - ⏱ **TLE (Time Limit Exceeded)** — Strict 2-second timeout enforcement.
-- 🌓 **Theme Intelligence**: System-aware light/dark modes with GPU-accelerated animations.
+- 🌓 **Theme Intelligence**: System-aware light/dark modes with seamless transitions.
 
 ---
 
 ## 🧠 Architecture Overview
 
-CodeJudge is built on a distributed architecture that separates the web interface from the high-security judging core.
+Vlyxir is built on a distributed architecture that decouples the high-security judging core from the modern web interface.
 
 ```mermaid
 flowchart TD
@@ -67,7 +80,7 @@ flowchart TD
     ApiLib -->|"HTTP fetch"| Backend
     AppPy --> Runner
     Runner --> WorkerPy
-    Storage --> SupabaseDB
+    Frontend --> SupabaseDB
 ```
 
 ---
@@ -111,17 +124,18 @@ npm run dev
 - [x] **Phase 2**: Persistent worker judge pool (Optimization).
 - [x] **Phase 3**: User accounts & Submission history via Supabase.
 - [x] **Phase 4**: Modern Design Experience (MDE) routes.
-- [ ] **Phase 5**: Dockerized container isolation for code execution.
-- [ ] **Phase 6**: Support for C++, Java, and JavaScript.
+- [x] **Phase 5**: Leaderboard & Competitive Scoring.
+- [ ] **Phase 6**: Dockerized container isolation for code execution.
+- [ ] **Phase 7**: Multi-language support (C++, Java, JS).
 
 ---
 
 ## 📜 License Notice
 
-CodeJudge uses a dual-license structure:
+Vlyxir uses a dual-license structure:
 
 - 👋 **Frontend (`/frontend`)**: MIT License — Open for modification and use.
-- ⚖️ **Backend & Core (`/backend`, `/problems`, etc.)**: CodeJudge Proprietary License v1.0 — Restricted use.
+- ⚖️ **Backend & Core (`/backend`, `/problems`, etc.)**: Vlyxir Proprietary License v1.0 — Restricted use.
 
 See [LICENSE](LICENSE) for full details.
 
