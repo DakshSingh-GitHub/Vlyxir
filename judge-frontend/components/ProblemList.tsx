@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, memo, useCallback } from "react";
 import { anime, stagger } from "../app/lib/anime";
 import { getProblems } from "../app/lib/api";
-import { Filter, Check, Sparkles, SlidersHorizontal } from "lucide-react";
+import { Filter, Check, Sparkles, SlidersHorizontal, X } from "lucide-react";
 import { getSubmissions } from "../app/lib/storage";
 import FilterModal from "./General/FilterModal";
 
@@ -26,6 +26,7 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
     });
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [solvedProblemIds, setSolvedProblemIds] = useState<Set<string>>(new Set());
+    const [attemptedProblemIds, setAttemptedProblemIds] = useState<Set<string>>(new Set());
     const filterRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLUListElement>(null);
 
@@ -59,7 +60,11 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                     .filter(s => s.final_status === "Accepted")
                     .map(s => s.problemId)
             );
+            const attemptedIds = new Set(
+                submissions.map(s => s.problemId)
+            );
             setSolvedProblemIds(solvedIds);
+            setAttemptedProblemIds(attemptedIds);
         } catch (err) {
             console.error("Failed to fetch submissions", err);
         }
@@ -108,7 +113,11 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                         .filter(s => s.final_status === "Accepted")
                         .map(s => s.problemId)
                 );
+                const attemptedIds = new Set(
+                    submissions.map(s => s.problemId)
+                );
                 setSolvedProblemIds(solvedIds);
+                setAttemptedProblemIds(attemptedIds);
             });
         };
 
@@ -125,9 +134,10 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
 
         // Status Filter
         const isSolved = solvedProblemIds.has(problem.id);
+        const isAttempted = attemptedProblemIds.has(problem.id);
         const matchesStatus = filters.status === "all" ||
-            (filters.status === "solved" && isSolved) ||
-            (filters.status === "unsolved" && !isSolved);
+            (filters.status === "solved" && isAttempted) ||
+            (filters.status === "unsolved" && !isAttempted);
 
         return matchesSearch && matchesDifficulty && matchesStatus;
     });
@@ -319,13 +329,15 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                                     </div>
 
                                     <div className="flex items-center gap-3 shrink-0">
-                                        {solvedProblemIds.has(problem.id) && (
-                                            <div
-                                                className="text-emerald-500"
-                                            >
+                                        {solvedProblemIds.has(problem.id) ? (
+                                            <div className="text-emerald-500">
                                                 <Check className="w-4 h-4" />
                                             </div>
-                                        )}
+                                        ) : attemptedProblemIds.has(problem.id) ? (
+                                            <div className="text-rose-500">
+                                                <X className="w-4 h-4" />
+                                            </div>
+                                        ) : null}
                                         <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${getDifficultyStyles(typeof problem.difficulty === 'string' ? problem.difficulty : 'medium')}`}>
                                             {typeof problem.difficulty === 'string' ? problem.difficulty : JSON.stringify(problem.difficulty || "Medium")}
                                         </span>
