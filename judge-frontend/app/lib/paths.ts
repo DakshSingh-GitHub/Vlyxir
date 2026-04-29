@@ -28,3 +28,7 @@ export function getCodeAnalysisPath(useNewUi: boolean) {
 export function isCodeAnalysisPath(pathname: string | null | undefined) {
   return pathname === CODE_ANALYSIS_PATH || pathname === CODE_ANALYSIS_MDE_PATH;
 }
+
+export function isForumPath(pathname: string | null | undefined) {
+  return pathname?.startsWith("/forum");
+}

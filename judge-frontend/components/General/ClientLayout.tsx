@@ -7,7 +7,7 @@ import NavBar from './NavBar';
 import NewNavBar from './NewNavBar';
 import SubmissionsModal from './SubmissionsModal';
 import SettingsModal from './SettingsModal';
-import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath } from '@/app/lib/paths';
+import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath } from '@/app/lib/paths';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi, isDark } = useAppContext();
@@ -19,7 +19,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     const isHomePage = pathname === '/';
     const isAccountPage = pathname.startsWith('/account');
-    const isSingleScreenPage = isCodeJudgePath(pathname) || isCodeIdePath(pathname) || isCodeAnalysisPath(pathname);
+    const isSingleScreenPage = isCodeJudgePath(pathname) || isCodeIdePath(pathname) || isCodeAnalysisPath(pathname) || isForumPath(pathname);
     const isGradientPage = isHomePage || isSingleScreenPage || isAccountPage;
 
     // Base background classes based on theme and route
