@@ -16,9 +16,11 @@ export type ForumPost = {
   read_time_minutes: number;
   is_pinned: boolean;
   created_at: string;
-  comment_count?: number;
   upvotes_count?: number;
+  comment_count?: number;
   has_upvoted?: boolean;
+  referenced_problem_id?: string;
+  channel_name?: string;
 };
 
 export type ForumChannel = {
@@ -123,6 +125,7 @@ export async function fetchPosts(
 ): Promise<ForumPost[]> {
   let query = supabase.from('forum_posts').select(`
     *,
+    forum_channels(name),
     forum_comments(count),
     forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
   `);
@@ -165,7 +168,8 @@ export async function fetchPosts(
       ...post,
       comment_count: post.forum_comments?.[0]?.count || 0,
       upvotes_count: post.forum_post_upvotes?.[0]?.count || 0,
-      has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false
+      has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false,
+      channel_name: post.forum_channels?.name
     };
   }).filter(Boolean) as ForumPost[];
 }
@@ -178,7 +182,8 @@ export async function publishPost(
   body: string,
   channel_id: string,
   tags: string[],
-  user: any // Replace with proper User type from your auth context
+  user: any, // Replace with proper User type from your auth context
+  referenced_problem_id?: string
 ): Promise<{ data: ForumPost | null; error: Error | null }> {
   if (!user || !user.id) {
     return { data: null, error: new Error("User must be logged in to post.") };
@@ -205,6 +210,7 @@ export async function publishPost(
     upvotes: 0,
     read_time_minutes,
     is_pinned: false,
+    referenced_problem_id: referenced_problem_id || null,
     // created_at is handled by Postgres by default, but you can explicitly add it if needed
   };
 
@@ -331,7 +337,8 @@ export async function updatePost(
   body: string,
   channel_id: string,
   tags: string[],
-  author_username: string
+  author_username: string,
+  referenced_problem_id?: string
 ): Promise<{ data: ForumPost | null; error: Error | null; newId?: string }> {
   // estimate read time (rough estimate: 200 words per minute)
   const wordCount = body.trim().split(/\s+/).length;
@@ -355,6 +362,7 @@ export async function updatePost(
         channel_id,
         tags,
         read_time_minutes,
+        referenced_problem_id: referenced_problem_id || null,
       })
       .eq('id', id)
       .select('*')
@@ -372,6 +380,7 @@ export async function updatePost(
       channel_id,
       tags,
       read_time_minutes,
+      referenced_problem_id: referenced_problem_id || null,
     })
     .eq('id', id)
     .select('*')

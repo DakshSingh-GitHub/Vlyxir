@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, MessagesSquare, MessageSquare, ArrowUp, Menu, Plus, User, PenSquare } from "lucide-react";
+import { Search, MessagesSquare, MessageSquare, ArrowUp, Menu, Plus, User, PenSquare, HelpCircle } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
@@ -193,6 +193,15 @@ export default function ForumFeed({
                                     <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                                         • {new Date(post.created_at).toLocaleDateString()}
                                     </div>
+
+                                    {post.channel_name === 'Questions' && (
+                                        <div className={`ml-auto flex items-center gap-2 px-3 py-1.5 rounded-xl border shadow-sm transition-all hover:scale-105 ${
+                                            isDark ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-600'
+                                        }`}>
+                                            <HelpCircle className="w-4 h-4" />
+                                            <span className="text-xs font-black uppercase tracking-widest">Question</span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="pointer-events-auto">

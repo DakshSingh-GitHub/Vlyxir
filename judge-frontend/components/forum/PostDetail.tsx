@@ -10,6 +10,8 @@ import { useState } from "react";
 import { toggleUpvote } from "../../app/forum/forum-helper/helper";
 import { useAuth } from "../../app/lib/auth-context";
 import CommentSection from "./CommentSection";
+import ProblemReferenceModal from "./ProblemReferenceModal";
+import { Sparkles, ExternalLink } from "lucide-react";
 
 interface PostDetailProps {
     post: ForumPost;
@@ -21,6 +23,7 @@ export default function PostDetail({ post }: PostDetailProps) {
     const [upvoteCount, setUpvoteCount] = useState(post.upvotes_count || 0);
     const [hasUpvoted, setHasUpvoted] = useState(!!post.has_upvoted);
     const [isVoting, setIsVoting] = useState(false);
+    const [showProblemModal, setShowProblemModal] = useState(false);
 
     const handleVote = async () => {
         if (!user) {
@@ -93,6 +96,43 @@ export default function PostDetail({ post }: PostDetailProps) {
                     </div>
                 )}
 
+                {post.referenced_problem_id && (
+                    <div className={`mb-10 p-6 rounded-2xl border transition-all hover:scale-[1.01] ${
+                        isDark 
+                        ? 'bg-indigo-500/5 border-indigo-500/20' 
+                        : 'bg-indigo-50/50 border-indigo-100'
+                    }`}>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl ${
+                                    isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white text-indigo-600 shadow-sm'
+                                }`}>
+                                    <Sparkles className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className={`text-sm font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                        Contextual Problem Attached
+                                    </h3>
+                                    <p className={`text-xs font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        This question refers to a specific technical challenge.
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setShowProblemModal(true)}
+                                className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black tracking-widest transition-all active:scale-95 ${
+                                    isDark 
+                                    ? 'bg-indigo-500 text-white hover:bg-indigo-400 shadow-lg shadow-indigo-500/20' 
+                                    : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/10'
+                                }`}
+                            >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                VIEW PROBLEM
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <div className={`prose-forum max-w-none mb-12 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {post.body}
@@ -132,6 +172,14 @@ export default function PostDetail({ post }: PostDetailProps) {
 
                 <CommentSection postId={post.id} postOwnerId={post.author_id} />
             </article>
+
+            {post.referenced_problem_id && (
+                <ProblemReferenceModal 
+                    isOpen={showProblemModal} 
+                    onClose={() => setShowProblemModal(false)} 
+                    problemId={post.referenced_problem_id} 
+                />
+            )}
         </div>
     );
 }

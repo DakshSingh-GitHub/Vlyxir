@@ -21,6 +21,8 @@ import { useAuth } from "../../lib/auth-context";
 import { fetchChannels, publishPost, ForumChannel, checkProfanity } from "../forum-helper/helper";
 import ProfanityModal from "../forum-helper/ProfanityModal";
 import CreatePostErrorModal from "../forum-helper/CreatePostErrorModal";
+import { getProblems } from "../../lib/api";
+import { Problem } from "../../lib/types";
 
 const COMMON_TAGS = [
     "bug", "feature-request", "question", "discussion", "help-wanted", "solved", "tutorial", "announcement",
@@ -53,6 +55,9 @@ export default function CreatePostPage() {
     const [showProfanityModal, setShowProfanityModal] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [problems, setProblems] = useState<Problem[]>([]);
+    const [selectedProblemId, setSelectedProblemId] = useState<string>("");
+    const [isLoadingProblems, setIsLoadingProblems] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -78,6 +83,25 @@ export default function CreatePostPage() {
 
         loadChannels();
     }, []);
+
+    useEffect(() => {
+        async function loadProblems() {
+            setIsLoadingProblems(true);
+            try {
+                const data = await getProblems();
+                // Correctly access the problems array from the response object
+                setProblems(data.problems || []);
+            } catch (error) {
+                console.error("Error loading problems:", error);
+                setProblems([]);
+            } finally {
+                setIsLoadingProblems(false);
+            }
+        }
+        loadProblems();
+    }, []);
+
+    const isQuestionChannel = channels.find(c => c.id === selectedChannelId)?.name.toLowerCase() === 'questions';
 
     const handleAddTag = (tagToAdd: string) => {
         const newTag = tagToAdd.trim().replace(/^#/, "");
@@ -158,7 +182,8 @@ export default function CreatePostPage() {
             body.trim(),
             selectedChannelId,
             tags,
-            user
+            user,
+            selectedProblemId || undefined
         );
 
         setIsPublishing(false);
@@ -248,241 +273,269 @@ export default function CreatePostPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8 items-stretch">
                     
-                    {/* Main Composer (Left Column) */}
-                    <div className="flex flex-col gap-6">
-                        
-                        <div className={`p-6 border rounded-2xl ${bgCard}`}>
-                            <div className="flex items-center gap-2 mb-2">
-                                <PenSquare className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                <label className={`${labelClass} leading-none m-0`}>Title</label>
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="What do you want to discuss?"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className={`w-full rounded-xl border p-4 text-xl font-bold outline-none transition-all ${inputClass}`}
-                            />
+                    {/* Row 1, Col 1: Title */}
+                    <div className={`p-6 border rounded-2xl ${bgCard}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                            <PenSquare className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                            <label className={`${labelClass} leading-none m-0`}>Title</label>
                         </div>
-
-                        <div className={`flex flex-col relative border rounded-2xl min-h-120 overflow-hidden ${bgCard}`}>
-                            <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                        <h3 className={`${labelClass} leading-none m-0`}>Write your post</h3>
-                                    </div>
-                                    <div className={`flex items-center p-1 rounded-lg ${isDark ? "bg-slate-950 border border-slate-800" : "bg-slate-100 border border-slate-200"}`}>
-                                        <button 
-                                            onClick={() => setActiveTab('write')}
-                                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'write' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
-                                        >
-                                            Write
-                                        </button>
-                                        <button 
-                                            onClick={() => setActiveTab('preview')}
-                                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'preview' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
-                                        >
-                                            Preview
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            {activeTab === 'write' ? (
-                                <textarea
-                                    placeholder={"Start with the problem, the idea, or the question.\n\nExample:\n## What I tried\n- Explain the setup\n- Share the bug or result\n- Ask for the specific help you need"}
-                                    value={body}
-                                    onChange={(e) => setBody(e.target.value)}
-                                    className={`flex-1 w-full bg-transparent p-6 pb-20 text-base leading-relaxed outline-none resize-y transition-all ${
-                                        isDark ? "text-slate-100 placeholder:text-slate-600 focus:bg-slate-900/30" : "text-slate-900 placeholder:text-slate-400 focus:bg-slate-50/30"
-                                    }`}
-                                />
-                            ) : (
-                                <div className={`flex-1 w-full p-6 pb-20 overflow-y-auto ${isDark ? "text-slate-200" : "text-slate-800"}`}>
-                                    {body.trim() ? (
-                                        <div dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(body) }} />
-                                    ) : (
-                                        <div className="h-full flex items-center justify-center text-sm font-medium opacity-50">
-                                            Nothing to preview yet.
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            <div className="absolute bottom-4 left-4 flex gap-2 pointer-events-none">
-                                <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
-                                    isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
-                                }`}>
-                                    {wordCount} words
-                                </span>
-                                <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
-                                    isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
-                                }`}>
-                                    {readTime} min read
-                                </span>
-                            </div>
-                        </div>
-
+                        <input
+                            type="text"
+                            placeholder="What do you want to discuss?"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className={`w-full rounded-xl border p-4 text-xl font-bold outline-none transition-all ${inputClass}`}
+                        />
                     </div>
 
-                    {/* Sidebar (Right Column) */}
-                    <div className="flex flex-col gap-6 h-full">
+                    {/* Row 1, Col 2: Quick Tips */}
+                    <div className={`p-6 border rounded-2xl ${bgCard}`}>
+                        <div className="flex items-center gap-2 mb-6">
+                            <Sparkles className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                            <h3 className={`${labelClass} leading-none m-0`}>Quick tips</h3>
+                        </div>
+                        <ul className={`space-y-4 text-sm font-medium leading-relaxed ${mutedTextClass}`}>
+                            <li className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                Lead with the exact problem, insight, or question.
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                Use headings to separate context, attempts, and results.
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
+                                Add tags that help the right readers find your post.
+                            </li>
+                        </ul>
+                    </div>
 
-                        <div className={`p-6 border rounded-2xl ${bgCard}`}>
-                            <div className="flex items-center gap-2 mb-6">
-                                <Sparkles className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                <h3 className={`${labelClass} leading-none m-0`}>Quick tips</h3>
+                    {/* Row 2, Col 1: Write Post */}
+                    <div className={`flex flex-col relative border rounded-2xl min-h-140 overflow-hidden ${bgCard}`}>
+                        <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <FileText className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                                    <h3 className={`${labelClass} leading-none m-0`}>Write your post</h3>
+                                </div>
+                                <div className={`flex items-center p-1 rounded-lg ${isDark ? "bg-slate-950 border border-slate-800" : "bg-slate-100 border border-slate-200"}`}>
+                                    <button 
+                                        onClick={() => setActiveTab('write')}
+                                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'write' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
+                                    >
+                                        Write
+                                    </button>
+                                    <button 
+                                        onClick={() => setActiveTab('preview')}
+                                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-md transition-all ${activeTab === 'preview' ? (isDark ? "bg-slate-800 text-slate-100 shadow-sm" : "bg-white text-indigo-600 shadow-sm") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700")}`}
+                                    >
+                                        Preview
+                                    </button>
+                                </div>
                             </div>
-                            <ul className={`space-y-4 text-sm font-medium leading-relaxed ${mutedTextClass}`}>
-                                <li className="flex items-start gap-3">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
-                                    Lead with the exact problem, insight, or question.
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
-                                    Use headings to separate context, attempts, and results.
-                                </li>
-                                <li className="flex items-start gap-3">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
-                                    Add tags that help the right readers find your post.
-                                </li>
-                            </ul>
+                        </div>
+                        
+                        {activeTab === 'write' ? (
+                            <textarea
+                                placeholder={"Start with the problem, the idea, or the question.\n\nExample:\n## What I tried\n- Explain the setup\n- Share the bug or result\n- Ask for the specific help you need"}
+                                value={body}
+                                onChange={(e) => setBody(e.target.value)}
+                                className={`flex-1 w-full bg-transparent p-6 pb-20 text-base leading-relaxed outline-none resize-y transition-all ${
+                                    isDark ? "text-slate-100 placeholder:text-slate-600 focus:bg-slate-900/30" : "text-slate-900 placeholder:text-slate-400 focus:bg-slate-50/30"
+                                }`}
+                            />
+                        ) : (
+                            <div className={`flex-1 w-full p-6 pb-20 overflow-y-auto ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                                {body.trim() ? (
+                                    <div dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(body) }} />
+                                ) : (
+                                    <div className="h-full flex items-center justify-center text-sm font-medium opacity-50">
+                                        Nothing to preview yet.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="absolute bottom-4 left-4 flex gap-2 pointer-events-none">
+                            <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
+                                isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
+                            }`}>
+                                {wordCount} words
+                            </span>
+                            <span className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border shadow-sm ${
+                                isDark ? "bg-slate-950/80 border-slate-800 text-slate-400 backdrop-blur-md" : "bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md"
+                            }`}>
+                                {readTime} min read
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Row 2, Col 2: Post Settings */}
+                    <div className={`p-6 border rounded-2xl flex flex-col ${bgCard}`}>
+                        <div className="flex items-center gap-2 mb-8">
+                            <Settings className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                            <h2 className={`${labelClass} leading-none m-0`}>Post settings</h2>
                         </div>
 
-                        <div className={`p-6 border rounded-2xl flex flex-col flex-1 ${bgCard}`}>
-                            <div className="flex items-center gap-2 mb-8">
-                                <Settings className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                <h2 className={`${labelClass} leading-none m-0`}>Post settings</h2>
+                        <div className="flex flex-col gap-8 flex-1">
+                            <div>
+                                <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
+                                    <Hash className="h-3.5 w-3.5" />
+                                    Channel
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        value={selectedChannelId}
+                                        onChange={(e) => setSelectedChannelId(e.target.value)}
+                                        className={`w-full rounded-xl border p-4 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
+                                        disabled={isLoadingChannels}
+                                    >
+                                        {isLoadingChannels ? (
+                                            <option disabled className={isDark ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}>
+                                                Loading channels...
+                                            </option>
+                                        ) : (
+                                            channels.map((channel) => (
+                                                <option 
+                                                    key={channel.id} 
+                                                    value={channel.id}
+                                                    className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-900"}
+                                                >
+                                                    {channel.name}
+                                                </option>
+                                            ))
+                                        )}
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                        <ChevronLeft className="w-4 h-4 text-slate-500 -rotate-90" />
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-8">
-                                <div>
+                            {isQuestionChannel && (
+                                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                                     <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
-                                        <Hash className="h-3.5 w-3.5" />
-                                        Channel
+                                        <Sparkles className="h-3.5 w-3.5" />
+                                        Reference Problem (Optional)
                                     </label>
                                     <div className="relative">
                                         <select
-                                            value={selectedChannelId}
-                                            onChange={(e) => setSelectedChannelId(e.target.value)}
+                                            value={selectedProblemId}
+                                            onChange={(e) => setSelectedProblemId(e.target.value)}
                                             className={`w-full rounded-xl border p-4 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
-                                            disabled={isLoadingChannels}
+                                            disabled={isLoadingProblems}
                                         >
-                                            {isLoadingChannels ? (
-                                                <option disabled className={isDark ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}>
-                                                    Loading channels...
+                                            <option value="" className={isDark ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}>
+                                                {isLoadingProblems ? "Loading problems..." : "No problem selected"}
+                                            </option>
+                                            {problems.map((problem) => (
+                                                <option 
+                                                    key={problem.id} 
+                                                    value={problem.id}
+                                                    className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-900"}
+                                                >
+                                                    {problem.title}
                                                 </option>
-                                            ) : (
-                                                channels.map((channel) => (
-                                                    <option 
-                                                        key={channel.id} 
-                                                        value={channel.id}
-                                                        className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-900"}
-                                                    >
-                                                        {channel.name}
-                                                    </option>
-                                                ))
-                                            )}
+                                            ))}
                                         </select>
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                             <ChevronLeft className="w-4 h-4 text-slate-500 -rotate-90" />
                                         </div>
                                     </div>
                                 </div>
+                            )}
 
-                                <div>
-                                    <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
-                                        <Hash className="h-3.5 w-3.5" />
-                                        Tags
-                                    </label>
-                                    <div className="relative" ref={dropdownRef}>
-                                        <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass} ${showDropdown ? "ring-1 ring-indigo-500 border-indigo-500" : ""}`}>
-                                            <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
-                                                {tags.map((tag) => (
-                                                    <span
+                            <div>
+                                <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
+                                    <Hash className="h-3.5 w-3.5" />
+                                    Tags
+                                </label>
+                                <div className="relative" ref={dropdownRef}>
+                                    <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass} ${showDropdown ? "ring-1 ring-indigo-500 border-indigo-500" : ""}`}>
+                                        <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
+                                            {tags.map((tag) => (
+                                                <span
+                                                    key={tag}
+                                                    className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
+                                                        isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                                    }`}
+                                                >
+                                                    #{tag}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeTag(tag)}
+                                                        className="opacity-60 transition hover:opacity-100"
+                                                    >
+                                                        <X className="h-3.5 w-3.5" />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder={tags.length === 0 ? "Type a tag and press Enter" : "Add another tag"}
+                                            value={tagInput}
+                                            onChange={handleTagInputChange}
+                                            onKeyDown={onTagInputKeyDown}
+                                            onFocus={() => tagInput.trim() && setShowDropdown(true)}
+                                            className="w-full bg-transparent text-sm font-bold outline-none placeholder-inherit"
+                                        />
+                                    </div>
+
+                                    {showDropdown && (
+                                        <div className={`absolute z-50 w-full mt-2 rounded-xl border shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${
+                                            isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
+                                        }`}>
+                                            <div className="p-2">
+                                                {filteredTags.map((tag, index) => (
+                                                    <button
                                                         key={tag}
-                                                        className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
-                                                            isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+                                                        onClick={() => handleAddTag(tag)}
+                                                        onMouseEnter={() => setActiveIndex(index)}
+                                                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-between ${
+                                                            index === activeIndex 
+                                                                ? (isDark ? "bg-indigo-500/20 text-indigo-300" : "bg-indigo-50 text-indigo-600") 
+                                                                : (isDark ? "text-slate-400 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-50")
                                                         }`}
                                                     >
-                                                        #{tag}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => removeTag(tag)}
-                                                            className="opacity-60 transition hover:opacity-100"
-                                                        >
-                                                            <X className="h-3.5 w-3.5" />
-                                                        </button>
-                                                    </span>
+                                                        <span>#{tag}</span>
+                                                        {index === activeIndex && <Sparkles className="h-3.5 w-3.5 opacity-50" />}
+                                                    </button>
                                                 ))}
                                             </div>
-                                            <input
-                                                type="text"
-                                                placeholder={tags.length === 0 ? "Type a tag and press Enter" : "Add another tag"}
-                                                value={tagInput}
-                                                onChange={handleTagInputChange}
-                                                onKeyDown={onTagInputKeyDown}
-                                                onFocus={() => tagInput.trim() && setShowDropdown(true)}
-                                                className="w-full bg-transparent text-sm font-bold outline-none placeholder-inherit"
-                                            />
                                         </div>
-
-                                        {showDropdown && (
-                                            <div className={`absolute z-50 w-full mt-2 rounded-xl border shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 ${
-                                                isDark ? "bg-slate-900 border-slate-800" : "bg-white border-slate-200"
-                                            }`}>
-                                                <div className="p-2">
-                                                    {filteredTags.map((tag, index) => (
-                                                        <button
-                                                            key={tag}
-                                                            onClick={() => handleAddTag(tag)}
-                                                            onMouseEnter={() => setActiveIndex(index)}
-                                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-bold transition-colors flex items-center justify-between ${
-                                                                index === activeIndex 
-                                                                    ? (isDark ? "bg-indigo-500/20 text-indigo-300" : "bg-indigo-50 text-indigo-600") 
-                                                                    : (isDark ? "text-slate-400 hover:bg-slate-800" : "text-slate-600 hover:bg-slate-50")
-                                                            }`}
-                                                        >
-                                                            <span>#{tag}</span>
-                                                            {index === activeIndex && <Sparkles className="h-3.5 w-3.5 opacity-50" />}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-auto pt-8">
-                                <button
-                                    onClick={handlePublish}
-                                    disabled={isPublishing}
-                                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 p-4 text-sm font-bold tracking-widest uppercase text-white shadow-[0_8px_24px_rgba(79,70,229,0.25)] transition-all hover:bg-indigo-500 hover:shadow-[0_8px_32px_rgba(79,70,229,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none"
-                                >
-                                    {isPublishing ? (
-                                        <>
-                                            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                            Publishing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Send className="h-4 w-4" />
-                                            Publish post
-                                        </>
                                     )}
-                                </button>
-                                
-                                {!user && (
-                                    <p className={`mt-4 text-center text-xs font-semibold ${mutedTextClass}`}>
-                                        Sign in to publish this draft.
-                                    </p>
-                                )}
+                                </div>
                             </div>
                         </div>
 
+                        <div className="mt-8">
+                            <button
+                                onClick={handlePublish}
+                                disabled={isPublishing}
+                                className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 p-4 text-sm font-bold tracking-widest uppercase text-white shadow-[0_8px_24px_rgba(79,70,229,0.25)] transition-all hover:bg-indigo-500 hover:shadow-[0_8px_32px_rgba(79,70,229,0.35)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none"
+                            >
+                                {isPublishing ? (
+                                    <>
+                                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                                        Publishing...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send className="h-4 w-4" />
+                                        Publish post
+                                    </>
+                                )}
+                            </button>
+                            
+                            {!user && (
+                                <p className={`mt-4 text-center text-xs font-semibold ${mutedTextClass}`}>
+                                    Sign in to publish this draft.
+                                </p>
+                            )}
+                        </div>
                     </div>
+
                 </div>
 
             </div>
