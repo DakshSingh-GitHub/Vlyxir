@@ -1,6 +1,7 @@
 /* eslint-disable prefer-const */
 "use client";
 
+// Triggering re-compilation to fix potential 404 issue
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

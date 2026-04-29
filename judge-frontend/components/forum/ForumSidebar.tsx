@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home, PenSquare } from 'lucide-react';
+import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home, PenSquare, HelpCircle } from 'lucide-react';
 import { useAppContext } from '../../app/lib/context';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -139,7 +139,11 @@ export default function ForumSidebar({
                                             : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900')
                                             }`}
                                     >
-                                        <Globe className={`w-4 h-4 ${isActive ? 'text-indigo-400' : 'text-indigo-500'}`} />
+                                        {channel.name.toLowerCase() === 'questions' ? (
+                                            <HelpCircle className={`w-4 h-4 ${activeChannelId === channel.id ? 'text-indigo-400' : 'text-indigo-500'}`} />
+                                        ) : (
+                                            <Globe className={`w-4 h-4 ${activeChannelId === channel.id ? 'text-indigo-400' : 'text-indigo-500'}`} />
+                                        )}
                                         {channel.name}
                                     </button>
                                 );

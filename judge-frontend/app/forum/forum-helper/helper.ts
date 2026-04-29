@@ -74,10 +74,12 @@ export function parseForumId(forumId: string): { username: string; uid: string }
 export async function fetchChannels(): Promise<ForumChannel[]> {
   const { data, error } = await supabase.from('forum_channels').select('*').order('created_at', { ascending: true });
   
+  let channels: ForumChannel[] = data || [];
+
   if (error || !data || data.length === 0) {
     if (error) console.error("Error fetching channels:", error);
     // Failover: provide a default channel so users aren't blocked from posting
-    return [
+    channels = [
       {
         id: "default-general",
         name: "General",
@@ -85,10 +87,32 @@ export async function fetchChannels(): Promise<ForumChannel[]> {
         description: "General discussion",
         is_starred: true,
         created_at: new Date().toISOString()
+      },
+      {
+        id: "default-questions",
+        name: "Questions",
+        slug: "questions",
+        description: "Ask and answer community questions",
+        is_starred: false,
+        created_at: new Date().toISOString()
       }
     ];
+  } else {
+    // If we have data from the DB, ensure "Questions" is included for the user's request
+    const hasQuestions = channels.some(c => c.name.toLowerCase() === "questions");
+    if (!hasQuestions) {
+      channels.push({
+        id: "channel-questions-fallback",
+        name: "Questions",
+        slug: "questions",
+        description: "Ask and answer community questions",
+        is_starred: false,
+        created_at: new Date().toISOString()
+      });
+    }
   }
-  return data;
+  
+  return channels;
 }
 
 export async function fetchPosts(

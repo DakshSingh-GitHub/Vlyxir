@@ -253,7 +253,7 @@ export default function ForumFeed({
 
                     {/* Create Post Option */}
                     <Link
-                        href="/forum/create-post"
+                        href="/forum/new-post"
                         className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl shadow-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-700'} active:scale-95 transition-all`}
                     >
                         <span className="text-xs font-bold tracking-wide">Create Post</span>

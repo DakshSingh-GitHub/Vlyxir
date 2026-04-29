@@ -40,7 +40,7 @@ export default function ForumRightPanel() {
             <div className="mb-10 space-y-3">
                 {user ? (
                     <>
-                        <Link href="/forum/create-post" className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
+                        <Link href="/forum/new-post" className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
                             <Plus className="w-4 h-4" />
                             Create New Post
                         </Link>
@@ -94,7 +94,7 @@ export default function ForumRightPanel() {
                             <p className={`text-xs font-bold ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                                 No stats to show yet.
                             </p>
-                            <Link href="/forum/create-post" className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                            <Link href="/forum/new-post" className="px-5 py-2 rounded-lg bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
                                 Create your first post!
                             </Link>
                         </div>

@@ -168,7 +168,7 @@ export default function YourContentPage() {
                             <p className={`text-slate-500 max-w-xs mb-8 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                                 Share your knowledge, ask a question, or start a discussion to see your content here.
                             </p>
-                            <Link href="/forum/create-post" className="px-8 py-3 rounded-2xl bg-indigo-600 text-white font-bold transition-all hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95">
+                            <Link href="/forum/new-post" className="px-8 py-3 rounded-2xl bg-indigo-600 text-white font-bold transition-all hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95">
                                 Create your first post
                             </Link>
                         </div>
