@@ -1,4 +1,4 @@
-./artifacts
-./.idea
-./__pycache__
-./screenshots
+/artifacts/
+/.idea/
+/__pycache__/
+/screenshots/

@@ -2,7 +2,7 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/anime';
-import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
+import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Trophy, BarChart2 } from 'lucide-react';
 import NewNavDropdown from './NewNavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/paths';
@@ -196,15 +196,32 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                 <p className={`text-[10px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>Logged in as</p>
                                                 <p className={`text-sm font-bold truncate ${isDark ? "text-white" : "text-slate-900"}`}>{user?.email || "Guest"}</p>
                                             </div>
-                                            <button
-                                                onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
-                                                className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
-                                            >
-                                                <Settings className={`h-4 w-4 transition-transform group-hover:rotate-90 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
-                                                General settings
-                                            </button>
                                             {user ? (
                                                 <>
+                                                    <button
+                                                        onClick={() => { router.push('/leaderboard'); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <Trophy className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-amber-400" : "text-slate-400 group-hover:text-amber-500"}`} />
+                                                        Leaderboard
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { router.push('/forum/your-content'); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <BarChart2 className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
+                                                        Community posts
+                                                    </button>
+
+                                                    <div className={`mx-4 my-2 h-px ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
+
+                                                    <button
+                                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <Settings className={`h-4 w-4 transition-transform group-hover:rotate-90 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
+                                                        General settings
+                                                    </button>
                                                     <button
                                                         onClick={() => { router.push('/account-settings'); setIsProfileOpen(false); }}
                                                         className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
@@ -212,9 +229,6 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                         <User className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                         Account settings
                                                     </button>
-
-                                                    <div className={`mx-4 my-2 h-px ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
-
                                                     <button
                                                         onClick={() => { router.push('/account-controls'); setIsProfileOpen(false); }}
                                                         className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
@@ -222,6 +236,9 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                         <Shield className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
                                                         Account controls
                                                     </button>
+
+                                                    <div className={`mx-4 my-2 h-px ${isDark ? "bg-white/5" : "bg-slate-100"}`} />
+
                                                     <button
                                                         onClick={async () => {
                                                             await signOut();
@@ -235,13 +252,22 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                     </button>
                                                 </>
                                             ) : (
-                                                <button
-                                                    onClick={() => { router.push('/login'); setIsProfileOpen(false); }}
-                                                    className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
-                                                >
-                                                    <User className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
-                                                    Login
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => { onOpenSettings(); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <Settings className={`h-4 w-4 transition-transform group-hover:rotate-90 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
+                                                        General settings
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { router.push('/login'); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <User className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-cyan-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
+                                                        Login
+                                                    </button>
+                                                </>
                                             )}
                                         </div>
                                     </div>
