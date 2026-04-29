@@ -8,7 +8,6 @@ import { useAppContext } from './lib/context';
 import Footer from "@/components/General/Footer";
 
 export default function Home() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { isDark, codeJudgePath } = useAppContext();
 
     const containerVariants: Variants = {
@@ -79,8 +78,8 @@ export default function Home() {
         <div className={shellClassName}>
             {/* Ambient Background Elements */}
             <div className={ambientClassName} />
-            <div className={`pointer-events-none fixed left-[-10%] top-[5%] h-[500px] w-[500px] rounded-full blur-[120px] ${glowLeftClassName} opacity-60`} />
-            <div className={`pointer-events-none fixed right-[-5%] bottom-[-10%] h-[600px] w-[600px] rounded-full blur-[140px] ${glowRightClassName} opacity-50`} />
+            <div className={`pointer-events-none fixed left-[-10%] top-[5%] h-125 w-125 rounded-full blur-[120px] ${glowLeftClassName} opacity-60`} />
+            <div className={`pointer-events-none fixed right-[-5%] bottom-[-10%] h-150 w-150 rounded-full blur-[140px] ${glowRightClassName} opacity-50`} />
             <div className={`pointer-events-none fixed left-[20%] top-[20%] h-96 w-96 rounded-full blur-[150px] ${glowCenterClassName} opacity-30`} />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32">
@@ -193,7 +192,7 @@ export default function Home() {
                             className={`h-full p-8 rounded-[2.5rem] border ${isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200 bg-white/80"} backdrop-blur-xl transition-all duration-500 relative overflow-hidden flex flex-col hover:scale-[1.02] hover:shadow-2xl`}
                         >
                             <div className={`absolute top-0 right-0 p-6 ${isDark ? "text-purple-500/10 group-hover:text-purple-500/20" : "text-purple-500/5 group-hover:text-purple-500/10"} transition-all duration-700`}>
-                                <Code className="w-32 h-32 rotate-[15deg] group-hover:scale-125 transition-transform duration-700" />
+                                <Code className="w-32 h-32 rotate-15 group-hover:scale-125 transition-transform duration-700" />
                             </div>
                             <div className="relative z-10 flex flex-col h-full">
                                 <div className="w-12 h-12 rounded-xl bg-purple-600 flex items-center justify-center mb-6 shadow-lg shadow-purple-600/20">
@@ -217,7 +216,7 @@ export default function Home() {
                             className={`h-full p-8 rounded-[2.5rem] border ${isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200 bg-white/80"} backdrop-blur-xl transition-all duration-500 relative overflow-hidden flex flex-col hover:scale-[1.02] hover:shadow-2xl`}
                         >
                             <div className={`absolute top-0 right-0 p-6 ${isDark ? "text-emerald-500/10 group-hover:text-emerald-500/20" : "text-emerald-500/5 group-hover:text-emerald-500/10"} transition-all duration-700`}>
-                                <BrainCircuit className="w-32 h-32 rotate-[15deg] group-hover:scale-125 transition-transform duration-700" />
+                                <BrainCircuit className="w-32 h-32 rotate-15 group-hover:scale-125 transition-transform duration-700" />
                             </div>
                             <div className="relative z-10 flex flex-col h-full">
                                 <div className="w-12 h-12 rounded-xl bg-emerald-600 flex items-center justify-center mb-6 shadow-lg shadow-emerald-600/20">

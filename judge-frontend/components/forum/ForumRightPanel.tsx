@@ -36,7 +36,7 @@ export default function ForumRightPanel() {
 
     
     return (
-        <aside className={`w-80 flex-shrink-0 hidden lg:flex flex-col py-6 px-6 border-l ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} overflow-y-auto`}>
+        <aside className={`w-80 shrink-0 hidden lg:flex flex-col py-6 px-6 border-l ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} overflow-y-auto`}>
             <div className="mb-10 space-y-3">
                 {user ? (
                     <>
@@ -151,6 +151,11 @@ export default function ForumRightPanel() {
                         </div>
                     </div>
                 )}
+            </div>
+            <div className={`mt-auto p-5 rounded-2xl border ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-white/50'} text-center`}>
+                <p className={`text-[11px] leading-relaxed font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    While posting, be sure to follow the <Link href='/community-guidelines' className="text-indigo-500 hover:text-indigo-600 font-bold transition-colors block mt-1">Community Guidelines</Link>
+                </p>
             </div>
         </aside>
     );

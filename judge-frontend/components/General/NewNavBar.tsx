@@ -187,7 +187,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
 
                                 {isProfileOpen && (
-                                    <div className={`absolute right-0 z-50 mt-4 w-64 overflow-hidden rounded-[2rem] border p-2 shadow-[0_30px_70px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-4 duration-300 ${isDark
+                                    <div className={`absolute right-0 z-50 mt-4 w-64 overflow-hidden rounded-4xl border p-2 shadow-[0_30px_70px_rgba(0,0,0,0.5)] backdrop-blur-3xl animate-in fade-in slide-in-from-top-4 duration-300 ${isDark
                                         ? "border-white/10 bg-[#0A0F1A]/95"
                                         : "border-slate-200 bg-white/95"
                                         }`}>

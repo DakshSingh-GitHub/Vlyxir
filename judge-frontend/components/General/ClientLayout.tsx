@@ -13,7 +13,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi, isDark } = useAppContext();
     const pathname = usePathname();
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
-    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard'];
+    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard', '/community-guidelines'];
     const isNavExcluded = excludedPaths.includes(pathname) || pathname.startsWith('/forum') || pathname.startsWith('/user') || pathname.startsWith('/account');
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 
