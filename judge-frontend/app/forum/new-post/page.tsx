@@ -2,7 +2,7 @@
 "use client";
 
 // Triggering re-compilation to fix potential 404 issue
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -34,7 +34,7 @@ const COMMON_TAGS = [
 ];
 
 
-export default function CreatePostPage() {
+function NewPostContent() {
     const { isDark } = useAppContext();
     const { user } = useAuth();
     const router = useRouter();
@@ -606,5 +606,17 @@ export default function CreatePostPage() {
                 onClose={() => setShowErrorModal(false)}
             />
         </div>
+    );
+}
+
+export default function CreatePostPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex h-screen w-full items-center justify-center bg-[#0a0f18]">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500/30 border-t-indigo-500" />
+            </div>
+        }>
+            <NewPostContent />
+        </Suspense>
     );
 }
