@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, MessagesSquare, MessageSquare, ArrowUp, Menu, Plus, User, PenSquare, HelpCircle } from "lucide-react";
+import { Search, MessagesSquare, MessageSquare, ArrowUp, Menu, Plus, User, PenSquare, HelpCircle, FileText } from "lucide-react";
 import { useAppContext } from "@/app/lib/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
@@ -257,6 +257,17 @@ export default function ForumFeed({
                         <span className="text-xs font-bold tracking-wide">Your Contents</span>
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                             <User className="w-5 h-5" />
+                        </div>
+                    </Link>
+                    
+                    {/* Drafts Option */}
+                    <Link
+                        href="/forum/drafts"
+                        className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl shadow-xl border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-white border-slate-200 text-slate-700'} active:scale-95 transition-all`}
+                    >
+                        <span className="text-xs font-bold tracking-wide">Drafts</span>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                            <FileText className="w-5 h-5" />
                         </div>
                     </Link>
 

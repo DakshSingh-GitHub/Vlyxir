@@ -4,7 +4,7 @@
 // Triggering re-compilation to fix potential 404 issue
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
     ChevronLeft,
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useAppContext } from "../../lib/context";
 import { useAuth } from "../../lib/auth-context";
-import { fetchChannels, publishPost, ForumChannel, checkProfanity } from "../forum-helper/helper";
+import { fetchChannels, publishPost, ForumChannel, checkProfanity, saveDraft, fetchDraftById, deleteDraft } from "../forum-helper/helper";
 import ProfanityModal from "../forum-helper/ProfanityModal";
 import CreatePostErrorModal from "../forum-helper/CreatePostErrorModal";
 import { getProblems } from "../../lib/api";
@@ -30,16 +30,18 @@ const COMMON_TAGS = [
     "react", "nextjs", "vue", "angular", "svelte", "tailwind", "node", "express", "django", "flask", "fastapi", "spring", "laravel",
     "database", "sql", "nosql", "mongodb", "postgresql", "redis", "prisma", "supabase",
     "frontend", "backend", "fullstack", "mobile", "devops", "ai", "ml", "security", "performance",
-    "leetcode", "algorithms", "data-structures", "interview-prep"
+    "leetcode", "algorithms", "data-structures", "interview-prep", "General"
 ];
-
 
 
 export default function CreatePostPage() {
     const { isDark } = useAppContext();
     const { user } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const urlDraftId = searchParams.get("draftId");
 
+    const [draftId, setDraftId] = useState<string | null>(urlDraftId);
     const [title, setTitle] = useState("");
     const [body, setBody] = useState("");
     const [channels, setChannels] = useState<ForumChannel[]>([]);
@@ -100,6 +102,23 @@ export default function CreatePostPage() {
         }
         loadProblems();
     }, []);
+
+    useEffect(() => {
+        if (urlDraftId) {
+            async function loadDraft() {
+                const draft = await fetchDraftById(urlDraftId!);
+                if (draft) {
+                    setTitle(draft.title || "");
+                    setBody(draft.body || "");
+                    if (draft.channel_id) setSelectedChannelId(draft.channel_id);
+                    if (draft.tags) setTags(draft.tags);
+                    if (draft.referenced_problem_id) setSelectedProblemId(draft.referenced_problem_id);
+                    setDraftId(draft.id);
+                }
+            }
+            loadDraft();
+        }
+    }, [urlDraftId]);
 
     const isQuestionChannel = channels.find(c => c.id === selectedChannelId)?.name.toLowerCase() === 'questions';
 
@@ -192,8 +211,40 @@ export default function CreatePostPage() {
             setErrorMessage(publishError.message || "A cosmic interference occurred. Please try again.");
             setShowErrorModal(true);
         } else {
+            // If it was a draft, delete it after successful publish
+            if (draftId) {
+                await deleteDraft(draftId);
+            }
             router.refresh();
             router.push("/forum");
+        }
+    };
+
+    const handleSaveDraft = async (redirect = true) => {
+        // Only save if there's some content or title
+        if (!title.trim() && !body.trim()) {
+            if (redirect) router.back();
+            return;
+        }
+
+        if (!user) return;
+
+        const { data, error } = await saveDraft(
+            user,
+            title,
+            body,
+            selectedChannelId || null,
+            tags,
+            selectedProblemId || null,
+            draftId || undefined
+        );
+
+        if (!error && data) {
+            setDraftId(data.id);
+            if (redirect) router.back();
+        } else if (error) {
+            console.error("Error saving draft:", error);
+            if (redirect) router.back();
         }
     };
 
@@ -226,20 +277,20 @@ export default function CreatePostPage() {
     const labelClass = `text-[11px] font-bold uppercase tracking-[0.15em] ${mutedTextClass}`;
 
     return (
-        <div className={`flex min-h-screen flex-col font-sans selection:bg-indigo-500/30 ${bgApp}`}>
-            <div className="mx-auto w-full max-w-350 px-6 py-12 flex-1 flex flex-col gap-8">
+        <div className={`flex h-screen flex-col font-sans selection:bg-indigo-500/30 overflow-hidden ${bgApp}`}>
+            <div className="mx-auto w-full max-w-350 px-6 pt-6 pb-6 flex-1 flex flex-col gap-4 overflow-hidden">
 
-                <header className="flex flex-col w-full relative">
-                    <div className="absolute -top-8 left-0">
-                        <Link
-                            href="/forum"
+                <header className="flex flex-col w-full">
+                    <div className="mb-2">
+                        <button
+                            onClick={() => handleSaveDraft(true)}
                             className={`flex items-center text-sm font-semibold transition-colors ${
                                 isDark ? "text-slate-400 hover:text-slate-200" : "text-slate-500 hover:text-slate-800"
                             }`}
                         >
                             <ChevronLeft className="h-4 w-4 mr-1.5" />
-                            Back to forum
-                        </Link>
+                            Back
+                        </button>
                     </div>
                     
                     <div className="flex flex-col md:flex-row md:items-center justify-between w-full mt-2 gap-6 md:gap-0">
@@ -247,14 +298,14 @@ export default function CreatePostPage() {
                             Create a post
                         </h1>
                         <div className="flex items-center gap-4">
-                            <Link
-                                href="/forum"
+                            <button
+                                onClick={() => handleSaveDraft(true)}
                                 className={`px-6 py-2 rounded-xl border text-sm font-bold transition-all ${
                                     isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-slate-50" : "border-slate-300 text-slate-700 hover:bg-slate-100"
                                 }`}
                             >
                                 Cancel
-                            </Link>
+                            </button>
                             <button
                                 onClick={handlePublish}
                                 disabled={isPublishing}
@@ -271,10 +322,13 @@ export default function CreatePostPage() {
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-8 items-stretch">
+                <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-hidden">
+                    
+                    {/* Row 1: Title and Quick Tips */}
+                    <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-4 shrink-0">
                     
                     {/* Row 1, Col 1: Title */}
-                    <div className={`p-6 border rounded-2xl ${bgCard}`}>
+                    <div className={`p-4 border rounded-2xl ${bgCard}`}>
                         <div className="flex items-center gap-2 mb-2">
                             <PenSquare className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
                             <label className={`${labelClass} leading-none m-0`}>Title</label>
@@ -284,7 +338,7 @@ export default function CreatePostPage() {
                             placeholder="What do you want to discuss?"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className={`w-full rounded-xl border p-4 text-xl font-bold outline-none transition-all ${inputClass}`}
+                            className={`w-full rounded-xl border p-3 text-lg font-bold outline-none transition-all ${inputClass}`}
                         />
                     </div>
 
@@ -309,10 +363,14 @@ export default function CreatePostPage() {
                             </li>
                         </ul>
                     </div>
+                    </div>
+
+                    {/* Row 2: Write Post and Post Settings */}
+                    <div className="grid grid-cols-1 lg:grid-cols-[7fr_3fr] gap-4 flex-1 min-h-0 overflow-hidden">
 
                     {/* Row 2, Col 1: Write Post */}
-                    <div className={`flex flex-col relative border rounded-2xl min-h-140 overflow-hidden ${bgCard}`}>
-                        <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
+                    <div className={`flex flex-col relative border rounded-2xl min-h-0 overflow-hidden ${bgCard}`}>
+                        <div className={`p-4 pb-4 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <FileText className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
@@ -371,13 +429,13 @@ export default function CreatePostPage() {
                     </div>
 
                     {/* Row 2, Col 2: Post Settings */}
-                    <div className={`p-6 border rounded-2xl flex flex-col ${bgCard}`}>
+                    <div className={`p-4 border rounded-2xl flex flex-col ${bgCard}`}>
                         <div className="flex items-center gap-2 mb-8">
                             <Settings className={`h-4 w-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
                             <h2 className={`${labelClass} leading-none m-0`}>Post settings</h2>
                         </div>
 
-                        <div className="flex flex-col gap-8 flex-1">
+                        <div className="flex flex-col gap-4 flex-1 overflow-y-auto pr-2">
                             <div>
                                 <label className={`flex items-center gap-2 mb-2 ${labelClass}`}>
                                     <Hash className="h-3.5 w-3.5" />
@@ -387,7 +445,7 @@ export default function CreatePostPage() {
                                     <select
                                         value={selectedChannelId}
                                         onChange={(e) => setSelectedChannelId(e.target.value)}
-                                        className={`w-full rounded-xl border p-4 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
+                                        className={`w-full rounded-xl border p-3 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
                                         disabled={isLoadingChannels}
                                     >
                                         {isLoadingChannels ? (
@@ -422,7 +480,7 @@ export default function CreatePostPage() {
                                         <select
                                             value={selectedProblemId}
                                             onChange={(e) => setSelectedProblemId(e.target.value)}
-                                            className={`w-full rounded-xl border p-4 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
+                                            className={`w-full rounded-xl border p-3 text-sm font-bold outline-none transition-all appearance-none cursor-pointer ${inputClass}`}
                                             disabled={isLoadingProblems}
                                         >
                                             <option value="" className={isDark ? "bg-slate-900 text-slate-400" : "bg-white text-slate-500"}>
@@ -451,7 +509,7 @@ export default function CreatePostPage() {
                                     Tags
                                 </label>
                                 <div className="relative" ref={dropdownRef}>
-                                    <div className={`rounded-xl border p-4 flex flex-col overflow-hidden transition-all ${inputClass} ${showDropdown ? "ring-1 ring-indigo-500 border-indigo-500" : ""}`}>
+                                    <div className={`rounded-xl border p-3 flex flex-col overflow-hidden transition-all ${inputClass} ${showDropdown ? "ring-1 ring-indigo-500 border-indigo-500" : ""}`}>
                                         <div className="flex flex-wrap gap-2 mb-2 empty:hidden">
                                             {tags.map((tag) => (
                                                 <span
@@ -539,6 +597,8 @@ export default function CreatePostPage() {
                 </div>
 
             </div>
+
+        </div>
             <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
             <CreatePostErrorModal
                 isOpen={showErrorModal}

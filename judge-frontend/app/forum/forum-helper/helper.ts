@@ -45,6 +45,19 @@ export type ForumComment = {
   has_liked?: boolean;
 };
 
+export type ForumDraft = {
+  id: string;
+  author_id: string;
+  author_username: string | null;
+  title: string | null;
+  body: string | null;
+  channel_id: string | null;
+  tags: string[] | null;
+  referenced_problem_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 // ID Formatting
 export function slugify(text: string): string {
   return text
@@ -450,6 +463,85 @@ export async function deleteComment(commentId: string): Promise<{ error: Error |
 
 
 
+
+// Draft Functions
+export async function saveDraft(
+  user: any,
+  title: string,
+  body: string,
+  channel_id: string | null,
+  tags: string[] | null,
+  referenced_problem_id: string | null,
+  draftId?: string
+): Promise<{ data: ForumDraft | null; error: Error | null }> {
+  if (!user || !user.id) {
+    return { data: null, error: new Error("User must be logged in to save drafts.") };
+  }
+
+  const rawUsername = user.user_metadata?.username || user.email?.split('@')[0] || "user";
+  const safeUsername = rawUsername.replace(/:/g, '');
+  
+  const id = draftId || generateForumId(safeUsername, title || undefined);
+
+  const draftPayload = {
+    id,
+    author_id: user.id,
+    author_username: safeUsername,
+    title: title || null,
+    body: body || null,
+    channel_id: channel_id || null,
+    tags: tags || [],
+    referenced_problem_id: referenced_problem_id || null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from('forum_drafts')
+    .upsert([draftPayload], { onConflict: 'id' })
+    .select('*')
+    .single();
+
+  return { data, error };
+}
+
+export async function fetchUserDrafts(userId: string): Promise<ForumDraft[]> {
+  const { data, error } = await supabase
+    .from('forum_drafts')
+    .select('*')
+    .eq('author_id', userId)
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching drafts:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function deleteDraft(draftId: string): Promise<{ error: Error | null }> {
+  const { error } = await supabase
+    .from('forum_drafts')
+    .delete()
+    .eq('id', draftId);
+
+  return { error };
+}
+
+export async function fetchDraftById(id: string): Promise<ForumDraft | null> {
+  const { data, error } = await supabase
+    .from('forum_drafts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) {
+    if (error) console.error("Error fetching draft by ID:", error);
+    return null;
+  }
+
+  return data as ForumDraft;
+}
 
 // Profanity Logic
 leoProfanity.loadDictionary();

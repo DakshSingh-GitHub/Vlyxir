@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../../app/lib/context';
 import { useAuth } from '@/app/lib/auth-context';
 import { fetchUserPosts, ForumPost } from '@/app/forum/forum-helper/helper';
-import { Plus, User, BarChart2, Star, TrendingUp, Info } from 'lucide-react';
+import { Plus, User, BarChart2, Star, TrendingUp, Info, FileText } from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -47,6 +47,10 @@ export default function ForumRightPanel() {
                         <Link href="/forum/your-content" className={`w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-900/40 hover:bg-slate-800 text-slate-200' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'} text-sm font-bold transition-all active:scale-95`}>
                             <User className="w-4 h-4" />
                             Your Contents
+                        </Link>
+                        <Link href="/forum/drafts" className={`w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-900/40 hover:bg-slate-800 text-slate-200' : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'} text-sm font-bold transition-all active:scale-95`}>
+                            <FileText className="w-4 h-4" />
+                            Drafts
                         </Link>
                     </>
                 ) : (
