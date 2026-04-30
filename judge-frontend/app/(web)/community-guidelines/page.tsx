@@ -60,9 +60,25 @@ export default function CommunityGuidelines() {
                     </section>
 
                     <section className="space-y-4">
-                        <h2 className="text-2xl font-bold text-foreground">5. Enforcement and Reporting</h2>
+                        <h2 className="text-2xl font-bold text-foreground">5. AI Usage and Integrity</h2>
+                        <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                            <li><strong>Responsible AI Use:</strong> AI tools provided on Vlyxir (like AI Code Analysis) are intended for learning and debugging. Do not use them to automate contest submissions or bypass the core learning process.</li>
+                            <li><strong>Verify AI Output:</strong> Always review and understand AI-generated suggestions before applying them. AI can make mistakes or suggest insecure patterns; the ultimate responsibility for the code lies with you.</li>
+                        </ul>
+                    </section>
+
+                    <section className="space-y-4">
+                        <h2 className="text-2xl font-bold text-foreground">6. Privacy and Security</h2>
+                        <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                            <li><strong>Protect your data:</strong> Never post sensitive information such as passwords, API keys, or personal identifying information (PII) in public comments, forum posts, or shared code.</li>
+                            <li><strong>Respect Platform Integrity:</strong> Do not attempt to bypass security measures, scrape the platform excessively, or interfere with the judge backend and worker processes.</li>
+                        </ul>
+                    </section>
+
+                    <section className="space-y-4">
+                        <h2 className="text-2xl font-bold text-foreground">7. Enforcement and Reporting</h2>
                         <p className="text-muted-foreground">
-                            If you experience or witness unacceptable behavior—or have any other concerns—please report it immediately using our platform's reporting features or by contacting the moderation team. 
+                            If you experience or witness unacceptable behavior—or have any other concerns—please report it immediately using our platform's reporting features or by contacting the moderation team.
                         </p>
                         <p className="text-muted-foreground">
                             Community moderators reserve the right to remove comments, posts, or solutions that do not adhere to these guidelines. Violations may result in temporary suspensions or permanent bans from the platform.
