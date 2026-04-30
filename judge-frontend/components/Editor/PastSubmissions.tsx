@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Submission } from "../../app/lib/storage";
+import { Submission } from "../../app/lib/utils/storage";
 import { Trash2, AlertTriangle, X, LogIn, LockKeyhole } from "lucide-react";
 import { useState, memo, useEffect, useRef } from "react";
-import { anime, stagger } from "../../app/lib/anime";
-import { useAuth } from "../../app/lib/auth-context";
-import { useAppContext } from "../../app/lib/context";
+import { anime, stagger } from "../../app/lib/utils/anime";
+import { useAuth } from "../../app/lib/auth/auth-context";
+import { useAppContext } from "../../app/lib/auth/context";
 
 interface PastSubmissionsProps {
     submissions: Submission[];
@@ -87,8 +87,8 @@ const PastSubmissions = memo(function PastSubmissions({ submissions, onLoadCode,
             : "bg-[linear-gradient(135deg,#1d4ed8,#8b5cf6)] shadow-lg shadow-indigo-500/20";
 
         return (
-            <div className="flex h-full min-h-[320px] items-center justify-center px-4 py-12">
-                <div className={`w-full max-w-md rounded-[2rem] border p-6 text-center ${cardClass}`}>
+            <div className="flex h-full min-h-80 items-center justify-center px-4 py-12">
+                <div className={`w-full max-w-md rounded-4xl border p-6 text-center ${cardClass}`}>
                     <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border ${iconClass}`}>
                         <LockKeyhole className="h-6 w-6" />
                     </div>
@@ -188,7 +188,7 @@ const PastSubmissions = memo(function PastSubmissions({ submissions, onLoadCode,
             </div>
 
             {deletingId && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
                     <div
                         ref={modalOverlayRef}
                         onClick={() => setDeletingId(null)}

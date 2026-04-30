@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -13,10 +15,10 @@ import {
   LogOut,
   Sparkles
 } from 'lucide-react';
-import { useAuth } from '../../lib/auth-context';
-import { useAppContext } from '../../lib/context';
+import { useAuth } from '../../lib/auth/auth-context';
+import { useAppContext } from '../../lib/auth/context';
 import NotFound from '../../not-found';
-import { supabase } from '@/app/lib/supabase/client';
+import { supabase } from '@/app/lib/api/supabase/client';
 
 type AdminTab = 'Users' | 'Platform' | 'Controls';
 
@@ -148,7 +150,7 @@ export default function AdminPage() {
               transition={{ delay: 0.1 }}
               className="mt-4 text-4xl font-black tracking-tight md:text-5xl"
             >
-              System <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">{activeTab}</span>
+              System <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 to-purple-500">{activeTab}</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}

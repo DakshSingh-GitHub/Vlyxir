@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Globe, Search } from "lucide-react";
-import { COUNTRY_OPTIONS } from "../app/lib/country-options";
+import { COUNTRY_OPTIONS } from "../app/lib/utils/country-options";
 
 type Tone = "dark" | "light";
 

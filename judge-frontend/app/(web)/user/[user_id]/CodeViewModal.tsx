@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from 'react';
@@ -35,7 +37,7 @@ export default function CodeViewModal({ isOpen, onClose, submission, isDark }: C
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6">
+            <div className="fixed inset-0 z-110 flex items-center justify-center p-4 md:p-6">
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

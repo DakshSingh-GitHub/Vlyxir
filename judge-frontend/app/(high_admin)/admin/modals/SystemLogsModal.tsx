@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, CheckCircle, AlertTriangle, AlertOctagon, Terminal, Clock } from 'lucide-react';
-import { SystemLog } from '../../../lib/storage';
+import { SystemLog } from '../../../lib/utils/storage';
 
 interface SystemLogsModalProps {
     isOpen: boolean;

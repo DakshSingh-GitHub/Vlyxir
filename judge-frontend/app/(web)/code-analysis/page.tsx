@@ -5,9 +5,9 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction, Trash2, AlertTriangle } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
-import { useAppContext } from '../../lib/context';
-import { useAuth } from '../../lib/auth-context';
-import { supabase } from '../../lib/supabase/client';
+import { useAppContext } from '../../lib/auth/context';
+import { useAuth } from '../../lib/auth/auth-context';
+import { supabase } from '../../lib/api/supabase/client';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:

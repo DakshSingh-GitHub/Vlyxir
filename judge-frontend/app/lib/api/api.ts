@@ -1,5 +1,5 @@
-import { getCachedProblems, setCachedProblems, getCachedProblemById, setCachedProblemById } from "./cache";
-import { SubmitResponse, Problem } from "./types";
+import { getCachedProblems, setCachedProblems, getCachedProblemById, setCachedProblemById } from "../utils/cache";
+import { SubmitResponse, Problem } from "../types/types";
 
 const LOCAL_URL = "http://localhost:5000";
 const REMOTE_URL = "https://code-judge-6fm6.vercel.app";
@@ -88,7 +88,7 @@ export async function getProblemById(id: string, onBackgroundUpdate?: (data: Pro
 }
 
 export async function submitCode(problemId: string, code: string, testOnly: boolean = false): Promise<SubmitResponse> {
-	const { getSystemConfig } = await import("./storage");
+	const { getSystemConfig } = await import("../utils/storage");
 	if (getSystemConfig().maintenanceMode) {
 		throw new Error("⚠️ System Maintenance: Submissions are currently paused.");
 	}
@@ -115,7 +115,7 @@ export async function submitCode(problemId: string, code: string, testOnly: bool
 }
 
 export async function runCode(code: string, input: string = "") {
-	const { getSystemConfig } = await import("./storage");
+	const { getSystemConfig } = await import("../utils/storage");
 	if (getSystemConfig().maintenanceMode) {
 		throw new Error("⚠️ System Maintenance: Execution is currently paused.");
 	}

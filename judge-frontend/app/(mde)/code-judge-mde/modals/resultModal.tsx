@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { X, CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
-import { SubmitResponse, TestCaseResult } from '../../../lib/types';
+import { SubmitResponse, TestCaseResult } from '../../../lib/types/types';
 
 interface ResultModalProps {
     result: SubmitResponse & { error?: string };
@@ -19,7 +19,7 @@ export default function ResultModal({ result, onClose }: ResultModalProps) {
     const percentage = total > 0 ? (passed / total) * 100 : 0;
 
     return (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 sm:px-6">
+        <div className="fixed inset-0 z-70 flex items-center justify-center px-4 sm:px-6">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"

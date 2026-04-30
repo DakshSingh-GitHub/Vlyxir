@@ -21,7 +21,7 @@ import {
     Layers,
     Rocket
 } from 'lucide-react';
-import { useAppContext } from '../../lib/context';
+import { useAppContext } from '../../lib/auth/context';
 import Link from 'next/link';
 
 export default function Documentation() {

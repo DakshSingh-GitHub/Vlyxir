@@ -12,13 +12,13 @@ export default function CreatePostErrorModal({ isOpen, message, onClose }: Creat
     }
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/65 backdrop-blur-md" />
             <div
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="create-post-error-title"
-                className="relative w-full max-w-md rounded-[2rem] border border-red-200 bg-white p-8 shadow-2xl dark:border-red-900/40 dark:bg-slate-950"
+                className="relative w-full max-w-md rounded-4xl border border-red-200 bg-white p-8 shadow-2xl dark:border-red-900/40 dark:bg-slate-950"
             >
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-950/70 dark:text-red-400">
                     <svg

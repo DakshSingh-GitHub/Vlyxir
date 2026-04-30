@@ -1,12 +1,12 @@
 "use client";
 
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { anime } from '../../app/lib/anime';
+import { anime } from '../../app/lib/utils/anime';
 import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown } from 'lucide-react';
 import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
-import { isCodeJudgePath } from '../../app/lib/paths';
-import { useAuth } from '../../app/lib/auth-context';
+import { isCodeJudgePath } from '../../app/lib/utils/paths';
+import { useAuth } from '../../app/lib/auth/auth-context';
 
 interface NavBarProps {
     isSidebarOpen: boolean;

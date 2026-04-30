@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { anime } from "../../../lib/anime";
+import { anime } from "../../../lib/utils/anime";
 import type { DesktopLayoutProps } from "./types";
-import { useAppContext } from "../../../lib/context";
+import { useAppContext } from "../../../lib/auth/context";
 import { List, FileText } from "lucide-react";
 
 type LeftPanelTab = "selector" | "description";

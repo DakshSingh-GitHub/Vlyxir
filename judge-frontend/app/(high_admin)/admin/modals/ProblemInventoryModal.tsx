@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, FolderOpen, FileCode, Dna, Terminal, CircleCheck } from 'lucide-react';
-import { Problem } from '../../../lib/types';
+import { Problem } from '../../../lib/types/types';
 
 interface ProblemInventoryModalProps {
     isOpen: boolean;
@@ -14,7 +15,7 @@ export default function ProblemInventoryModal({ isOpen, onClose, problems, diffi
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -120,7 +121,7 @@ function TestCaseBadge({ count, label, color }: { count: number, label: string, 
     const text = color === 'blue' ? 'text-blue-600' : 'text-purple-600';
 
     return (
-        <div className={`px-4 py-3 rounded-2xl ${bg} border border-transparent flex flex-col gap-1 min-w-[100px] shadow-sm ${shadow}`}>
+        <div className={`px-4 py-3 rounded-2xl ${bg} border border-transparent flex flex-col gap-1 min-w-25 shadow-sm ${shadow}`}>
             <span className={`text-xl font-black ${text}`}>{count}</span>
             <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">{label}</span>
         </div>

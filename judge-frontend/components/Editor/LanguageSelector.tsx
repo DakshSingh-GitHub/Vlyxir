@@ -46,7 +46,7 @@ const LanguageSelector = memo(({ language = "python", setLanguage }: LanguageSel
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-gray-800/40 backdrop-blur-md border border-gray-700/50 transition-all duration-200 min-w-[100px] md:min-w-[120px] hover:border-indigo-500/50 hover:bg-gray-700/70 cursor-pointer shadow-lg shadow-black/5"
+          className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-gray-800/40 backdrop-blur-md border border-gray-700/50 transition-all duration-200 min-w-25 md:min-w-30 hover:border-indigo-500/50 hover:bg-gray-700/70 cursor-pointer shadow-lg shadow-black/5"
         >
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded flex items-center justify-center bg-indigo-500/10 text-indigo-400 text-[10px] font-bold border border-indigo-500/20">
@@ -72,7 +72,7 @@ const LanguageSelector = memo(({ language = "python", setLanguage }: LanguageSel
               exit={{ opacity: 0, y: 0, scale: 0.95 }}
               transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
               style={{ zIndex: 9999 }}
-              className="absolute left-0 bottom-full mb-2 w-full min-w-[160px] 
+              className="absolute left-0 bottom-full mb-2 w-full min-w-40 
                 bg-gray-900 border border-gray-700/80 
                 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden py-1"
             >

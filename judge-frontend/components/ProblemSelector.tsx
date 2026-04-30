@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { getProblems } from "../app/lib/api";
+import { getProblems } from "../app/lib/api/api";
 
 interface Problem {
     id: string;

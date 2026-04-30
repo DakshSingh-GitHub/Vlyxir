@@ -1,10 +1,12 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState } from "react";
 import ForumLayout from "@/components/forum/ForumLayout";
 import ForumSidebar from "@/components/forum/ForumSidebar";
-import { useAppContext } from "@/app/lib/context";
-import { useAuth } from "@/app/lib/auth-context";
+import { useAppContext } from "@/app/lib/auth/context";
+import { useAuth } from "@/app/lib/auth/auth-context";
 import { fetchUserPosts, deletePost, ForumPost } from "@/app/forum/forum-helper/helper";
 import Link from "next/link";
 import { Edit2, Trash2, Calendar, Clock, MessageSquare, AlertCircle, Trash } from "lucide-react";
@@ -24,7 +26,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, postTitle, isDele
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
             <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
                 <div className="flex flex-col items-center text-center">
@@ -160,7 +162,7 @@ export default function YourContentPage() {
                             </div>
                         ))
                     ) : posts.length === 0 ? (
-                        <div className={`flex flex-col items-center justify-center p-16 text-center rounded-[32px] border-2 border-dashed ${isDark ? 'bg-slate-950/50 border-slate-800/50' : 'bg-slate-50/50 border-slate-200'}`}>
+                        <div className={`flex flex-col items-center justify-center p-16 text-center rounded-4xl border-2 border-dashed ${isDark ? 'bg-slate-950/50 border-slate-800/50' : 'bg-slate-50/50 border-slate-200'}`}>
                             <div className={`p-5 rounded-3xl mb-6 ${isDark ? 'bg-slate-900 text-indigo-400' : 'bg-white text-indigo-500 shadow-sm'}`}>
                                 <AlertCircle className="w-10 h-10" />
                             </div>
@@ -176,7 +178,7 @@ export default function YourContentPage() {
                         posts.map((post) => (
                             <div 
                                 key={post.id} 
-                                className={`group p-6 rounded-[24px] border transition-all duration-300 ${
+                                className={`group p-6 rounded-3xl border transition-all duration-300 ${
                                     isDark 
                                     ? 'bg-slate-900/50 border-slate-800 hover:bg-slate-900 hover:border-slate-700 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]' 
                                     : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]'

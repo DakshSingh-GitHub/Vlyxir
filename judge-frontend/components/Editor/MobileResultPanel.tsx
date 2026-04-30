@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { Check, X, ChevronRight, Info, AlertCircle } from 'lucide-react';
-import { SubmitResponse } from '../../app/lib/types';
+import { SubmitResponse } from '../../app/lib/types/types';
 
 interface MobileResultPanelProps {
     result: SubmitResponse & { error?: string } | null;
@@ -71,7 +72,7 @@ export default function MobileResultPanel({ result, isDark, onOpenDetails, onClo
                     mass: 0.5,
                     restDelta: 0.001
                 }}
-                className={`fixed top-0 left-0 right-0 z-[60] h-[95vh] rounded-t-[2.5rem] border-t backdrop-blur-xl shadow-[0_-20px_80px_rgba(0,0,0,0.6)] flex flex-col transform-gpu ${isDark
+                className={`fixed top-0 left-0 right-0 z-60 h-[95vh] rounded-t-[2.5rem] border-t backdrop-blur-xl shadow-[0_-20px_80px_rgba(0,0,0,0.6)] flex flex-col transform-gpu ${isDark
                         ? "bg-slate-900/90 border-slate-700/50"
                         : "bg-white/90 border-slate-200/50"
                     }`}

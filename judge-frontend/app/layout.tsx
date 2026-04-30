@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppWrapper } from "./lib/context";
-import { AuthProvider } from "./lib/auth-context";
+import { AppWrapper } from "./lib/auth/context";
+import { AuthProvider } from "./lib/auth/auth-context";
 import ClientLayout from "../components/General/ClientLayout";
 import { ThemeScript } from "../components/General/ThemeScript";
 

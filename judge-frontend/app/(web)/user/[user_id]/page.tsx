@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -15,16 +17,16 @@ import {
     Clock,
     ExternalLink
 } from 'lucide-react';
-import { supabase } from '../../../lib/supabase/client';
-import { useAuth } from '../../../lib/auth-context';
+import { supabase } from '../../../lib/api/supabase/client';
+import { useAuth } from '../../../lib/auth/auth-context';
 import { format } from 'date-fns';
 
 import LoginPrompt from '../../../../components/Auth/LoginPrompt';
-import { useAppContext } from '../../../lib/context';
+import { useAppContext } from '../../../lib/auth/context';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { getProblems } from '../../../lib/api';
+import { getProblems } from '../../../lib/api/api';
 import AllSubmissionsModal from './AllSubmissionsModal';
 import CodeViewModal from './CodeViewModal';
 
@@ -284,7 +286,7 @@ export default function UserPage({ params }: PageProps) {
                 <div className="flex items-center">
                     <button 
                         onClick={() => router.back()} 
-                        className="flex items-center gap-2 text-sm font-medium transition-all px-4 py-2 rounded-full glass-morphism outline outline-1 text-slate-600 hover:text-indigo-600 bg-white/70 outline-slate-200 shadow-sm dark:text-slate-400 dark:hover:text-indigo-400 dark:bg-slate-900/50 dark:outline-slate-800 dark:shadow-none cursor-pointer"
+                        className="flex items-center gap-2 text-sm font-medium transition-all px-4 py-2 rounded-full glass-morphism outline-1 text-slate-600 hover:text-indigo-600 bg-white/70 outline-slate-200 shadow-sm dark:text-slate-400 dark:hover:text-indigo-400 dark:bg-slate-900/50 dark:outline-slate-800 dark:shadow-none cursor-pointer"
                     >
                         <ArrowLeft size={16} />
                         Go Back
@@ -302,7 +304,7 @@ export default function UserPage({ params }: PageProps) {
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
-                        <div className="h-32 w-32 rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-indigo-500/20">
+                        <div className="h-32 w-32 rounded-3xl bg-linear-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-indigo-500/20">
                             {getInitials(profile.full_name)}
                         </div>
 

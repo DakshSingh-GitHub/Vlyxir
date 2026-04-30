@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { anime } from "../../../lib/anime";
+import { anime } from "../../../lib/utils/anime";
 import type { DesktopLayoutProps } from "./types";
 
 export default function ClassicLayout({

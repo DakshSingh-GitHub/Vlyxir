@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { anime } from "../../lib/anime";
-import { getProblemById, submitCode } from "../../lib/api";
-import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../../lib/storage";
-import { Problem, SubmitResponse } from "../../lib/types";
-import { useAppContext } from "../../lib/context";
+import { anime } from "../../lib/utils/anime";
+import { getProblemById, submitCode } from "../../lib/api/api";
+import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../../lib/utils/storage";
+import { Problem, SubmitResponse } from "../../lib/types/types";
+import { useAppContext } from "../../lib/auth/context";
 import { FileText, Code, History, Check, X, PanelTop, List } from "lucide-react";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
 
@@ -18,7 +18,7 @@ import ProblemViewer from "../../../components/ProblemViewer";
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import PastSubmissions from "../../../components/Editor/PastSubmissions";
 import ResultModal from "./modals/resultModal";
-import { useAuth } from "../../lib/auth-context";
+import { useAuth } from "../../lib/auth/auth-context";
 
 const DEFAULT_CODE = "#Write your code here";
 const LAYOUT_STORAGE_KEY = "codejudge_ui_grid_layout";
@@ -239,7 +239,7 @@ export default function Home() {
             const sampleCount = problem.sample_test_cases?.length || 0;
             if (data.test_case_results && data.test_case_results.length > sampleCount && sampleCount > 0) {
                 const sampleResults = data.test_case_results.slice(0, sampleCount);
-                const passedCount = sampleResults.filter(r => r.status === "Accepted").length;
+                const passedCount = sampleResults.filter((r: { status: string; }) => r.status === "Accepted").length;
 
                 data.summary = {
                     passed: passedCount,

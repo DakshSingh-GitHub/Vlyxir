@@ -17,12 +17,12 @@ import {
   UserRound,
 } from "lucide-react";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
-import { useAppContext } from "../../lib/context";
-import { useAuth } from "../../lib/auth-context";
+import { useAppContext } from "../../lib/auth/context";
+import { useAuth } from "../../lib/auth/auth-context";
 import { formatAccountDate } from "../account-settings/helper/acc_helper";
 import DeleteAccountModal from "../../../components/Account/DeleteAccountModal";
 import { Trash2 } from "lucide-react";
-import { supabase } from "../../lib/supabase/client";
+import { supabase } from "../../lib/api/supabase/client";
 
 function getDisplayName(user: ReturnType<typeof useAuth>["user"]) {
   return (

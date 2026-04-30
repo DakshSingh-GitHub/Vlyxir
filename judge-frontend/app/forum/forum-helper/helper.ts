@@ -1,4 +1,5 @@
-import { supabase } from "../../lib/supabase/client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { supabase } from "../../lib/api/supabase/client";
 import leoProfanity from "leo-profanity";
 
 

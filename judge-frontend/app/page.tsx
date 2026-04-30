@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 import { Code, Scale, Zap, Shield, Globe, Cpu, ArrowRight, Github, BookOpen, BrainCircuit, Coffee } from 'lucide-react';
-import { useAppContext } from './lib/context';
+import { useAppContext } from './lib/auth/context';
 import Footer from "@/components/General/Footer";
 
 export default function Home() {

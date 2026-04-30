@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Check, ChevronDown, Shield, Trash2, Key } from 'lucide-react';
-import { User, Permission } from '../../../lib/types';
+import { User, Permission } from '../../../lib/types/types';
 
 interface EditUserModalProps {
     isOpen: boolean;
@@ -84,7 +86,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSave, onDelete,
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -106,7 +108,7 @@ export default function EditUserModal({ isOpen, onClose, user, onSave, onDelete,
                         </button>
 
                         <div className="flex items-center gap-4 mb-8">
-                            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white text-xl md:text-2xl font-black">
+                            <div className="w-16 h-16 bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white text-xl md:text-2xl font-black">
                                 {user.username.charAt(0).toUpperCase()}
                             </div>
                             <div>

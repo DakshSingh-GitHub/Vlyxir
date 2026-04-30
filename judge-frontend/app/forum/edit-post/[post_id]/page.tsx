@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState, use, useRef } from "react";
@@ -16,8 +17,8 @@ import {
     Settings,
     Save,
 } from "lucide-react";
-import { useAppContext } from "@/app/lib/context";
-import { useAuth } from "@/app/lib/auth-context";
+import { useAppContext } from "@/app/lib/auth/context";
+import { useAuth } from "@/app/lib/auth/auth-context";
 import { fetchChannels, fetchPostById, updatePost, ForumChannel, ForumPost, checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 
@@ -199,7 +200,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     const readTime = wordCount === 0 ? 0 : Math.ceil(wordCount / 220);
 
     const renderSimpleMarkdown = (text: string) => {
-        let html = text
+        const html = text
             .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") 
             .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2 text-inherit">$1</h3>')
             .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-5 mb-3 text-inherit">$1</h2>')
@@ -235,7 +236,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
 
     return (
         <div className={`flex min-h-screen flex-col font-sans selection:bg-indigo-500/30 ${bgApp}`}>
-            <div className="mx-auto w-full max-w-[1400px] px-6 py-12 flex-1 flex flex-col gap-8">
+            <div className="mx-auto w-full max-w-350 px-6 py-12 flex-1 flex flex-col gap-8">
 
                 <header className="flex flex-col w-full relative">
                     <div className="absolute -top-8 left-0">
@@ -281,7 +282,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
 
                 {error && (
                     <div className={`mt-2 flex items-start gap-4 rounded-2xl border p-4 text-sm font-semibold ${isDark ? "border-red-900/50 bg-red-950/30 text-red-400" : "border-red-200 bg-red-50 text-red-800"}`}>
-                        <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                        <Info className="mt-0.5 h-4 w-4 shrink-0" />
                         <span>{error}</span>
                     </div>
                 )}
@@ -305,7 +306,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                             />
                         </div>
 
-                        <div className={`flex flex-col relative border rounded-2xl min-h-[480px] overflow-hidden ${bgCard}`}>
+                        <div className={`flex flex-col relative border rounded-2xl min-h-120 overflow-hidden ${bgCard}`}>
                             <div className={`p-6 pb-6 border-b ${isDark ? "border-slate-800" : "border-slate-200"}`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">

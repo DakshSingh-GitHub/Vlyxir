@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { LayoutList, TrendingUp, Sparkles, Zap, Globe, Home, PenSquare, HelpCircle } from 'lucide-react';
-import { useAppContext } from '../../app/lib/context';
+import { useAppContext } from '../../app/lib/auth/context';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -53,12 +54,12 @@ export default function ForumSidebar({
             {/* Mobile Backdrop */}
             {isMobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden transition-all duration-300"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-60 md:hidden transition-all duration-300"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
 
-            <aside className={`w-64 flex-shrink-0 border-r flex flex-col fixed md:relative inset-y-0 left-0 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-transform duration-300 ease-in-out z-[70] md:z-auto ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} py-6 px-4 shadow-2xl md:shadow-none`}>
+            <aside className={`w-64 shrink-0 border-r flex flex-col fixed md:relative inset-y-0 left-0 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} transition-transform duration-300 ease-in-out z-70 md:z-auto ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} py-6 px-4 shadow-2xl md:shadow-none`}>
                 <div className="flex items-center gap-3 px-3 mb-8">
                     <div className="w-8 h-8 relative rounded-xl overflow-hidden bg-indigo-600 flex items-center justify-center p-1.5 shadow-lg shadow-indigo-500/20">
                         <Image

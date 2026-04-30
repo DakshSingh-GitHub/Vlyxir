@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react';
-import { getCodeJudgePath, getCodeIdePath, getCodeAnalysisPath } from './paths';
+import { getCodeJudgePath, getCodeIdePath, getCodeAnalysisPath } from '../utils/paths';
 
 type ThemeMode = "light" | "dark" | "system";
 

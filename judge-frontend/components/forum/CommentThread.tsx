@@ -4,8 +4,8 @@ import { ForumComment, toggleCommentLike, deleteComment, checkProfanity } from "
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
 import Link from "next/link";
 
-import { useAppContext } from "../../app/lib/context";
-import { useAuth } from "../../app/lib/auth-context";
+import { useAppContext } from "../../app/lib/auth/context";
+import { useAuth } from "../../app/lib/auth/auth-context";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface CommentThreadProps {
@@ -100,7 +100,7 @@ function CommentItem({
             <div className="flex gap-3">
                 <Link
                     href={`/user/${comment.author_username}`}
-                    className="flex-shrink-0"
+                    className="shrink-0"
                 >
                     <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs uppercase shadow-sm transition-all hover:scale-110 active:scale-95 ${isDark ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'bg-slate-100 text-indigo-600 border border-slate-200'}`}>
                         {comment.author_username?.charAt(0) || <User className="w-4 h-4" />}
@@ -118,7 +118,7 @@ function CommentItem({
                             {new Date(comment.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                     </div>
-                    <p className={`text-sm leading-relaxed break-words ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <p className={`text-sm leading-relaxed wrap-break-word ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         {comment.body}
                     </p>
 
@@ -164,7 +164,7 @@ function CommentItem({
                                     value={replyBody}
                                     onChange={(e) => setReplyBody(e.target.value)}
                                     placeholder="Write a reply..."
-                                    className={`flex-1 bg-transparent p-2 md:p-3 text-sm focus:outline-none resize-none min-h-[60px] ${isDark ? 'text-slate-200 placeholder-slate-600' : 'text-slate-900 placeholder-slate-400'}`}
+                                    className={`flex-1 bg-transparent p-2 md:p-3 text-sm focus:outline-none resize-none min-h-15 ${isDark ? 'text-slate-200 placeholder-slate-600' : 'text-slate-900 placeholder-slate-400'}`}
                                     autoFocus
                                 />
                                 <div className="flex flex-col gap-1 p-1">

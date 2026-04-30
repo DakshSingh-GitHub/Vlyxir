@@ -4,9 +4,9 @@
 import Editor, { OnMount, useMonaco } from "@monaco-editor/react";
 import { useState, useEffect, useRef, memo } from "react";
 import Toolbar from "./Toolbar";
-import { DEEP_SPACE_THEME, PYTHON_SNIPPETS } from "../../app/lib/editor-config";
-import { anime } from "../../app/lib/anime";
-import { useAppContext } from "../../app/lib/context";
+import { DEEP_SPACE_THEME, PYTHON_SNIPPETS } from "../../app/lib/utils/editor-config";
+import { anime } from "../../app/lib/utils/anime";
+import { useAppContext } from "../../app/lib/auth/context";
 
 interface CodeEditorProps {
     code: string;

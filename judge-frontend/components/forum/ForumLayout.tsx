@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useAppContext } from '../../app/lib/context';
+import { useAppContext } from '../../app/lib/auth/context';
 
 export default function ForumLayout({ children }: { children: React.ReactNode }) {
     const { isDark } = useAppContext();

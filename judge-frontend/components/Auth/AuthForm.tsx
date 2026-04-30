@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Check, CircleAlert, Eye, EyeOff, Home, Loader2, Lock, Mail, User, UserPlus, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
-import { supabase } from "../../app/lib/supabase/client";
-import { useAuth } from "../../app/lib/auth-context";
+import { supabase } from "../../app/lib/api/supabase/client";
+import { useAuth } from "../../app/lib/auth/auth-context";
 import CountryDropdown from "../CountryDropdown";
 
 type AuthMode = "login" | "register";

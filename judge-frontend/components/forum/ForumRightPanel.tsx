@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useAppContext } from '../../app/lib/context';
-import { useAuth } from '@/app/lib/auth-context';
+import { useAppContext } from '../../app/lib/auth/context';
+import { useAuth } from '@/app/lib/auth/auth-context';
 import { fetchUserPosts, ForumPost } from '@/app/forum/forum-helper/helper';
 import { Plus, User, BarChart2, Star, TrendingUp, Info, FileText } from 'lucide-react';
 

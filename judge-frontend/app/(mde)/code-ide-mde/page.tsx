@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { anime } from "../../lib/anime";
-import { useAppContext } from "../../lib/context";
-import { runCode } from "../../lib/api";
+import { anime } from "../../lib/utils/anime";
+import { useAppContext } from "../../lib/auth/context";
+import { runCode } from "../../lib/api/api";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History } from "lucide-react";
 
@@ -12,7 +12,7 @@ import CodeEditor from "../../../components/Editor/CodeEditor";
 import { ideLayoutOptions, IdeUiLayout } from "./layoutOptions";
 import ClassicIdeLayout from "./layouts/ClassicIdeLayout";
 import WideIdeLayout from "./layouts/WideIdeLayout";
-import { useAuth } from "../../lib/auth-context";
+import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";

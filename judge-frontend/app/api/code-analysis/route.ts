@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { analyzeCodeWithGroq } from "@/app/lib/groq";
+import { analyzeCodeWithGroq } from "@/app/lib/api/groq";
 import { createClient } from "@supabase/supabase-js";
 
 export async function POST(request: Request) {

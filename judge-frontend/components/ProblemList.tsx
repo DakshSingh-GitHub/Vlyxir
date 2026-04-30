@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState, useRef, memo, useCallback } from "react";
-import { anime, stagger } from "../app/lib/anime";
-import { getProblems } from "../app/lib/api";
+import { anime, stagger } from "../app/lib/utils/anime";
+import { getProblems } from "../app/lib/api/api";
 import { Filter, Check, Sparkles, SlidersHorizontal, X } from "lucide-react";
-import { getSubmissions } from "../app/lib/storage";
+import { getSubmissions } from "../app/lib/utils/storage";
 import FilterModal from "./General/FilterModal";
 
-import { Problem } from "../app/lib/types";
+import { Problem } from "../app/lib/types/types";
 
 interface ProblemListProps {
     onSelect: (id: string) => void;

@@ -2,9 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { anime } from '../../app/lib/anime';
-import { useAppContext } from '../../app/lib/context';
-import { CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH, CODE_IDE_PATH, CODE_IDE_MDE_PATH, CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH } from '../../app/lib/paths';
+import { anime } from '../../app/lib/utils/anime';
+import { useAppContext } from '../../app/lib/auth/context';
+import { CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH, CODE_IDE_PATH, CODE_IDE_MDE_PATH, CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH } from '../../app/lib/utils/paths';
 
 type RouteItem = {
     name: string;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { analyzeCodeWithGroq } from "@/app/lib/groq";
+import { analyzeCodeWithGroq } from "@/app/lib/api/groq";
 
 export async function GET(request: Request) {
     try {

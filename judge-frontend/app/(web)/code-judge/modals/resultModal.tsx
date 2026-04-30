@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { X, CheckCircle, XCircle, AlertTriangle, Clock } from 'lucide-react';
-import { SubmitResponse, TestCaseResult } from '../../../lib/types';
+import { SubmitResponse, TestCaseResult } from '../../../lib/types/types';
 
 interface ResultModalProps {
     result: SubmitResponse & { error?: string };

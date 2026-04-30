@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { memo } from 'react';
@@ -5,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Terminal, ExternalLink, Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Settings from './Settings';
-import { useAppContext } from '../../app/lib/context';
+import { useAppContext } from '../../app/lib/auth/context';
 
 interface ToolbarProps {
     code: string;

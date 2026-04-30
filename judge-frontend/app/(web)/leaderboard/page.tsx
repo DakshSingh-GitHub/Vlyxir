@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState } from 'react';
@@ -15,11 +17,11 @@ import {
     Globe,
     Home
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase/client';
-import { useAppContext } from '../../lib/context';
+import { supabase } from '../../lib/api/supabase/client';
+import { useAppContext } from '../../lib/auth/context';
 import Link from 'next/link';
-import { LeaderboardUser } from '../../lib/types';
-import { getCachedLeaderboard, setCachedLeaderboard } from '../../lib/cache';
+import { LeaderboardUser } from '../../lib/types/types';
+import { getCachedLeaderboard, setCachedLeaderboard } from '../../lib/utils/cache';
 
 
 export default function LeaderboardPage() {
@@ -121,7 +123,7 @@ export default function LeaderboardPage() {
                             transition={{ delay: 0.1 }}
                             className="text-4xl md:text-5xl font-black tracking-tight"
                         >
-                            Global <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">Leaderboard</span>
+                            Global <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 to-purple-500">Leaderboard</span>
                         </motion.h1>
                         <motion.p
                             initial={{ opacity: 0 }}
@@ -304,7 +306,7 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain }: any)
             )}
 
             <Link href={`/user/${user.username}`} className="group relative z-20">
-                <div className={`h-24 w-24 md:h-32 md:w-32 rounded-3xl bg-gradient-to-br ${color} ${shadow} shadow-2xl flex items-center justify-center text-3xl md:text-4xl font-black text-white border-4 border-white dark:border-[#0B0C15] group-hover:rotate-6 transition-transform relative`}>
+                <div className={`h-24 w-24 md:h-32 md:w-32 rounded-3xl bg-linear-to-br ${color} ${shadow} shadow-2xl flex items-center justify-center text-3xl md:text-4xl font-black text-white border-4 border-white dark:border-[#0B0C15] group-hover:rotate-6 transition-transform relative`}>
                     {user.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || '?'}
                 </div>
                 <div className={`absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 flex items-center justify-center font-black z-20`}>
@@ -324,14 +326,14 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain }: any)
             </div>
 
             {/* Podium Base */}
-            <div className={`w-full ${height} rounded-t-3xl bg-gradient-to-b from-white/10 to-transparent dark:from-slate-800/40 dark:to-transparent border-x border-t border-slate-200 dark:border-slate-800 mt-4 backdrop-blur-md relative overflow-hidden flex flex-col items-center p-6`}>
+            <div className={`w-full ${height} rounded-t-3xl bg-linear-to-b from-white/10 to-transparent dark:from-slate-800/40 dark:to-transparent border-x border-t border-slate-200 dark:border-slate-800 mt-4 backdrop-blur-md relative overflow-hidden flex flex-col items-center p-6`}>
                 {/* Background Rank Number */}
                 <div className="absolute -bottom-10 -right-4 text-9xl font-black text-slate-900/20 dark:text-white/5 select-none pointer-events-none">
                     {rank}
                 </div>
 
                 {/* Visual accents */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-indigo-500/50 to-transparent"></div>
 
                 <div className="mt-4 flex flex-col items-center gap-2 relative z-10">
                     <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-3 py-1 rounded-full border ${rank === 1 ? 'border-amber-500/50 text-amber-500 bg-amber-500/5' :
@@ -369,7 +371,7 @@ function RankingRow({ user, rank }: { user: LeaderboardUser, rank: number }) {
             </td>
             <td className="px-4 py-5">
                 <Link href={`/user/${user.username}`} className="flex items-center gap-4 group/user">
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white group-hover/user:scale-110 transition-transform">
+                    <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white group-hover/user:scale-110 transition-transform">
                         {user.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}
                     </div>
                     <div>
@@ -416,7 +418,7 @@ function LeaderboardSkeleton() {
                     ))}
                 </div>
 
-                <div className="h-[600px] bg-white dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800"></div>
+                <div className="h-150 bg-white dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800"></div>
             </div>
         </div>
     );

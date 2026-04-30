@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { useAppContext } from '../../app/lib/context';
+import { useAppContext } from '../../app/lib/auth/context';
 import NavBar from './NavBar';
 import NewNavBar from './NewNavBar';
 import SubmissionsModal from './SubmissionsModal';
 import SettingsModal from './SettingsModal';
-import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath } from '@/app/lib/paths';
+import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath } from '@/app/lib/utils/paths';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const { isSidebarOpen, setIsSidebarOpen, isSubmissionsModalOpen, setIsSubmissionsModalOpen, useNewUi, isDark } = useAppContext();

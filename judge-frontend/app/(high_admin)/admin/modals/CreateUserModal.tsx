@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, UserPlus, Check, ChevronDown } from 'lucide-react';
-import { Permission } from '../../../lib/types';
+import { Permission } from '../../../lib/types/types';
 
 interface CreateUserModalProps {
     isOpen: boolean;
@@ -42,7 +42,7 @@ export default function CreateUserModal({ isOpen, onClose, onSubmit }: CreateUse
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

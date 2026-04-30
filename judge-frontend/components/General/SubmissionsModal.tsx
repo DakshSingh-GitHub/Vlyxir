@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { X, History, Sparkles, ChevronDown, CheckCircle2, XCircle, Clock, ExternalLink, Code2, Terminal, ChevronRight } from "lucide-react";
 import { useEffect, useState, useMemo, memo, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { getSubmissions, Submission } from "../../app/lib/storage";
+import { getSubmissions, Submission } from "../../app/lib/utils/storage";
 import Editor from "@monaco-editor/react";
-import { anime } from "../../app/lib/anime";
-import { useAuth } from "../../app/lib/auth-context";
+import { anime } from "../../app/lib/utils/anime";
+import { useAuth } from "../../app/lib/auth/auth-context";
 import LoginPrompt from "../Auth/LoginPrompt";
 
 interface SubmissionsModalProps {
@@ -215,7 +217,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
 
     if (isAuthLoading) {
         return createPortal(
-            <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-gray-950/40 backdrop-blur-sm">
+            <div className="fixed inset-0 z-10000 flex items-center justify-center bg-gray-950/40 backdrop-blur-sm">
                 <div className="rounded-2xl border border-white/20 bg-white/95 px-6 py-4 text-sm font-medium text-gray-700 shadow-2xl dark:bg-gray-950 dark:text-gray-200">
                     Checking login state...
                 </div>
@@ -226,7 +228,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
 
     if (!user) {
         return createPortal(
-            <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-10000 flex items-center justify-center p-4">
                 <div className="absolute inset-0 bg-gray-950/40 backdrop-blur-sm" onClick={handleClose} />
                 <div className="relative z-10 w-full max-w-xl">
                     <LoginPrompt
@@ -241,7 +243,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
     }
 
     const ModalContent = (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-10000 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
                 ref={backdropRef}
@@ -252,7 +254,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
             {/* Modal Card - Dynamic Width via CSS transition */}
             <div
                 ref={modalRef}
-                className={`relative bg-white dark:bg-gray-950 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/20 dark:border-gray-800 flex h-[750px] max-h-[90vh] transform-gpu opacity-0 transition-[width] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]`}
+                className={`relative bg-white dark:bg-gray-950 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/20 dark:border-gray-800 flex h-187.5 max-h-[90vh] transform-gpu opacity-0 transition-[width] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]`}
                 style={{
                     width: selectedSubmission ? "min(1400px, 95vw)" : "min(768px, 95vw)"
                 }}
@@ -264,7 +266,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                     {/* Header */}
                     <div className="p-8 md:p-10 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50 backdrop-blur-md sticky top-0 z-10">
                         <div className="flex items-center gap-5">
-                            <div className="p-4 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/30">
+                            <div className="p-4 bg-linear-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-xl shadow-indigo-500/30">
                                 <History className="w-6 h-6 text-white" />
                             </div>
                             <div>
@@ -312,7 +314,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                                     return (
                                         <div
                                             key={id}
-                                            className={`rounded-[2rem] border transition-all duration-300 transform-gpu ${isExpanded
+                                            className={`rounded-4xl border transition-all duration-300 transform-gpu ${isExpanded
                                                 ? "bg-indigo-50/30 dark:bg-indigo-500/5 border-indigo-200 dark:border-indigo-500/30 shadow-lg shadow-indigo-500/5"
                                                 : "bg-white dark:bg-gray-900/40 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 shadow-sm"
                                                 }`}
@@ -341,7 +343,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                                             </button>
 
                                             <div
-                                                className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out px-4 pb-4 space-y-2 ${isExpanded ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}
+                                                className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out px-4 pb-4 space-y-2 ${isExpanded ? 'max-h-250 opacity-100' : 'max-h-0 opacity-0'}`}
                                             >
                                                 {group.submissions.map((sub) => (
                                                     <SubmissionItem
@@ -419,7 +421,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                         <div className="p-6 md:p-8 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
                             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                                 <div className="flex items-center gap-5">
-                                    <div className={`p-4 rounded-[1.5rem] shadow-xl ${selectedSubmission.final_status === "Accepted"
+                                    <div className={`p-4 rounded-3xl shadow-xl ${selectedSubmission.final_status === "Accepted"
                                         ? "bg-emerald-500/10 text-emerald-500 shadow-emerald-500/10"
                                         : "bg-rose-500/10 text-rose-500 shadow-rose-500/10"
                                         }`}>
@@ -446,11 +448,11 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                                 </div>
 
                                 <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900 p-2 rounded-2xl border border-gray-100 dark:border-gray-800">
-                                    <div className="px-4 py-2 bg-emerald-500/10 rounded-xl text-center min-w-[80px]">
+                                    <div className="px-4 py-2 bg-emerald-500/10 rounded-xl text-center min-w-20">
                                         <p className="text-[10px] font-black text-emerald-600/60 uppercase">Passed</p>
                                         <p className="text-lg font-black text-emerald-600">All</p>
                                     </div>
-                                    <div className="px-4 py-2 bg-gray-200/50 dark:bg-gray-800 rounded-xl text-center min-w-[80px]">
+                                    <div className="px-4 py-2 bg-gray-200/50 dark:bg-gray-800 rounded-xl text-center min-w-20">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Testcases</p>
                                         <p className="text-lg font-black text-gray-700 dark:text-gray-300">Detailed</p>
                                     </div>
@@ -461,7 +463,7 @@ export default function SubmissionsModal({ isOpen, onClose }: SubmissionsModalPr
                 )}
 
                 {/* Decoration */}
-                <div className="absolute top-0 right-0 w-1 pt-full bg-gradient-to-b from-indigo-500 via-purple-500 to-transparent opacity-20" />
+                <div className="absolute top-0 right-0 w-1 pt-full bg-linear-to-b from-indigo-500 via-purple-500 to-transparent opacity-20" />
             </div>
         </div>
     );

@@ -1,14 +1,14 @@
 "use client";
 
 import { ForumPost } from "../../app/forum/forum-helper/helper";
-import { useAppContext } from "../../app/lib/context";
+import { useAppContext } from "../../app/lib/auth/context";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, ArrowUp, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toggleUpvote } from "../../app/forum/forum-helper/helper";
-import { useAuth } from "../../app/lib/auth-context";
+import { useAuth } from "../../app/lib/auth/auth-context";
 import CommentSection from "./CommentSection";
 import ProblemReferenceModal from "./ProblemReferenceModal";
 import { Sparkles, ExternalLink } from "lucide-react";
@@ -63,7 +63,7 @@ export default function PostDetail({ post }: PostDetailProps) {
                     href={`/user/${post.author_username}`}
                     className="flex items-center gap-3 mb-8 group w-fit"
                 >
-                    <div className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg transition-all group-hover:scale-110 group-hover:shadow-indigo-500/20 ${isDark ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
+                    <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg transition-all group-hover:scale-110 group-hover:shadow-indigo-500/20 ${isDark ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
                         {post.author_username?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="min-w-0">
@@ -104,7 +104,7 @@ export default function PostDetail({ post }: PostDetailProps) {
                     }`}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl ${
+                                <div className={`w-12 h-12 shrink-0 flex items-center justify-center rounded-xl ${
                                     isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white text-indigo-600 shadow-sm'
                                 }`}>
                                     <Sparkles className="w-6 h-6" />

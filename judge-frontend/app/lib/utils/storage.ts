@@ -1,5 +1,6 @@
-import { User } from "./types";
-import { supabase } from "./supabase/client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { User } from "../types/types";
+import { supabase } from "../api/supabase/client";
 
 export interface Submission {
     id: string;

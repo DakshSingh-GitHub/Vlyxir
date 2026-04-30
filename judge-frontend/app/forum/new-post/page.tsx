@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-const */
 "use client";
 
@@ -16,13 +17,13 @@ import {
     X,
     Settings,
 } from "lucide-react";
-import { useAppContext } from "../../lib/context";
-import { useAuth } from "../../lib/auth-context";
+import { useAppContext } from "../../lib/auth/context";
+import { useAuth } from "../../lib/auth/auth-context";
 import { fetchChannels, publishPost, ForumChannel, checkProfanity, saveDraft, fetchDraftById, deleteDraft } from "../forum-helper/helper";
 import ProfanityModal from "../forum-helper/ProfanityModal";
 import CreatePostErrorModal from "../forum-helper/CreatePostErrorModal";
-import { getProblems } from "../../lib/api";
-import { Problem } from "../../lib/types";
+import { getProblems } from "../../lib/api/api";
+import { Problem } from "../../lib/types/types";
 
 const COMMON_TAGS = [
     "bug", "feature-request", "question", "discussion", "help-wanted", "solved", "tutorial", "announcement",
@@ -514,7 +515,7 @@ function NewPostContent() {
                                             {tags.map((tag) => (
                                                 <span
                                                     key={tag}
-                                                    className={`inline-flex items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-xs font-bold transition-colors ${
+                                                    className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-bold transition-colors ${
                                                         isDark ? "bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30" : "bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
                                                     }`}
                                                 >

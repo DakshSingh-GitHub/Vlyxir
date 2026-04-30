@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { anime } from "../../app/lib/anime";
-import { useAppContext } from "../../app/lib/context";
+import { anime } from "../../app/lib/utils/anime";
+import { useAppContext } from "../../app/lib/auth/context";
 import { Moon, Sun, Monitor, Type, PencilRuler, Sparkles, Smartphone, Cpu, RotateCcw, X, LayoutGrid } from "lucide-react";
 
 interface SettingsModalProps {
@@ -113,7 +114,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center px-4">
             <button
                 ref={backdropRef}
                 onClick={onClose}

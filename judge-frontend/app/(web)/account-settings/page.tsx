@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppContext } from "../../lib/context";
-import { useAuth } from "../../lib/auth-context";
+import { useAppContext } from "../../lib/auth/context";
+import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import CountryDropdown from "../../../components/CountryDropdown";
 import {

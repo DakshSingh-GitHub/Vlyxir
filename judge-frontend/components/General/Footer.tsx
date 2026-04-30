@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {Scale} from "lucide-react";
 import Link from "next/link";
-import { useAppContext } from "../../app/lib/context";
+import { useAppContext } from "../../app/lib/auth/context";
 
 export default function Footer() {
     const { codeJudgePath, isDark } = useAppContext();

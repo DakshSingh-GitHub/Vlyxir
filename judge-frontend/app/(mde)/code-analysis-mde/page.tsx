@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { anime } from '../../lib/anime';
+import { anime } from '../../lib/utils/anime';
 import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Loader2, X, History, Terminal, Cpu, Construction, Trash2, AlertTriangle } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
-import { useAppContext } from '../../lib/context';
-import { useAuth } from '../../lib/auth-context';
-import { supabase } from '../../lib/supabase/client';
+import { useAppContext } from '../../lib/auth/context';
+import { useAuth } from '../../lib/auth/auth-context';
+import { supabase } from '../../lib/api/supabase/client';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -732,7 +733,7 @@ export default function CodeAnalysisPage() {
                                                 <Terminal className={`w-8 h-8 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
                                             </div>
                                             <p className={`text-[10px] font-black uppercase tracking-[0.4em] mb-2 ${mutedClass}`}>Awaiting Stream</p>
-                                            <p className={`text-xs max-w-[180px] ${lighterMutedClass}`}>AI insights will materialize once you start analysis.</p>
+                                            <p className={`text-xs max-w-45 ${lighterMutedClass}`}>AI insights will materialize once you start analysis.</p>
                                         </div>
                                     )}
                                 </div>
@@ -776,7 +777,7 @@ export default function CodeAnalysisPage() {
                     )}
 
                     {isRecordsModalOpen && (
-                        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 lg:p-10">
+                        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 sm:p-6 lg:p-10">
                             <button
                                 onClick={closeRecordsModal}
                                 className={`absolute inset-0 backdrop-blur-sm transition-opacity duration-300 ${modalBackdropClass} ${isRecordsModalVisible ? "opacity-100" : "opacity-0"}`}
@@ -890,11 +891,11 @@ export default function CodeAnalysisPage() {
                     {/* Deletion Confirmation Modal */}
                     {isDeleteConfirmOpen && (
                         <div
-                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
+                            className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
                             onClick={() => !isDeleting && setIsDeleteConfirmOpen(false)}
                         >
                             <div
-                                className={`w-full max-w-sm rounded-[2rem] border p-8 animate-in zoom-in-95 duration-200 ${surfaceClass}`}
+                                className={`w-full max-w-sm rounded-4xl border p-8 animate-in zoom-in-95 duration-200 ${surfaceClass}`}
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <div className="flex items-center justify-center mb-6">

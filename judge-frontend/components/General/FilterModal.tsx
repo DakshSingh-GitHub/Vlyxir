@@ -3,7 +3,7 @@
 import { X, Check, Filter, Layers, BadgeCheck, RotateCcw } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { anime } from "../../app/lib/anime";
+import { anime } from "../../app/lib/utils/anime";
 
 interface FilterModalProps {
     isOpen: boolean;
@@ -131,7 +131,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
     if (!isOpen) return null;
 
     const ModalContent = (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-10000 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
                 ref={backdropRef}
@@ -142,7 +142,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
             {/* Modal Card */}
             <div
                 ref={modalRef}
-                className="relative w-full max-w-[70vw] min-w-[350px] md:min-w-[850px] bg-white dark:bg-gray-950 rounded-2xl md:rounded-[2rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] overflow-hidden border border-white/10 dark:border-gray-800 flex flex-col md:flex-row h-[550px] md:h-[650px] max-h-[90vh] opacity-0"
+                className="relative w-full max-w-[70vw] min-w-87.5 md:min-w-212.5 bg-white dark:bg-gray-950 rounded-2xl md:rounded-4xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.5)] dark:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] overflow-hidden border border-white/10 dark:border-gray-800 flex flex-col md:flex-row h-137.5 md:h-162.5 max-h-[90vh] opacity-0"
             >
                 {/* Sidebar / Top Tabs */}
                 <div className="w-full md:w-72 bg-gray-50/50 dark:bg-gray-900/40 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-800 p-4 md:p-8 flex flex-col md:justify-between shrink-0">
@@ -164,12 +164,12 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                     <button
                                         key={cat.id}
                                         onClick={() => setActiveCategory(cat.id as Category)}
-                                        className={`flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 md:gap-3 px-3 md:px-5 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] transition-all duration-300 group ${isActive
+                                        className={`flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 md:gap-3 px-3 md:px-5 py-3 md:py-4 rounded-xl md:rounded-3xl transition-all duration-300 group ${isActive
                                             ? "bg-white dark:bg-gray-800 shadow-md md:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.15)] dark:shadow-none border border-gray-100 dark:border-gray-700"
                                             : "hover:bg-gray-100 dark:hover:bg-gray-800/40"
                                             }`}
                                     >
-                                        <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl transition-all duration-500 scale-100 ${isActive ? `bg-gradient-to-br ${cat.color} text-white shadow-lg shadow-indigo-500/20` : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                                        <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl transition-all duration-500 scale-100 ${isActive ? `bg-linear-to-br ${cat.color} text-white shadow-lg shadow-indigo-500/20` : "bg-gray-100 dark:bg-gray-800 text-gray-400"
                                             }`}>
                                             <Icon className="w-4 h-4 md:w-5 md:h-5" />
                                         </div>
@@ -230,7 +230,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                     {difficultyOptions.map((opt) => (
                                         <label
                                             key={opt.id}
-                                            className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-[1.5rem] border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.difficulty.includes(opt.id)
+                                            className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.difficulty.includes(opt.id)
                                                 ? `border-indigo-600 dark:border-indigo-500 bg-indigo-50/30 dark:bg-indigo-500/10`
                                                 : "border-gray-50 dark:border-gray-900 hover:border-gray-100 dark:hover:border-gray-800 bg-gray-50/30 dark:bg-gray-900/20"
                                                 }`}
@@ -270,7 +270,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                     {statusOptions.map((opt) => (
                                         <div key={opt.id} className="space-y-4">
                                             <label
-                                                className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-[1.5rem] border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.status === opt.id
+                                                className={`flex items-center justify-between p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 transition-all cursor-pointer group active:scale-[0.98] ${filters.status === opt.id
                                                     ? "border-emerald-600 dark:border-emerald-500 bg-emerald-50/30 dark:bg-emerald-500/10"
                                                     : "border-gray-50 dark:border-gray-900 hover:border-gray-100 dark:hover:border-gray-800 bg-gray-50/30 dark:bg-gray-900/20"
                                                     }`}
@@ -304,7 +304,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                             </label>
 
                                             {opt.id === "solved" && filters.status === "solved" && (
-                                                <div className="ml-4 md:ml-8 p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800/50 space-y-6 animate-in slide-in-from-top-4 duration-400">
+                                                <div className="ml-4 md:ml-8 p-6 md:p-8 rounded-3xl md:rounded-4xl bg-gray-50/50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-800/50 space-y-6 animate-in slide-in-from-top-4 duration-400">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         {[
                                                             { id: 'correct', label: 'Correct', color: 'text-emerald-500', bg: 'bg-emerald-500/10', desc: 'At least one accepted answer' },
@@ -342,7 +342,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                                         ))}
                                                     </div>
 
-                                                    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-800 to-transparent" />
+                                                    <div className="h-px bg-linear-to-r from-transparent via-gray-200 dark:via-gray-800 to-transparent" />
 
                                                     <button
                                                         onClick={() => setFilters({
@@ -384,7 +384,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                     <div className="mt-6 md:mt-8 pt-2">
                         <button
                             onClick={handleClose}
-                            className="w-full py-4 bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-2xl md:rounded-[2rem] text-sm md:text-lg font-black shadow-[0_15px_30px_-8px_rgba(79,70,229,0.5)] active:scale-[0.97] transition-all flex items-center justify-center gap-2 md:gap-4 group"
+                            className="w-full py-4 bg-linear-to-r from-indigo-600 via-indigo-700 to-blue-700 hover:from-indigo-500 hover:to-blue-600 text-white rounded-2xl md:rounded-4xl text-sm md:text-lg font-black shadow-[0_15px_30px_-8px_rgba(79,70,229,0.5)] active:scale-[0.97] transition-all flex items-center justify-center gap-2 md:gap-4 group"
                         >
                             <div className="flex items-center gap-2">
                                 Apply Filters

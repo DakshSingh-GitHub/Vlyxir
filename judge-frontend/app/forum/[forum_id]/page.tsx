@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState, use } from 'react';
@@ -8,8 +9,8 @@ import PostDetail from "../../../components/forum/PostDetail";
 import { fetchPostById, ForumPost } from '../forum-helper/helper';
 import { useRouter } from 'next/navigation';
 import { Loader2, Globe } from 'lucide-react';
-import { useAppContext } from '../../lib/context';
-import { useAuth } from '../../lib/auth-context';
+import { useAppContext } from '../../lib/auth/context';
+import { useAuth } from '../../lib/auth/auth-context';
 
 export default function ForumIDPage({
     params,

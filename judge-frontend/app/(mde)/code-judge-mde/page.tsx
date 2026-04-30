@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { anime } from "../../lib/anime";
-import { getProblemById, submitCode } from "../../lib/api";
-import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../../lib/storage";
-import { Problem, SubmitResponse } from "../../lib/types";
-import { useAppContext } from "../../lib/context";
+import { anime } from "../../lib/utils/anime";
+import { getProblemById, submitCode } from "../../lib/api/api";
+import { saveSubmission, getSubmissionsByProblemId, deleteSubmission, Submission } from "../../lib/utils/storage";
+import { Problem, SubmitResponse } from "../../lib/types/types";
+import { useAppContext } from "../../lib/auth/context";
 import { FileText, Code, History, Check, X, PanelTop, List } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
@@ -20,7 +21,7 @@ import CodeEditor from "../../../components/Editor/CodeEditor";
 import PastSubmissions from "../../../components/Editor/PastSubmissions";
 import ResultModal from "./modals/resultModal";
 import MobileResultPanel from "../../../components/Editor/MobileResultPanel";
-import { useAuth } from "../../lib/auth-context";
+import { useAuth } from "../../lib/auth/auth-context";
 
 const DEFAULT_CODE = "#Write your code here";
 const LAYOUT_STORAGE_KEY = "codejudge_ui_grid_layout";
@@ -241,7 +242,7 @@ export default function Home() {
             const sampleCount = problem.sample_test_cases?.length || 0;
             if (data.test_case_results && data.test_case_results.length > sampleCount && sampleCount > 0) {
                 const sampleResults = data.test_case_results.slice(0, sampleCount);
-                const passedCount = sampleResults.filter(r => r.status === "Accepted").length;
+                const passedCount = sampleResults.filter((r: { status: string; }) => r.status === "Accepted").length;
 
                 data.summary = {
                     passed: passedCount,
@@ -883,7 +884,7 @@ export default function Home() {
                                             <button
                                                 key={tab}
                                                 onClick={() => handleMobileTabChange(tab)}
-                                                className={`relative px-4 py-2.5 rounded-full transition-all duration-300 flex flex-col items-center justify-center gap-1 min-w-[72px] ${isActive
+                                                className={`relative px-4 py-2.5 rounded-full transition-all duration-300 flex flex-col items-center justify-center gap-1 min-w-18 ${isActive
                                                     ? (isDark ? "text-cyan-400" : "text-indigo-600")
                                                     : (isDark ? "text-slate-400" : "text-slate-500")
                                                     }`}
@@ -891,7 +892,7 @@ export default function Home() {
                                                 {isActive && (
                                                     <motion.div
                                                         layoutId="mobile-pill-bg"
-                                                        className={`absolute inset-0 rounded-full z-0 ${isDark ? 'bg-cyan-500/[0.08] shadow-[inset_0_0_12px_rgba(34,211,238,0.15)]' : 'bg-indigo-50 shadow-sm'}`}
+                                                        className={`absolute inset-0 rounded-full z-0 ${isDark ? 'bg-cyan-500/8 shadow-[inset_0_0_12px_rgba(34,211,238,0.15)]' : 'bg-indigo-50 shadow-sm'}`}
                                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                                     />
                                                 )}

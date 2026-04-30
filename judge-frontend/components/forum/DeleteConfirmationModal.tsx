@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { anime } from "../../app/lib/anime";
+import { anime } from "../../app/lib/utils/anime";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 
 interface DeleteConfirmationModalProps {
@@ -62,7 +62,7 @@ export default function DeleteConfirmationModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             {/* Backdrop */}
             <button
                 ref={backdropRef}

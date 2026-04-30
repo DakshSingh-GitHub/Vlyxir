@@ -1,4 +1,5 @@
-import { Problem, LeaderboardUser } from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Problem, LeaderboardUser } from "../types/types";
 
 const PROBLEMS_CACHE_KEY = "code_judge_problems_cache";
 const PROBLEM_DETAIL_PREFIX = "code_judge_problem_cache_";

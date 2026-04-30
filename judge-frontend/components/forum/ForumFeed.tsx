@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Search, MessagesSquare, MessageSquare, ArrowUp, Menu, Plus, User, PenSquare, HelpCircle, FileText } from "lucide-react";
-import { useAppContext } from "@/app/lib/context";
+import { useAppContext } from "@/app/lib/auth/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
-import { useAuth } from "@/app/lib/auth-context";
+import { useAuth } from "@/app/lib/auth/auth-context";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
@@ -108,7 +109,7 @@ export default function ForumFeed({
             </div>
 
             {/* Tabs Header - Hidden on Mobile (available in sidebar) */}
-            <div className={`hidden md:flex gap-6 mb-8 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} overflow-x-auto no-scrollbar min-h-[48px]`}>
+            <div className={`hidden md:flex gap-6 mb-8 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'} overflow-x-auto no-scrollbar min-h-12`}>
                 {tabs.map((tab) => {
                     // A tab is active if activeTab matches it, 
                     // OR if activeChannelId is set and this is the default tab ('All Posts') and activeTab is the channel name
@@ -126,7 +127,7 @@ export default function ForumFeed({
                         >
                             {tab}
                             {isActive && (
-                                <div className="absolute -bottom-[1px] left-0 right-0 h-[2.5px] bg-indigo-500 rounded-full z-20" />
+                                <div className="absolute -bottom-px left-0 right-0 h-[2.5px] bg-indigo-500 rounded-full z-20" />
                             )}
                         </button>
                     );
@@ -287,7 +288,7 @@ export default function ForumFeed({
                 <button
                     onClick={() => setIsFabOpen(!isFabOpen)}
                     className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 z-50 border-2 border-white/10 active:scale-90 ${isFabOpen
-                            ? 'bg-slate-800 text-slate-400 rotate-[135deg]'
+                            ? 'bg-slate-800 text-slate-400 rotate-135'
                             : 'bg-indigo-600 text-white shadow-indigo-500/40'
                         }`}
                 >

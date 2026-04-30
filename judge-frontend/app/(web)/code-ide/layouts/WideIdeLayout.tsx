@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { anime } from "../../../lib/anime";
+import { anime } from "../../../lib/utils/anime";
 import type { IdeDesktopLayoutProps } from "./types";
 
 export default function WideIdeLayout({ mainContentRef, editorPanel, inputPanel, outputPanel }: IdeDesktopLayoutProps) {

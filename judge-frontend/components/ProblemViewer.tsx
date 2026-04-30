@@ -1,7 +1,8 @@
-import { Problem } from "../app/lib/types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Problem } from "../app/lib/types/types";
 import { Sparkles, Terminal } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
-import { anime, stagger } from "../app/lib/anime";
+import { anime, stagger } from "../app/lib/utils/anime";
 
 interface ProblemViewerProps {
     problem: Problem | null;
@@ -76,7 +77,7 @@ const ProblemViewer = memo(function ProblemViewer({ problem }: ProblemViewerProp
         >
             <h2
                 data-pv-title
-                className="text-xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-50 dark:to-gray-400"
+                className="text-xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50 bg-clip-text bg-linear-to-r from-gray-900 to-gray-600 dark:from-gray-50 dark:to-gray-400"
             >
                 {typeof problem.title === 'string' ? problem.title : JSON.stringify(problem.title || "Untitled")}
             </h2>

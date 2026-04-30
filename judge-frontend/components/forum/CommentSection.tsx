@@ -1,11 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+ 
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
 import { ForumComment, fetchComments, publishComment, checkProfanity } from "../../app/forum/forum-helper/helper";
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
 
-import { useAppContext } from "../../app/lib/context";
-import { useAuth } from "../../app/lib/auth-context";
+import { useAppContext } from "../../app/lib/auth/context";
+import { useAuth } from "../../app/lib/auth/auth-context";
 import { Loader2, Send, MessageSquare, ArrowDown } from "lucide-react";
 import CommentThread from "./CommentThread";
 
@@ -127,7 +129,7 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
                             value={topLevelBody}
                             onChange={(e) => setTopLevelBody(e.target.value)}
                             placeholder="Add your thoughts to the discussion..."
-                            className={`w-full bg-transparent p-4 min-h-[120px] text-sm focus:outline-none resize-y ${isDark ? 'text-slate-200 placeholder-slate-600' : 'text-slate-900 placeholder-slate-400'}`}
+                            className={`w-full bg-transparent p-4 min-h-30 text-sm focus:outline-none resize-y ${isDark ? 'text-slate-200 placeholder-slate-600' : 'text-slate-900 placeholder-slate-400'}`}
                         />
                         <div className={`flex items-center justify-between p-2 px-3 border-t mt-2 ${isDark ? 'border-slate-800/50' : 'border-slate-200'}`}>
                             <p className={`text-[10px] font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>

@@ -27,8 +27,8 @@ import {
     LineChart
 } from 'lucide-react';
 import Link from 'next/link';
-import { getUsers } from '../../lib/storage';
-import { useAppContext } from '../../lib/context';
+import { getUsers } from '../../lib/utils/storage';
+import { useAppContext } from '../../lib/auth/context';
 
 export default function DocsInt() {
     const { isDark } = useAppContext();

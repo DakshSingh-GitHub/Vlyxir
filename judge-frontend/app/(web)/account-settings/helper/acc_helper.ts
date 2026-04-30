@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "../../../lib/supabase/client";
+import { supabase } from "../../../lib/api/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
 export interface ProfileRecord {
