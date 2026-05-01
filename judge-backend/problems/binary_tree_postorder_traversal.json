@@ -1,0 +1,61 @@
+{
+    "id": "binary_tree_postorder_traversal",
+    "title": "Binary Tree Postorder Traversal",
+    "description": "Return postorder traversal of a binary tree.",
+    "input_format": "A level-order representation.",
+    "output_format": "A list of integers.",
+    "constraints": {
+        "nodes": "0-100"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 null 2 3",
+            "output": "3 2 1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "",
+            "output": ""
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "1 2",
+            "output": "2 1"
+        },
+        {
+            "input": "1 null 2",
+            "output": "2 1"
+        },
+        {
+            "input": "1 2 3",
+            "output": "2 3 1"
+        },
+        {
+            "input": "1 2 3 4 5 6 7",
+            "output": "4 5 2 6 7 3 1"
+        },
+        {
+            "input": "1 null 2 null 3",
+            "output": "3 2 1"
+        },
+        {
+            "input": "1 2 null null 3",
+            "output": "3 2 1"
+        },
+        {
+            "input": "1 2 3 4 null null 5",
+            "output": "4 2 5 3 1"
+        },
+        {
+            "input": "10 5 15 2 7 12 17",
+            "output": "2 7 5 12 17 15 10"
+        }
+    ]
+}

@@ -1,0 +1,61 @@
+{
+    "id": "symmetric_tree",
+    "title": "Symmetric Tree",
+    "description": "Check if a binary tree is symmetric.",
+    "input_format": "A level-order representation.",
+    "output_format": "true or false",
+    "constraints": {
+        "nodes": "1-1000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 2 2 3 4 4 3",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 2 2 null 3 null 3",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "true"
+        },
+        {
+            "input": "1 2 2 3 null null 3",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3",
+            "output": "false"
+        },
+        {
+            "input": "1 2 2 null 3 3 null",
+            "output": "true"
+        },
+        {
+            "input": "1 2 2 2 null null 2",
+            "output": "true"
+        },
+        {
+            "input": "1 2 2 2 3 3 2",
+            "output": "true"
+        },
+        {
+            "input": "1 2 2 2 3 2 2",
+            "output": "false"
+        },
+        {
+            "input": "1 1 1",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5 5 4",
+            "output": "true"
+        }
+    ]
+}

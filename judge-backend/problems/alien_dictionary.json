@@ -1,0 +1,61 @@
+{
+    "id": "alien_dictionary",
+    "title": "Alien Dictionary",
+    "description": "Find order of letters in alien language.",
+    "input_format": "Space-separated words.",
+    "output_format": "Order string.",
+    "constraints": {
+        "words": "1-100"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "wrt wrf er ett rftt",
+            "output": "wertf"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "z x",
+            "output": "zx"
+        },
+        {
+            "input": "z x z",
+            "output": ""
+        },
+        {
+            "input": "abc ab",
+            "output": ""
+        },
+        {
+            "input": "wrt wrf er ett rftt",
+            "output": "wertf"
+        },
+        {
+            "input": "ab ac",
+            "output": "abc"
+        },
+        {
+            "input": "z z",
+            "output": "z"
+        },
+        {
+            "input": "ri r j i",
+            "output": "rji"
+        },
+        {
+            "input": "ze we r er",
+            "output": "zwer"
+        },
+        {
+            "input": "a b a",
+            "output": ""
+        },
+        {
+            "input": "za zb ca cb",
+            "output": "zacb"
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+{
+    "id": "reverse_linked_list",
+    "title": "Reverse Linked List",
+    "description": "Given the head of a singly linked list, reverse the list, and return the reversed list.",
+    "input_format": "A list of integers representing the linked list.",
+    "output_format": "A list of integers representing the reversed linked list.",
+    "constraints": {
+        "nodes": "0-5000",
+        "val": "-5000 to 5000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 2 3 4 5",
+            "output": "5 4 3 2 1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 2 3",
+            "output": "3 2 1"
+        },
+        {
+            "input": "10 20 30 40 50",
+            "output": "50 40 30 20 10"
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "",
+            "output": ""
+        },
+        {
+            "input": "5 4 3 2 1",
+            "output": "1 2 3 4 5"
+        },
+        {
+            "input": "7 8 9 10",
+            "output": "10 9 8 7"
+        },
+        {
+            "input": "1 1 1",
+            "output": "1 1 1"
+        },
+        {
+            "input": "1 2 1",
+            "output": "1 2 1"
+        },
+        {
+            "input": "-1 -2 -3",
+            "output": "-3 -2 -1"
+        },
+        {
+            "input": "100 200",
+            "output": "200 100"
+        }
+    ]
+}

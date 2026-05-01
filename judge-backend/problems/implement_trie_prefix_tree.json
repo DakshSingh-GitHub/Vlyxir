@@ -1,0 +1,61 @@
+{
+    "id": "implement_trie_prefix_tree",
+    "title": "Implement Trie (Prefix Tree)",
+    "description": "Implement a trie with insert, search, and startsWith.",
+    "input_format": "Commands and arguments.",
+    "output_format": "List of results.",
+    "constraints": {
+        "n": "1-2000"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "[\"Trie\", \"insert\", \"search\", \"search\", \"startsWith\", \"insert\", \"search\"]\n[[], [\"apple\"], [\"apple\"], [\"app\"], [\"app\"], [\"app\"], [\"app\"]]",
+            "output": "[null, null, true, false, true, null, true]"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "[\"Trie\",\"search\"]\n[[],[\"a\"]]",
+            "output": "[null,false]"
+        },
+        {
+            "input": "[\"Trie\",\"startsWith\"]\n[[],[\"a\"]]",
+            "output": "[null,false]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"search\"]\n[[],[\"a\"],[\"a\"]]",
+            "output": "[null,null,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"startsWith\"]\n[[],[\"abc\"],[\"a\"]]",
+            "output": "[null,null,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"insert\",\"search\",\"search\"]\n[[],[\"apple\"],[\"app\"],[\"apple\"],[\"app\"]]",
+            "output": "[null,null,null,true,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"search\",\"startsWith\"]\n[[],[\"hello\"],[\"hell\"],[\"hell\"]]",
+            "output": "[null,null,false,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"insert\",\"startsWith\"]\n[[],[\"a\"],[\"b\"],[\"c\"]]",
+            "output": "[null,null,null,false]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"insert\",\"search\"]\n[[],[\"a\"],[\"a\"],[\"a\"]]",
+            "output": "[null,null,null,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"search\",\"startsWith\"]\n[[],[\"trie\"],[\"trie\"],[\"tr\"]]",
+            "output": "[null,null,true,true]"
+        },
+        {
+            "input": "[\"Trie\",\"insert\",\"search\",\"startsWith\"]\n[[],[\"abc\"],[\"abcd\"],[\"abc\"]]",
+            "output": "[null,null,false,true]"
+        }
+    ]
+}

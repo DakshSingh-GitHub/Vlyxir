@@ -1,0 +1,61 @@
+{
+    "id": "remove_invalid_parentheses",
+    "title": "Remove Invalid Parentheses",
+    "description": "Remove min parentheses to make string valid.",
+    "input_format": "A string.",
+    "output_format": "List of strings.",
+    "constraints": {
+        "len": "1-25"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 2,
+    "sample_test_cases": [
+        {
+            "input": "()())()",
+            "output": "[\"(())()\",\"()()()\"]"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "(a)())()",
+            "output": "[\"(a())()\",\"(a)()()\"]"
+        },
+        {
+            "input": ")(",
+            "output": "[\"\"]"
+        },
+        {
+            "input": "()",
+            "output": "[\"()\"]"
+        },
+        {
+            "input": "(",
+            "output": "[\"\"]"
+        },
+        {
+            "input": ")",
+            "output": "[\"\"]"
+        },
+        {
+            "input": "a",
+            "output": "[\"a\"]"
+        },
+        {
+            "input": "())(",
+            "output": "[\"()\"]"
+        },
+        {
+            "input": "(()",
+            "output": "[\"()\"]"
+        },
+        {
+            "input": "())",
+            "output": "[\"()\"]"
+        },
+        {
+            "input": "((()))",
+            "output": "[\"((()))\"]"
+        }
+    ]
+}

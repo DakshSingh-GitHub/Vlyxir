@@ -1,0 +1,61 @@
+{
+    "id": "path_sum",
+    "title": "Path Sum",
+    "description": "Check if tree has root-to-leaf path sum equal to targetSum.",
+    "input_format": "Level-order representation and targetSum.",
+    "output_format": "true or false",
+    "constraints": {
+        "nodes": "0-5000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "5 4 8 11 null 13 4 7 2 null null null 1\n22",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 2 3\n5",
+            "output": "false"
+        },
+        {
+            "input": "1 2\n3",
+            "output": "true"
+        },
+        {
+            "input": "1 2\n1",
+            "output": "false"
+        },
+        {
+            "input": "null\n0",
+            "output": "false"
+        },
+        {
+            "input": "1 2 3\n4",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3\n3",
+            "output": "true"
+        },
+        {
+            "input": "-2 null -3\n-5",
+            "output": "true"
+        },
+        {
+            "input": "1 2 null 3 null 4 null 5\n15",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5 6 7\n7",
+            "output": "true"
+        },
+        {
+            "input": "10 5 15\n25",
+            "output": "true"
+        }
+    ]
+}

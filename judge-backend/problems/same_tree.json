@@ -1,0 +1,61 @@
+{
+    "id": "same_tree",
+    "title": "Same Tree",
+    "description": "Check if two binary trees are the same.",
+    "input_format": "Two level-order representations separated by a newline.",
+    "output_format": "true or false",
+    "constraints": {
+        "nodes": "0-100"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 2 3\n1 2 3",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 2\n1 null 2",
+            "output": "false"
+        },
+        {
+            "input": "1 2 1\n1 1 2",
+            "output": "false"
+        },
+        {
+            "input": "1\n1",
+            "output": "true"
+        },
+        {
+            "input": "1\n2",
+            "output": "false"
+        },
+        {
+            "input": "\n",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3\n1 2 3",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3\n1 2 4",
+            "output": "false"
+        },
+        {
+            "input": "1 null 2\n1 null 2",
+            "output": "true"
+        },
+        {
+            "input": "1 2 null\n1 2 null",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5\n1 2 3 4 5",
+            "output": "true"
+        }
+    ]
+}

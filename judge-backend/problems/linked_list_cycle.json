@@ -1,0 +1,62 @@
+{
+    "id": "linked_list_cycle",
+    "title": "Linked List Cycle",
+    "description": "Determine if a linked list has a cycle.",
+    "input_format": "A list of integers and pos (-1 if no cycle).",
+    "output_format": "true or false",
+    "constraints": {
+        "nodes": "0-10^4",
+        "pos": "-1 to valid index"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "3 2 0 -4\n1",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1\n-1",
+            "output": "false"
+        },
+        {
+            "input": "1 2\n0",
+            "output": "true"
+        },
+        {
+            "input": "1 2\n-1",
+            "output": "false"
+        },
+        {
+            "input": "1 1 1\n1",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5\n-1",
+            "output": "false"
+        },
+        {
+            "input": "1 2 3 4 5\n0",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5\n4",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5\n2",
+            "output": "true"
+        },
+        {
+            "input": "10 20\n1",
+            "output": "true"
+        },
+        {
+            "input": "5 5 5 5\n-1",
+            "output": "false"
+        }
+    ]
+}

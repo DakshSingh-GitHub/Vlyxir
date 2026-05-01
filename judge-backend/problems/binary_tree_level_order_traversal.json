@@ -1,0 +1,61 @@
+{
+    "id": "binary_tree_level_order_traversal",
+    "title": "Binary Tree Level Order Traversal",
+    "description": "Return level order traversal of a binary tree.",
+    "input_format": "A level-order representation.",
+    "output_format": "A 2D array representation [[val], [val, val], ...].",
+    "constraints": {
+        "nodes": "0-2000"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "3 9 20 null null 15 7",
+            "output": "[[3],[9,20],[15,7]]"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1",
+            "output": "[[1]]"
+        },
+        {
+            "input": "",
+            "output": "[]"
+        },
+        {
+            "input": "1 2",
+            "output": "[[1],[2]]"
+        },
+        {
+            "input": "1 null 2",
+            "output": "[[1],[2]]"
+        },
+        {
+            "input": "1 2 3",
+            "output": "[[1],[2,3]]"
+        },
+        {
+            "input": "1 2 3 4 5 6 7",
+            "output": "[[1],[2,3],[4,5,6,7]]"
+        },
+        {
+            "input": "1 2 null 3",
+            "output": "[[1],[2],[3]]"
+        },
+        {
+            "input": "1 null 2 null 3",
+            "output": "[[1],[2],[3]]"
+        },
+        {
+            "input": "1 2 3 4 null null 5",
+            "output": "[[1],[2,3],[4,5]]"
+        },
+        {
+            "input": "10 5 15 2 7 12 17",
+            "output": "[[10],[5,15],[2,7,12,17]]"
+        }
+    ]
+}

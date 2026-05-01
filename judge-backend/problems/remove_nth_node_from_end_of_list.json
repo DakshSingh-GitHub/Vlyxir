@@ -1,0 +1,62 @@
+{
+    "id": "remove_nth_node_from_end_of_list",
+    "title": "Remove Nth Node From End of List",
+    "description": "Remove the nth node from the end of a linked list.",
+    "input_format": "A list of integers and n separated by newline.",
+    "output_format": "A list of integers.",
+    "constraints": {
+        "sz": "1-30",
+        "n": "1-sz"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 2 3 4 5\n2",
+            "output": "1 2 3 5"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1\n1",
+            "output": ""
+        },
+        {
+            "input": "1 2\n1",
+            "output": "1"
+        },
+        {
+            "input": "1 2\n2",
+            "output": "2"
+        },
+        {
+            "input": "1 2 3\n1",
+            "output": "1 2"
+        },
+        {
+            "input": "1 2 3\n2",
+            "output": "1 3"
+        },
+        {
+            "input": "1 2 3\n3",
+            "output": "2 3"
+        },
+        {
+            "input": "1 2 3 4\n4",
+            "output": "2 3 4"
+        },
+        {
+            "input": "1 2 3 4\n1",
+            "output": "1 2 3"
+        },
+        {
+            "input": "10 20 30\n2",
+            "output": "10 30"
+        },
+        {
+            "input": "5 6 7 8 9\n3",
+            "output": "5 6 8 9"
+        }
+    ]
+}

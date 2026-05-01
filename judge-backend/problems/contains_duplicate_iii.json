@@ -1,0 +1,61 @@
+{
+    "id": "contains_duplicate_iii",
+    "title": "Contains Duplicate III",
+    "description": "Check if abs(i-j) <= indexDiff and abs(nums[i]-nums[j]) <= valueDiff.",
+    "input_format": "Array, indexDiff, valueDiff.",
+    "output_format": "true or false",
+    "constraints": {
+        "n": "2-10^5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 2,
+    "sample_test_cases": [
+        {
+            "input": "1 2 3 1\n3\n0",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 5 9 1 5 9\n2\n3",
+            "output": "false"
+        },
+        {
+            "input": "1 2 2 3 4 5\n3\n0",
+            "output": "true"
+        },
+        {
+            "input": "8 7 15 1 6 1 9 15\n1\n3",
+            "output": "true"
+        },
+        {
+            "input": "1 2 3 4 5\n1\n0",
+            "output": "false"
+        },
+        {
+            "input": "1 2 3 4 5\n0\n0",
+            "output": "false"
+        },
+        {
+            "input": "1 1\n1\n0",
+            "output": "true"
+        },
+        {
+            "input": "1 10\n1\n5",
+            "output": "false"
+        },
+        {
+            "input": "1 2 3\n2\n1",
+            "output": "true"
+        },
+        {
+            "input": "1 5 10 15\n1\n2",
+            "output": "false"
+        },
+        {
+            "input": "1 5 10 15\n3\n15",
+            "output": "true"
+        }
+    ]
+}

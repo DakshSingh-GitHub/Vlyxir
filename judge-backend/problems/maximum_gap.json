@@ -1,0 +1,61 @@
+{
+    "id": "maximum_gap",
+    "title": "Maximum Gap",
+    "description": "Return maximum difference between successive elements in sorted form.",
+    "input_format": "Space-separated integers.",
+    "output_format": "Integer.",
+    "constraints": {
+        "n": "1-10^5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "3 6 9 1",
+            "output": "3"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "10",
+            "output": "0"
+        },
+        {
+            "input": "1 1 1 1",
+            "output": "0"
+        },
+        {
+            "input": "1 100",
+            "output": "99"
+        },
+        {
+            "input": "1 5 10",
+            "output": "5"
+        },
+        {
+            "input": "1 2 3 4 5",
+            "output": "1"
+        },
+        {
+            "input": "1 10 5 100",
+            "output": "90"
+        },
+        {
+            "input": "1 2 4 8 16",
+            "output": "8"
+        },
+        {
+            "input": "100 10 2 0",
+            "output": "90"
+        },
+        {
+            "input": "7 7 7",
+            "output": "0"
+        },
+        {
+            "input": "1 1000000000",
+            "output": "999999999"
+        }
+    ]
+}

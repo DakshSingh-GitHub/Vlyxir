@@ -1,0 +1,61 @@
+{
+    "id": "find_minimum_in_rotated_sorted_array_ii",
+    "title": "Find Minimum in Rotated Sorted Array II",
+    "description": "Find min element in rotated sorted array with duplicates.",
+    "input_format": "Space-separated integers.",
+    "output_format": "Integer.",
+    "constraints": {
+        "n": "1-5000"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 3 5",
+            "output": "1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2 2 2 0 1",
+            "output": "0"
+        },
+        {
+            "input": "3 3 1 3",
+            "output": "1"
+        },
+        {
+            "input": "1 1 1",
+            "output": "1"
+        },
+        {
+            "input": "1",
+            "output": "1"
+        },
+        {
+            "input": "10 1 10 10 10",
+            "output": "1"
+        },
+        {
+            "input": "3 1 3 3 3",
+            "output": "1"
+        },
+        {
+            "input": "3 3 3 1 3",
+            "output": "1"
+        },
+        {
+            "input": "1 3 3",
+            "output": "1"
+        },
+        {
+            "input": "3 3 1",
+            "output": "1"
+        },
+        {
+            "input": "1 2 1",
+            "output": "1"
+        }
+    ]
+}

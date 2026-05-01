@@ -1,0 +1,61 @@
+{
+    "id": "word_ladder_ii",
+    "title": "Word Ladder II",
+    "description": "Return all shortest transformation sequences.",
+    "input_format": "beginWord, endWord, wordList.",
+    "output_format": "2D array of strings.",
+    "constraints": {
+        "len": "1-5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 2,
+    "sample_test_cases": [
+        {
+            "input": "hit\ncog\nhot dot dog lot log cog",
+            "output": "[[\"hit\",\"hot\",\"dot\",\"dog\",\"cog\"],[\"hit\",\"hot\",\"lot\",\"log\",\"cog\"]]"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "hit\ncog\nhot dot dog lot log",
+            "output": "[]"
+        },
+        {
+            "input": "a\nc\na b c",
+            "output": "[[\"a\",\"c\"]]"
+        },
+        {
+            "input": "hot\ndog\nhot dog dot",
+            "output": "[[\"hot\",\"dot\",\"dog\"]]"
+        },
+        {
+            "input": "lost\ncost\nlost cost",
+            "output": "[[\"lost\",\"cost\"]]"
+        },
+        {
+            "input": "aaaaa\nggggg\naaaaa ggggg",
+            "output": "[]"
+        },
+        {
+            "input": "hit\ncog\nhot dot dog lot log cog",
+            "output": "[[\"hit\",\"hot\",\"dot\",\"dog\",\"cog\"],[\"hit\",\"hot\",\"lot\",\"log\",\"cog\"]]"
+        },
+        {
+            "input": "red\ntax\nted tex red tax tad den rex pee",
+            "output": "[[\"red\",\"ted\",\"tad\",\"tax\"],[\"red\",\"ted\",\"tex\",\"tax\"],[\"red\",\"rex\",\"tex\",\"tax\"]]"
+        },
+        {
+            "input": "red\ntax\nted tex red tax tad den rex pee",
+            "output": "[[\"red\",\"ted\",\"tad\",\"tax\"],[\"red\",\"ted\",\"tex\",\"tax\"],[\"red\",\"rex\",\"tex\",\"tax\"]]"
+        },
+        {
+            "input": "a\nb\na b",
+            "output": "[[\"a\",\"b\"]]"
+        },
+        {
+            "input": "cat\nfin\ncab fin can fat fan",
+            "output": "[[\"cat\",\"can\",\"fan\",\"fin\"],[\"cat\",\"fat\",\"fan\",\"fin\"]]"
+        }
+    ]
+}
