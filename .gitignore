@@ -1,4 +1,8 @@
 /artifacts/
 /.idea/
 /__pycache__/
-/screenshots/
+/screenshots/*.log
+__pycache__/
+*.pyc
+.next/
+node_modules/
