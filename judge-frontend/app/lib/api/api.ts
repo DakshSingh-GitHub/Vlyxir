@@ -1,5 +1,6 @@
 import { getCachedProblems, setCachedProblems, getCachedProblemById, setCachedProblemById } from "../utils/cache";
 import { SubmitResponse, Problem } from "../types/types";
+import { supabase } from "./supabase/client";
 
 const LOCAL_URL = "http://localhost:5000";
 const REMOTE_URL = "https://code-judge-6fm6.vercel.app";
@@ -94,10 +95,14 @@ export async function submitCode(problemId: string, code: string, testOnly: bool
 	}
 
 	const baseUrl = await getBaseUrl();
+	const { data: { session } } = await supabase.auth.getSession();
+	const token = session?.access_token;
+
 	const res = await fetch(`${baseUrl}/submit`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
+			...(token ? { "Authorization": `Bearer ${token}` } : {})
 		},
 		body: JSON.stringify({
 			problem_id: problemId,
@@ -121,10 +126,14 @@ export async function runCode(code: string, input: string = "") {
 	}
 
 	const baseUrl = await getBaseUrl();
+	const { data: { session } } = await supabase.auth.getSession();
+	const token = session?.access_token;
+
 	const res = await fetch(`${baseUrl}/run`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
+			...(token ? { "Authorization": `Bearer ${token}` } : {})
 		},
 		body: JSON.stringify({
 			code: code,
