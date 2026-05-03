@@ -86,12 +86,15 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
         if (sessionOrder) {
             try {
                 const orderIds: string[] = JSON.parse(sessionOrder);
+                const problemMap = new Map(problemList.map(p => [p.id, p]));
+                const orderIdsSet = new Set(orderIds);
+
                 const orderedProblems = orderIds
-                    .map(id => problemList.find(p => p.id === id))
+                    .map(id => problemMap.get(id))
                     .filter((p): p is Problem => !!p);
 
                 // Add any problems that might be new or not in session storage
-                const remainingProblems = problemList.filter(p => !orderIds.includes(p.id));
+                const remainingProblems = problemList.filter(p => !orderIdsSet.has(p.id));
                 setProblems([...orderedProblems, ...remainingProblems]);
             } catch (e) {
                 console.error("Failed to parse session order", e);
