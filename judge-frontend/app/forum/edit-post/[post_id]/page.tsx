@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { useAppContext } from "@/app/lib/auth/context";
 import { useAuth } from "@/app/lib/auth/auth-context";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { fetchChannels, fetchPostById, updatePost, ForumChannel, ForumPost, checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 
@@ -199,21 +201,6 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     const wordCount = body.trim() ? body.trim().split(/\s+/).filter(Boolean).length : 0;
     const readTime = wordCount === 0 ? 0 : Math.ceil(wordCount / 220);
 
-    const renderSimpleMarkdown = (text: string) => {
-        const html = text
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") 
-            .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2 text-inherit">$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-5 mb-3 text-inherit">$1</h2>')
-            .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-black mt-6 mb-4 text-inherit">$1</h1>')
-            .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-inherit">$1</strong>')
-            .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
-            .replace(/```([\s\S]*?)```/gim, `<pre class="p-4 rounded-xl my-4 overflow-x-auto text-sm ${isDark ? 'bg-slate-950 text-slate-300 border border-slate-800' : 'bg-slate-100 text-slate-800 border border-slate-200'}"><code>$1</code></pre>`)
-            .replace(/`(.*?)`/gim, `<code class="px-1.5 py-0.5 rounded-md text-sm ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-700'}">$1</code>`)
-            .replace(/^\- (.*$)/gim, '<li class="ml-6 list-disc mb-1">$1</li>')
-            .replace(/\n\s*\n/g, '</p><p class="mb-4">')
-            .replace(/\n/g, '<br/>');
-        return `<div class="mb-4 leading-relaxed">${html}</div>`;
-    };
 
     if (isLoading) {
         return (
@@ -328,8 +315,10 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                     disabled={!!error}
                                 />
                             ) : (
-                                <div className={`flex-1 w-full p-6 pb-20 overflow-y-auto ${isDark ? "text-slate-200" : "text-slate-800"}`}>
-                                    <div dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(body) }} />
+                                <div className={`flex-1 w-full p-6 pb-20 overflow-y-auto prose-forum ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {body}
+                                    </ReactMarkdown>
                                 </div>
                             )}
 

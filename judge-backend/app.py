@@ -1,29 +1,65 @@
 import json
 import os
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import jwt
 from runner import run_code_multiple, run_code_once
 
 app = FastAPI(title="Judge Backend", description="FastAPI migration of the Code Judge backend")
 
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+
+def get_current_user(authorization: Optional[str] = Header(None)):
+    if not SUPABASE_JWT_SECRET:
+        # If no secret is provided, we might be in dev mode,
+        # but for security, we should ideally require it.
+        # For now, let's just log a warning and allow if not set,
+        # OR enforce it. Given this is a security fix, let's enforce it if not in dev.
+        if os.getenv("ENV") == "production":
+            raise HTTPException(status_code=500, detail="JWT secret not configured")
+        return {"id": "dev-user"}
+
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 # Configure CORS
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
 if allowed_origins_env:
+    # Handle the case where someone might put "*" in the env var,
+    # but we want to encourage specific origins.
     allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
 else:
+    # Default to localhost for development and the production domain
     allowed_origins = [
         "http://localhost:3000",
         "https://vlyxir.vercel.app"
     ]
 
+# If we are in production, we should definitely NOT allow "*"
+if os.getenv("ENV") == "production" and "*" in allowed_origins:
+    # Force a more restrictive policy or log a critical warning
+    # For now, let's just remove the wildcard if other origins are present
+    allowed_origins = [o for o in allowed_origins if o != "*"]
+    if not allowed_origins:
+         allowed_origins = ["https://vlyxir.vercel.app"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["POST", "GET"], # Restrict to necessary methods
+    allow_headers=["Content-Type", "Authorization"], # Restrict to necessary headers
 )
 
 PROBLEMS_DIR = "problems"
@@ -34,9 +70,9 @@ class TestCase(BaseModel):
     output: str
 
 class ProblemBase(BaseModel):
-    id: str
-    title: str
-    description: str
+    id: Optional[str] = ""
+    title: Optional[str] = ""
+    description: Optional[str] = ""
     difficulty: Optional[str] = "medium"
 
 class ProblemDetail(ProblemBase):
@@ -180,7 +216,7 @@ def get_problem(problem_id: str):
     return response
 
 @app.post("/submit", response_model=SubmitResponse)
-def submit(request_data: SubmitRequest):
+def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
     problem_id = request_data.problem_id
     code = request_data.code
 
@@ -261,7 +297,7 @@ def submit(request_data: SubmitRequest):
     }
 
 @app.post("/run", response_model=RunResponse)
-def run_code_endpoint(request_data: RunRequest):
+def run_code_endpoint(request_data: RunRequest, user: dict = Depends(get_current_user)):
     code = request_data.code
     user_input = request_data.input
 

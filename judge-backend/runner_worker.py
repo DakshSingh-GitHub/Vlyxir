@@ -4,8 +4,25 @@ import json
 import traceback
 import io
 import time
+import os
 from contextlib import redirect_stdout, redirect_stderr
 from security import validate_code, get_safe_globals, WARNING_MESSAGE
+
+# Resource limits
+MAX_MEMORY_MB = 128
+MAX_OUTPUT_CHARS = 100000 # ~100KB
+
+def set_resource_limits():
+    try:
+        import resource
+        # Set address space limit (memory)
+        mem_limit = MAX_MEMORY_MB * 1024 * 1024
+        resource.setrlimit(resource.RLIMIT_AS, (mem_limit, mem_limit))
+        # Optional: Set CPU time limit as a backup to the supervisor
+        # resource.setrlimit(resource.RLIMIT_CPU, (5, 5))
+    except ImportError:
+        # Resource module not available on non-Unix systems
+        pass
 
 def main():
     # Read the code to execute from the first line of stdin (or separate file arg)
@@ -69,6 +86,12 @@ def main():
             input_stream = io.StringIO(user_input)
             output_stream = io.StringIO()
             
+            # Apply resource limits before execution if on Unix
+            # Note: RLIMIT_AS persists for the life of the worker.
+            # If we want to change it per run, we'd need to do it here.
+            # But since workers are per-submission, it's fine to set it once or repeat.
+            set_resource_limits()
+
             start_time = time.time()
             error_output = ""
             
@@ -97,14 +120,20 @@ def main():
                 sys.stdin = input_stream
                 with redirect_stdout(output_stream), redirect_stderr(output_stream):
                     exec(compiled_code, exec_globals)
+            except MemoryError:
+                error_output = "Memory Limit Exceeded"
             except Exception:
-                error_output = traceback.format_exc()
+                # Sanitize traceback to avoid leaking internal paths
+                exc_type, exc_value, _ = sys.exc_info()
+                error_output = f"{exc_type.__name__}: {exc_value}"
             finally:
                 sys.stdin = sys.__stdin__ # Restore original stdin
             
             duration = time.time() - start_time
             
             output = output_stream.getvalue()
+            if len(output) > MAX_OUTPUT_CHARS:
+                output = output[:MAX_OUTPUT_CHARS] + "\n... [Output truncated due to size limit]"
             
             result = {
                 "status": "done",

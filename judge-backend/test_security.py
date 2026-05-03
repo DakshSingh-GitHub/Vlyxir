@@ -44,6 +44,21 @@ def test_security():
             "name": "Normal code (fibonacci)",
             "code": "def fib(n):\n    if n <= 1: return n\n    return fib(n-1) + fib(n-2)\nprint(fib(5))",
             "expected_violation": False
+        },
+        {
+            "name": "Attempt to use open()",
+            "code": "print(open('/etc/passwd').read())",
+            "expected_violation": True
+        },
+        {
+            "name": "Attempt to use getattr()",
+            "code": "g = getattr; print(g(str, 'upper'))",
+            "expected_violation": True
+        },
+        {
+            "name": "Attempt to use sys module",
+            "code": "import sys; print(sys.modules)",
+            "expected_violation": True
         }
     ]
 
