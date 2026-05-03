@@ -9,9 +9,18 @@ from runner import run_code_multiple, run_code_once
 app = FastAPI(title="Judge Backend", description="FastAPI migration of the Code Judge backend")
 
 # Configure CORS
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "https://vlyxir.vercel.app"
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
