@@ -140,9 +140,18 @@ builtins.input = custom_input
         duration = time.time() - start_t
         
         if result.returncode != 0:
+            # Basic sanitization for stderr if it's a runtime error
+            sanitized_stderr = result.stderr
+            if result.stderr and "File \"" in result.stderr:
+                # Simple heuristic to keep only the last line (the error message)
+                # and avoid leaking the full path in the traceback
+                lines = result.stderr.strip().splitlines()
+                if lines:
+                    sanitized_stderr = lines[-1]
+
             return {
                 "stdout": result.stdout,
-                "stderr": result.stderr,
+                "stderr": sanitized_stderr,
                 "status": "Runtime Error",
                 "duration": duration
             }
