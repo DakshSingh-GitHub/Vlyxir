@@ -22,20 +22,20 @@ export const metadata: Metadata = {
     default: "Vlyxir - Next-Gen Coding Platform",
     template: "%s | Vlyxir",
   },
-  description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
+  description: "Vlyxir is a next-generation platform designed for seamless coding, execution, and evaluation. It offers a fast, secure environment with real-time feedback, advanced analytics, and scalable architecture to empower developers, educators, and organizations in assessing and enhancing technical skills.",
   verification: {
     google: 'xkk6SWB7s8uypKr5DN6f1s9xTs0hZEBxjk-1Z4k_Esc',
   },
   openGraph: {
     title: "Vlyxir",
-    description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
+    description: "Vlyxir is a next-generation platform designed for seamless coding, execution, and evaluation. It offers a fast, secure environment with real-time feedback, advanced analytics, and scalable architecture to empower developers, educators, and organizations in assessing and enhancing technical skills.",
     siteName: "Vlyxir",
     type: "website",
   },
   twitter: {
     card: "summary",
     title: "Vlyxir",
-    description: "Vlyxir — a fast, secure platform for coding, execution, and evaluation",
+    description: "Vlyxir is a next-generation platform designed for seamless coding, execution, and evaluation. It offers a fast, secure environment with real-time feedback, advanced analytics, and scalable architecture to empower developers, educators, and organizations in assessing and enhancing technical skills.",
   },
   appleWebApp: {
     capable: true,
