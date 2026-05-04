@@ -1,0 +1,32 @@
+{
+    "id": "swim_in_rising_water",
+    "title": "Swim in Rising Water",
+    "description": "You are given an n x n integer matrix grid where each value grid[i][j] represents the elevation at that point (i, j).\n\nThe rain starts to fall. At time t, the depth of the water everywhere is t. You can swim from a square to another 4-directionally adjacent square if and only if both squares have an elevation less than or equal to t. You can swim infinite distances in zero time. Of course, you must stay within the boundaries of the grid during your swim.\n\nYou start at the top left square (0, 0). What is the least time until you can reach the bottom right square (n - 1, n - 1)?",
+    "input_format": "The first line contains n. The next n lines each contain n integers separated by space.",
+    "output_format": "The minimum time.",
+    "constraints": [
+        "n == grid.length == grid[i].length",
+        "1 <= n <= 50",
+        "0 <= grid[i][j] < n^2",
+        "Each value grid[i][j] is unique."
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "2\n0 2\n1 3",
+            "output": "3"
+        },
+        {
+            "input": "5\n0 1 2 3 4\n24 23 22 21 5\n12 13 14 15 16\n11 17 18 19 20\n10 9 8 7 6",
+            "output": "16"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1\n0",
+            "output": "0"
+        }
+    ]
+}

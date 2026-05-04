@@ -1,0 +1,38 @@
+{
+    "id": "decode_ways_ii",
+    "title": "Decode Ways II",
+    "description": "A message containing letters from A-Z can be encoded into numbers using the following mapping: 'A' -> \"1\", 'B' -> \"2\", ..., 'Z' -> \"26\".\n\nTo decode an encoded message, all the digits must be grouped then mapped back into letters using the reverse of the mapping above (there may be multiple ways). For example, \"11106\" can be mapped into:\n- \"AAJF\" with the grouping (1 1 10 6)\n- \"KJF\" with the grouping (11 10 6)\n\nIn addition to the digits 1-9, the encoded message can also contain the '*' character, which can represent any digit from 1 to 9. Given a string s containing digits and stars, return the number of ways to decode it. Since the answer may be very large, return it modulo 10^9 + 7.",
+    "input_format": "The first line contains s.",
+    "output_format": "The number of ways modulo 10^9 + 7.",
+    "constraints": [
+        "1 <= s.length <= 10^5",
+        "s[i] is a digit or '*'."
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "*",
+            "output": "9"
+        },
+        {
+            "input": "1*",
+            "output": "18"
+        },
+        {
+            "input": "2*",
+            "output": "15"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "11",
+            "output": "2"
+        },
+        {
+            "input": "0",
+            "output": "0"
+        }
+    ]
+}

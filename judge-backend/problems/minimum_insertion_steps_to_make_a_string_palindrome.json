@@ -1,0 +1,38 @@
+{
+    "id": "minimum_insertion_steps_to_make_a_string_palindrome",
+    "title": "Minimum Insertion Steps to Make a String Palindrome",
+    "description": "Given a string s. In one step you can insert any character at any index of the string.\n\nReturn the minimum number of steps to make s palindrome.\n\nA Palindrome String is one that reads the same backward as forward.",
+    "input_format": "The first line contains s.",
+    "output_format": "The minimum number of insertions.",
+    "constraints": [
+        "1 <= s.length <= 500",
+        "s consists of lowercase English letters."
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "zzazz",
+            "output": "0"
+        },
+        {
+            "input": "mbadm",
+            "output": "2"
+        },
+        {
+            "input": "leetcode",
+            "output": "5"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "g",
+            "output": "0"
+        },
+        {
+            "input": "no",
+            "output": "1"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "id": "design_browser_history",
+    "title": "Design Browser History",
+    "description": "You have a browser of one tab where you start on a homepage and you can visit another url, get back in the history number of steps or move forward in the history number of steps.\n\nImplement the BrowserHistory class:\n- BrowserHistory(string homepage) Initializes the object with the homepage of the browser.\n- void visit(string url) Visits url from the current page. It clears up all the forward history.\n- string back(int steps) Move steps back in history. If you can only return x steps in the history and steps > x, you will return only x steps. Return the current url after moving back in history at most steps.\n- string forward(int steps) Move steps forward in history. If you can only forward x steps in the history and steps > x, you will forward only x steps. Return the current url after forwarding in history at most steps.",
+    "input_format": "The first line contains a list of method names. The second line contains a list of corresponding arguments.",
+    "output_format": "A list of strings (null for void methods) representing the return values, separated by space.",
+    "constraints": [
+        "1 <= homepage.length <= 20",
+        "1 <= url.length <= 20",
+        "1 <= steps <= 100",
+        "At most 5000 calls will be made to visit, back, and forward."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "BrowserHistory visit visit visit back back forward visit back forward\nleetcode.com google.com facebook.com youtube.com 1 1 1 linkedin.com 2 2",
+            "output": "null null null null facebook.com google.com facebook.com null google.com facebook.com"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "BrowserHistory visit back forward back\nexample.com test.com 10 10 1",
+            "output": "null null example.com test.com example.com"
+        }
+    ]
+}

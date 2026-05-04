@@ -1,0 +1,30 @@
+{
+    "id": "distinct_subsequences",
+    "title": "Distinct Subsequences",
+    "description": "Given two strings s and t, return the number of distinct subsequences of s which equals t.",
+    "input_format": "The first line contains s. The second line contains t.",
+    "output_format": "The number of distinct subsequences.",
+    "constraints": [
+        "1 <= s.length, t.length <= 1000",
+        "s and t consist of English letters."
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "rabbbit\nrabbit",
+            "output": "3"
+        },
+        {
+            "input": "babgbag\nbag",
+            "output": "5"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "aaaa\naa",
+            "output": "6"
+        }
+    ]
+}

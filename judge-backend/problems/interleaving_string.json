@@ -1,0 +1,31 @@
+{
+    "id": "interleaving_string",
+    "title": "Interleaving String",
+    "description": "Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.\n\nAn interleaving of two strings s and t is a configuration where s and t are divided into n and m substrings respectively, such that:\n- s = s1 + s2 + ... + sn\n- t = t1 + t2 + ... + tm\n- |n - m| <= 1\n- The interleaving is s1 + t1 + s2 + t2 + s3 + t3 + ... or t1 + s1 + t2 + s2 + t3 + s3 + ...",
+    "input_format": "The first line contains s1. The second line contains s2. The third line contains s3.",
+    "output_format": "true or false",
+    "constraints": [
+        "0 <= s1.length, s2.length <= 100",
+        "0 <= s3.length <= 200",
+        "s1, s2, and s3 consist of lowercase English letters."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "aabcc\ndb bca\naadbbcbcac",
+            "output": "true"
+        },
+        {
+            "input": "aabcc\ndb bca\naadbbbaccc",
+            "output": "false"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": " \n \n ",
+            "output": "true"
+        }
+    ]
+}

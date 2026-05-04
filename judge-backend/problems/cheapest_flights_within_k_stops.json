@@ -1,0 +1,33 @@
+{
+    "id": "cheapest_flights_within_k_stops",
+    "title": "Cheapest Flights Within K Stops",
+    "description": "There are n cities connected by some number of flights. You are given an array flights where flights[i] = [fromi, toi, pricei] indicates that there is a flight from city fromi to city toi with cost pricei.\n\nYou are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.",
+    "input_format": "The first line contains n. The second line contains the number of flights. The next m lines contain from, to, price. The last line contains src, dst, k.",
+    "output_format": "The cheapest price.",
+    "constraints": [
+        "1 <= n <= 100",
+        "0 <= flights.length <= (n * (n - 1) / 2)",
+        "0 <= src, dst <= n - 1",
+        "src != dst",
+        "0 <= k <= n - 1"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "4\n4\n0 1 100\n1 2 100\n2 0 100\n1 3 600\n0 3 1",
+            "output": "700"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "3\n2\n0 1 100\n1 2 100\n0 2 0",
+            "output": "200"
+        },
+        {
+            "input": "3\n2\n0 1 100\n1 2 100\n0 2 1",
+            "output": "200"
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "id": "palindromic_substrings",
+    "title": "Palindromic Substrings",
+    "description": "Given a string s, return the number of palindromic substrings in it.\n\nA string is a palindrome when it reads the same backward as forward.\n\nA substring is a contiguous sequence of characters within the string.",
+    "input_format": "The first line contains s.",
+    "output_format": "The number of palindromic substrings.",
+    "constraints": [
+        "1 <= s.length <= 1000",
+        "s consists of lowercase English letters."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "abc",
+            "output": "3"
+        },
+        {
+            "input": "aaa",
+            "output": "6"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "abccba",
+            "output": "9"
+        }
+    ]
+}

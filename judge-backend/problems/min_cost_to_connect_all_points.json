@@ -1,0 +1,30 @@
+{
+    "id": "min_cost_to_connect_all_points",
+    "title": "Min Cost to Connect All Points",
+    "description": "You are given an array points representing integer coordinates of some points on a 2D-plane, where points[i] = [xi, yi].\n\nThe cost of connecting two points [xi, yi] and [xj, yj] is the manhattan distance between them: |xi - xj| + |yi - yj|.\n\nReturn the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.",
+    "input_format": "The first line contains n. The next n lines each contain x and y separated by space.",
+    "output_format": "The minimum cost.",
+    "constraints": [
+        "1 <= n <= 1000",
+        "-10^6 <= xi, yi <= 10^6"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "5\n0 0\n2 2\n3 10\n5 2\n7 0",
+            "output": "20"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "3\n0 0\n1 1\n1 0",
+            "output": "2"
+        },
+        {
+            "input": "1\n0 0",
+            "output": "0"
+        }
+    ]
+}

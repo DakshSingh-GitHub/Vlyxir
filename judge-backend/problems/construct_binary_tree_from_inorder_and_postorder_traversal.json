@@ -1,0 +1,40 @@
+{
+    "id": "construct_binary_tree_from_inorder_and_postorder_traversal",
+    "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+    "description": "Given two integer arrays inorder and postorder where inorder is the inorder traversal of a binary tree and postorder is the postorder traversal of the same tree, construct and return the binary tree in level-order traversal format.",
+    "input_format": "The first line contains inorder traversal separated by space. The second line contains postorder traversal separated by space.",
+    "output_format": "The level-order traversal of the constructed tree, separated by space. Use 'null' for empty nodes.",
+    "constraints": [
+        "1 <= inorder.length <= 3000",
+        "postorder.length == inorder.length",
+        "-3000 <= inorder[i], postorder[i] <= 3000",
+        "inorder and postorder consist of unique values."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "9 3 15 20 7\n9 15 7 20 3",
+            "output": "3 9 20 null null 15 7"
+        },
+        {
+            "input": "-1\n-1",
+            "output": "-1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2 1\n2 1",
+            "output": "1 2"
+        },
+        {
+            "input": "1 2\n2 1",
+            "output": "1 null 2"
+        },
+        {
+            "input": "1 2 3\n1 3 2",
+            "output": "2 1 3"
+        }
+    ]
+}

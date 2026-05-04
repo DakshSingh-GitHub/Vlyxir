@@ -1,0 +1,33 @@
+{
+    "id": "minimum_cost_for_tickets",
+    "title": "Minimum Cost For Tickets",
+    "description": "You have planned some train traveling one year in advance. The days of the year in which you will travel are given as an integer array days. Each day is an integer from 1 to 365.\n\nTrain tickets are sold in three different ways:\n- a 1-day pass is sold for costs[0] dollars,\n- a 7-day pass is sold for costs[1] dollars, and\n- a 30-day pass is sold for costs[2] dollars.\n\nThe passes allow that many days of consecutive travel.\n\nReturn the minimum number of dollars you need to travel every day in the given list of days.",
+    "input_format": "The first line contains travel days separated by space. The second line contains three integers (costs) separated by space.",
+    "output_format": "The minimum cost.",
+    "constraints": [
+        "1 <= days.length <= 365",
+        "1 <= days[i] <= 365",
+        "days is in strictly increasing order.",
+        "costs.length == 3",
+        "1 <= costs[i] <= 1000"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 4 6 7 8 20\n2 7 15",
+            "output": "11"
+        },
+        {
+            "input": "1 2 3 4 5 6 7 8 9 10 30 31\n2 7 15",
+            "output": "17"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1\n2 7 15",
+            "output": "2"
+        }
+    ]
+}

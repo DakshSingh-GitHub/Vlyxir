@@ -1,0 +1,39 @@
+{
+    "id": "split_array_largest_sum",
+    "title": "Split Array Largest Sum",
+    "description": "Given an array nums which consists of non-negative integers and an integer k, you can split the array into k non-empty continuous subarrays. Write an algorithm to minimize the largest sum among these k subarrays.",
+    "input_format": "The first line contains the array nums separated by space. The second line contains the integer k.",
+    "output_format": "The minimized largest sum.",
+    "constraints": [
+        "1 <= nums.length <= 1000",
+        "0 <= nums[i] <= 10^6",
+        "1 <= k <= min(50, nums.length)"
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "7 2 5 10 8\n2",
+            "output": "18"
+        },
+        {
+            "input": "1 2 3 4 5\n2",
+            "output": "9"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 4 4\n3",
+            "output": "4"
+        },
+        {
+            "input": "10 5 10\n2",
+            "output": "15"
+        },
+        {
+            "input": "4 8 12 16\n1",
+            "output": "40"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "id": "bitwise_and_of_numbers_range",
+    "title": "Bitwise AND of Numbers Range",
+    "description": "Given two integers left and right that represent the range [left, right], return the bitwise AND of all numbers in this range, inclusive.",
+    "input_format": "The first line contains left and right separated by space.",
+    "output_format": "The bitwise AND result.",
+    "constraints": [
+        "0 <= left <= right <= 2^31 - 1"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "5 7",
+            "output": "4"
+        },
+        {
+            "input": "0 0",
+            "output": "0"
+        },
+        {
+            "input": "1 2147483647",
+            "output": "0"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "10 11",
+            "output": "10"
+        },
+        {
+            "input": "2147483646 2147483647",
+            "output": "2147483646"
+        }
+    ]
+}

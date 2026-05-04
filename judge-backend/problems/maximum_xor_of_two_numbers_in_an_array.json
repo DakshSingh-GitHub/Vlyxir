@@ -1,0 +1,34 @@
+{
+    "id": "maximum_xor_of_two_numbers_in_an_array",
+    "title": "Maximum XOR of Two Numbers in an Array",
+    "description": "Given an integer array nums, return the maximum result of nums[i] XOR nums[j], where 0 <= i <= j < n.",
+    "input_format": "The first line contains integers separated by space (nums).",
+    "output_format": "The maximum XOR result.",
+    "constraints": [
+        "1 <= nums.length <= 2 * 10^5",
+        "0 <= nums[i] <= 2^31 - 1"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "3 10 5 25 2 8",
+            "output": "28"
+        },
+        {
+            "input": "14 70 53 83 49 91 36 80 92 51 66 70",
+            "output": "127"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "0",
+            "output": "0"
+        },
+        {
+            "input": "1 2",
+            "output": "3"
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "id": "kth_smallest_element_in_a_sorted_matrix",
+    "title": "Kth Smallest Element in a Sorted Matrix",
+    "description": "Given an n x n matrix where each of the rows and columns is sorted in ascending order, return the kth smallest element in the matrix.\n\nNote that it is the kth smallest element in the sorted order, not the kth distinct element.\n\nYou must find a solution with a memory complexity better than O(n^2).",
+    "input_format": "The first line contains n and k. The next n lines each contain n integers separated by space.",
+    "output_format": "The kth smallest element.",
+    "constraints": [
+        "n == matrix.length == matrix[i].length",
+        "1 <= n <= 300",
+        "-10^9 <= matrix[i][j] <= 10^9",
+        "All the rows and columns of matrix are guaranteed to be sorted in non-decreasing order.",
+        "1 <= k <= n^2"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "3 8\n1 5 9\n10 11 13\n12 13 15",
+            "output": "13"
+        },
+        {
+            "input": "1 1\n-5",
+            "output": "-5"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2 2\n1 2\n1 3",
+            "output": "1"
+        }
+    ]
+}

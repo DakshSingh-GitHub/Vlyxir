@@ -1,0 +1,28 @@
+{
+    "id": "design_underground_system",
+    "title": "Design Underground System",
+    "description": "An underground railway system is keeping track of customer travel times between different stations. They are using this data to calculate the average time it takes to travel from one station to another.\n\nImplement the UndergroundSystem class:\n- void checkIn(int id, string stationName, int t)\n- void checkOut(int id, string stationName, int t)\n- double getAverageTime(string startStation, string endStation)",
+    "input_format": "The first line contains a list of method names. The second line contains a list of corresponding arguments.",
+    "output_format": "A list of strings (null for void methods) representing the return values, separated by space.",
+    "constraints": [
+        "1 <= id <= 10^6",
+        "1 <= stationName.length <= 10",
+        "1 <= t <= 10^6",
+        "At most 20000 calls will be made to checkIn, checkOut, and getAverageTime."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "checkIn checkIn checkIn checkOut checkOut checkOut getAverageTime getAverageTime checkIn getAverageTime checkOut getAverageTime\n45 Leyton 3,32 Paradise 8,27 Leyton 10,45 Waterloo 15,27 Waterloo 20,32 Cambridge 22,Paradise Cambridge,Leyton Waterloo,10 Leyton 24,Leyton Waterloo,10 Waterloo 38,Leyton Waterloo",
+            "output": "null null null null null null 14.0 11.0 null 11.0 null 12.0"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "checkIn checkOut getAverageTime\n1 A 1,1 A 5,A A",
+            "output": "null null 4.0"
+        }
+    ]
+}

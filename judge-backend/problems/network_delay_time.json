@@ -1,0 +1,33 @@
+{
+    "id": "network_delay_time",
+    "title": "Network Delay Time",
+    "description": "You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.",
+    "input_format": "The first line contains n and k. The second line contains m (number of edges). The next m lines each contain u, v, w separated by space.",
+    "output_format": "The minimum time or -1.",
+    "constraints": [
+        "1 <= n <= 100",
+        "1 <= k <= n",
+        "1 <= times.length <= 6000",
+        "1 <= ui, vi <= n",
+        "0 <= wi <= 100"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "4 2\n3\n2 1 1\n2 3 1\n3 4 1",
+            "output": "2"
+        },
+        {
+            "input": "2 1\n1\n1 2 1",
+            "output": "1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2 2\n1\n1 2 1",
+            "output": "-1"
+        }
+    ]
+}

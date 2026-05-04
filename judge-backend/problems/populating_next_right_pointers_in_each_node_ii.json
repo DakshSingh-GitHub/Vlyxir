@@ -1,0 +1,34 @@
+{
+    "id": "populating_next_right_pointers_in_each_node_ii",
+    "title": "Populating Next Right Pointers in Each Node II",
+    "description": "Given a binary tree, populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL. Initially, all next pointers are set to NULL.",
+    "input_format": "The root of the binary tree in level-order traversal format.",
+    "output_format": "Level-order traversal with level breaks marked by '#' to show the next pointers.",
+    "constraints": [
+        "The number of nodes in the tree is in the range [0, 6000].",
+        "-100 <= Node.val <= 100"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "1 2 3 4 5 null 7",
+            "output": "1 # 2 3 # 4 5 7 #"
+        },
+        {
+            "input": "",
+            "output": ""
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 2 3",
+            "output": "1 # 2 3 #"
+        },
+        {
+            "input": "1 2 null 3",
+            "output": "1 # 2 # 3 #"
+        }
+    ]
+}

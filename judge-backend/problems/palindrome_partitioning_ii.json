@@ -1,0 +1,34 @@
+{
+    "id": "palindrome_partitioning_ii",
+    "title": "Palindrome Partitioning II",
+    "description": "Given a string s, partition s such that every substring of the partition is a palindrome. Return the minimum cuts needed for a palindrome partitioning of s.",
+    "input_format": "The first line contains s.",
+    "output_format": "The minimum number of cuts.",
+    "constraints": [
+        "1 <= s.length <= 2000",
+        "s consists of lowercase English letters."
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "aab",
+            "output": "1"
+        },
+        {
+            "input": "a",
+            "output": "0"
+        },
+        {
+            "input": "ab",
+            "output": "1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "abccba",
+            "output": "0"
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "id": "surrounded_regions",
+    "title": "Surrounded Regions",
+    "description": "Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.\n\nA region is captured by flipping all 'O's into 'X's in that surrounded region.",
+    "input_format": "The first line contains m and n. The next m lines each contain n characters ('X' or 'O') separated by space.",
+    "output_format": "The modified m x n matrix with levels separated by newlines.",
+    "constraints": [
+        "m == board.length",
+        "n == board[i].length",
+        "1 <= m, n <= 200",
+        "board[i][j] is 'X' or 'O'"
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "4 4\nX X X X\nX O O X\nX X O X\nX O X X",
+            "output": "X X X X\nX X X X\nX X X X\nX O X X"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1 1\nO",
+            "output": "O"
+        },
+        {
+            "input": "3 3\nX X X\nX O X\nX X X",
+            "output": "X X X\nX X X\nX X X"
+        }
+    ]
+}

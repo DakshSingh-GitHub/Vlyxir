@@ -1,0 +1,31 @@
+{
+    "id": "russian_doll_envelopes",
+    "title": "Russian Doll Envelopes",
+    "description": "You are given a 2D array of integers envelopes where envelopes[i] = [wi, hi] represents the width and the height of an envelope.\n\nOne envelope can fit into another if and only if both the width and height of one envelope are greater than the other envelope's width and height.\n\nReturn the maximum number of envelopes you can Russian doll (i.e., put one inside another).",
+    "input_format": "The first line contains n. The next n lines each contain width and height separated by space.",
+    "output_format": "The maximum number of envelopes.",
+    "constraints": [
+        "1 <= envelopes.length <= 10^5",
+        "envelopes[i].length == 2",
+        "1 <= wi, hi <= 10^5"
+    ],
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "4\n5 4\n6 4\n6 7\n2 3",
+            "output": "3"
+        },
+        {
+            "input": "3\n1 1\n1 1\n1 1",
+            "output": "1"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "1\n1 1",
+            "output": "1"
+        }
+    ]
+}

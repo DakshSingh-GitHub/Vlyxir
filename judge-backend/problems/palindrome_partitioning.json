@@ -1,0 +1,30 @@
+{
+    "id": "palindrome_partitioning",
+    "title": "Palindrome Partitioning",
+    "description": "Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.",
+    "input_format": "The first line contains s.",
+    "output_format": "Each possible partitioning should be on a new line, with substrings separated by space. The order of partitions doesn't matter.",
+    "constraints": [
+        "1 <= s.length <= 16",
+        "s contains only lowercase English letters."
+    ],
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "aab",
+            "output": "a a b\naa b"
+        },
+        {
+            "input": "a",
+            "output": "a"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "efe",
+            "output": "e f e\nefe"
+        }
+    ]
+}
