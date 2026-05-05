@@ -7,6 +7,7 @@ import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/utils/paths';
 import { useAuth } from '../../app/lib/auth/auth-context';
+import Image from 'next/image';
 
 interface NavBarProps {
     isSidebarOpen: boolean;
@@ -24,6 +25,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
         user?.user_metadata?.username ||
         user?.email?.split("@")[0] ||
         "Login";
+    const avatarUrl = user?.user_metadata?.avatar_url;
     const isHomeRoute = pathname === '/';
     const isCodeIDE = pathname === '/code-ide' || pathname === '/code-ide-mde';
     const isCodeJudge = isCodeJudgePath(pathname);
@@ -150,8 +152,12 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                     title="Profile"
                                     aria-label="Profile"
                                 >
-                                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-indigo-200 bg-indigo-100 shadow-sm transition-transform group-hover:scale-105 dark:border-indigo-800 dark:bg-indigo-900/40">
-                                        <User className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
+                                    <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-indigo-200 bg-indigo-100 shadow-sm transition-transform group-hover:scale-105 dark:border-indigo-800 dark:bg-indigo-900/40">
+                                        {avatarUrl ? (
+                                            <Image src={avatarUrl} alt="Profile" fill className="object-cover" unoptimized />
+                                        ) : (
+                                            <User className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
+                                        )}
                                     </div>
                                     <span className="hidden text-sm font-bold tracking-tight md:block">
                                         {isLoading ? "LOADING..." : user ? `HEY, ${displayName.toUpperCase()}` : "LOGIN"}

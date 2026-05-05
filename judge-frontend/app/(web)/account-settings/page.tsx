@@ -22,7 +22,6 @@ import {
 import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 
-
 export default function AccountSettingsPage() {
   const router = useRouter();
   const { isDark } = useAppContext();
