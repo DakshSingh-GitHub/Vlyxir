@@ -187,7 +187,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                         )}
                                     </div>
                                     <span className={`hidden text-[11px] font-black tracking-[0.2em] md:block ${isDark ? "text-slate-100" : "text-slate-800"}`}>
-                                        {isLoading ? "LOADING..." : user ? `HEY, ${displayName.toUpperCase()}` : "LOGIN"}
+                                        {user ? `HEY, ${displayName.toUpperCase()}` : isLoading ? "LOADING..." : "LOGIN"}
                                     </span>
                                     <ChevronDown className={`h-4 w-4 transition-transform duration-500 ${isDark ? "text-slate-400" : "text-slate-500"} ${isProfileOpen ? 'rotate-180' : ''}`} />
                                 </button>
