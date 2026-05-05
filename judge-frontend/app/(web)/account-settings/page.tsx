@@ -2,8 +2,8 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound } from "lucide-react";
+import { useEffect, useMemo, useState, useRef, type FormEvent } from "react";
+import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
@@ -17,10 +17,14 @@ import {
   normalizeUsername,
   profileToFormValues,
   saveAccountProfile,
+  uploadAvatar,
+  deleteAvatar,
   type ProfileRecord,
 } from "./helper/acc_helper";
 import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
+import SuccessModal from "./SuccessModal";
+import AvatarActionModal from "./AvatarActionModal";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -33,6 +37,127 @@ export default function AccountSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showProfanityModal, setShowProfanityModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showAvatarActionModal, setShowAvatarActionModal] = useState(false);
+  const [successConfig, setSuccessConfig] = useState({ title: "Saved Successfully", message: "Your changes have been saved." });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const compressedFile = await compressImage(file);
+      const url = await uploadAvatar(user, compressedFile);
+      setFormValues((prev) => ({ ...prev, avatar_url: url }));
+      setSuccessConfig({
+        title: "Image Uploaded",
+        message: "Your new profile picture has been uploaded. Click 'Save changes' to apply it to your account."
+      });
+      setShowSuccessModal(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to upload image.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleResetPicture = async (revertToProvider = false) => {
+    if (!user) return;
+    setIsUploading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await deleteAvatar(user);
+      
+      let targetAvatar = "";
+      let message = "Your profile photo has been removed and reset to initials. Click 'Save changes' to apply.";
+      let title = "Photo Removed";
+
+      if (revertToProvider) {
+        targetAvatar = user.user_metadata?.picture || user.user_metadata?.avatar_url || "";
+        message = "Your profile picture has been reset to your default account image. Click 'Save changes' to apply.";
+        title = "Picture Reset";
+      }
+
+      setFormValues((prev) => ({ ...prev, avatar_url: targetAvatar }));
+      setSuccessConfig({ title, message });
+      setShowSuccessModal(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to reset image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new window.Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // Cap resolution to 800px for avatars
+          const MAX_DIM = 800;
+          if (width > MAX_DIM || height > MAX_DIM) {
+            const ratio = Math.min(MAX_DIM / width, MAX_DIM / height);
+            width *= ratio;
+            height *= ratio;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          // Iterative quality adjustment to hit ~150KB - 250KB range
+          let quality = 0.7;
+          
+          const attemptCompression = (q: number) => {
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  const sizeKB = blob.size / 1024;
+                  // Target range: 150KB - 250KB
+                  if (sizeKB > 250 && q > 0.1) {
+                    // Too large, decrease quality
+                    attemptCompression(q - 0.1);
+                  } else if (sizeKB < 150 && q < 0.9) {
+                    // Too small, increase quality
+                    attemptCompression(q + 0.1);
+                  } else {
+                    // Range met or quality limits reached
+                    resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+                  }
+                } else {
+                  reject(new Error("Canvas to Blob failed"));
+                }
+              },
+              "image/jpeg",
+              q
+            );
+          };
+
+          attemptCompression(quality);
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
 
   const shellClass = "relative flex-1 font-sans";
@@ -59,6 +184,12 @@ export default function AccountSettingsPage() {
     if (!user) {
       setProfile(null);
       setFormValues(EMPTY_PROFILE_VALUES);
+      setIsLoadingProfile(false);
+      return;
+    }
+
+    // Prevent re-fetching if we already have the correct profile loaded
+    if (profile?.id === user.id) {
       setIsLoadingProfile(false);
       return;
     }
@@ -131,7 +262,11 @@ export default function AccountSettingsPage() {
       });
       setProfile(updated);
       setFormValues(profileToFormValues(updated));
-      setSuccess("Account settings saved.");
+      setSuccessConfig({
+        title: "Saved Successfully",
+        message: "Your account settings have been updated successfully."
+      });
+      setShowSuccessModal(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save account settings.");
     } finally {
@@ -337,7 +472,7 @@ export default function AccountSettingsPage() {
               <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your profile</h1>
             </div>
           </div>
-          <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] ${isDark ? "border-slate-700/70 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-white text-slate-500"}`}>
+          <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] ${isDark ? "border-slate-700/70 bg-slate-900/70 text-emerald-400" : "border-slate-200 bg-white text-emerald-600"}`}>
             <ShieldCheck className="h-4 w-4 text-emerald-500" />
             Signed in
           </div>
@@ -346,11 +481,6 @@ export default function AccountSettingsPage() {
         {error && (
           <div className={`rounded-2xl border px-4 py-3 text-sm ${isDark ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
             {error}
-          </div>
-        )}
-        {success && (
-          <div className={`rounded-2xl border px-4 py-3 text-sm ${isDark ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
-            {success}
           </div>
         )}
 
@@ -416,7 +546,9 @@ export default function AccountSettingsPage() {
                 </div>
 
                 <div className="flex flex-col items-center gap-4">
-                  <span className={`block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile Image</span>
+                  <div className="flex w-40 items-center justify-between pl-1">
+                    <span className={`block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile Image</span>
+                  </div>
                   <div className={`group relative h-36 w-40 overflow-hidden rounded-4xl border-2 border-indigo-500/40 transition-all hover:border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.15)] ${isDark ? "bg-slate-900/70" : "bg-slate-50"}`}>
                     {formValues.avatar_url ? (
                       <Image
@@ -431,7 +563,30 @@ export default function AccountSettingsPage() {
                         <span className="text-4xl font-black text-slate-400">{initials}</span>
                       </div>
                     )}
+                    
+                    {/* Action Button (Pencil) */}
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarActionModal(true)}
+                      className="absolute bottom-3 left-3 flex h-8 w-8 items-center justify-center rounded-full border border-indigo-500/50 bg-slate-950/80 text-indigo-400 shadow-xl backdrop-blur-md transition-all hover:bg-indigo-600 hover:text-white hover:scale-110 active:scale-95 z-20"
+                      title="Edit profile picture"
+                    >
+                      <Pencil size={14} />
+                    </button>
+
+                    {/* Simple hover overlay */}
+                    <div 
+                      onClick={() => setShowAvatarActionModal(true)}
+                      className="absolute inset-0 cursor-pointer bg-black/10 opacity-0 transition-opacity group-hover:opacity-100"
+                    />
                   </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
                 </div>
               </div>
 
@@ -571,6 +726,20 @@ export default function AccountSettingsPage() {
           </div>
         </div>
         <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
+        <SuccessModal 
+          isOpen={showSuccessModal} 
+          onClose={() => setShowSuccessModal(false)} 
+          title={successConfig.title}
+          message={successConfig.message}
+        />
+        <AvatarActionModal 
+          isOpen={showAvatarActionModal}
+          onClose={() => setShowAvatarActionModal(false)}
+          onUpload={() => fileInputRef.current?.click()}
+          onDelete={() => handleResetPicture(false)}
+          onResetToProvider={user?.app_metadata?.provider === "google" || user?.user_metadata?.picture ? () => handleResetPicture(true) : undefined}
+          providerName={user?.app_metadata?.provider === "google" ? "Google" : "Provider"}
+        />
       </div>
     </div>
   );

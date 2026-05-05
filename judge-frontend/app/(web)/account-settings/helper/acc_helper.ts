@@ -192,3 +192,37 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     avatar_url: data.avatar_url ?? values.avatar_url,
   };
 }
+
+export async function uploadAvatar(user: User, file: File): Promise<string> {
+  const fileExt = file.name.split('.').pop();
+  const filePath = `${user.id}/avatar.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file, { upsert: true });
+
+  if (uploadError) {
+    throw new Error(`Failed to upload avatar: ${uploadError.message}`);
+  }
+
+  const { data } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+
+export async function deleteAvatar(user: User): Promise<void> {
+  const { data, error } = await supabase.storage.from('avatars').list(user.id);
+  if (error) {
+     throw new Error(`Failed to list avatars: ${error.message}`);
+  }
+  
+  if (data && data.length > 0) {
+     const filesToDelete = data.map(f => `${user.id}/${f.name}`);
+     const { error: deleteError } = await supabase.storage.from('avatars').remove(filesToDelete);
+     if (deleteError) {
+        throw new Error(`Failed to delete avatar: ${deleteError.message}`);
+     }
+  }
+}
