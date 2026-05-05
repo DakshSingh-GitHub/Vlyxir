@@ -9,6 +9,7 @@ import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import CountryDropdown from "../../../components/CountryDropdown";
+import Image from "next/image";
 import {
   EMPTY_PROFILE_VALUES,
   formatAccountDate,
@@ -94,9 +95,21 @@ export default function AccountSettingsPage() {
       .split(" ")
       .filter(Boolean)
       .slice(0, 2)
-      .map((part: string[]) => part[0]?.toUpperCase())
+      .map((part: string) => part[0]?.toUpperCase())
       .join("") || "U";
   }, [profile, user]);
+
+  const hasChanges = useMemo(() => {
+    if (!profile) return false;
+    const original = profileToFormValues(profile);
+    return (
+      formValues.full_name.trim() !== original.full_name.trim() ||
+      normalizeUsername(formValues.username) !== normalizeUsername(original.username) ||
+      formValues.bio.trim() !== original.bio.trim() ||
+      formValues.country !== original.country ||
+      formValues.avatar_url.trim() !== original.avatar_url.trim()
+    );
+  }, [formValues, profile]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -164,15 +177,18 @@ export default function AccountSettingsPage() {
               </div>
 
               <div className="space-y-5">
-                <div className="grid gap-5 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="flex-1 space-y-5">
+                    <div className="space-y-2">
+                      <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
+                      <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                    </div>
+                    <div className="space-y-2">
+                      <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
+                      <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
-                  </div>
+                  <div className={`h-40 w-40 shrink-0 rounded-4xl border ${skeletonBar} animate-pulse`} />
                 </div>
 
                 <div className="space-y-2">
@@ -358,8 +374,8 @@ export default function AccountSettingsPage() {
                   <button
                     type="submit"
                     form="account-settings-form"
-                    disabled={isSaving}
-                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"} ${isSaving ? "cursor-not-allowed opacity-70" : ""}`}
+                    disabled={isSaving || !hasChanges}
+                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 enabled:hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 enabled:hover:brightness-110"} ${isSaving || !hasChanges ? "cursor-not-allowed opacity-40 grayscale-[0.5]" : ""}`}
                 >
                   <Save className="h-4 w-4" />
                   {isSaving ? "Saving..." : "Save changes"}
@@ -371,32 +387,53 @@ export default function AccountSettingsPage() {
             </div>
 
             <form id="account-settings-form" className="space-y-5" onSubmit={handleSubmit}>
-              <div className="grid gap-5 md:grid-cols-2">
-                <label className="block">
-                  <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Full name</span>
-                  <div className="relative">
-                    <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                    <input
-                      value={formValues.full_name}
-                      onChange={(event) => setFormValues((prev) => ({ ...prev, full_name: event.target.value }))}
-                      className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                      placeholder="Your full name"
-                    />
-                  </div>
-                </label>
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex-1 space-y-5">
+                  <label className="block">
+                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Full name</span>
+                    <div className="relative">
+                      <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <input
+                        value={formValues.full_name}
+                        onChange={(event) => setFormValues((prev) => ({ ...prev, full_name: event.target.value }))}
+                        className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
+                        placeholder="Your full name"
+                      />
+                    </div>
+                  </label>
 
-                <label className="block">
-                  <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Username</span>
-                  <div className="relative">
-                    <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                    <input
-                      value={formValues.username}
-                      onChange={(event) => setFormValues((prev) => ({ ...prev, username: normalizeUsername(event.target.value) }))}
-                      className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                      placeholder="yourusername"
-                    />
+                  <label className="block">
+                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Username</span>
+                    <div className="relative">
+                      <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                      <input
+                        value={formValues.username}
+                        onChange={(event) => setFormValues((prev) => ({ ...prev, username: normalizeUsername(event.target.value) }))}
+                        className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
+                        placeholder="yourusername"
+                      />
+                    </div>
+                  </label>
+                </div>
+
+                <div className="flex flex-col items-center gap-4">
+                  <span className={`block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile Image</span>
+                  <div className={`group relative h-36 w-40 overflow-hidden rounded-4xl border-2 border-indigo-500/40 transition-all hover:border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.15)] ${isDark ? "bg-slate-900/70" : "bg-slate-50"}`}>
+                    {formValues.avatar_url ? (
+                      <Image
+                        src={formValues.avatar_url}
+                        alt="Profile"
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <span className="text-4xl font-black text-slate-400">{initials}</span>
+                      </div>
+                    )}
                   </div>
-                </label>
+                </div>
               </div>
 
               <label className="block">
@@ -539,4 +576,3 @@ export default function AccountSettingsPage() {
     </div>
   );
 }
-

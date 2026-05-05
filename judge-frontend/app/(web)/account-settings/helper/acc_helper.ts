@@ -12,6 +12,7 @@ export interface ProfileRecord {
   updated_at: string;
   bio: string | null;
   country: string | null;
+  avatar_url: string | null;
 }
 
 export interface ProfileFormValues {
@@ -19,6 +20,7 @@ export interface ProfileFormValues {
   username: string;
   bio: string;
   country: string;
+  avatar_url: string;
 }
 
 export const EMPTY_PROFILE_VALUES: ProfileFormValues = {
@@ -26,6 +28,7 @@ export const EMPTY_PROFILE_VALUES: ProfileFormValues = {
   username: "",
   bio: "",
   country: "",
+  avatar_url: "",
 };
 
 const PROFILE_TABLE = "profiles";
@@ -45,6 +48,7 @@ export function profileToFormValues(profile: ProfileRecord): ProfileFormValues {
     username: profile.username || "",
     bio: profile.bio || "",
     country: profile.country || "",
+    avatar_url: profile.avatar_url || "",
   };
 }
 
@@ -63,6 +67,7 @@ export function buildFallbackProfile(user: User): ProfileRecord {
     updated_at: user.updated_at || user.created_at || new Date().toISOString(),
     bio,
     country,
+    avatar_url: getMetadataString(user, "avatar_url") || "",
   };
 }
 
@@ -82,7 +87,7 @@ export function formatAccountDate(value: string | null | undefined) {
 export async function getAccountProfile(user: User): Promise<ProfileRecord> {
   const { data, error } = await supabase
     .from(PROFILE_TABLE)
-    .select("id, full_name, username, email, created_at, updated_at, bio, country")
+    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -108,6 +113,7 @@ export async function getAccountProfile(user: User): Promise<ProfileRecord> {
     updated_at: data.updated_at || data.created_at || user.updated_at || new Date().toISOString(),
     bio: data.bio ?? metadataBio ?? "",
     country: data.country ?? metadataCountry ?? "",
+    avatar_url: data.avatar_url ?? getMetadataString(user, "avatar_url") ?? "",
   };
 }
 
@@ -145,13 +151,14 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     email: user.email || "",
     bio: trimmedBio,
     country: trimmedCountry,
+    avatar_url: values.avatar_url,
     updated_at: nowIso,
   };
 
   const { data, error } = await supabase
     .from(PROFILE_TABLE)
     .upsert(profilePayload, { onConflict: "id" })
-    .select("id, full_name, username, email, created_at, updated_at, bio, country")
+    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url")
     .single();
 
   if (error) {
@@ -165,6 +172,7 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
       username: normalizedUsername,
       bio: trimmedBio,
       country: trimmedCountry,
+      avatar_url: values.avatar_url,
     },
   });
 
@@ -181,5 +189,6 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     updated_at: data.updated_at || nowIso,
     bio: data.bio ?? trimmedBio,
     country: data.country ?? trimmedCountry,
+    avatar_url: data.avatar_url ?? values.avatar_url,
   };
 }

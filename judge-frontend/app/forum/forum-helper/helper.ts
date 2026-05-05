@@ -139,13 +139,13 @@ export async function fetchPosts(
   searchQuery?: string,
   currentUserId?: string
 ): Promise<ForumPost[]> {
-  let query = supabase.from('forum_posts').select(`
+  const selectQuery = `
     *,
-    author:profiles!author_id(username, avatar_url),
     forum_channels(name),
     forum_comments(count),
     forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
-  `);
+  `;
+  let query = supabase.from('forum_posts').select(selectQuery);
   
   if (currentUserId) {
     // Note: We'll filter the user_vote join to ONLY the current user in the mapping step 
@@ -179,11 +179,23 @@ export async function fetchPosts(
     return [];
   }
   
+  const authorIds = [...new Set((data || []).map((p: any) => p.author_id).filter(Boolean))];
+  let avatarMap = new Map();
+  if (authorIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, avatar_url')
+      .in('id', authorIds);
+    if (profiles) {
+      avatarMap = new Map(profiles.map((p: any) => [p.id, p.avatar_url]));
+    }
+  }
+
   return (data || []).map((post: any) => {
     if (!post) return null;
     return {
       ...post,
-      author_avatar_url: post.author?.avatar_url,
+      author_avatar_url: avatarMap.get(post.author_id),
       comment_count: post.forum_comments?.[0]?.count || 0,
       upvotes_count: post.forum_post_upvotes?.[0]?.count || 0,
       has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false,
@@ -242,13 +254,14 @@ export async function publishPost(
 }
 
 export async function fetchPostById(id: string, currentUserId?: string): Promise<ForumPost | null> {
-  const { data, error } = await supabase
-    .from('forum_posts')
-    .select(`
+  const selectQuery = `
       *, 
       forum_comments(count), 
       forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
-    `)
+  `;
+  const { data, error } = await supabase
+    .from('forum_posts')
+    .select(selectQuery)
     .eq('id', id)
     .single();
 
@@ -257,8 +270,22 @@ export async function fetchPostById(id: string, currentUserId?: string): Promise
     return null;
   }
   
+  let author_avatar_url: string | undefined = undefined;
+  const postData = data as any;
+  if (postData?.author_id) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('id', postData.author_id)
+      .single();
+    if (profile?.avatar_url) {
+      author_avatar_url = profile.avatar_url;
+    }
+  }
+
   return {
     ...(data as any),
+    author_avatar_url,
     comment_count: (data as any).forum_comments?.[0]?.count || 0,
     upvotes_count: (data as any).forum_post_upvotes?.[0]?.count || 0,
     has_upvoted: currentUserId ? ((data as any).user_vote || []).some((v: any) => v.user_id === currentUserId) : false
@@ -266,13 +293,13 @@ export async function fetchPostById(id: string, currentUserId?: string): Promise
 }
 
 export async function fetchComments(postId: string, currentUserId?: string): Promise<ForumComment[]> {
+  const selectQuery = `
+      *,
+      forum_comment_likes(count)${currentUserId ? `, user_like:forum_comment_likes(comment_id, user_id)` : ''}
+  `;
   const { data, error } = await supabase
     .from('forum_comments')
-    .select(`
-      *,
-      author:profiles!author_id(avatar_url),
-      forum_comment_likes(count)${currentUserId ? `, user_like:forum_comment_likes(comment_id, user_id)` : ''}
-    `)
+    .select(selectQuery)
     .eq('post_id', postId)
     .order('created_at', { ascending: true });
 
@@ -281,9 +308,21 @@ export async function fetchComments(postId: string, currentUserId?: string): Pro
     return [];
   }
   
+  const authorIds = [...new Set((data || []).map((c: any) => c.author_id).filter(Boolean))];
+  let avatarMap = new Map();
+  if (authorIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, avatar_url')
+      .in('id', authorIds);
+    if (profiles) {
+      avatarMap = new Map(profiles.map((p: any) => [p.id, p.avatar_url]));
+    }
+  }
+
   return (data || []).map((comment: any) => ({
     ...comment,
-    author_avatar_url: comment.author?.avatar_url,
+    author_avatar_url: avatarMap.get(comment.author_id),
     likes_count: comment.forum_comment_likes?.[0]?.count || 0,
     has_liked: currentUserId ? (comment.user_like || []).some((l: any) => l.user_id === currentUserId) : false
   })) as ForumComment[];
