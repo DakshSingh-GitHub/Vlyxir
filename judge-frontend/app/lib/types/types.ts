@@ -50,5 +50,6 @@ export interface LeaderboardUser {
     full_name: string;
     total_score: number;
     country?: string;
+    avatar_url?: string;
     rank?: number;
 }

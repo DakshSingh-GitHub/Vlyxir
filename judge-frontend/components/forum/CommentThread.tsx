@@ -3,6 +3,7 @@ import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2 } from "lucide-react";
 import { ForumComment, toggleCommentLike, deleteComment, checkProfanity } from "../../app/forum/forum-helper/helper";
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
 import Link from "next/link";
+import Image from "next/image";
 
 import { useAppContext } from "../../app/lib/auth/context";
 import { useAuth } from "../../app/lib/auth/auth-context";
@@ -102,8 +103,17 @@ function CommentItem({
                     href={`/user/${comment.author_username}`}
                     className="shrink-0"
                 >
-                    <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs uppercase shadow-sm transition-all hover:scale-110 active:scale-95 ${isDark ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'bg-slate-100 text-indigo-600 border border-slate-200'}`}>
-                        {comment.author_username?.charAt(0) || <User className="w-4 h-4" />}
+                    <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs uppercase shadow-sm transition-all hover:scale-110 active:scale-95 overflow-hidden relative ${isDark ? 'bg-slate-800 text-indigo-400 border border-slate-700' : 'bg-slate-100 text-indigo-600 border border-slate-200'}`}>
+                        {comment.author_avatar_url ? (
+                            <Image 
+                                src={comment.author_avatar_url} 
+                                alt={comment.author_username} 
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            comment.author_username?.charAt(0) || <User className="w-4 h-4" />
+                        )}
                     </div>
                 </Link>
                 <div className="flex-1 min-w-0">

@@ -9,6 +9,7 @@ export type ForumPost = {
   channel_id: string;
   author_id: string;
   author_username: string;
+  author_avatar_url?: string;
   title: string;
   body: string;
   cover_image?: string;
@@ -39,6 +40,7 @@ export type ForumComment = {
   post_id: string;
   author_id: string;
   author_username: string;
+  author_avatar_url?: string;
   body: string;
   parent_id?: string;
   created_at: string;
@@ -139,6 +141,7 @@ export async function fetchPosts(
 ): Promise<ForumPost[]> {
   let query = supabase.from('forum_posts').select(`
     *,
+    author:profiles!author_id(username, avatar_url),
     forum_channels(name),
     forum_comments(count),
     forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
@@ -180,6 +183,7 @@ export async function fetchPosts(
     if (!post) return null;
     return {
       ...post,
+      author_avatar_url: post.author?.avatar_url,
       comment_count: post.forum_comments?.[0]?.count || 0,
       upvotes_count: post.forum_post_upvotes?.[0]?.count || 0,
       has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false,
@@ -266,6 +270,7 @@ export async function fetchComments(postId: string, currentUserId?: string): Pro
     .from('forum_comments')
     .select(`
       *,
+      author:profiles!author_id(avatar_url),
       forum_comment_likes(count)${currentUserId ? `, user_like:forum_comment_likes(comment_id, user_id)` : ''}
     `)
     .eq('post_id', postId)
@@ -278,6 +283,7 @@ export async function fetchComments(postId: string, currentUserId?: string): Pro
   
   return (data || []).map((comment: any) => ({
     ...comment,
+    author_avatar_url: comment.author?.avatar_url,
     likes_count: comment.forum_comment_likes?.[0]?.count || 0,
     has_liked: currentUserId ? (comment.user_like || []).some((l: any) => l.user_id === currentUserId) : false
   })) as ForumComment[];

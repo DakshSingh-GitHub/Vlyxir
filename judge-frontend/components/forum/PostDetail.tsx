@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowLeft, ArrowUp, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { toggleUpvote } from "../../app/forum/forum-helper/helper";
 import { useAuth } from "../../app/lib/auth/auth-context";
@@ -63,8 +64,17 @@ export default function PostDetail({ post }: PostDetailProps) {
                     href={`/user/${post.author_username}`}
                     className="flex items-center gap-3 mb-8 group w-fit"
                 >
-                    <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg transition-all group-hover:scale-110 group-hover:shadow-indigo-500/20 ${isDark ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
-                        {post.author_username?.charAt(0).toUpperCase() || 'U'}
+                    <div className={`w-10 h-10 shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-lg transition-all group-hover:scale-110 group-hover:shadow-indigo-500/20 overflow-hidden relative ${isDark ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border border-indigo-100'}`}>
+                        {post.author_avatar_url ? (
+                            <Image 
+                                src={post.author_avatar_url} 
+                                alt={post.author_username} 
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            post.author_username?.charAt(0).toUpperCase() || 'U'
+                        )}
                     </div>
                     <div className="min-w-0">
                         <div className={`text-sm font-black truncate transition-colors group-hover:text-indigo-400 ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
