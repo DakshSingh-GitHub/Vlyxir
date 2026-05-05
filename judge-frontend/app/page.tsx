@@ -176,7 +176,7 @@ export default function Home() {
                                 </div>
                                 <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${isDark ? "text-white" : "text-slate-900"}`}>VLYXIR Arena</h3>
                                 <p className={`text-sm md:text-base ${isDark ? "text-slate-400" : "text-slate-600"} mb-8 leading-relaxed`}>
-                                    Practice with 50+ hand-picked algorithmic problems. Experience instant evaluation with our industrial-grade sandbox runtime.
+                                    Practice with 500+ hand-picked algorithmic problems. Experience instant evaluation with our industrial-grade sandbox runtime.
                                 </p>
                                 <div className="mt-auto flex items-center gap-2 font-bold text-indigo-500 group-hover:gap-3 transition-all">
                                     Start Practice <ArrowRight className="w-5 h-5" />
