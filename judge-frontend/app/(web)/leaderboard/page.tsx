@@ -19,9 +19,10 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/api/supabase/client';
 import { useAppContext } from '../../lib/auth/context';
-import Link from 'next/link';
 import { LeaderboardUser } from '../../lib/types/types';
 import { getCachedLeaderboard, setCachedLeaderboard } from '../../lib/utils/cache';
+import Image from 'next/image';
+import Link from 'next/link';
 
 
 export default function LeaderboardPage() {
@@ -51,7 +52,7 @@ export default function LeaderboardPage() {
             try {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('id, username, full_name, total_score, country')
+                    .select('id, username, full_name, total_score, country, avatar_url')
                     .order('total_score', { ascending: false })
                     .limit(50);
 
@@ -306,8 +307,17 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain }: any)
             )}
 
             <Link href={`/user/${user.username}`} className="group relative z-20">
-                <div className={`h-24 w-24 md:h-32 md:w-32 rounded-3xl bg-linear-to-br ${color} ${shadow} shadow-2xl flex items-center justify-center text-3xl md:text-4xl font-black text-white border-4 border-white dark:border-[#0B0C15] group-hover:rotate-6 transition-transform relative`}>
-                    {user.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || '?'}
+                <div className={`h-24 w-24 md:h-32 md:w-32 rounded-3xl bg-linear-to-br ${color} ${shadow} shadow-2xl flex items-center justify-center text-3xl md:text-4xl font-black text-white border-4 border-white dark:border-[#0B0C15] group-hover:rotate-6 transition-transform relative overflow-hidden`}>
+                    {user.avatar_url ? (
+                        <Image 
+                            src={user.avatar_url} 
+                            alt={user.full_name} 
+                            fill
+                            className="object-cover"
+                        />
+                    ) : (
+                        user.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || '?'
+                    )}
                 </div>
                 <div className={`absolute -bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 flex items-center justify-center font-black z-20`}>
                     {rank}
@@ -371,8 +381,17 @@ function RankingRow({ user, rank }: { user: LeaderboardUser, rank: number }) {
             </td>
             <td className="px-4 py-5">
                 <Link href={`/user/${user.username}`} className="flex items-center gap-4 group/user">
-                    <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white group-hover/user:scale-110 transition-transform">
-                        {user.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'}
+                    <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white group-hover/user:scale-110 transition-transform overflow-hidden relative">
+                        {user.avatar_url ? (
+                            <Image 
+                                src={user.avatar_url} 
+                                alt={user.full_name} 
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            user.full_name?.split(' ').map(n => n[0]).join('').toUpperCase() || '?'
+                        )}
                     </div>
                     <div>
                         <p className="font-bold text-slate-900 dark:text-white group-hover/user:text-indigo-400 transition-colors">{user.full_name}</p>

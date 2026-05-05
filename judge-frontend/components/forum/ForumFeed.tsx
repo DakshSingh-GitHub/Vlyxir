@@ -6,9 +6,10 @@ import { useAppContext } from "@/app/lib/auth/context";
 import { useEffect, useState } from "react";
 import { fetchPosts, ForumPost } from "../../app/forum/forum-helper/helper";
 import { useAuth } from "@/app/lib/auth/auth-context";
-import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 
 interface ForumFeedProps {
@@ -184,8 +185,17 @@ export default function ForumFeed({
                                         href={`/user/${post.author_username}`}
                                         className="flex items-center gap-3 pointer-events-auto group/author"
                                     >
-                                        <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs shadow-sm transition-all group-hover/author:scale-110 ${isDark ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/20' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}`}>
-                                            {post.author_username?.charAt(0).toUpperCase() || 'U'}
+                                        <div className={`w-8 h-8 flex items-center justify-center rounded-full font-bold text-xs shadow-sm transition-all group-hover/author:scale-110 overflow-hidden relative ${isDark ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/20' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}`}>
+                                            {post.author_avatar_url ? (
+                                                <Image 
+                                                    src={post.author_avatar_url} 
+                                                    alt={post.author_username} 
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                post.author_username?.charAt(0).toUpperCase() || 'U'
+                                            )}
                                         </div>
                                         <div className={`text-sm font-semibold transition-colors group-hover/author:text-indigo-400 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                                             {post.author_username || 'Anonymous'}

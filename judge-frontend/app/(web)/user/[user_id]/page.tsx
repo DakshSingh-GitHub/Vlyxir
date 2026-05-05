@@ -29,6 +29,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getProblems } from '../../../lib/api/api';
 import AllSubmissionsModal from './AllSubmissionsModal';
 import CodeViewModal from './CodeViewModal';
+import Image from 'next/image';
 
 interface PageProps {
     params: Promise<{
@@ -46,6 +47,7 @@ interface UserProfile {
     twitter_username?: string;
     created_at: string;
     total_score?: number;
+    avatar_url?: string;
 }
 
 interface SubmissionStats {
@@ -304,8 +306,17 @@ export default function UserPage({ params }: PageProps) {
                     </div>
 
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
-                        <div className="h-32 w-32 rounded-3xl bg-linear-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-indigo-500/20">
-                            {getInitials(profile.full_name)}
+                        <div className="h-32 w-32 rounded-3xl bg-linear-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-indigo-500/20 overflow-hidden relative">
+                            {profile.avatar_url ? (
+                                <Image 
+                                    src={profile.avatar_url} 
+                                    alt={profile.full_name} 
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                getInitials(profile.full_name)
+                            )}
                         </div>
 
                         <div className="flex-1 text-center md:text-left space-y-2">
