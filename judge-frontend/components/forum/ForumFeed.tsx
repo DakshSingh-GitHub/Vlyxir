@@ -9,6 +9,7 @@ import { useAuth } from "@/app/lib/auth/auth-context";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 
 interface ForumFeedProps {
