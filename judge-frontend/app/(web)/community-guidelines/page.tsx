@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import { BackButton } from "@/components/General/BackButton";
 
 export const metadata: Metadata = {
-    title: "Community Guidelines | Vlyxir",
+    title: "Community Guidelines",
     description: "Our community guidelines and standards for a welcoming environment.",
 };
 
