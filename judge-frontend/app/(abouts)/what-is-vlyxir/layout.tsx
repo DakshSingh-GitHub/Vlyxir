@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "What is Vlyxir?",
-    description: "Learn about the mission and vision of Vlyxir—the intelligent frontier of competitive coding. Built for the next generation of developers.",
+    description: "Discover the vision behind Vlyxir—the elite ecosystem for mastering algorithms, preparing for FAANG interviews, and accelerating your software engineering career.",
 };
 
 export default function WhatIsVlyxirLayout({

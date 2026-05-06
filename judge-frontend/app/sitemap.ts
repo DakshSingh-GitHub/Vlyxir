@@ -10,6 +10,13 @@ const publicRoutes = [
   "/code-judge",
   "/code-ide",
   "/code-analysis",
+  "/code-judge-mde",
+  "/code-ide-mde",
+  "/code-analysis-mde",
+  "/leaderboard",
+  "/features",
+  "/what-is-vlyxir",
+  "/community-guidelines",
 ];
 
 function getSiteUrl() {

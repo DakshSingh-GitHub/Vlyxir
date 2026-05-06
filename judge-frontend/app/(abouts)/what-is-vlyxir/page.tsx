@@ -4,6 +4,7 @@
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Code2, Cpu, Zap, Shield, Globe, Users } from 'lucide-react';
+import { BackButton } from '@/components/General/BackButton';
 
 const fadeInUp: Variants = {
     initial: { opacity: 0, y: 20 },
@@ -26,7 +27,7 @@ export default function WhatIsVlyxirPage() {
     return (
         <div className="min-h-screen bg-background selection:bg-indigo-500/30">
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 overflow-hidden">
+            <section className="relative pt-12 pb-20 overflow-hidden">
                 {/* Background Ambient Light */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full -z-10 pointer-events-none">
                     <div className="absolute top-[-10%] left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/10 blur-[120px] animate-pulse" />
@@ -34,6 +35,9 @@ export default function WhatIsVlyxirPage() {
                 </div>
 
                 <div className="max-w-6xl mx-auto px-6">
+                    <div className="mb-8">
+                        <BackButton />
+                    </div>
                     <motion.div 
                         initial="initial"
                         animate="animate"
@@ -60,10 +64,9 @@ export default function WhatIsVlyxirPage() {
 
                         <motion.p 
                             variants={fadeInUp}
-                            className="max-w-2xl mx-auto text-lg md:text-xl text-foreground/60 leading-relaxed"
+                            className="max-w-3xl mx-auto text-lg md:text-xl text-foreground/60 leading-relaxed"
                         >
-                            Vlyxir is more than just a judge. It's a premium ecosystem designed for engineers 
-                            who demand precision, speed, and intelligence in their coding journey.
+                            Vlyxir is far more than a standard online judge. It is a sophisticated, premium ecosystem engineered specifically for developers and software engineers who demand absolute precision, lightning-fast execution speeds, and deep architectural intelligence. Whether you are preparing for high-stakes technical interviews at FAANG companies or looking to sharpen your algorithmic intuition, Vlyxir provides the high-fidelity tools necessary to master every line of code you write.
                         </motion.p>
                     </motion.div>
                 </div>
@@ -80,15 +83,12 @@ export default function WhatIsVlyxirPage() {
                             transition={{ duration: 0.8 }}
                             className="space-y-6"
                         >
-                            <h2 className="text-3xl md:text-4xl font-bold">Built for the Next Generation of Developers</h2>
+                            <h2 className="text-3xl md:text-4xl font-bold">Built for the Next Generation of Elite Developers</h2>
                             <p className="text-foreground/70 text-lg leading-relaxed">
-                                We started Vlyxir with a simple realization: competitive coding platforms haven't evolved with the modern web. 
-                                Most judges feel like tools from the past decade—clunky, slow, and aesthetically uninspiring.
+                                Vlyxir was born from a fundamental observation of the current developer landscape: most competitive coding platforms and technical assessment tools haven't kept pace with the rapid evolution of the modern web. Many existing online judges rely on legacy architectures that feel clunky, suffer from significant latency, and offer an uninspiring, purely functional aesthetic that fails to ignite a developer's creativity.
                             </p>
                             <p className="text-foreground/70 text-lg leading-relaxed">
-                                Our mission is to bridge the gap between high-performance execution and premium user experience. 
-                                By integrating state-of-the-art LLM analysis with a lightning-fast judge engine, we provide an 
-                                environment where you don't just solve problems—you master them.
+                                Our core mission is to bridge the significant gap between industrial-grade performance execution and a world-class, premium user experience. By seamlessly integrating state-of-the-art Large Language Model (LLM) analysis with a custom-engineered, lightning-fast judge engine, we have created an environment where you don't just solve algorithmic puzzles—you undergo a comprehensive code transformation. We provide the metrics, the insights, and the performance stability required to transition from a coder to a master software architect.
                             </p>
                         </motion.div>
 
@@ -119,25 +119,25 @@ export default function WhatIsVlyxirPage() {
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="text-center mb-16 space-y-4">
                         <h2 className="text-3xl md:text-5xl font-bold tracking-tight">The Three Pillars of Vlyxir</h2>
-                        <p className="text-foreground/60 max-w-xl mx-auto">Everything you need to sharpen your skills and dominate the leaderboards.</p>
+                        <p className="text-foreground/60 max-w-xl mx-auto">A holistic approach to mastering data structures, algorithms, and secure coding practices.</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
                         {[
                             {
                                 icon: <Cpu className="text-indigo-400" size={32} />,
-                                title: "Performance Judge",
-                                desc: "Blazing fast execution for Python and C++ with real-time test case validation and precise metrics."
+                                title: "Performance Judge Engine",
+                                desc: "Our industrial-strength execution engine is optimized for Python, providing near-instantaneous test case validation. We deliver precise metrics on runtime latency and memory consumption, ensuring your algorithmic solutions are not just correct, but optimally efficient for production-scale environments."
                             },
                             {
                                 icon: <Zap className="text-purple-400" size={32} />,
-                                title: "AI-Powered Insights",
-                                desc: "Deep static and security analysis powered by Groq to identify complexity bottlenecks and vulnerabilities."
+                                title: "AI-Powered Logic Insights",
+                                desc: "Leveraging cutting-edge LLMs and Groq-accelerated inference, Vlyxir performs deep static analysis on your code. We identify complex logic flaws, Big O complexity bottlenecks, and potential security vulnerabilities in real-time, offering actionable feedback that traditional judges simply cannot provide."
                             },
                             {
                                 icon: <Globe className="text-emerald-400" size={32} />,
-                                title: "Elite Community",
-                                desc: "Compete on global leaderboards, share wisdom in the forums, and track your growth with detailed analytics."
+                                title: "Global Elite Community",
+                                desc: "Join an international network of high-performing developers. Compete on global leaderboards for rank and prestige, share architectural wisdom in our curated forums, and track your long-term growth with professional-grade analytics that map your journey toward technical excellence."
                             }
                         ].map((pillar, idx) => (
                             <motion.div 
@@ -160,7 +160,7 @@ export default function WhatIsVlyxirPage() {
             </section>
 
             {/* Stats / Numbers (Social Proof Mockup) */}
-            <section className="py-24">
+            {/* <section className="py-24">
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {[
@@ -176,18 +176,19 @@ export default function WhatIsVlyxirPage() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Footer-like CTA */}
             <section className="py-24 border-t border-white/5">
                 <div className="max-w-4xl mx-auto px-6 text-center space-y-10">
-                    <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Ready to level up your code?</h2>
+                    <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Ready to Accelerate Your <br/><span className="text-indigo-400">Engineering Career?</span></h2>
+                    <p className="text-foreground/60 max-w-2xl mx-auto text-lg">Join developers who are using Vlyxir to master complex algorithms and secure their dream roles at top tech companies.</p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button className="px-8 py-4 rounded-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-indigo-500/25">
-                            Start Solving Problems
+                            Join the Elite Arena
                         </button>
                         <button className="px-8 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 font-bold transition-all hover:scale-105 active:scale-95">
-                            Explore Features
+                            View Documentation
                         </button>
                     </div>
                 </div>

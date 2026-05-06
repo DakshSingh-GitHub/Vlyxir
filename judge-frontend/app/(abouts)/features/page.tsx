@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
+import { BackButton } from '@/components/General/BackButton';
 import { 
     Code2, 
     Cpu, 
@@ -102,8 +103,11 @@ export default function FeaturesPage() {
 
 
     return (
-        <div className="min-h-screen bg-background py-32 selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-background pt-12 pb-32 selection:bg-indigo-500/30">
             <div className="max-w-6xl mx-auto px-6">
+                <div className="mb-8">
+                    <BackButton />
+                </div>
                 <header className="mb-20 space-y-6 text-center">
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.9 }}

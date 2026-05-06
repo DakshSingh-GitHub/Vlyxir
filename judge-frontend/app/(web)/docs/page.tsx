@@ -56,7 +56,12 @@ export default function Documentation() {
             icon: <BookOpen className="w-6 h-6" />,
             color: "text-blue-500",
             bg: "bg-blue-500/10",
-            content: "Welcome to CodeJudge, a high-performance platform engineered for developers to sharpen their algorithmic skills and master technical interviews. Built with a focus on speed, security, and developer experience, CodeJudge provides a seamless environment to practice, test, and validate your solutions."
+            content: (
+                <>
+                    Welcome to Vlyxir, a high-performance platform engineered for developers to sharpen their algorithmic skills and master technical interviews. Built with a focus on speed, security, and developer experience, our ecosystem provides a seamless environment to practice, test, and validate your solutions. 
+                    Discover our <Link href="/features" className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">advanced features</Link> or learn more about <Link href="/what-is-vlyxir" className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">the vision behind Vlyxir</Link>.
+                </>
+            )
         },
         {
             id: "quickstart",

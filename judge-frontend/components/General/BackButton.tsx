@@ -1,17 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function BackButton() {
-    const router = useRouter();
-
     return (
-        <button
-            onClick={() => router.back()}
-            className="mb-8 inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        <Link
+            href="/"
+            className="mb-8 inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
         >
             <svg
-                className="mr-2 h-4 w-4"
+                className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -24,7 +22,7 @@ export function BackButton() {
                     d="M10 19l-7-7m0 0l7-7m-7 7h18"
                 />
             </svg>
-            Back
-        </button>
+            Back to Home
+        </Link>
     );
 }
