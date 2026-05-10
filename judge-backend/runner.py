@@ -2,7 +2,10 @@ import subprocess
 import os
 import time
 import json
-import psutil
+try:
+    import psutil
+except ImportError:
+    psutil = None
 from concurrent.futures import ThreadPoolExecutor
 from security import validate_code
 
@@ -390,12 +393,18 @@ class JudgeWorker:
     def kill(self):
         if self.process:
             try:
-                parent = psutil.Process(self.process.pid)
-                for child in parent.children(recursive=True):
-                    child.kill()
-                parent.kill()
+                if psutil:
+                    parent = psutil.Process(self.process.pid)
+                    for child in parent.children(recursive=True):
+                        child.kill()
+                    parent.kill()
+                else:
+                    self.process.kill()
             except:  # noqa: E722
-                pass
+                try:
+                    self.process.kill()
+                except:
+                    pass
             self.process = None
 
 def run_code_multiple(code, test_cases, mode="ALL"):

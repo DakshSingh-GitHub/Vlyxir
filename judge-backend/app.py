@@ -125,7 +125,12 @@ class ProblemsListResponse(BaseModel):
 # Helper Functions
 def normalize_judge_mode(raw_mode: Optional[str]) -> str:
     mode = str(raw_mode or "").strip().upper()
-    if mode in ["ALL", "FIRST_FAIL"]:
+    # Support more modes from problem definitions
+    if mode in ["ALL", "FIRST_FAIL", "STR_COMPARE_STRIP"]:
+        # Currently the runner only implements ALL and FIRST_FAIL logic for stopping
+        # but the comparison itself is always normalized (strip/space collapsed)
+        if mode == "STR_COMPARE_STRIP":
+            return "ALL"
         return mode
     return "ALL"
 
