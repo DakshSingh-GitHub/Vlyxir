@@ -59,6 +59,21 @@ def test_security():
             "name": "Attempt to use sys module",
             "code": "import sys; print(sys.modules)",
             "expected_violation": True
+        },
+        {
+            "name": "Aliasing eval",
+            "code": "f = eval; f('print(123)')",
+            "expected_violation": True
+        },
+        {
+            "name": "Attribute access builtins.eval",
+            "code": "import builtins; builtins.eval('print(123)')",
+            "expected_violation": True
+        },
+        {
+            "name": "Introspection bypass",
+            "code": "print([].__class__.__base__.__subclasses__())",
+            "expected_violation": True
         }
     ]
 

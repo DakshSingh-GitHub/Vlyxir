@@ -4,17 +4,22 @@ import ast
 
 WARNING_MESSAGE = "no pinging to any external servers"
 
-# List of modules that are strictly forbidden (related to networking/system access)
+# Centralized constants for forbidden entities
 FORBIDDEN_MODULES = {
     'socket', 'http', 'urllib', 'requests', 'ftplib', 'telnetlib', 'smtplib', 
     'asyncio', 'multiprocessing', 'os', 'subprocess', 'shutil', 'tempfile',
-    'sys', 'inspect', 'pdb', 'posix', 'pwd', 'threading', '_thread'
+    'sys', 'inspect', 'pdb', 'posix', 'pwd', 'threading', '_thread', 'ctypes'
 }
 
-# Regex to catch obvious imports and system calls (as a fast first pass)
+FORBIDDEN_FUNCTIONS = {
+    'eval', 'exec', 'open', '__import__', 'getattr', 'setattr', 'delattr',
+    'compile', 'breakpoint', 'help', 'input'
+}
+
+# Regex to catch obvious imports and system calls (fast first pass)
 RESTRICTED_KEYWORDS = [
-    r'import\s+(socket|http|urllib|requests|ftplib|telnetlib|smtplib|asyncio|os|subprocess|sys|inspect|pdb|posix|pwd|threading)',
-    r'from\s+(socket|http|urllib|requests|ftplib|telnetlib|smtplib|asyncio|os|subprocess|sys|inspect|pdb|posix|pwd|threading)',
+    r'import\s+(socket|http|urllib|requests|ftplib|telnetlib|smtplib|asyncio|os|subprocess|sys|inspect|pdb|posix|pwd|threading|ctypes)',
+    r'from\s+(socket|http|urllib|requests|ftplib|telnetlib|smtplib|asyncio|os|subprocess|sys|inspect|pdb|posix|pwd|threading|ctypes)',
     r'__import__',
     r'getattr',
     r'setattr',
@@ -34,29 +39,33 @@ class SecurityTransformer(ast.NodeVisitor):
     def visit_Import(self, node):
         for alias in node.names:
             if alias.name.split('.')[0] in FORBIDDEN_MODULES:
-                self.is_safe = False
-                self.error_message = f"Forbidden module import: {alias.name}"
+                self.fail(f"Forbidden module import: {alias.name}")
                 return
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
         if node.module and node.module.split('.')[0] in FORBIDDEN_MODULES:
-            self.is_safe = False
-            self.error_message = f"Forbidden module import: {node.module}"
+            self.fail(f"Forbidden module import: {node.module}")
+            return
+        self.generic_visit(node)
+
+    def visit_Name(self, node):
+        # Catch any reference to forbidden functions (prevents aliasing f = eval)
+        if node.id in FORBIDDEN_FUNCTIONS:
+            self.fail(f"Forbidden reference to: {node.id}")
             return
         self.generic_visit(node)
 
     def visit_Call(self, node):
-        # Check for direct calls to forbidden functions
+        # Specifically check the function being called
         func_name = None
         if isinstance(node.func, ast.Name):
             func_name = node.func.id
         elif isinstance(node.func, ast.Attribute):
             func_name = node.func.attr
 
-        if func_name in ['eval', 'exec', 'open', '__import__', 'getattr', 'setattr', 'delattr', 'compile', 'breakpoint']:
-            self.is_safe = False
-            self.error_message = f"Forbidden function call: {func_name}"
+        if func_name in FORBIDDEN_FUNCTIONS:
+            self.fail(f"Forbidden function call: {func_name}")
             return
 
         self.generic_visit(node)
@@ -64,10 +73,17 @@ class SecurityTransformer(ast.NodeVisitor):
     def visit_Attribute(self, node):
         # Block access to sensitive attributes like __globals__, __subclasses__, etc.
         if node.attr.startswith('__') and node.attr != '__init__':
-            self.is_safe = False
-            self.error_message = f"Access to sensitive attribute: {node.attr}"
+            self.fail(f"Access to sensitive attribute: {node.attr}")
+            return
+        # Block attribute access to forbidden functions (e.g., builtins.eval)
+        if node.attr in FORBIDDEN_FUNCTIONS:
+            self.fail(f"Forbidden attribute access: {node.attr}")
             return
         self.generic_visit(node)
+
+    def fail(self, message):
+        self.is_safe = False
+        self.error_message = message
 
 def validate_code(code: str) -> (bool, str):
     """
@@ -90,10 +106,8 @@ def validate_code(code: str) -> (bool, str):
         # We let the actual compilation/execution handle syntax errors
         pass
     except Exception as e:
-        # If AST parsing fails for other reasons, we might want to block or log
-        # For security, blocking is safer, but let's just log and allow for now
-        # unless it's a clear failure.
-        pass
+        # Fail-closed: if analysis fails for any reason, consider it unsafe.
+        return False, f"Security Analysis Error: {str(e)}"
 
     return True, None
 
@@ -118,10 +132,7 @@ def get_safe_globals():
     safe_builtins['__import__'] = restricted_import
 
     # Remove dangerous built-ins
-    dangerous_builtins = [
-        'open', 'eval', 'exec', 'compile', 'getattr', 'setattr',
-        'delattr', 'help', 'input', 'breakpoint'
-    ]
+    dangerous_builtins = list(FORBIDDEN_FUNCTIONS)
     for b in dangerous_builtins:
         if b in safe_builtins:
             del safe_builtins[b]
