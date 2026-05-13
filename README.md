@@ -25,7 +25,7 @@ We've been busy! Here are the latest updates to the platform:
 
 | General UI | Code Editor & Problem | Submission Result |
 | :---: | :---: | :---: |
-| ![General UI](screenshots/general_ui.png) | ![Code Problem](screenshots/code_problem.png) | ![Saved Result](screenshots/saved_result.png) |
+| ![General UI](screenshots/reserves/general_ui.png) | ![Code Problem](screenshots/reserves/code_problem.png) | ![Saved Result](screenshots/reserves/saved_result.png) |
 
 ---
 
