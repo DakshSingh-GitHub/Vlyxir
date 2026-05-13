@@ -39,7 +39,7 @@ const ProblemViewer = memo(function ProblemViewer({ problem }: ProblemViewerProp
                 easing: 'easeOutCubic'
             });
         }
-    }, [problem]);
+    }, [problem?.id]);
 
     useEffect(() => {
         if (!problem && emptyStateRef.current) {

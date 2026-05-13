@@ -38,16 +38,24 @@ const PastSubmissions = memo(function PastSubmissions({ submissions, onLoadCode,
 
     useEffect(() => {
         if (submissions.length > 0 && listContainerRef.current) {
-            anime({
-                targets: listContainerRef.current.children,
-                opacity: [0, 1],
-                translateY: [20, 0],
-                delay: stagger(50),
-                duration: 500,
-                easing: 'easeOutQuad'
+            const children = Array.from(listContainerRef.current.children);
+            const invisibleChildren = children.filter(child => {
+                const style = window.getComputedStyle(child);
+                return style.opacity === "0";
             });
+
+            if (invisibleChildren.length > 0) {
+                anime({
+                    targets: invisibleChildren,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    delay: stagger(50),
+                    duration: 500,
+                    easing: 'easeOutQuad'
+                });
+            }
         }
-    }, [submissions.length]);
+    }, [submissions]);
 
     useEffect(() => {
         if (deletingId) {

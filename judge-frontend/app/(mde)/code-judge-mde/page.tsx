@@ -191,6 +191,8 @@ export default function Home() {
 
     const handleSelect = useCallback(async (id: string) => {
         setSelectedProblemId(id);
+        setPastSubmissions([]);
+        
         if (id) {
             sessionStorage.setItem("last_selected_problem_id", id);
         }
@@ -211,14 +213,17 @@ export default function Home() {
         setResult(null);
 
         try {
-            const data = await getProblemById(id, (newData) => {
-                setProblem(newData);
-            });
+            const [data, subs] = await Promise.all([
+                getProblemById(id, (newData) => {
+                    setProblem(newData);
+                }),
+                getSubmissionsByProblemId(id)
+            ]);
+            
             setProblem(data);
-            const subs = await getSubmissionsByProblemId(id);
             setPastSubmissions(subs);
         } catch (error) {
-            console.error("Failed to fetch problem", error);
+            console.error("Failed to fetch data", error);
         }
     }, [isMobile, setIsSidebarOpen]);
 
@@ -674,6 +679,7 @@ export default function Home() {
                     className={`flex-1 overflow-y-auto ${(!isMobile && activeTab === "submissions") || (isMobile && mobileTab === "submissions") ? "block" : "hidden"}`}
                 >
                     <PastSubmissions
+                        key={selectedProblemId}
                         submissions={pastSubmissions}
                         onLoadCode={(savedCode) => {
                             setCode(savedCode);
