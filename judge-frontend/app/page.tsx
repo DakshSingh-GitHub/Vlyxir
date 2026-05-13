@@ -83,13 +83,13 @@ export default function Home() {
             <div className={`pointer-events-none fixed right-[-5%] bottom-[-10%] h-150 w-150 rounded-full blur-[140px] ${glowRightClassName} opacity-50`} />
             <div className={`pointer-events-none fixed left-[20%] top-[20%] h-96 w-96 rounded-full blur-[150px] ${glowCenterClassName} opacity-30`} />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-24">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:pl-4 md:pr-12 pt-12 pb-24">
                 {/* Hero Section */}
                 <motion.section
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid lg:grid-cols-[1fr_1fr] gap-12 lg:gap-16 items-center mb-40 relative pt-4 min-h-[70vh]"
+                    className="grid lg:grid-cols-2 gap-12 lg:gap-32 items-center mb-40 relative pt-4 min-h-[70vh]"
                 >
                     {/* Background Code Snippets (Decorative) */}
                     <div className="absolute inset-0 -z-10 pointer-events-none opacity-[0.03] font-mono text-[10px] select-none overflow-hidden hidden lg:block">
@@ -106,7 +106,7 @@ export default function Home() {
                     <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-indigo-400/40 rounded-full blur-[2px] animate-pulse" style={{ animationDelay: '1s' }} />
                     <div className="absolute bottom-1/3 right-1/2 w-1 h-1 bg-purple-400/30 rounded-full blur-[1px] animate-pulse" style={{ animationDelay: '2s' }} />
 
-                    <div className="flex flex-col items-start text-left z-10">
+                    <div className="flex flex-col items-start text-left z-10 lg:-translate-x-8">
                         <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Next-Gen Platform</span>
@@ -124,7 +124,7 @@ export default function Home() {
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-sm md:text-base text-slate-400 max-w-md mb-8 font-medium leading-relaxed"
+                            className="text-sm md:text-base text-slate-400 max-w-lg mb-8 font-medium leading-relaxed"
                         >
                             VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
                         </motion.p>
@@ -165,14 +165,14 @@ export default function Home() {
 
                     <motion.div
                         variants={itemVariants}
-                        className="relative lg:block hidden group w-full scale-[1.3] lg:translate-x-20"
+                        className="relative lg:block hidden group w-full scale-[1.45]"
                         style={{ perspective: '2000px' }}
                     >
                         <motion.div
                             animate={{
                                 y: [0, -15, 0],
-                                rotateX: [2, 0, 2],
-                                rotateY: [-15, -12, -15]
+                                rotateX: [4, 2, 4],
+                                rotateY: [-28, -24, -28]
                             }}
                             transition={{
                                 duration: 8,
@@ -182,7 +182,7 @@ export default function Home() {
                             className="relative z-20 transition-transform duration-700"
                             style={{ 
                                 transformStyle: 'preserve-3d',
-                                transform: 'rotateY(-15deg) rotateX(2deg)'
+                                transform: 'rotateY(-29deg) rotateX(10deg)'
                             }}
                         >
                             {/* Glass Tablet Frame */}

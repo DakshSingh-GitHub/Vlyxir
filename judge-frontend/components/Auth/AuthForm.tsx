@@ -31,10 +31,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const [message, setMessage] = useState<string | null>(null);
 
   const nextPath = searchParams.get("next") || "/";
+  const isAddingAccount = searchParams.get("add_account") === "true";
 
   useEffect(() => {
-    if (!isLoading && user) router.replace(nextPath);
-  }, [isLoading, nextPath, router, user]);
+    if (!isLoading && user && !isAddingAccount) router.replace(nextPath);
+  }, [isLoading, nextPath, router, user, isAddingAccount]);
 
   const passwordStrength = (() => {
     if (!password) {

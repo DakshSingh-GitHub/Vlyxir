@@ -11,6 +11,7 @@
 
 html {
   font-size: calc(12.8px * var(--app-font-scale));
+  background: #0B0C15 !important;
 }
 
 @theme inline {
@@ -70,7 +71,7 @@ html {
 }
 
 body {
-  background: var(--background);
+  background: #0B0C15 !important;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   margin: 0;
@@ -223,5 +224,30 @@ html.dark {
   .glass-morphism {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 8s linear infinite;
+    padding-right: 50px;
+  }
+
+  @keyframes vlyxir-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); filter: blur(0px); }
+    50% { opacity: 1; transform: scale(1.05); filter: blur(1px); }
+  }
+
+  .vlyxir-logo-pulse {
+    animation: vlyxir-pulse 2s ease-in-out infinite;
   }
 }

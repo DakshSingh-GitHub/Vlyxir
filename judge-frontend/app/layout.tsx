@@ -76,6 +76,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeScript />
+        <style>{`
+          html, body {
+            background: #0B0C15 !important;
+          }
+        `}</style>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased select-none`}
