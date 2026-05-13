@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import { motion, Variants } from 'framer-motion';
 import Link from 'next/link';
 import { Code, Scale, Zap, Shield, Globe, Cpu, ArrowRight, Github, BookOpen, BrainCircuit, Coffee } from 'lucide-react';
@@ -55,11 +56,11 @@ export default function Home() {
         ? "text-xs font-black text-indigo-400 uppercase tracking-[0.2em]"
         : "text-xs font-black text-indigo-600 uppercase tracking-[0.2em]";
     const heroTitleClassName = isDark
-        ? "text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter mb-8 leading-[0.9] text-white"
-        : "text-5xl md:text-7xl lg:text-9xl font-black tracking-tighter mb-8 leading-[0.9] text-slate-900";
+        ? "text-5xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter mb-8 leading-[0.95] text-white text-left"
+        : "text-5xl md:text-7xl lg:text-7xl xl:text-8xl font-black tracking-tighter mb-8 leading-[0.95] text-slate-900 text-left";
     const heroSubtitleClassName = isDark
-        ? "text-base md:text-lg lg:text-xl text-slate-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed"
-        : "text-base md:text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto mb-12 font-medium leading-relaxed";
+        ? "text-base md:text-lg lg:text-xl text-slate-400 max-w-2xl mb-12 font-medium leading-relaxed text-left"
+        : "text-base md:text-lg lg:text-xl text-slate-600 max-w-2xl mb-12 font-medium leading-relaxed text-left";
     const secondaryButtonClassName = isDark
         ? "flex items-center justify-center gap-2 px-8 py-4 bg-slate-900/50 backdrop-blur-xl text-white rounded-2xl font-bold text-lg border border-slate-700/50 hover:border-indigo-500 transition-all duration-300 w-full sm:w-auto"
         : "flex items-center justify-center gap-2 px-8 py-4 bg-white/80 backdrop-blur-xl text-slate-900 rounded-2xl font-bold text-lg border border-slate-200 hover:border-indigo-300 transition-all duration-300 w-full sm:w-auto shadow-[0_12px_30px_rgba(15,23,42,0.08)]";
@@ -82,74 +83,133 @@ export default function Home() {
             <div className={`pointer-events-none fixed right-[-5%] bottom-[-10%] h-150 w-150 rounded-full blur-[140px] ${glowRightClassName} opacity-50`} />
             <div className={`pointer-events-none fixed left-[20%] top-[20%] h-96 w-96 rounded-full blur-[150px] ${glowCenterClassName} opacity-30`} />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-24">
                 {/* Hero Section */}
                 <motion.section
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="text-center mb-24"
+                    className="grid lg:grid-cols-[1fr_1fr] gap-12 lg:gap-16 items-center mb-40 relative pt-4 min-h-[70vh]"
                 >
-                    <motion.div variants={itemVariants} className={badgeClassName}>
-                        <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                        <span className={badgeTextClassName}>Next-Gen Platform</span>
-                    </motion.div>
+                    {/* Background Code Snippets (Decorative) */}
+                    <div className="absolute inset-0 -z-10 pointer-events-none opacity-[0.03] font-mono text-[10px] select-none overflow-hidden hidden lg:block">
+                        <pre className="absolute top-0 right-1/4 leading-relaxed">
+                            {`function solve(n, k) {\n  const dp = Array(n).fill(0);\n  for(let i=0; i<n; i++) {\n    dp[i] = Math.max(dp[i-1], ...);\n  }\n  return dp[n-1];\n}`}
+                        </pre>
+                        <pre className="absolute bottom-1/4 left-0 leading-relaxed rotate-[-5deg]">
+                            {`class VlyxirEngine {\n  async execute(code) {\n    const sandbox = await init();\n    return sandbox.run(code);\n  }\n}`}
+                        </pre>
+                    </div>
 
-                    <motion.h1
-                        variants={itemVariants}
-                        className={heroTitleClassName}
-                    >
-                        Master the Art of <br />
-                        <span className={`bg-clip-text text-transparent bg-linear-to-r ${isDark ? "from-indigo-400 via-cyan-400 to-purple-500" : "from-indigo-600 via-purple-600 to-pink-600"} animate-gradient-x`}>
-                            Problem Solving
-                        </span>
-                    </motion.h1>
+                    {/* Sparkles / Particles */}
+                    <div className="absolute top-1/4 right-1/3 w-1 h-1 bg-white rounded-full blur-[1px] animate-pulse" />
+                    <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-indigo-400/40 rounded-full blur-[2px] animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute bottom-1/3 right-1/2 w-1 h-1 bg-purple-400/30 rounded-full blur-[1px] animate-pulse" style={{ animationDelay: '2s' }} />
 
-                    <motion.p
-                        variants={itemVariants}
-                        className={heroSubtitleClassName}
-                    >
-                        VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
-                    </motion.p>
+                    <div className="flex flex-col items-start text-left z-10">
+                        <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Next-Gen Platform</span>
+                        </motion.div>
+
+                        <motion.h1
+                            variants={itemVariants}
+                            className="text-5xl md:text-6xl xl:text-[4.5rem] font-[900] tracking-tight mb-8 leading-[1.05] text-white"
+                        >
+                            Master the <br /> Art of <br />
+                            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-400 via-cyan-400 to-purple-500 whitespace-nowrap">
+                                Problem Solving
+                            </span>
+                        </motion.h1>
+
+                        <motion.p
+                            variants={itemVariants}
+                            className="text-sm md:text-base text-slate-400 max-w-md mb-8 font-medium leading-relaxed"
+                        >
+                            VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
+                        </motion.p>
+
+                        <motion.div
+                            variants={itemVariants}
+                            className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 mb-10"
+                        >
+                            {[
+                                { l: 'V', w: 'ersatile' },
+                                { l: 'L', w: 'ogic' },
+                                { l: 'Y', w: 'ield' },
+                                { l: 'X', w: '-platform' },
+                                { l: 'I', w: 'ntelligent' },
+                                { l: 'R', w: 'untime' }
+                            ].map((pillar) => (
+                                <div key={pillar.w} className="flex items-center gap-1.5">
+                                    <span className="text-[10px] font-black text-indigo-500">{pillar.l}</span>
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{pillar.w}</span>
+                                </div>
+                            ))}
+                        </motion.div>
+
+                        <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-5">
+                            <Link
+                                href={codeJudgePath}
+                                className="px-10 py-4 bg-indigo-600 text-white rounded-xl font-bold text-base shadow-xl shadow-indigo-600/25 hover:bg-indigo-500 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+                            >
+                                Get Started
+                            </Link>
+                            {/* Discreet secondary links */}
+                            <div className="flex items-center gap-6 ml-2">
+                                <Link href="https://github.com/DakshSingh-GitHub/Vlyxir" target="_blank" className="text-xs font-bold text-slate-500 hover:text-white transition-colors">VLYXIR</Link>
+                                <Link href="/docs" className="text-xs font-bold text-slate-500 hover:text-white transition-colors">Documentation</Link>
+                            </div>
+                        </motion.div>
+                    </div>
 
                     <motion.div
                         variants={itemVariants}
-                        className="flex items-center justify-center gap-4 mb-12 flex-wrap"
+                        className="relative lg:block hidden group w-full scale-[1.3] lg:translate-x-20"
+                        style={{ perspective: '2000px' }}
                     >
-                        {['Versatile', 'Logic', 'Yield', 'X-platform', 'Intelligent', 'Runtime'].map((word, i) => (
-                            <span key={word} className={`text-xs font-bold tracking-widest uppercase ${isDark ? "text-slate-500" : "text-slate-400"} flex items-center gap-2`}>
-                                <span className={isDark ? "text-indigo-400" : "text-indigo-600"}>{word[0]}</span>{word.slice(1)}
-                                {i < 5 && <span className="opacity-30">•</span>}
-                            </span>
-                        ))}
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-                        <Link
-                            href={codeJudgePath}
-                            className="group relative px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-600/25 hover:bg-indigo-500 transition-all duration-300 hover:scale-[1.02] active:scale-95 overflow-hidden w-full sm:w-auto flex justify-center"
+                        <motion.div
+                            animate={{
+                                y: [0, -15, 0],
+                                rotateX: [2, 0, 2],
+                                rotateY: [-15, -12, -15]
+                            }}
+                            transition={{
+                                duration: 8,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="relative z-20 transition-transform duration-700"
+                            style={{ 
+                                transformStyle: 'preserve-3d',
+                                transform: 'rotateY(-15deg) rotateX(2deg)'
+                            }}
                         >
-                            <span className="relative z-10 flex items-center gap-2">
-                                Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                            <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                        </Link>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                            <Link
-                                href="https://github.com/DakshSingh-GitHub/Vlyxir"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={secondaryButtonClassName}
-                            >
-                                <Github className="w-5 h-5" /> VLYXIR
-                            </Link>
-                            <Link
-                                href="/docs"
-                                className={secondaryButtonClassName}
-                            >
-                                <BookOpen className="w-5 h-5" /> Documentation
-                            </Link>
-                        </div>
+                            {/* Glass Tablet Frame */}
+                            <div className="absolute -inset-1 bg-linear-to-tr from-white/20 via-white/5 to-transparent rounded-[2.5rem] blur-[2px] -z-10" />
+                            <div className="absolute -inset-[0.5px] bg-white/10 rounded-[2.5rem] -z-10" />
+                            
+                            <div className="relative rounded-[2.2rem] border border-white/10 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-slate-950/50 backdrop-blur-sm">
+                                <Image
+                                    src="/hero_arena.png"
+                                    alt="Vlyxir Arena UI"
+                                    width={1200}
+                                    height={800}
+                                    className="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+                                    priority
+                                />
+                                {/* Glass shine overlay */}
+                                <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/[0.05] to-white/0 pointer-events-none" />
+                            </div>
+
+                            {/* Floating UI Elements (Optional subtle accents) */}
+                            <div className="absolute -right-8 top-1/4 p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl hidden xl:block animate-float">
+                                <div className="w-8 h-1.5 bg-emerald-500/50 rounded-full" />
+                            </div>
+                        </motion.div>
+
+                        {/* Large Background Glow */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-indigo-500/10 blur-[120px] rounded-full -z-10" />
                     </motion.div>
                 </motion.section>
 
