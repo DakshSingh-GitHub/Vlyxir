@@ -89,7 +89,7 @@ export default function Home() {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid lg:grid-cols-2 gap-12 lg:gap-32 items-center mb-40 relative pt-4 min-h-[70vh]"
+                    className="grid lg:grid-cols-2 gap-12 lg:gap-48 items-center mb-40 relative pt-4 min-h-[70vh]"
                 >
                     {/* Background Code Snippets (Decorative) */}
                     <div className="absolute inset-0 -z-10 pointer-events-none opacity-[0.03] font-mono text-[10px] select-none overflow-hidden hidden lg:block">
@@ -169,20 +169,22 @@ export default function Home() {
                         style={{ perspective: '2000px' }}
                     >
                         <motion.div
-                            animate={{
-                                y: [0, -15, 0],
-                                rotateX: [4, 2, 4],
-                                rotateY: [-28, -24, -28]
+                            initial={{ rotateX: 4, rotateY: -28, x: 0, y: 0 }}
+                            animate={{ rotateX: 4, rotateY: -28, x: 0, y: 0 }}
+                            whileHover={{
+                                rotateX: 0,
+                                rotateY: 0,
+                                y: 0,
+                                x: 0,
+                                scale: 1.02,
                             }}
                             transition={{
-                                duration: 8,
-                                repeat: Infinity,
-                                ease: "easeInOut"
+                                duration: 0.6,
+                                ease: "easeOut"
                             }}
-                            className="relative z-20 transition-transform duration-700"
+                            className="relative z-20"
                             style={{ 
-                                transformStyle: 'preserve-3d',
-                                transform: 'rotateY(-29deg) rotateX(10deg)'
+                                transformStyle: 'preserve-3d'
                             }}
                         >
                             {/* Glass Tablet Frame */}
