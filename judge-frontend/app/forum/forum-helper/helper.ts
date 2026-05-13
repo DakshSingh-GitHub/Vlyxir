@@ -23,6 +23,7 @@ export type ForumPost = {
   has_upvoted?: boolean;
   referenced_problem_id?: string;
   channel_name?: string;
+  selected_solution_id?: string | null;
 };
 
 export type ForumChannel = {
@@ -142,7 +143,7 @@ export async function fetchPosts(
   const selectQuery = `
     *,
     forum_channels(name),
-    forum_comments(count),
+    comment_aggregate:forum_comments!forum_comments_post_id_fkey(count),
     forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
   `;
   let query = supabase.from('forum_posts').select(selectQuery);
@@ -196,7 +197,7 @@ export async function fetchPosts(
     return {
       ...post,
       author_avatar_url: avatarMap.get(post.author_id),
-      comment_count: post.forum_comments?.[0]?.count || 0,
+      comment_count: post.comment_aggregate?.[0]?.count || 0,
       upvotes_count: post.forum_post_upvotes?.[0]?.count || 0,
       has_upvoted: currentUserId ? (post.user_vote || []).some((v: any) => v.user_id === currentUserId) : false,
       channel_name: post.forum_channels?.name
@@ -206,6 +207,15 @@ export async function fetchPosts(
 
 
 // Add further stubs like createPost, createComment, votePost down the road.
+
+export async function selectSolution(postId: string, commentId: string | null): Promise<{ error: Error | null }> {
+  const { error } = await supabase
+    .from('forum_posts')
+    .update({ selected_solution_id: commentId })
+    .eq('id', postId);
+
+  return { error };
+}
 
 export async function publishPost(
   title: string,
@@ -256,7 +266,8 @@ export async function publishPost(
 export async function fetchPostById(id: string, currentUserId?: string): Promise<ForumPost | null> {
   const selectQuery = `
       *, 
-      forum_comments(count), 
+      forum_channels(name),
+      comment_aggregate:forum_comments!forum_comments_post_id_fkey(count), 
       forum_post_upvotes(count)${currentUserId ? `, user_vote:forum_post_upvotes(post_id, user_id)` : ''}
   `;
   const { data, error } = await supabase
@@ -286,9 +297,10 @@ export async function fetchPostById(id: string, currentUserId?: string): Promise
   return {
     ...(data as any),
     author_avatar_url,
-    comment_count: (data as any).forum_comments?.[0]?.count || 0,
+    comment_count: (data as any).comment_aggregate?.[0]?.count || 0,
     upvotes_count: (data as any).forum_post_upvotes?.[0]?.count || 0,
-    has_upvoted: currentUserId ? ((data as any).user_vote || []).some((v: any) => v.user_id === currentUserId) : false
+    has_upvoted: currentUserId ? ((data as any).user_vote || []).some((v: any) => v.user_id === currentUserId) : false,
+    channel_name: (data as any).forum_channels?.name
   } as ForumPost;
 }
 
@@ -361,7 +373,7 @@ export async function publishComment(
 export async function fetchUserPosts(userId: string): Promise<ForumPost[]> {
   const { data, error } = await supabase
     .from('forum_posts')
-    .select('*, forum_comments(count), forum_post_upvotes(count)')
+    .select('*, comment_aggregate:forum_comments!forum_comments_post_id_fkey(count), forum_post_upvotes(count)')
     .eq('author_id', userId)
     .order('created_at', { ascending: false });
 
@@ -374,7 +386,7 @@ export async function fetchUserPosts(userId: string): Promise<ForumPost[]> {
     if (!post) return null;
     return {
       ...post,
-      comment_count: post.forum_comments?.[0]?.count || 0,
+      comment_count: post.comment_aggregate?.[0]?.count || 0,
       upvotes_count: post.forum_post_upvotes?.[0]?.count || 0
     };
   }).filter(Boolean) as ForumPost[];

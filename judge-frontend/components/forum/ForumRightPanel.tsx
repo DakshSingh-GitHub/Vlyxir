@@ -5,9 +5,10 @@ import { fetchUserPosts, ForumPost } from '@/app/forum/forum-helper/helper';
 import { Plus, User, BarChart2, Star, TrendingUp, Info, FileText } from 'lucide-react';
 
 import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 
 export default function ForumRightPanel() {
-    const { isDark } = useAppContext();
+    const { isDark, reduceMotion } = useAppContext();
     const { user } = useAuth();
     const [posts, setPosts] = useState<ForumPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -35,9 +36,33 @@ export default function ForumRightPanel() {
 
 
     
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: reduceMotion ? 0 : 0.05
+            }
+        }
+    };
+
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, x: reduceMotion ? 0 : 20 },
+        visible: { 
+            opacity: 1, 
+            x: 0,
+            transition: { type: "spring", stiffness: 100, damping: 15 }
+        }
+    };
+
     return (
         <aside className={`w-80 shrink-0 hidden lg:flex flex-col py-6 px-6 border-l ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-200 bg-slate-50'} overflow-y-auto`}>
-            <div className="mb-10 space-y-3">
+            <motion.div 
+                initial={{ opacity: 0, y: reduceMotion ? 0 : -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="mb-10 space-y-3"
+            >
                 {user ? (
                     <>
                         <Link href="/forum/new-post" className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/20 transition-all active:scale-95">
@@ -65,10 +90,17 @@ export default function ForumRightPanel() {
                         </button>
                     </>
                 )}
-            </div>
+            </motion.div>
 
             <div className="mb-8">
-                <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] mb-6 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Post Insights</h3>
+                <motion.h3 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className={`text-[10px] font-black uppercase tracking-[0.2em] mb-6 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}
+                >
+                    Post Insights
+                </motion.h3>
                 
                 {!user ? (
                     <div className={`p-6 rounded-2xl border ${isDark ? 'border-indigo-500/20 bg-indigo-500/5' : 'border-indigo-100 bg-indigo-50/30'}`}>
@@ -104,8 +136,16 @@ export default function ForumRightPanel() {
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-6">
-                        <div className={`p-5 rounded-2xl border ${isDark ? 'border-indigo-500/20 bg-indigo-500/5' : 'border-indigo-100 bg-indigo-50/50'}`}>
+                    <motion.div 
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="flex flex-col gap-6"
+                    >
+                        <motion.div 
+                            variants={itemVariants}
+                            className={`p-5 rounded-2xl border ${isDark ? 'border-indigo-500/20 bg-indigo-500/5' : 'border-indigo-100 bg-indigo-50/50'}`}
+                        >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <BarChart2 className={`w-4 h-4 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
@@ -113,54 +153,62 @@ export default function ForumRightPanel() {
                                 </div>
                                 <span className={`text-xl font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{posts.length}</span>
                             </div>
-                        </div>
+                        </motion.div>
 
                         <div className="space-y-4">
                             <h4 className={`text-[9px] font-black uppercase tracking-[0.2em] ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>Recent Contributions</h4>
                             <div className="flex flex-col gap-3">
                                 {posts.slice(0, 3).map((post) => (
-                                    <Link 
-                                        key={post.id} 
-                                        href={`/forum/${post.id}`}
-                                        className={`group p-4 rounded-xl border transition-all hover:scale-[1.02] ${
-                                            isDark 
-                                            ? 'border-slate-800 bg-slate-900/30 hover:bg-slate-800 hover:border-slate-700' 
-                                            : 'border-slate-100 bg-white hover:border-slate-200 shadow-sm'
-                                        }`}
-                                    >
-                                        <h5 className={`text-xs font-bold line-clamp-1 group-hover:text-indigo-500 transition-colors ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                                            {post.title}
-                                        </h5>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <span className={`text-[9px] font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                                {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                            </span>
-                                            <div className="w-1 h-1 rounded-full bg-slate-700" />
-                                            <div className="flex items-center gap-1">
-                                                <Star className="w-2.5 h-2.5 text-amber-500" />
-                                                <span className={`text-[9px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{post.upvotes}</span>
+                                    <motion.div key={post.id} variants={itemVariants}>
+                                        <Link 
+                                            href={`/forum/${post.id}`}
+                                            className={`block group p-4 rounded-xl border transition-all hover:scale-[1.02] ${
+                                                isDark 
+                                                ? 'border-slate-800 bg-slate-900/30 hover:bg-slate-800 hover:border-slate-700' 
+                                                : 'border-slate-100 bg-white hover:border-slate-200 shadow-sm'
+                                            }`}
+                                        >
+                                            <h5 className={`text-xs font-bold line-clamp-1 group-hover:text-indigo-500 transition-colors ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                                                {post.title}
+                                            </h5>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <span className={`text-[9px] font-medium ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                                                    {new Date(post.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                </span>
+                                                <div className="w-1 h-1 rounded-full bg-slate-700" />
+                                                <div className="flex items-center gap-1">
+                                                    <Star className="w-2.5 h-2.5 text-amber-500" />
+                                                    <span className={`text-[9px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{post.upvotes}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Link>
+                                        </Link>
+                                    </motion.div>
                                 ))}
                             </div>
                             {posts.length > 3 && (
-                                <Link 
-                                    href="/forum/your-content"
-                                    className={`block text-center text-[9px] font-black uppercase tracking-widest mt-2 transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-indigo-600'}`}
-                                >
-                                    View all posts →
-                                </Link>
+                                <motion.div variants={itemVariants}>
+                                    <Link 
+                                        href="/forum/your-content"
+                                        className={`block text-center text-[9px] font-black uppercase tracking-widest mt-2 transition-colors ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-indigo-600'}`}
+                                    >
+                                        View all posts →
+                                    </Link>
+                                </motion.div>
                             )}
                         </div>
-                    </div>
+                    </motion.div>
                 )}
             </div>
-            <div className={`mt-auto p-5 rounded-2xl border ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-white/50'} text-center`}>
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className={`mt-auto p-5 rounded-2xl border ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-white/50'} text-center`}
+            >
                 <p className={`text-[11px] leading-relaxed font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     While posting, be sure to follow the <Link href='/community-guidelines' className="text-indigo-500 hover:text-indigo-600 font-bold transition-colors block mt-1">Community Guidelines</Link>
                 </p>
-            </div>
+            </motion.div>
         </aside>
     );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2 } from "lucide-react";
+import { Reply, User, Send, Loader2, X, ThumbsUp, Trash2, CheckCircle } from "lucide-react";
 import { ForumComment, toggleCommentLike, deleteComment, checkProfanity } from "../../app/forum/forum-helper/helper";
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
 import Link from "next/link";
@@ -18,6 +18,9 @@ interface CommentThreadProps {
     onCancelReply?: () => void;
     postOwnerId: string;
     onDeleteComment?: () => void;
+    selectedSolutionId?: string | null;
+    onSelectSolution?: (commentId: string | null) => Promise<void>;
+    isQuestion?: boolean;
 }
 
 interface CommentItemProps {
@@ -34,6 +37,9 @@ interface CommentItemProps {
     onCancelReply?: () => void;
     onDeleteComment?: () => void;
     comments: ForumComment[];
+    selectedSolutionId?: string | null;
+    onSelectSolution?: (commentId: string | null) => Promise<void>;
+    isQuestion?: boolean;
 }
 
 function CommentItem({
@@ -49,7 +55,10 @@ function CommentItem({
     onSubmitReply,
     onCancelReply,
     onDeleteComment,
-    comments
+    comments,
+    selectedSolutionId,
+    onSelectSolution,
+    isQuestion
 }: CommentItemProps) {
     const { user } = useAuth();
     const [likes, setLikes] = useState(comment.likes_count || 0);
@@ -63,6 +72,8 @@ function CommentItem({
     const isAuthor = user?.id === comment.author_id;
     const isPostOwner = user?.id === postOwnerId;
     const canDelete = isAuthor || isPostOwner;
+    const isSolution = selectedSolutionId === comment.id;
+    const isTopLevel = !comment.parent_id;
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -128,6 +139,14 @@ function CommentItem({
                             {new Date(comment.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                     </div>
+                    {isSolution && (
+                        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 shadow-sm border ${
+                            isDark ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                        }`}>
+                            <CheckCircle className="w-3 h-3" />
+                            Solution
+                        </div>
+                    )}
                     <p className={`text-sm leading-relaxed wrap-break-word ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                         {comment.body}
                     </p>
@@ -149,6 +168,20 @@ function CommentItem({
                             <Reply className="w-3.5 h-3.5" />
                             REPLY
                         </button>
+
+                        {isQuestion && isPostOwner && isTopLevel && (
+                            <button
+                                onClick={() => onSelectSolution?.(isSolution ? null : comment.id)}
+                                className={`flex items-center gap-1.5 text-[11px] font-bold tracking-tight transition-all hover:scale-105 ${
+                                    isSolution 
+                                    ? 'text-emerald-500' 
+                                    : isDark ? 'text-slate-500 hover:text-emerald-400' : 'text-slate-400 hover:text-emerald-600'
+                                }`}
+                            >
+                                <CheckCircle className={`w-3.5 h-3.5 ${isSolution ? 'fill-current' : ''}`} />
+                                {isSolution ? 'UNMARK SOLUTION' : 'MARK AS SOLUTION'}
+                            </button>
+                        )}
 
                         {canDelete && (
                             <button
@@ -223,6 +256,9 @@ function CommentItem({
                 onSubmitReply={onSubmitReply}
                 onCancelReply={onCancelReply}
                 onDeleteComment={onDeleteComment}
+                selectedSolutionId={selectedSolutionId}
+                onSelectSolution={onSelectSolution}
+                isQuestion={isQuestion}
             />
 
             <DeleteConfirmationModal
@@ -245,7 +281,10 @@ export default function CommentThread({
     onSubmitReply,
     onCancelReply,
     postOwnerId,
-    onDeleteComment
+    onDeleteComment,
+    selectedSolutionId,
+    onSelectSolution,
+    isQuestion
 }: CommentThreadProps) {
     const { isDark } = useAppContext();
     const [replyBody, setReplyBody] = useState("");
@@ -274,6 +313,9 @@ export default function CommentThread({
                     onCancelReply={onCancelReply}
                     onDeleteComment={onDeleteComment}
                     comments={comments}
+                    selectedSolutionId={selectedSolutionId}
+                    onSelectSolution={onSelectSolution}
+                    isQuestion={isQuestion}
                 />
             ))}
         </div>

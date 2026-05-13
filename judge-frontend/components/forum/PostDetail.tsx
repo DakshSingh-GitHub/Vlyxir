@@ -180,7 +180,12 @@ export default function PostDetail({ post }: PostDetailProps) {
                     </div>
                 </div>
 
-                <CommentSection postId={post.id} postOwnerId={post.author_id} />
+                <CommentSection 
+                    postId={post.id} 
+                    postOwnerId={post.author_id} 
+                    initialSelectedSolutionId={post.selected_solution_id}
+                    isQuestion={post.channel_name === 'Questions'}
+                />
             </article>
 
             {post.referenced_problem_id && (

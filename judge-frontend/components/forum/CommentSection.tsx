@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { ForumComment, fetchComments, publishComment, checkProfanity } from "../../app/forum/forum-helper/helper";
+import { ForumComment, fetchComments, publishComment, checkProfanity, selectSolution } from "../../app/forum/forum-helper/helper";
 import ProfanityModal from "../../app/forum/forum-helper/ProfanityModal";
 
 import { useAppContext } from "../../app/lib/auth/context";
@@ -14,14 +14,17 @@ import CommentThread from "./CommentThread";
 interface CommentSectionProps {
     postId: string;
     postOwnerId: string;
+    initialSelectedSolutionId?: string | null;
+    isQuestion?: boolean;
 }
 
-export default function CommentSection({ postId, postOwnerId }: CommentSectionProps) {
+export default function CommentSection({ postId, postOwnerId, initialSelectedSolutionId, isQuestion }: CommentSectionProps) {
     const { isDark } = useAppContext();
     const { user } = useAuth();
 
     const [comments, setComments] = useState<ForumComment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedSolutionId, setSelectedSolutionId] = useState<string | null>(initialSelectedSolutionId || null);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     const [topLevelBody, setTopLevelBody] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,6 +82,20 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
             console.error("Failed to post reply:", error);
         }
     };
+    
+    const handleSelectSolution = async (commentId: string | null) => {
+        if (!user || user.id !== postOwnerId) return;
+        
+        // Optimistic update
+        setSelectedSolutionId(commentId);
+        
+        const { error } = await selectSolution(postId, commentId);
+        if (error) {
+            // Rollback
+            setSelectedSolutionId(selectedSolutionId);
+            console.error("Failed to select solution:", error);
+        }
+    };
 
     return (
         <div className={`mt-16 pt-8 border-t ${isDark ? 'border-slate-800/50' : 'border-slate-200'}`}>
@@ -114,6 +131,9 @@ export default function CommentSection({ postId, postOwnerId }: CommentSectionPr
                         onCancelReply={() => setReplyingTo(null)}
                         onSubmitReply={handleReplySubmit}
                         onDeleteComment={loadComments}
+                        selectedSolutionId={selectedSolutionId}
+                        onSelectSolution={handleSelectSolution}
+                        isQuestion={isQuestion}
                     />
                 </div>
             ) : (

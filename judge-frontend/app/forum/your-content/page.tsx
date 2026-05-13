@@ -74,6 +74,7 @@ export default function YourContentPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [postToDelete, setPostToDelete] = useState<ForumPost | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -120,9 +121,10 @@ export default function YourContentPage() {
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 activeChannelId={activeChannelId}
-                setActiveChannelId={setActiveChannelId} isMobileMenuOpen={false} setIsMobileMenuOpen={function (isOpen: boolean): void {
-                    throw new Error("Function not implemented.");
-                } }            />
+                setActiveChannelId={setActiveChannelId} 
+                isMobileMenuOpen={isMobileMenuOpen} 
+                setIsMobileMenuOpen={setIsMobileMenuOpen}
+            />
             
             <main className="flex-1 flex flex-col min-w-0 overflow-y-auto px-4 py-6 md:px-8">
                 {/* Header */}
