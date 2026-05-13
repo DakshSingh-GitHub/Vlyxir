@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { analyzeCodeWithGroq } from "@/app/lib/api/groq";
+import { analyzeCodeWithGemini } from "@/app/lib/api/gemini";
 import { createClient } from "@supabase/supabase-js";
+import { AIProvider } from "@/app/lib/api/ai-types";
 
 export async function POST(request: Request) {
     try {
@@ -35,6 +37,7 @@ export async function POST(request: Request) {
 
         const body = await request.json();
         const code = typeof body?.code === "string" ? body.code.trim() : "";
+        const provider = (body?.provider as AIProvider) || "groq";
 
         if (!code) {
             return NextResponse.json(
@@ -43,7 +46,13 @@ export async function POST(request: Request) {
             );
         }
 
-        const analysis = await analyzeCodeWithGroq(code);
+        let analysis;
+        if (provider === "gemini") {
+            analysis = await analyzeCodeWithGemini(code);
+        } else {
+            analysis = await analyzeCodeWithGroq(code);
+        }
+
         return NextResponse.json({ ok: true, analysis });
     } catch (error) {
         return NextResponse.json(
@@ -55,3 +64,4 @@ export async function POST(request: Request) {
         );
     }
 }
+

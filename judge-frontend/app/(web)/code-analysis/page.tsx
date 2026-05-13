@@ -82,6 +82,7 @@ export default function CodeAnalysisPage() {
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [provider, setProvider] = useState<"groq" | "gemini">("groq");
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-analysis") {
@@ -333,7 +334,7 @@ export default function CodeAnalysisPage() {
                     "Content-Type": "application/json",
                     ...(session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {})
                 },
-                body: JSON.stringify({ code })
+                body: JSON.stringify({ code, provider })
             });
 
             const payload = await response.json();
@@ -462,10 +463,33 @@ export default function CodeAnalysisPage() {
                         <div className="flex-1 min-h-0 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                             <CodeEditor code={code} setCode={setCode} isDark={isDark} isDisabled={false} />
                         </div>
+                        <div className="mt-4 flex items-center justify-center gap-3">
+                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Provider:</span>
+                            <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                                <button
+                                    onClick={() => setProvider("groq")}
+                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "groq"
+                                            ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                        }`}
+                                >
+                                    Groq
+                                </button>
+                                <button
+                                    onClick={() => setProvider("gemini")}
+                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "gemini"
+                                            ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                        }`}
+                                >
+                                    Gemini
+                                </button>
+                            </div>
+                        </div>
                         <button
                             onClick={handleAnalyze}
                             disabled={isLoading}
-                            className="w-full mt-6 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all duration-300 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+                            className="w-full mt-4 py-3.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all duration-300 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center gap-2">

@@ -84,6 +84,7 @@ export default function CodeAnalysisPage() {
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [provider, setProvider] = useState<"groq" | "gemini">("groq");
 
     const loaderTitleRef = useRef<HTMLDivElement>(null);
     const loaderBarRef = useRef<HTMLDivElement>(null);
@@ -426,7 +427,7 @@ export default function CodeAnalysisPage() {
                     "Content-Type": "application/json",
                     ...(session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {})
                 },
-                body: JSON.stringify({ code })
+                body: JSON.stringify({ code, provider })
             });
 
             const payload = await response.json();
@@ -590,7 +591,28 @@ export default function CodeAnalysisPage() {
                                             <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${mutedClass}`}>Source Analysis</span>
                                         </div>
                                     </div>
-                                    <div className="hidden lg:flex items-center gap-2">
+                                    <div className="hidden lg:flex items-center gap-3">
+                                        <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? "bg-slate-900/60 border-slate-700/70" : "bg-slate-100 border-slate-200"}`}>
+                                            <button
+                                                onClick={() => setProvider("groq")}
+                                                className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${provider === "groq"
+                                                        ? isDark ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-white text-indigo-600 shadow-sm"
+                                                        : isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700"
+                                                    }`}
+                                            >
+                                                Groq
+                                            </button>
+                                            <button
+                                                onClick={() => setProvider("gemini")}
+                                                className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${provider === "gemini"
+                                                        ? isDark ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-white text-indigo-600 shadow-sm"
+                                                        : isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700"
+                                                    }`}
+                                            >
+                                                Gemini
+                                            </button>
+                                        </div>
+                                        <div className={`h-4 w-px ${isDark ? "bg-slate-700/70" : "bg-slate-200"}`} />
                                         <div className={`p-1 px-2 rounded-md text-[10px] font-black border uppercase tracking-wider ${isDark ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" : "bg-indigo-50 text-indigo-600 border-indigo-100"}`}>PRO</div>
                                         <span className={`text-xs font-bold tracking-tight ${isDark ? "text-slate-300" : "text-slate-500"}`}>AI Inspector</span>
                                     </div>
