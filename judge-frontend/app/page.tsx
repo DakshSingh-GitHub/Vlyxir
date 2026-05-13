@@ -165,7 +165,7 @@ export default function Home() {
 
                     <motion.div
                         variants={itemVariants}
-                        className="relative lg:block hidden group w-full scale-[1.45]"
+                        className="relative block group w-full scale-100 lg:scale-[1.45] mt-20 lg:mt-0"
                         style={{ perspective: '2000px' }}
                     >
                         <motion.div
