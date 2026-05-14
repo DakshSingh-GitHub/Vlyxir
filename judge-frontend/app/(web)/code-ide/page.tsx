@@ -21,7 +21,7 @@ export default function CodeTestPage() {
     const { user, isLoading: isAuthLoading } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
-    const [code, setCode] = useState("# Write your code here to test\nprint('Hello, CodeJudge!')");
+    const [code, setCode] = useState("# Write your code here to test\nprint('Start with Vlyxir Forge!!')");
     const [input, setInput] = useState("");
     const [output, setOutput] = useState<{
         stdout: string;

@@ -22,7 +22,7 @@ export default function CodeTestPage() {
     const { user, isLoading: isAuthLoading } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
-    const [code, setCode] = useState("# Write your code here to test\nprint('Hello, CodeJudge!')");
+    const [code, setCode] = useState("# Write your code here to test\nprint('Start with Vlyxir Forge!!')");
     const [input, setInput] = useState("");
     const [output, setOutput] = useState<{
         stdout: string;
@@ -162,7 +162,7 @@ export default function CodeTestPage() {
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleMouseDownMain = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -425,74 +425,74 @@ export default function CodeTestPage() {
                 nextPath={pathname}
             />
         ) : (
-        <div className={`h-full min-h-0 flex flex-col rounded-4xl border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/10 ${isDark
-            ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
-            : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
-            }`}>
-            <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-700/70 bg-slate-900/40" : "border-slate-100 bg-slate-50/70"}`}>
-                <div className="flex items-center gap-2">
-                    <Cpu className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-500"}`} />
-                    <h2 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Output Sink</h2>
-                </div>
-
-                {output && (
+            <div className={`h-full min-h-0 flex flex-col rounded-4xl border backdrop-blur-2xl overflow-hidden transition-all duration-300 hover:shadow-purple-500/10 ${isDark
+                ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
+                : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+                }`}>
+                <div className={`px-6 py-4 border-b flex items-center justify-between ${isDark ? "border-slate-700/70 bg-slate-900/40" : "border-slate-100 bg-slate-50/70"}`}>
                     <div className="flex items-center gap-2">
-                        <div className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${isDark ? "bg-slate-800/80 text-slate-400 border-slate-700/50" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
-                            {output.duration < 1 ? `${(output.duration * 1000).toFixed(0)}ms` : `${output.duration.toFixed(2)}s`}
-                        </div>
-                        <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${output.status === "Success"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                            }`}>
-                            {output.status}
-                        </div>
+                        <Cpu className={`w-4 h-4 ${isDark ? "text-purple-400" : "text-purple-500"}`} />
+                        <h2 className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Output Sink</h2>
                     </div>
-                )}
-            </div>
 
-            <div className={`flex-1 p-6 relative flex flex-col min-h-0 ${isDark ? "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.05),transparent_70%)]" : "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.06),transparent_70%)]"}`}>
-                {!output && !isLoading ? (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 overflow-hidden">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border ${isDark ? "bg-slate-800/50 border-slate-700/50" : "bg-slate-100 border-slate-200"}`}>
-                            <Terminal className={`w-6 h-6 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                    {output && (
+                        <div className="flex items-center gap-2">
+                            <div className={`px-2 py-1 rounded-lg text-[10px] font-bold border ${isDark ? "bg-slate-800/80 text-slate-400 border-slate-700/50" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                                {output.duration < 1 ? `${(output.duration * 1000).toFixed(0)}ms` : `${output.duration.toFixed(2)}s`}
+                            </div>
+                            <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${output.status === "Success"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                                }`}>
+                                {output.status}
+                            </div>
                         </div>
-                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${isDark ? "text-slate-500" : "text-slate-400"}`}>Waiting for Run</p>
-                    </div>
-                ) : isLoading ? (
-                    <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-                        <div className="w-10 h-10 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.2)]" />
-                        <p className={`text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Running...</p>
-                    </div>
-                ) : (
-                    <div ref={outputRef} className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                        <div className={`flex-1 overflow-auto rounded-2xl border p-5 font-mono text-sm leading-relaxed custom-scrollbar ${isDark ? "bg-slate-950/40 border-slate-700/30 text-slate-200" : "bg-slate-50 border-slate-100 text-slate-800"}`}>
-                            {output?.stdout && (
-                                <div className="whitespace-pre-wrap selection:bg-indigo-500/30">{output.stdout}</div>
-                            )}
-                            {output?.stderr && (
-                                <div className={`whitespace-pre-wrap mt-2 p-4 rounded-xl border ${isDark ? "text-rose-400 bg-rose-500/5 border-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]" : "text-rose-600 bg-rose-50 border-rose-100"}`}>
-                                    <div className={`flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest ${isDark ? "text-rose-500/60" : "text-rose-500"}`}>
-                                        <AlertCircle className="w-3 h-3" /> Error Stream
+                    )}
+                </div>
+
+                <div className={`flex-1 p-6 relative flex flex-col min-h-0 ${isDark ? "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.05),transparent_70%)]" : "bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.06),transparent_70%)]"}`}>
+                    {!output && !isLoading ? (
+                        <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 overflow-hidden">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 border ${isDark ? "bg-slate-800/50 border-slate-700/50" : "bg-slate-100 border-slate-200"}`}>
+                                <Terminal className={`w-6 h-6 ${isDark ? "text-slate-400" : "text-slate-500"}`} />
+                            </div>
+                            <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${isDark ? "text-slate-500" : "text-slate-400"}`}>Waiting for Run</p>
+                        </div>
+                    ) : isLoading ? (
+                        <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+                            <div className="w-10 h-10 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.2)]" />
+                            <p className={`text-[10px] font-bold uppercase tracking-[0.3em] animate-pulse ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Running...</p>
+                        </div>
+                    ) : (
+                        <div ref={outputRef} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                            <div className={`flex-1 overflow-auto rounded-2xl border p-5 font-mono text-sm leading-relaxed custom-scrollbar ${isDark ? "bg-slate-950/40 border-slate-700/30 text-slate-200" : "bg-slate-50 border-slate-100 text-slate-800"}`}>
+                                {output?.stdout && (
+                                    <div className="whitespace-pre-wrap selection:bg-indigo-500/30">{output.stdout}</div>
+                                )}
+                                {output?.stderr && (
+                                    <div className={`whitespace-pre-wrap mt-2 p-4 rounded-xl border ${isDark ? "text-rose-400 bg-rose-500/5 border-rose-500/10 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]" : "text-rose-600 bg-rose-50 border-rose-100"}`}>
+                                        <div className={`flex items-center gap-2 mb-2 text-[10px] font-black uppercase tracking-widest ${isDark ? "text-rose-500/60" : "text-rose-500"}`}>
+                                            <AlertCircle className="w-3 h-3" /> Error Stream
+                                        </div>
+                                        {output.stderr}
                                     </div>
-                                    {output.stderr}
-                                </div>
-                            )}
-                            {!output?.stdout && !output?.stderr && (
-                                <div className={`italic text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>No output returned.</div>
-                            )}
+                                )}
+                                {!output?.stdout && !output?.stderr && (
+                                    <div className={`italic text-xs ${isDark ? "text-slate-500" : "text-slate-400"}`}>No output returned.</div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                <div className={`mt-4 pt-4 flex items-center justify-between opacity-50 flex-none ${isDark ? "border-t border-slate-800/50" : "border-t border-slate-100"}`}>
-                    <div className="flex items-center gap-2 font-mono text-[10px]">
-                        <span className="text-emerald-500">➜</span>
-                        <span className={isDark ? "text-slate-400" : "text-slate-500"}>{user ? "python runtime" : "login required"}</span>
+                    <div className={`mt-4 pt-4 flex items-center justify-between opacity-50 flex-none ${isDark ? "border-t border-slate-800/50" : "border-t border-slate-100"}`}>
+                        <div className="flex items-center gap-2 font-mono text-[10px]">
+                            <span className="text-emerald-500">➜</span>
+                            <span className={isDark ? "text-slate-400" : "text-slate-500"}>{user ? "python runtime" : "login required"}</span>
+                        </div>
+                        <div className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>UTF-8</div>
                     </div>
-                    <div className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>UTF-8</div>
                 </div>
             </div>
-        </div>
         )
     );
 
