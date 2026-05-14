@@ -57,6 +57,8 @@ if os.getenv("ENV") == "production" and "*" in allowed_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    # Allow Vercel preview deployments (supports both vlyxir- and code-judge- prefixes)
+    allow_origin_regex=r"https://(vlyxir|code-judge)-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["POST", "GET"], # Restrict to necessary methods
     allow_headers=["Content-Type", "Authorization"], # Restrict to necessary headers

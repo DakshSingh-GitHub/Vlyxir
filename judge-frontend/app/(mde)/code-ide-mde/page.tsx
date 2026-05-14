@@ -14,6 +14,8 @@ import ClassicIdeLayout from "./layouts/ClassicIdeLayout";
 import WideIdeLayout from "./layouts/WideIdeLayout";
 import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
+import { checkForgeLimit, recordForgeRun } from "../../lib/api/forge-limits";
+import LimitFlash from "../../../components/General/LimitFlash";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
@@ -37,6 +39,7 @@ export default function CodeTestPage() {
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
     const [selectedLayout, setSelectedLayout] = useState<IdeUiLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
+    const [showLimitFlash, setShowLimitFlash] = useState(false);
 
     const [mainContentWidth, setMainContentWidth] = useState(65); // percentage for editor
     const [secondaryContentWidth, setSecondaryContentWidth] = useState(45); // percentage for input/output in wide
@@ -288,14 +291,26 @@ export default function CodeTestPage() {
             return;
         }
         if (isLoading) return;
-        if (isMobile) {
-            setMobileTab("output");
-        }
+
         setIsLoading(true);
-        setOutput(null);
+
         try {
+            // Check forge limits
+            const limitCheck = await checkForgeLimit(user.id);
+            if (!limitCheck.allowed) {
+                setShowLimitFlash(true);
+                setIsLoading(false);
+                return;
+            }
+
+            if (isMobile) {
+                setMobileTab("output");
+            }
+            setOutput(null);
             const res = await runCode(code, input);
             setOutput(res);
+            // Record successful run
+            await recordForgeRun(user.id);
         } catch (error: unknown) {
             const err = error as Error;
             setOutput({
@@ -668,6 +683,11 @@ export default function CodeTestPage() {
                     )}
                 </>
             )}
+            
+            <LimitFlash 
+                isVisible={showLimitFlash} 
+                onClose={() => setShowLimitFlash(false)} 
+            />
         </div>
     );
 }

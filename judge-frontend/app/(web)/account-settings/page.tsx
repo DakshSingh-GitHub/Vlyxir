@@ -3,7 +3,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef, type FormEvent } from "react";
-import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
@@ -25,6 +26,7 @@ import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 import SuccessModal from "./SuccessModal";
 import AvatarActionModal from "./AvatarActionModal";
+import { checkForgeLimit, FORGE_DAILY_LIMIT } from "../../lib/api/forge-limits";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -42,6 +44,8 @@ export default function AccountSettingsPage() {
   const [successConfig, setSuccessConfig] = useState({ title: "Saved Successfully", message: "Your changes have been saved." });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [forgeUsage, setForgeUsage] = useState(0);
+  const [userRole, setUserRole] = useState("user");
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -217,6 +221,14 @@ export default function AccountSettingsPage() {
     return () => {
       mounted = false;
     };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    checkForgeLimit(user.id).then((res) => {
+      setForgeUsage(res.count || 0);
+      setUserRole(res.role || "user");
+    });
   }, [user]);
 
   const initials = useMemo(() => {
@@ -699,6 +711,42 @@ export default function AccountSettingsPage() {
                   <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Updated at</p>
                   <p className={`mt-1 text-sm ${mutedClass}`}>{formatAccountDate(profile?.updated_at)}</p>
                 </div>
+              </div>
+            </div>
+            
+            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+              <div className="mb-5 flex items-center gap-3">
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
+                  <Zap className="h-5 w-5 text-amber-500" />
+                </div>
+                <div>
+                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Daily Quota</p>
+                  <h2 className="text-lg font-bold">Forge runs</h2>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
+                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/${FORGE_DAILY_LIMIT}`}</span>
+                </div>
+                {userRole !== 'super' ? (
+                  <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, (forgeUsage / FORGE_DAILY_LIMIT) * 100)}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                      className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-2 w-full rounded-full bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]" />
+                )}
+                <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
+                  {userRole === 'super' 
+                    ? "You have granted unlimited access to Vlyxir Forge. Happy coding, Daksh." 
+                    : `Your daily quota of ${FORGE_DAILY_LIMIT} runs resets every day at 00:00 UTC.`}
+                </p>
               </div>
             </div>
 
