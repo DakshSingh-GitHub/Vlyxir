@@ -133,7 +133,7 @@ export default function Home() {
                     <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-indigo-400/40 rounded-full blur-[2px] animate-pulse" style={{ animationDelay: '1s' }} />
                     <div className="absolute bottom-1/3 right-1/2 w-1 h-1 bg-purple-400/30 rounded-full blur-[1px] animate-pulse" style={{ animationDelay: '2s' }} />
 
-                    <div className="flex flex-col items-start text-left z-10 lg:-translate-x-8">
+                    <div className="flex flex-col items-center text-center lg:items-start lg:text-left z-10 lg:-translate-x-8">
                         <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                             <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Next-Gen Platform</span>
@@ -151,7 +151,7 @@ export default function Home() {
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-sm md:text-base text-slate-400 max-w-lg mb-8 font-medium leading-relaxed"
+                            className="text-sm md:text-base text-slate-400 max-w-lg mx-auto lg:mx-0 mb-8 font-medium leading-relaxed"
                         >
                             VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
                         </motion.p>
@@ -175,7 +175,7 @@ export default function Home() {
                             ))}
                         </motion.div>
 
-                        <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-5">
+                        <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center lg:justify-start gap-5">
                             <Link
                                 href={codeJudgePath}
                                 className="px-10 py-4 bg-indigo-600 text-white rounded-xl font-bold text-base shadow-xl shadow-indigo-600/25 hover:bg-indigo-500 transition-all duration-300 hover:scale-[1.02] active:scale-95"
