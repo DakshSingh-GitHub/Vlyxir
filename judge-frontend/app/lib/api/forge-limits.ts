@@ -1,5 +1,7 @@
 import { supabase } from "./supabase/client";
 
+export const FORGE_DAILY_LIMIT = 10;
+
 export async function checkForgeLimit(userId: string) {
     try {
         // 1. Get user role from profiles
@@ -37,7 +39,7 @@ export async function checkForgeLimit(userId: string) {
             return { allowed: true, role }; // Allow on error
         }
 
-        if (count !== null && count >= 10) {
+        if (count !== null && count >= FORGE_DAILY_LIMIT) {
             return { allowed: false, count, role };
         }
 

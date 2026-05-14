@@ -292,19 +292,21 @@ export default function CodeTestPage() {
         }
         if (isLoading) return;
 
-        // Check forge limits
-        const limitCheck = await checkForgeLimit(user.id);
-        if (!limitCheck.allowed) {
-            setShowLimitFlash(true);
-            return;
-        }
-
-        if (isMobile) {
-            setMobileTab("output");
-        }
         setIsLoading(true);
-        setOutput(null);
+
         try {
+            // Check forge limits
+            const limitCheck = await checkForgeLimit(user.id);
+            if (!limitCheck.allowed) {
+                setShowLimitFlash(true);
+                setIsLoading(false);
+                return;
+            }
+
+            if (isMobile) {
+                setMobileTab("output");
+            }
+            setOutput(null);
             const res = await runCode(code, input);
             setOutput(res);
             // Record successful run

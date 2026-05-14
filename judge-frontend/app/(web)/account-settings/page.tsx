@@ -26,7 +26,7 @@ import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 import SuccessModal from "./SuccessModal";
 import AvatarActionModal from "./AvatarActionModal";
-import { checkForgeLimit } from "../../lib/api/forge-limits";
+import { checkForgeLimit, FORGE_DAILY_LIMIT } from "../../lib/api/forge-limits";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -728,13 +728,13 @@ export default function AccountSettingsPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
-                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/10`}</span>
+                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/${FORGE_DAILY_LIMIT}`}</span>
                 </div>
                 {userRole !== 'super' ? (
                   <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (forgeUsage / 10) * 100)}%` }}
+                      animate={{ width: `${Math.min(100, (forgeUsage / FORGE_DAILY_LIMIT) * 100)}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
                       className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
                     />
@@ -745,7 +745,7 @@ export default function AccountSettingsPage() {
                 <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
                   {userRole === 'super' 
                     ? "You have granted unlimited access to Vlyxir Forge. Happy coding, Daksh." 
-                    : "Your daily quota of 10 runs resets every day at 00:00 UTC."}
+                    : `Your daily quota of ${FORGE_DAILY_LIMIT} runs resets every day at 00:00 UTC.`}
                 </p>
               </div>
             </div>
