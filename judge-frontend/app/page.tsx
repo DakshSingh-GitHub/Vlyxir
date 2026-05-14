@@ -40,6 +40,33 @@ export default function Home() {
         { icon: <Cpu className="w-6 h-6" />, title: "Python Optimized", description: "Currently optimized for Python, with seamless execution and instant feedback." }
     ];
 
+    const pillars = [
+        {
+            title: "Vlyxir Arena",
+            description: "Step into the ultimate competitive coding environment. Solve challenges, climb the leaderboards, and master your algorithmic skills with real-time feedback.",
+            buttonText: "Enter the Arena",
+            href: codeJudgePath,
+            image: "/promo/arena.png",
+            reverse: false
+        },
+        {
+            title: "Vlyxir Forge",
+            description: "The powerful IDE built for creation. Prototype your ideas, build projects, and write code in a professional-grade editor with multi-language support.",
+            buttonText: "Start Forging",
+            href: "/code-ide",
+            image: "/promo/forge.png",
+            reverse: true
+        },
+        {
+            title: "Vlyxir Insights",
+            description: "Deep-dive into your code's performance. Our AI-driven analysis helps you understand complexity, identify bottlenecks, and learn how to optimize every line.",
+            buttonText: "Get Insights",
+            href: "/code-analysis",
+            image: "/promo/insights.png",
+            reverse: false
+        }
+    ];
+
     const shellClassName = isDark
         ? "relative flex flex-col min-h-0 flex-1 overflow-y-auto overflow-x-hidden text-slate-100 font-sans selection:bg-indigo-500/30"
         : "relative flex flex-col min-h-0 flex-1 overflow-y-auto overflow-x-hidden text-slate-900 font-sans selection:bg-indigo-500/20";
@@ -318,6 +345,94 @@ export default function Home() {
                             </div>
                         </motion.div>
                     </Link>
+                </motion.section>
+
+                {/* Section for Vlyxir pillars - Arena, Forge, Insights */}
+                <motion.section
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="flex flex-col gap-32 mb-40"
+                >
+                    <motion.div variants={itemVariants} className="text-center">
+                        <h2 className={sectionHeadingClassName}>Pillars of Vlyxir</h2>
+                        <p className={sectionSubheadingClassName}>Discover the core components of our ecosystem.</p>
+                    </motion.div>
+
+                    {pillars.map((pillar, idx) => (
+                        <div key={idx} className={`flex flex-col ${pillar.reverse ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-10 lg:gap-24`}>
+                            <div className="flex-1 text-left flex flex-col">
+                                <motion.h3 
+                                    variants={itemVariants}
+                                    className={`text-3xl md:text-5xl font-black mb-6 ${isDark ? "text-white" : "text-slate-900"}`}
+                                >
+                                    {pillar.title}
+                                </motion.h3>
+                                <motion.p 
+                                    variants={itemVariants}
+                                    className={`text-lg md:text-xl ${isDark ? "text-slate-400" : "text-slate-600"} mb-8 lg:mb-10 leading-relaxed max-w-xl`}
+                                >
+                                    {pillar.description}
+                                </motion.p>
+                                
+                                <div className="hidden lg:block mt-auto">
+                                    <motion.div variants={itemVariants}>
+                                        <Link
+                                            href={pillar.href}
+                                            className={`inline-flex items-center gap-2 px-8 py-4 ${isDark ? "bg-indigo-600 hover:bg-indigo-500" : "bg-indigo-600 hover:bg-indigo-700"} text-white rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.05] shadow-xl shadow-indigo-600/20`}
+                                        >
+                                            {pillar.buttonText} <ArrowRight className="w-5 h-5" />
+                                        </Link>
+                                    </motion.div>
+                                </div>
+                            </div>
+
+                            <motion.div
+                                variants={itemVariants}
+                                className="flex-1 w-full"
+                                style={{ perspective: '2000px' }}
+                            >
+                                <motion.div
+                                    initial={{ rotateX: 2, rotateY: pillar.reverse ? 15 : -15, x: 0, y: 0 }}
+                                    whileInView={{ rotateX: 2, rotateY: pillar.reverse ? 15 : -15, x: 0, y: 0 }}
+                                    whileHover={{
+                                        rotateX: 0,
+                                        rotateY: 0,
+                                        y: 0,
+                                        x: 0,
+                                        scale: 1.02,
+                                    }}
+                                    transition={{
+                                        duration: 0.6,
+                                        ease: "easeOut"
+                                    }}
+                                    className="relative group"
+                                >
+                                    <div className="absolute -inset-1 bg-linear-to-tr from-white/20 via-white/5 to-transparent rounded-[2rem] blur-[2px] -z-10" />
+                                    <div className="relative rounded-[1.8rem] border border-white/10 overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.4)] bg-slate-950/50 backdrop-blur-sm">
+                                        <Image
+                                            src={pillar.image}
+                                            alt={pillar.title}
+                                            width={1000}
+                                            height={600}
+                                            className="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-linear-to-tr from-white/0 via-white/[0.05] to-white/0 pointer-events-none" />
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+
+                            <motion.div variants={itemVariants} className="w-full lg:hidden">
+                                <Link
+                                    href={pillar.href}
+                                    className={`inline-flex items-center justify-center gap-2 px-8 py-4 w-full ${isDark ? "bg-indigo-600 hover:bg-indigo-500" : "bg-indigo-600 hover:bg-indigo-700"} text-white rounded-xl font-bold text-lg transition-all duration-300 active:scale-95 shadow-xl shadow-indigo-600/20`}
+                                >
+                                    {pillar.buttonText} <ArrowRight className="w-5 h-5" />
+                                </Link>
+                            </motion.div>
+                        </div>
+                    ))}
                 </motion.section>
 
                 {/* Features Grid */}
