@@ -58,7 +58,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     # Allow Vercel preview deployments (e.g., https://vlyxir-git-branch.vercel.app)
-    allow_origin_regex=r"https://vlyxir-.*\.vercel\.app",
+    allow_origin_regex=r"https://code-judge-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["POST", "GET"], # Restrict to necessary methods
     allow_headers=["Content-Type", "Authorization"], # Restrict to necessary headers
