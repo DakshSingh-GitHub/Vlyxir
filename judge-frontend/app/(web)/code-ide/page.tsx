@@ -13,6 +13,8 @@ import ClassicIdeLayout from "./layouts/ClassicIdeLayout";
 import WideIdeLayout from "./layouts/WideIdeLayout";
 import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
+import { checkForgeLimit, recordForgeRun } from "../../lib/api/forge-limits";
+import LimitFlash from "../../../components/General/LimitFlash";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
@@ -36,6 +38,7 @@ export default function CodeTestPage() {
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
     const [selectedLayout, setSelectedLayout] = useState<IdeUiLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
+    const [showLimitFlash, setShowLimitFlash] = useState(false);
 
     const mainContentRef = useRef<HTMLDivElement>(null);
     const outputRef = useRef<HTMLDivElement>(null);
@@ -188,6 +191,14 @@ export default function CodeTestPage() {
             return;
         }
         if (isLoading) return;
+
+        // Check forge limits
+        const limitCheck = await checkForgeLimit(user.id);
+        if (!limitCheck.allowed) {
+            setShowLimitFlash(true);
+            return;
+        }
+
         if (isMobile) {
             setMobileTab("output");
         }
@@ -196,6 +207,8 @@ export default function CodeTestPage() {
         try {
             const res = await runCode(code, input);
             setOutput(res);
+            // Record successful run
+            await recordForgeRun(user.id);
         } catch (error: unknown) {
             const err = error as Error;
             setOutput({
@@ -503,6 +516,11 @@ export default function CodeTestPage() {
                     </div>
                 </div>
             )}
+            
+            <LimitFlash 
+                isVisible={showLimitFlash} 
+                onClose={() => setShowLimitFlash(false)} 
+            />
         </div>
     );
 }
