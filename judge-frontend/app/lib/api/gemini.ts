@@ -1,7 +1,7 @@
 import "server-only";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { CodeAnalysisResult } from "./ai-types";
-import { parseAnalysisResult, ANALYSIS_PROMPT } from "./ai-utils";
+import { parseAnalysisResult, getAnalysisPrompt } from "./ai-utils";
 
 function getGeminiClient() {
     const apiKey = process.env.GOOGLE_API_KEY;
@@ -13,10 +13,10 @@ function getGeminiClient() {
     return new GoogleGenerativeAI(apiKey);
 }
 
-export async function analyzeCodeWithGemini(code: string): Promise<CodeAnalysisResult> {
+export async function analyzeCodeWithGemini(code: string, tier: number): Promise<CodeAnalysisResult> {
     const genAI = getGeminiClient();
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-    const prompt = ANALYSIS_PROMPT + code.trim();
+    const prompt = getAnalysisPrompt(tier) + code.trim();
 
     try {
         const result = await model.generateContent(prompt);

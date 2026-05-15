@@ -48,6 +48,8 @@ interface AnalysisResult {
         findings: AnalysisFinding[];
     };
     suggestions: string[];
+    improvementRoadmap?: string[];
+    recommendedCode?: string;
 }
 
 interface AnalysisRecord {
@@ -746,29 +748,59 @@ export default function CodeAnalysisPage() {
                                                 isDark={isDark}
                                             />
 
-                                            <AnalysisSection
-                                                icon={Shield}
-                                                title="Security Audit"
-                                                overview={analysisResult.security.overview}
-                                                findings={analysisResult.security.findings}
-                                                color="rose"
-                                                isDark={isDark}
-                                            />
+                                            {tier >= 3 && (
+                                                <>
+                                                    <AnalysisSection
+                                                        icon={Shield}
+                                                        title="Security Audit"
+                                                        overview={analysisResult.security.overview}
+                                                        findings={analysisResult.security.findings}
+                                                        color="rose"
+                                                        isDark={isDark}
+                                                    />
 
-                                            <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-emerald-500/20 bg-emerald-500/5" : "border-emerald-200 bg-emerald-50/70"}`}>
-                                                <div className="flex items-center gap-2 mb-4">
-                                                    <Sparkles className={`w-4 h-4 ${isDark ? "text-emerald-400" : "text-emerald-600"}`} />
-                                                    <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>Improvement Roadmap</h3>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    {analysisResult.suggestions.map((suggestion, idx) => (
-                                                        <div key={idx} className={`flex gap-3 text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                                                            <span className="flex-none w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-[10px] border border-emerald-500/20">{idx + 1}</span>
-                                                            <p className="leading-relaxed">{suggestion}</p>
+                                                    {analysisResult.recommendedCode && (
+                                                        <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-blue-500/20 bg-blue-500/5 shadow-[inset_0_0_30px_rgba(59,130,246,0.05)]" : "border-blue-200 bg-blue-50/70"}`}>
+                                                            <div className="flex items-center justify-between gap-3 mb-4">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Code2 className={`w-4 h-4 ${isDark ? "text-blue-400" : "text-blue-600"}`} />
+                                                                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-blue-400" : "text-blue-600"}`}>Recommended Reference Code</p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => setCode(analysisResult.recommendedCode || "")}
+                                                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${isDark ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:brightness-110" : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"} active:scale-95`}
+                                                                >
+                                                                    Apply to editor
+                                                                </button>
+                                                            </div>
+                                                            <div className={`rounded-2xl border ${isDark ? "border-blue-500/10 bg-slate-950/50" : "border-blue-100 bg-white/50"} overflow-hidden shadow-inner`}>
+                                                                <pre className={`p-4 text-xs font-mono whitespace-pre-wrap break-words custom-scrollbar ${isDark ? "text-blue-100" : "text-blue-900"}`}>
+                                                                    {analysisResult.recommendedCode}
+                                                                </pre>
+                                                            </div>
                                                         </div>
-                                                    ))}
-                                                </div>
-                                            </div>
+                                                    )}
+
+                                                    <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-emerald-500/20 bg-emerald-500/5" : "border-emerald-200 bg-emerald-50/70"}`}>
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                            <Construction className={`w-4 h-4 ${isDark ? "text-emerald-400" : "text-emerald-600"}`} />
+                                                            <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-emerald-400" : "text-emerald-600"}`}>Improvement Roadmap</h3>
+                                                        </div>
+                                                        <div className="space-y-3">
+                                                            {analysisResult.improvementRoadmap && analysisResult.improvementRoadmap.length > 0 ? (
+                                                                analysisResult.improvementRoadmap.map((step, idx) => (
+                                                                    <div key={idx} className={`flex gap-3 text-sm font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                                                                        <span className="flex-none w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-[10px] border border-emerald-500/20">{idx + 1}</span>
+                                                                        <p className="leading-relaxed">{step}</p>
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <p className={`text-xs font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>No roadmap steps provided.</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40">

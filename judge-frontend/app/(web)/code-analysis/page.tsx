@@ -47,6 +47,8 @@ interface AnalysisResult {
         findings: AnalysisFinding[];
     };
     suggestions: string[];
+    improvementRoadmap?: string[];
+    recommendedCode?: string;
 }
 
 interface AnalysisRecord {
@@ -574,31 +576,62 @@ export default function CodeAnalysisPage() {
                                         color="cyan"
                                     />
 
-                                    <AnalysisSection
-                                        icon={Shield}
-                                        title="Security Vulnerabilities"
-                                        overview={analysisResult.security.overview}
-                                        findings={analysisResult.security.findings}
-                                        color="rose"
-                                    />
+                                    {tier >= 3 && (
+                                        <>
+                                            <AnalysisSection
+                                                icon={Shield}
+                                                title="Security Vulnerabilities"
+                                                overview={analysisResult.security.overview}
+                                                findings={analysisResult.security.findings}
+                                                color="rose"
+                                            />
 
-                                    <div className="p-5 rounded-2xl border border-emerald-200/50 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-900/20">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Suggestions</h3>
-                                        </div>
-                                        {analysisResult.suggestions.length > 0 ? (
-                                            <div className="space-y-2">
-                                                {analysisResult.suggestions.map((suggestion, idx) => (
-                                                    <p key={idx} className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                                                        {idx + 1}. {suggestion}
-                                                    </p>
-                                                ))}
+                                            {analysisResult.recommendedCode && (
+                                                <div className="p-5 rounded-2xl border border-blue-200/50 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20">
+                                                    <div className="flex items-center justify-between gap-3 mb-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <Code2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Recommended Code</h3>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => setCode(analysisResult.recommendedCode || "")}
+                                                            className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all active:scale-95"
+                                                        >
+                                                            Apply to editor
+                                                        </button>
+                                                    </div>
+                                                    <div className="rounded-xl overflow-hidden border border-blue-200 dark:border-blue-800 shadow-sm">
+                                                        <pre className="p-4 text-sm font-mono text-gray-800 dark:text-gray-200 bg-white/50 dark:bg-gray-950/50 overflow-x-auto custom-scrollbar">
+                                                            {analysisResult.recommendedCode}
+                                                        </pre>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="p-5 rounded-2xl border border-emerald-200/50 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-900/20">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <Construction className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Improvement Roadmap</h3>
+                                                </div>
+                                                {analysisResult.improvementRoadmap && analysisResult.improvementRoadmap.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {analysisResult.improvementRoadmap.map((step, idx) => (
+                                                            <div key={idx} className="flex gap-3">
+                                                                <span className="flex-none w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-xs font-bold border border-emerald-200 dark:border-emerald-800">
+                                                                    {idx + 1}
+                                                                </span>
+                                                                <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+                                                                    {step}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-base text-gray-600 dark:text-gray-300">No roadmap steps provided.</p>
+                                                )}
                                             </div>
-                                        ) : (
-                                            <p className="text-base text-gray-600 dark:text-gray-300">No additional suggestions.</p>
-                                        )}
-                                    </div>
+                                        </>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">

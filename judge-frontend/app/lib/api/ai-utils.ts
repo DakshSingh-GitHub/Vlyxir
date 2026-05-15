@@ -55,19 +55,30 @@ export function parseAnalysisResult(raw: string): CodeAnalysisResult {
                 suggestion: f.suggestion || ""
             }))
         },
-        suggestions: (data.suggestions || []).filter((item): item is string => typeof item === "string")
+        suggestions: (data.suggestions || []).filter((item): item is string => typeof item === "string"),
+        improvementRoadmap: (data.improvementRoadmap || []).filter((item): item is string => typeof item === "string"),
+        recommendedCode: data.recommendedCode || ""
     };
 }
 
-export const ANALYSIS_PROMPT = `
-Return ONLY minified JSON (no markdown) for code review:
-{
- "summary":"...",
- "complexity":{"time":"O(?)","space":"O(?)","explanation":"..."},
- "staticAnalysis":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]},
- "security":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]},
- "suggestions":["..."]
-}
+export function getAnalysisPrompt(tier: number): string {
+    let jsonStructure = `{
+  "summary":"...",
+  "complexity":{"time":"O(?)","space":"O(?)","explanation":"..."},
+  "staticAnalysis":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]}`;
+
+    if (tier >= 3) {
+        jsonStructure += `,
+  "security":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]},
+  "improvementRoadmap":["..."],
+  "recommendedCode":"..."`;
+    }
+
+    jsonStructure += `\n}`;
+
+    return `Return ONLY minified JSON (no markdown) for code review:
+${jsonStructure}
 Rules: concise, actionable; infer only from code; use [] for no findings.
 Code:
 `;
+}

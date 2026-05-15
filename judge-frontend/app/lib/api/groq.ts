@@ -1,7 +1,7 @@
 import "server-only";
 import Groq from "groq-sdk";
 import { CodeAnalysisResult } from "./ai-types";
-import { parseAnalysisResult, ANALYSIS_PROMPT } from "./ai-utils";
+import { parseAnalysisResult, getAnalysisPrompt } from "./ai-utils";
 
 function getGroqClient() {
     const apiKey = process.env.GROQ_API_KEY;
@@ -13,9 +13,9 @@ function getGroqClient() {
     return new Groq({ apiKey });
 }
 
-export async function analyzeCodeWithGroq(code: string): Promise<CodeAnalysisResult> {
+export async function analyzeCodeWithGroq(code: string, tier: number): Promise<CodeAnalysisResult> {
     const groq = getGroqClient();
-    const prompt = ANALYSIS_PROMPT + code.trim();
+    const prompt = getAnalysisPrompt(tier) + code.trim();
 
     const completion = await groq.chat.completions.create({
         model: "qwen/qwen3-32b",

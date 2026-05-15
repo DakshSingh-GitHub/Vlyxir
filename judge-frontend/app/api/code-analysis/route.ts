@@ -35,6 +35,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ ok: false, error: "Pro subscription required." }, { status: 403 });
         }
 
+        // Fetch user tier
+        const { data: tierData } = await supabase
+            .from('user_tiers')
+            .select('tier')
+            .eq('user_id', user.id)
+            .single();
+        
+        const tier = tierData?.tier || 1;
+
         const body = await request.json();
         const code = typeof body?.code === "string" ? body.code.trim() : "";
         const provider = (body?.provider as AIProvider) || "groq";
@@ -48,9 +57,9 @@ export async function POST(request: Request) {
 
         let analysis;
         if (provider === "gemini") {
-            analysis = await analyzeCodeWithGemini(code);
+            analysis = await analyzeCodeWithGemini(code, tier);
         } else {
-            analysis = await analyzeCodeWithGroq(code);
+            analysis = await analyzeCodeWithGroq(code, tier);
         }
 
         return NextResponse.json({ ok: true, analysis });
