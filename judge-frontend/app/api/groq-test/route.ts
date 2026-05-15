@@ -5,8 +5,9 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const code = searchParams.get("code") || "def add(a, b):\n    return a + b";
+        const tier = parseInt(searchParams.get("tier") || "1");
 
-        const analysis = await analyzeCodeWithGroq(code);
+        const analysis = await analyzeCodeWithGroq(code, tier);
         return NextResponse.json({
             ok: true,
             analysis
