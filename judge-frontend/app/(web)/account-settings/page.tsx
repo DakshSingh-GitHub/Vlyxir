@@ -26,7 +26,7 @@ import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 import SuccessModal from "./SuccessModal";
 import AvatarActionModal from "./AvatarActionModal";
-import { checkForgeLimit, FORGE_DAILY_LIMIT } from "../../lib/api/forge-limits";
+import { checkForgeLimit, FORGE_FREE_LIMIT } from "../../lib/api/forge-limits";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -46,6 +46,7 @@ export default function AccountSettingsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [forgeUsage, setForgeUsage] = useState(0);
   const [userRole, setUserRole] = useState("user");
+  const [forgeLimit, setForgeLimit] = useState(FORGE_FREE_LIMIT);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -228,6 +229,7 @@ export default function AccountSettingsPage() {
     checkForgeLimit(user.id).then((res) => {
       setForgeUsage(res.count || 0);
       setUserRole(res.role || "user");
+      setForgeLimit(res.limit || FORGE_FREE_LIMIT);
     });
   }, [user]);
 
@@ -728,13 +730,13 @@ export default function AccountSettingsPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
-                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/${FORGE_DAILY_LIMIT}`}</span>
+                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/${forgeLimit}`}</span>
                 </div>
                 {userRole !== 'super' ? (
                   <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
                     <motion.div
                       initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (forgeUsage / FORGE_DAILY_LIMIT) * 100)}%` }}
+                      animate={{ width: `${Math.min(100, (forgeUsage / forgeLimit) * 100)}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
                       className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
                     />
@@ -745,7 +747,7 @@ export default function AccountSettingsPage() {
                 <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
                   {userRole === 'super' 
                     ? "You have granted unlimited access to Vlyxir Forge. Happy coding, Daksh." 
-                    : `Your daily quota of ${FORGE_DAILY_LIMIT} runs resets every day at 00:00 UTC.`}
+                    : `Your daily quota of ${forgeLimit} runs resets every day at 00:00 UTC.`}
                 </p>
               </div>
             </div>

@@ -1,30 +1,56 @@
 import { supabase } from "./supabase/client";
 
-export const FORGE_DAILY_LIMIT = 10;
+export const FORGE_FREE_LIMIT = 10;
+export const FORGE_PRO_TIER1_LIMIT = 25;
+export const FORGE_PRO_TIER2_LIMIT = 40;
+export const FORGE_PRO_TIER3_LIMIT = 100;
 
 export async function checkForgeLimit(userId: string) {
     try {
-        // 1. Get user role from profiles
+        // 1. Get user plan and role from profiles
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, plan')
             .eq('id', userId)
             .single();
 
         if (profileError) {
-            console.error("Error fetching profile role:", profileError);
-            // Default to allowed if we can't fetch profile to avoid blocking users
-            return { allowed: true, role: 'user' };
+            console.error("Error fetching profile role/plan:", profileError);
+            return { allowed: true, role: 'user', plan: 'free', limit: FORGE_FREE_LIMIT };
         }
 
         const role = profile?.role || 'user';
+        const plan = profile?.plan || 'free';
 
         // 2. If super, they are unlimited
         if (role === 'super') {
-            return { allowed: true, role: 'super' };
+            return { allowed: true, role: 'super', plan, limit: Infinity };
         }
 
-        // 3. Count today's runs (UTC)
+        // 3. Determine limit based on plan and tier
+        let dailyLimit = FORGE_FREE_LIMIT;
+
+        if (plan === 'pro') {
+            const { data: tierData, error: tierError } = await supabase
+                .from('user_tiers')
+                .select('tier')
+                .eq('user_id', userId)
+                .single();
+
+            if (tierError) {
+                if (tierError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                    console.error("Error fetching user tier:", tierError);
+                }
+                dailyLimit = FORGE_PRO_TIER1_LIMIT; // Default to tier 1 for pro
+            } else {
+                const tier = tierData?.tier || 1;
+                if (tier === 1) dailyLimit = FORGE_PRO_TIER1_LIMIT;
+                else if (tier === 2) dailyLimit = FORGE_PRO_TIER2_LIMIT;
+                else if (tier === 3) dailyLimit = FORGE_PRO_TIER3_LIMIT;
+            }
+        }
+
+        // 4. Count today's runs (UTC)
         const today = new Date();
         today.setUTCHours(0, 0, 0, 0);
         
@@ -36,17 +62,18 @@ export async function checkForgeLimit(userId: string) {
 
         if (error) {
             console.error("Error checking forge limit:", error);
-            return { allowed: true, role }; // Allow on error
+            return { allowed: true, role, plan, limit: dailyLimit };
         }
 
-        if (count !== null && count >= FORGE_DAILY_LIMIT) {
-            return { allowed: false, count, role };
+        const runCount = count || 0;
+        if (runCount >= dailyLimit) {
+            return { allowed: false, count: runCount, role, plan, limit: dailyLimit };
         }
 
-        return { allowed: true, count: count || 0, role };
+        return { allowed: true, count: runCount, role, plan, limit: dailyLimit };
     } catch (err) {
         console.error("Unexpected error in checkForgeLimit:", err);
-        return { allowed: true, role: 'user' };
+        return { allowed: true, role: 'user', plan: 'free', limit: FORGE_FREE_LIMIT };
     }
 }
 
