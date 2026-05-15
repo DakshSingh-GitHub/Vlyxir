@@ -5,6 +5,11 @@ export const FORGE_PRO_TIER1_LIMIT = 25;
 export const FORGE_PRO_TIER2_LIMIT = 40;
 export const FORGE_PRO_TIER3_LIMIT = 100;
 
+export const AI_FREE_LIMIT = 0;
+export const AI_PRO_TIER1_LIMIT = 0;
+export const AI_PRO_TIER2_LIMIT = 10;
+export const AI_PRO_TIER3_LIMIT = 20;
+
 export async function checkForgeLimit(userId: string) {
     try {
         // 1. Get user plan and role from profiles
@@ -16,7 +21,14 @@ export async function checkForgeLimit(userId: string) {
 
         if (profileError) {
             console.error("Error fetching profile role/plan:", profileError);
-            return { allowed: true, role: 'user', plan: 'free', limit: FORGE_FREE_LIMIT };
+            return { 
+                allowed: true, 
+                role: 'user', 
+                plan: 'free', 
+                tier: 0,
+                limit: FORGE_FREE_LIMIT,
+                aiLimit: AI_FREE_LIMIT 
+            };
         }
 
         const role = profile?.role || 'user';
@@ -24,11 +36,20 @@ export async function checkForgeLimit(userId: string) {
 
         // 2. If super, they are unlimited
         if (role === 'super') {
-            return { allowed: true, role: 'super', plan, limit: Infinity };
+            return { 
+                allowed: true, 
+                role: 'super', 
+                plan, 
+                tier: 3, 
+                limit: Infinity, 
+                aiLimit: Infinity 
+            };
         }
 
         // 3. Determine limit based on plan and tier
         let dailyLimit = FORGE_FREE_LIMIT;
+        let aiLimit = AI_FREE_LIMIT;
+        let tier = 0;
 
         if (plan === 'pro') {
             const { data: tierData, error: tierError } = await supabase
@@ -38,15 +59,24 @@ export async function checkForgeLimit(userId: string) {
                 .single();
 
             if (tierError) {
-                if (tierError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                if (tierError.code !== 'PGRST116') {
                     console.error("Error fetching user tier:", tierError);
                 }
-                dailyLimit = FORGE_PRO_TIER1_LIMIT; // Default to tier 1 for pro
+                tier = 1; // Default to tier 1 for pro
+                dailyLimit = FORGE_PRO_TIER1_LIMIT;
+                aiLimit = AI_PRO_TIER1_LIMIT;
             } else {
-                const tier = tierData?.tier || 1;
-                if (tier === 1) dailyLimit = FORGE_PRO_TIER1_LIMIT;
-                else if (tier === 2) dailyLimit = FORGE_PRO_TIER2_LIMIT;
-                else if (tier === 3) dailyLimit = FORGE_PRO_TIER3_LIMIT;
+                tier = tierData?.tier || 1;
+                if (tier === 1) {
+                    dailyLimit = FORGE_PRO_TIER1_LIMIT;
+                    aiLimit = AI_PRO_TIER1_LIMIT;
+                } else if (tier === 2) {
+                    dailyLimit = FORGE_PRO_TIER2_LIMIT;
+                    aiLimit = AI_PRO_TIER2_LIMIT;
+                } else if (tier === 3) {
+                    dailyLimit = FORGE_PRO_TIER3_LIMIT;
+                    aiLimit = AI_PRO_TIER3_LIMIT;
+                }
             }
         }
 
@@ -62,18 +92,18 @@ export async function checkForgeLimit(userId: string) {
 
         if (error) {
             console.error("Error checking forge limit:", error);
-            return { allowed: true, role, plan, limit: dailyLimit };
+            return { allowed: true, role, plan, tier, limit: dailyLimit, aiLimit };
         }
 
         const runCount = count || 0;
         if (runCount >= dailyLimit) {
-            return { allowed: false, count: runCount, role, plan, limit: dailyLimit };
+            return { allowed: false, count: runCount, role, plan, tier, limit: dailyLimit, aiLimit };
         }
 
-        return { allowed: true, count: runCount, role, plan, limit: dailyLimit };
+        return { allowed: true, count: runCount, role, plan, tier, limit: dailyLimit, aiLimit };
     } catch (err) {
         console.error("Unexpected error in checkForgeLimit:", err);
-        return { allowed: true, role: 'user', plan: 'free', limit: FORGE_FREE_LIMIT };
+        return { allowed: true, role: 'user', plan: 'free', tier: 0, limit: FORGE_FREE_LIMIT, aiLimit: AI_FREE_LIMIT };
     }
 }
 
