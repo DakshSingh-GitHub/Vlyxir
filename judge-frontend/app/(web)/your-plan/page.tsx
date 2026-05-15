@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../lib/auth/auth-context";
-import { checkForgeLimit } from "../../lib/api/forge-limits";
+import { checkForgeLimit, checkAiLimit } from "../../lib/api/forge-limits";
 
 interface PlanDetails {
     plan: string;
@@ -26,6 +26,7 @@ interface PlanDetails {
     limit: number;
     aiLimit: number;
     count: number;
+    aiCount: number;
 }
 
 export default function YourPlanPage() {
@@ -37,13 +38,18 @@ export default function YourPlanPage() {
     useEffect(() => {
         async function fetchPlan() {
             if (user) {
-                const details = await checkForgeLimit(user.id);
+                const [details, aiDetails] = await Promise.all([
+                    checkForgeLimit(user.id),
+                    checkAiLimit(user.id)
+                ]);
+                
                 setPlanDetails({
                     plan: details.plan || 'free',
                     tier: details.tier || 0,
                     limit: details.limit,
                     aiLimit: details.aiLimit,
-                    count: details.count || 0
+                    count: details.count || 0,
+                    aiCount: aiDetails.count || 0
                 });
                 setLoading(false);
             } else if (!authLoading) {
@@ -87,6 +93,9 @@ export default function YourPlanPage() {
     const isPro = planDetails?.plan === 'pro';
     const tierName = planDetails?.tier === 3 ? "Tier 3" : planDetails?.tier === 2 ? "Tier 2" : "Tier 1";
     const forgeUsagePercent = planDetails ? Math.min((planDetails.count / planDetails.limit) * 100, 100) : 0;
+    const aiUsagePercent = planDetails && planDetails.aiLimit > 0 
+        ? Math.min((planDetails.aiCount / planDetails.aiLimit) * 100, 100) 
+        : 0;
 
     return (
         <div className="min-h-screen w-full bg-[#0B0C15] text-white p-4 sm:p-8 lg:p-12 relative overflow-hidden">
@@ -188,13 +197,13 @@ export default function YourPlanPage() {
                                         </div>
                                         <div>
                                             <h3 className="text-xl font-black">Vlyxir Insights</h3>
-                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Monthly structural reports</p>
+                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Daily structural reports</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         {planDetails?.aiLimit && planDetails.aiLimit > 0 ? (
                                             <>
-                                                <span className="text-2xl font-black">0</span>
+                                                <span className="text-2xl font-black">{planDetails.aiCount}</span>
                                                 <span className="text-slate-500 text-sm font-bold"> / {planDetails.aiLimit === Infinity ? "∞" : planDetails.aiLimit}</span>
                                             </>
                                         ) : (
@@ -210,7 +219,7 @@ export default function YourPlanPage() {
                                         <div className="h-4 w-full bg-slate-800/50 rounded-full overflow-hidden border border-white/5 mb-6">
                                             <motion.div 
                                                 initial={{ width: 0 }}
-                                                animate={{ width: "0%" }}
+                                                animate={{ width: `${aiUsagePercent}%` }}
                                                 className="h-full bg-linear-to-r from-purple-500 via-indigo-500 to-purple-400 rounded-full"
                                             />
                                         </div>

@@ -60,7 +60,7 @@ const TIERS = [
         aiInsights: 10,
         features: [
             "Higher Execution Quota",
-            "10 Monthly AI Insights",
+            "10 Daily AI Insights",
             "Code Complexity Analysis",
             "Early Access Features"
         ],
@@ -77,7 +77,7 @@ const TIERS = [
         aiInsights: 20,
         features: [
             "Maximum Forge Quota",
-            "20 Monthly AI Insights",
+            "20 Daily AI Insights",
             "Direct Technical Support"
         ],
         icon: Crown,
@@ -90,7 +90,7 @@ const COMPARISON_FEATURES = [
     { name: "Vlyxir Forge", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Forge Submissions / day", free: "10", tier1: "25", tier2: "40", tier3: "100" },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },
-    { name: "AI Insights / month", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
+    { name: "AI Insights / day", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
     { name: "Priority Support", free: false, tier1: false, tier2: true, tier3: true },
 ];
 
@@ -291,7 +291,7 @@ export default function UpgradeTiersPage() {
                             What are AI Insights?
                         </h3>
                         <p className="text-slate-400 leading-relaxed">
-                            AI Insights provide deep structural and security analysis of your code. Using advanced models, Vlyxir helps you find bugs, optimize performance, and ensure best practices. Tier 2 and Tier 3 users get a dedicated monthly quota for these reports.
+                            AI Insights provide deep structural and security analysis of your code. Using advanced models, Vlyxir helps you find bugs, optimize performance, and ensure best practices. Tier 2 and Tier 3 users get a dedicated daily quota for these reports.
                         </p>
                     </div>
                 </div>
