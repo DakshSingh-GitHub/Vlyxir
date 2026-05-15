@@ -2,7 +2,7 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/utils/anime';
-import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Trophy, BarChart2, Users, Plus, X, Mail } from 'lucide-react';
+import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Trophy, BarChart2, Users, Plus, X, Mail, Crown } from 'lucide-react';
 import NewNavDropdown from './NewNavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath } from '../../app/lib/utils/paths';
@@ -218,6 +218,13 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                                     >
                                                         <Trophy className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-amber-400" : "text-slate-400 group-hover:text-amber-500"}`} />
                                                         Leaderboard
+                                                    </button>
+                                                    <button
+                                                        onClick={() => { router.push('/your-plan'); setIsProfileOpen(false); }}
+                                                        className={`group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-200 ${isDark ? "text-slate-200 hover:bg-white/10 hover:text-white" : "text-slate-700 hover:bg-slate-100"}`}
+                                                    >
+                                                        <Crown className={`h-4 w-4 transition-transform group-hover:scale-110 ${isDark ? "text-slate-400 group-hover:text-indigo-400" : "text-slate-400 group-hover:text-indigo-600"}`} />
+                                                        Your plan
                                                     </button>
                                                     <button
                                                         onClick={() => { router.push('/forum/your-content'); setIsProfileOpen(false); }}
