@@ -240,36 +240,57 @@ export default function CodeAnalysisPage() {
     }, [userId]);
 
     useEffect(() => {
+        if (authLoading) return;
+
+        // Reset hydration state when userId changes to prevent saving old data to new user key
+        setIsHydrated(false);
+
         const seededCode = sessionStorage.getItem("code-analysis-code");
         if (seededCode && seededCode.trim().length > 0) {
             setCode(seededCode);
             sessionStorage.removeItem("code-analysis-code");
+            setIsHydrated(true);
         } else {
-            const savedStateStr = localStorage.getItem("code-analysis-state");
+            const key = userId ? `code-analysis-state-${userId}` : "code-analysis-state-guest";
+            const savedStateStr = localStorage.getItem(key);
             if (savedStateStr) {
                 try {
                     const savedState = JSON.parse(savedStateStr);
                     if (savedState.code) setCode(savedState.code);
+                    else setCode(DEFAULT_CODE);
+                    
                     if (savedState.analysisResult !== undefined) setAnalysisResult(savedState.analysisResult);
+                    else setAnalysisResult(null);
+                    
                     if (savedState.error !== undefined) setError(savedState.error);
+                    else setError(null);
                 } catch (e) {
                     console.error("Error parsing saved state", e);
+                    // On error, reset to defaults
+                    setCode(DEFAULT_CODE);
+                    setAnalysisResult(null);
+                    setError(null);
                 }
+            } else {
+                // No saved state for this user, use defaults
+                setCode(DEFAULT_CODE);
+                setAnalysisResult(null);
+                setError(null);
             }
+            setIsHydrated(true);
         }
-
-        setIsHydrated(true);
-    }, []);
+    }, [userId, authLoading]);
 
     useEffect(() => {
-        if (isHydrated) {
-            localStorage.setItem("code-analysis-state", JSON.stringify({
+        if (isHydrated && !authLoading) {
+            const key = userId ? `code-analysis-state-${userId}` : "code-analysis-state-guest";
+            localStorage.setItem(key, JSON.stringify({
                 code,
                 analysisResult,
                 error
             }));
         }
-    }, [code, analysisResult, error, isHydrated]);
+    }, [code, analysisResult, error, isHydrated, userId, authLoading]);
 
     useEffect(() => {
         if (authLoading) return;
