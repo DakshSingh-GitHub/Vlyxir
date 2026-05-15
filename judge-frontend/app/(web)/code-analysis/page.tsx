@@ -461,7 +461,7 @@ export default function CodeAnalysisPage() {
                                 onClick={() => router.push("/")}
                                 className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
                             >
-                                Dashboard
+                                Home
                             </button>
                         </div>
                     </div>

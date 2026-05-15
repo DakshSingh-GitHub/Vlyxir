@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/auth/context";
+import { useAuth } from "../../lib/auth/auth-context";
+import { checkForgeLimit } from "../../lib/api/forge-limits";
+import { useState, useEffect } from "react";
 
 const TIERS = [
     {
@@ -94,6 +97,27 @@ const COMPARISON_FEATURES = [
 export default function UpgradeTiersPage() {
     const router = useRouter();
     const { isDark } = useAppContext();
+    const { user } = useAuth();
+    const [currentTierId, setCurrentTierId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUserTier = async () => {
+            if (user) {
+                try {
+                    const details = await checkForgeLimit(user.id);
+                    if (details.plan === 'pro') {
+                        setCurrentTierId(`tier${details.tier}`);
+                    } else {
+                        setCurrentTierId('free');
+                    }
+                } catch (err) {
+                    console.error("Error fetching user tier:", err);
+                    setCurrentTierId('free');
+                }
+            }
+        };
+        fetchUserTier();
+    }, [user]);
 
     return (
         <div className="min-h-screen w-full bg-[#0B0C15] text-white p-4 sm:p-8 lg:p-12 font-sans relative overflow-hidden">
@@ -151,9 +175,15 @@ export default function UpgradeTiersPage() {
 
                             <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
                             <div className="mb-4">
-                                <span className="text-[10px] px-2 py-1 rounded-md border border-white/10 bg-white/5 text-slate-400 font-bold uppercase tracking-wider">
-                                    Price to be disclosed
-                                </span>
+                                {currentTierId === tier.id ? (
+                                    <span className="text-[10px] px-2 py-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-bold uppercase tracking-wider">
+                                        Active Plan
+                                    </span>
+                                ) : (
+                                    <span className="text-[10px] px-2 py-1 rounded-md border border-white/10 bg-white/5 text-slate-400 font-bold uppercase tracking-wider">
+                                        Price to be disclosed
+                                    </span>
+                                )}
                             </div>
                             <p className="text-slate-400 text-sm mb-6 min-h-10">
                                 {tier.description}
@@ -171,10 +201,17 @@ export default function UpgradeTiersPage() {
                             </div>
 
                             <div className="mt-auto">
-                                <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 text-slate-500 font-bold text-sm cursor-not-allowed group-hover:bg-white/10 transition-colors">
-                                    <Construction className="w-4 h-4" />
-                                    Coming Soon
-                                </div>
+                                {currentTierId === tier.id ? (
+                                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-sm">
+                                        <Check className="w-4 h-4" />
+                                        Your Current Plan
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 text-slate-500 font-bold text-sm cursor-not-allowed group-hover:bg-white/10 transition-colors">
+                                        <Construction className="w-4 h-4" />
+                                        Coming Soon
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     ))}
