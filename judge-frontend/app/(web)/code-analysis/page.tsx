@@ -8,6 +8,8 @@ import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/auth/context';
 import { useAuth } from '../../lib/auth/auth-context';
 import { supabase } from '../../lib/api/supabase/client';
+import { checkForgeLimit, checkAiLimit, recordAiRun } from '../../lib/api/forge-limits';
+import LimitFlash from '../../../components/General/LimitFlash';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -68,7 +70,9 @@ export default function CodeAnalysisPage() {
     const [isHydrated, setIsHydrated] = useState(false);
     const { session, user, isLoading: authLoading } = useAuth();
     const [plan, setPlan] = useState<string | null>(null);
+    const [tier, setTier] = useState<number>(0);
     const [isFetchingPlan, setIsFetchingPlan] = useState(true);
+    const [isLimitFlashVisible, setIsLimitFlashVisible] = useState(false);
     const [records, setRecords] = useState<AnalysisRecord[]>([]);
     const [isRecordsModalOpen, setIsRecordsModalOpen] = useState(false);
     const [isRecordsModalVisible, setIsRecordsModalVisible] = useState(false);
@@ -184,22 +188,17 @@ export default function CodeAnalysisPage() {
 
         const fetchPlan = async () => {
             try {
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("plan")
-                    .eq("id", userId)
-                    .single();
-
+                const details = await checkForgeLimit(userId);
                 if (mounted) {
-                    if (data && data.plan) {
-                        setPlan(data.plan);
-                    } else {
-                        setPlan("free");
-                    }
+                    setPlan(details.plan);
+                    setTier(details.tier);
                 }
             } catch (err) {
                 console.error("Error fetching plan:", err);
-                if (mounted) setPlan("free");
+                if (mounted) {
+                    setPlan("free");
+                    setTier(0);
+                }
             } finally {
                 if (mounted) setIsFetchingPlan(false);
             }
@@ -327,6 +326,17 @@ export default function CodeAnalysisPage() {
         if (isMobile) {
             handleMobileTabChange("analysis");
         }
+        
+        // 1. Check AI Limit
+        if (user) {
+            const limitCheck = await checkAiLimit(user.id);
+            if (!limitCheck.allowed) {
+                setIsLimitFlashVisible(true);
+                setIsLoading(false);
+                return;
+            }
+        }
+
         try {
             const response = await fetch("/api/code-analysis", {
                 method: "POST",
@@ -372,6 +382,9 @@ export default function CodeAnalysisPage() {
                 } catch (err) {
                     console.error("Error saving analysis record:", err);
                 }
+
+                // 3. Record AI Run for limits
+                await recordAiRun(user.id);
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Analysis failed.");
@@ -420,7 +433,7 @@ export default function CodeAnalysisPage() {
         );
     }
 
-    if (plan !== "pro") {
+    if (plan !== "pro" || tier < 2) {
         return (
             <div className="h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
                 <div className="absolute top-[-20%] left-[-10%] w-lg h-128 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
@@ -430,19 +443,27 @@ export default function CodeAnalysisPage() {
                     <div className="w-full max-w-lg rounded-3xl border border-white/20 dark:border-gray-800/60 bg-white/75 dark:bg-gray-900/70 backdrop-blur-2xl shadow-2xl p-6 sm:p-8 text-center">
                         <div className="flex items-center justify-center mb-6">
                             <div className="p-4 rounded-2xl bg-indigo-500/15 border border-indigo-500/25">
-                                <Construction className="w-8 h-8 text-indigo-500" />
+                                <Lock className="w-8 h-8 text-indigo-500" />
                             </div>
                         </div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">Feature Under Development</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">Premium Feature</h1>
                         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-8">
-                            Code Analysis is currently under development and works exclusively for Pro users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
+                            Code Analysis is a premium feature exclusive to Pro Tier 2 and Tier 3 users. Please upgrade your plan to unlock deep AI structural insights, security audits, and more.
                         </p>
-                        <button
-                            onClick={() => router.push("/")}
-                            className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition-all active:scale-[0.99]"
-                        >
-                            Return to Dashboard
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={() => router.push("/upgrade-tiers")}
+                                className="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-semibold shadow-lg shadow-indigo-600/25 hover:bg-indigo-700 transition-all active:scale-[0.99]"
+                            >
+                                View Tiers
+                            </button>
+                            <button
+                                onClick={() => router.push("/")}
+                                className="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                            >
+                                Dashboard
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -790,7 +811,6 @@ export default function CodeAnalysisPage() {
                 </div>
             ) : null}
 
-            {/* Deletion Confirmation Modal */}
             {isDeleteConfirmOpen ? (
                 <div
                     className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200"
@@ -842,6 +862,12 @@ export default function CodeAnalysisPage() {
                     </div>
                 </div>
             ) : null}
+
+            <LimitFlash 
+                isVisible={isLimitFlashVisible} 
+                onClose={() => setIsLimitFlashVisible(false)} 
+                message="You've reached your daily AI Insight limit. Please check back tomorrow or upgrade for higher quotas."
+            />
         </div>
     );
 }

@@ -9,6 +9,8 @@ import CodeEditor from '../../../components/Editor/CodeEditor';
 import { useAppContext } from '../../lib/auth/context';
 import { useAuth } from '../../lib/auth/auth-context';
 import { supabase } from '../../lib/api/supabase/client';
+import { checkForgeLimit, checkAiLimit, recordAiRun } from '../../lib/api/forge-limits';
+import LimitFlash from '../../../components/General/LimitFlash';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -70,7 +72,9 @@ export default function CodeAnalysisPage() {
     const [isMounted, setIsMounted] = useState(false);
     const { session, user, isLoading: authLoading } = useAuth();
     const [plan, setPlan] = useState<string | null>(null);
+    const [tier, setTier] = useState<number>(0);
     const [isFetchingPlan, setIsFetchingPlan] = useState(true);
+    const [isLimitFlashVisible, setIsLimitFlashVisible] = useState(false);
     const [records, setRecords] = useState<AnalysisRecord[]>([]);
     const [isRecordsModalOpen, setIsRecordsModalOpen] = useState(false);
     const [isRecordsModalVisible, setIsRecordsModalVisible] = useState(false);
@@ -279,22 +283,17 @@ export default function CodeAnalysisPage() {
 
         const fetchPlan = async () => {
             try {
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("plan")
-                    .eq("id", userId)
-                    .single();
-
+                const details = await checkForgeLimit(userId);
                 if (mounted) {
-                    if (data && data.plan) {
-                        setPlan(data.plan);
-                    } else {
-                        setPlan("free");
-                    }
+                    setPlan(details.plan);
+                    setTier(details.tier);
                 }
             } catch (err) {
                 console.error("Error fetching plan:", err);
-                if (mounted) setPlan("free");
+                if (mounted) {
+                    setPlan("free");
+                    setTier(0);
+                }
             } finally {
                 if (mounted) setIsFetchingPlan(false);
             }
@@ -420,6 +419,17 @@ export default function CodeAnalysisPage() {
         if (isMobile) {
             handleMobileTabChange("analysis");
         }
+
+        // 1. Check AI Limit
+        if (user) {
+            const limitCheck = await checkAiLimit(user.id);
+            if (!limitCheck.allowed) {
+                setIsLimitFlashVisible(true);
+                setIsLoading(false);
+                return;
+            }
+        }
+
         try {
             const response = await fetch("/api/code-analysis", {
                 method: "POST",
@@ -465,6 +475,9 @@ export default function CodeAnalysisPage() {
                 } catch (err) {
                     console.error("Error saving analysis record:", err);
                 }
+
+                // 3. Record AI Run for limits
+                await recordAiRun(user.id);
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Analysis failed.");
@@ -513,7 +526,7 @@ export default function CodeAnalysisPage() {
         );
     }
 
-    if (plan !== "pro") {
+    if (plan !== "pro" || tier < 2) {
         return (
             <div className={shellClass}>
                 <div className={ambientClass} />
@@ -524,19 +537,27 @@ export default function CodeAnalysisPage() {
                     <div className={`w-full max-w-md rounded-[2.5rem] border backdrop-blur-2xl p-8 text-center ${surfaceClass}`}>
                         <div className="flex items-center justify-center mb-6">
                             <div className={`p-4 rounded-2xl border ${isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-indigo-50 border-indigo-100"}`}>
-                                <Construction className="w-8 h-8 text-indigo-400" />
+                                <Lock className="w-8 h-8 text-indigo-400" />
                             </div>
                         </div>
-                        <h1 className={`text-2xl font-black tracking-tight mb-3 ${titleClass}`}>Feature Under Development</h1>
+                        <h1 className={`text-2xl font-black tracking-tight mb-3 ${titleClass}`}>Premium Feature</h1>
                         <p className={`text-sm leading-relaxed mb-8 ${mutedClass}`}>
-                            Code Analysis is currently under development and works exclusively for Pro users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
+                            Code Analysis is a premium feature exclusive to Pro Tier 2 and Tier 3 users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
                         </p>
-                        <button
-                            onClick={() => router.push("/")}
-                            className="w-full py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-xs uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all"
-                        >
-                            Return to Dashboard
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button
+                                onClick={() => router.push("/upgrade-tiers")}
+                                className="flex-1 py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-xs uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all"
+                            >
+                                View Tiers
+                            </button>
+                            <button
+                                onClick={() => router.push("/")}
+                                className={`flex-1 py-4 rounded-2xl border font-black text-xs uppercase tracking-[0.2em] transition-all ${isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                            >
+                                Dashboard
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -962,6 +983,11 @@ export default function CodeAnalysisPage() {
                     )}
                 </>
             )}
+            <LimitFlash 
+                isVisible={isLimitFlashVisible} 
+                onClose={() => setIsLimitFlashVisible(false)} 
+                message="You've reached your daily AI Insight limit. Please check back tomorrow or upgrade for higher quotas."
+            />
         </div>
     );
 }

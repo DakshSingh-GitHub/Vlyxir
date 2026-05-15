@@ -107,10 +107,67 @@ export async function checkForgeLimit(userId: string) {
     }
 }
 
+export async function checkAiLimit(userId: string) {
+    try {
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('role, plan')
+            .eq('id', userId)
+            .single();
+
+        if (profileError) return { allowed: false, limit: 0 };
+        const role = profile?.role || 'user';
+        const plan = profile?.plan || 'free';
+
+        if (role === 'super') return { allowed: true, limit: Infinity };
+        if (plan !== 'pro') return { allowed: false, limit: 0 };
+
+        const { data: tierData } = await supabase
+            .from('user_tiers')
+            .select('tier')
+            .eq('user_id', userId)
+            .single();
+
+        const tier = tierData?.tier || 1;
+        let limit = 0;
+        if (tier === 2) limit = AI_PRO_TIER2_LIMIT;
+        else if (tier === 3) limit = AI_PRO_TIER3_LIMIT;
+
+        if (limit === 0) return { allowed: false, limit: 0 };
+
+        const today = new Date();
+        today.setUTCHours(0, 0, 0, 0);
+
+        const { count, error } = await supabase
+            .from('ai_usage')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .gte('created_at', today.toISOString());
+
+        if (error) return { allowed: true, limit };
+
+        return { 
+            allowed: (count || 0) < limit, 
+            count: count || 0, 
+            limit 
+        };
+    } catch (err) {
+        return { allowed: false, limit: 0 };
+    }
+}
+
 export async function recordForgeRun(userId: string) {
     try {
         await supabase.from('forge_usage').insert({ user_id: userId });
     } catch (err) {
         console.error("Error recording forge run:", err);
+    }
+}
+
+export async function recordAiRun(userId: string) {
+    try {
+        await supabase.from('ai_usage').insert({ user_id: userId });
+    } catch (err) {
+        console.error("Error recording AI run:", err);
     }
 }
