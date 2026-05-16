@@ -77,7 +77,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       const savedReduceMotion = localStorage.getItem("reduce_motion") === "1";
       const savedHardwareAcceleration = localStorage.getItem("hardware_accel_theme_animations");
       const savedAutoHidePills = localStorage.getItem("autohide_mobile_pills");
-      const savedUseNewUi = localStorage.getItem("use_new_ui") === "1";
+      const savedUseNewUi = localStorage.getItem("use_new_ui") !== "0";
 
       let initialThemeMode: ThemeMode = "system";
       if (savedThemeMode === "light" || savedThemeMode === "dark" || savedThemeMode === "system") {
@@ -200,7 +200,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
     setReduceMotionState(false);
     setHardwareAcceleratedThemeAnimationsState(true);
     setAutoHideMobilePillsState(true);
-    setUseNewUiState(false);
+    setUseNewUiState(true);
   };
 
   return (
