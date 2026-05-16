@@ -12,6 +12,7 @@ import { supabase } from '../../lib/api/supabase/client';
 import { checkForgeLimit, checkAiLimit, recordAiRun } from '../../lib/api/forge-limits';
 import LimitFlash from '../../../components/General/LimitFlash';
 import LoadingOverlay from '../../../components/General/LoadingOverlay';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -523,61 +524,65 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    if (!isHydrated || authLoading || isFetchingPlan) {
-        return (
-            <div className={shellBaseClass} />
-        );
-    }
+    return (
+        <>
+            <AnimatePresence mode="wait">
+            {!isMounted || authLoading || isFetchingPlan || !isHydrated ? (
+                <LoadingOverlay key="loader" />
+            ) : plan !== "pro" || tier < 2 ? (
+                <motion.div
+                    key="premium-guard"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-screen w-full flex flex-col p-4 sm:p-6 lg:p-10 font-sans relative overflow-hidden bg-slate-950"
+                >
+                    <div className="absolute top-[-20%] left-[-10%] w-[1000px] h-[1000px] bg-indigo-500/5 rounded-full blur-[130px] pointer-events-none" />
+                    <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-    if (plan !== "pro" || tier < 2) {
-        return (
-            <div className={shellClass}>
-                <div className={ambientClass} />
-                <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowLeftClass}`} />
-                <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowRightClass}`} />
-
-                <div className="relative z-10 flex-1 flex items-center justify-center p-4">
-                    <div className={`w-full max-w-md rounded-[2.5rem] border backdrop-blur-2xl p-8 text-center ${surfaceClass}`}>
-                        <div className="flex items-center justify-center mb-6">
-                            <div className={`p-4 rounded-2xl border ${isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-indigo-50 border-indigo-100"}`}>
-                                <Lock className="w-8 h-8 text-indigo-400" />
+                    <div className="z-10 flex-1 flex items-center justify-center">
+                        <div className={`w-full max-w-lg rounded-[2.5rem] border backdrop-blur-2xl p-8 sm:p-12 text-center ${isDark ? "border-slate-800/50 bg-slate-900/40" : "border-slate-200 bg-white/80"}`}>
+                            <div className="flex items-center justify-center mb-8">
+                                <div className={`p-5 rounded-3xl border ${isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-100 text-indigo-600"}`}>
+                                    <Lock className="w-10 h-10" />
+                                </div>
+                            </div>
+                            <h1 className={`text-3xl sm:text-4xl font-black tracking-tight mb-4 ${isDark ? "text-white" : "text-slate-900"}`}>Premium Access</h1>
+                            <p className={`text-sm sm:text-base leading-relaxed mb-10 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                                Code Analysis is a pro-tier feature. Upgrade to unlock deep structural insights, security audits, and architectural roadmaps powered by Vlyxir Neural Intelligence.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button
+                                    onClick={() => router.push("/upgrade-tiers")}
+                                    className="flex-1 py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-xs uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all"
+                                >
+                                    View Tiers
+                                </button>
+                                <button
+                                    onClick={() => router.push("/")}
+                                    className={`flex-1 py-4 rounded-2xl border font-black text-xs uppercase tracking-[0.2em] transition-all ${isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                                >
+                                    Home
+                                </button>
                             </div>
                         </div>
-                        <h1 className={`text-2xl font-black tracking-tight mb-3 ${titleClass}`}>Premium Feature</h1>
-                        <p className={`text-sm leading-relaxed mb-8 ${mutedClass}`}>
-                            Code Analysis is a premium feature exclusive to Pro Tier 2 and Tier 3 users. Please upgrade your plan to unlock AI-powered analysis, performance insights, and more.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button
-                                onClick={() => router.push("/upgrade-tiers")}
-                                className="flex-1 py-4 rounded-2xl bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] text-white font-black text-xs uppercase tracking-[0.2em] shadow-[0_12px_24px_rgba(79,70,229,0.3)] hover:brightness-110 active:scale-[0.98] transition-all"
-                            >
-                                View Tiers
-                            </button>
-                            <button
-                                onClick={() => router.push("/")}
-                                className={`flex-1 py-4 rounded-2xl border font-black text-xs uppercase tracking-[0.2em] transition-all ${isDark ? "border-slate-700 text-slate-300 hover:bg-slate-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
-                            >
-                                Home
-                            </button>
-                        </div>
                     </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={shellClass}>
-            <div className={ambientClass} />
-            <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowLeftClass}`} />
-            <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowRightClass}`} />
-            <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${glowCenterClass}`} />
-
-            {!isMounted ? (
-                <LoadingOverlay />
+                </motion.div>
             ) : (
-                <>
+                <motion.div
+                    key="main-content"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className={shellClass}
+                >
+                    <div className={ambientClass} />
+                    <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowLeftClass}`} />
+                    <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowRightClass}`} />
+                    <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${glowCenterClass}`} />
+
                     <div className={`relative z-10 flex-1 flex flex-col p-4 md:p-6 lg:p-8 xl:p-10 ${isMobile && mobileTab === "analysis" ? "pb-20" : "pb-20"} md:pb-20 lg:pb-8 xl:pb-10 w-full min-h-0 h-full overflow-hidden`}>
                         <div className="lg:hidden flex flex-col gap-1 px-2 mb-4 shrink-0">
                             <h1 className={`text-2xl font-black tracking-tighter leading-none ${isDark ? "text-white" : "text-slate-900"}`}>
@@ -609,30 +614,31 @@ export default function CodeAnalysisPage() {
                                         <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? "bg-slate-900/60 border-slate-700/70" : "bg-slate-100 border-slate-200"}`}>
                                             <button
                                                 onClick={() => setProvider("groq")}
-                                                className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${provider === "groq"
-                                                        ? isDark ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-white text-indigo-600 shadow-sm"
-                                                        : isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700"
+                                                className={`px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "groq"
+                                                    ? isDark
+                                                        ? "bg-slate-800 text-indigo-400 shadow-sm"
+                                                        : "bg-white text-indigo-600 shadow-sm"
+                                                    : "text-slate-500 hover:text-slate-400"
                                                     }`}
                                             >
                                                 Groq
                                             </button>
                                             <button
                                                 onClick={() => setProvider("gemini")}
-                                                className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${provider === "gemini"
-                                                        ? isDark ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-white text-indigo-600 shadow-sm"
-                                                        : isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-500 hover:text-slate-700"
+                                                className={`px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "gemini"
+                                                    ? isDark
+                                                        ? "bg-slate-800 text-indigo-400 shadow-sm"
+                                                        : "bg-white text-indigo-600 shadow-sm"
+                                                    : "text-slate-500 hover:text-slate-400"
                                                     }`}
                                             >
                                                 Gemini
                                             </button>
                                         </div>
                                         <div className={`h-4 w-px ${isDark ? "bg-slate-700/70" : "bg-slate-200"}`} />
-                                        <div className={`p-1 px-2 rounded-md text-[10px] font-black border uppercase tracking-wider ${isDark ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" : "bg-indigo-50 text-indigo-600 border-indigo-100"}`}>PRO</div>
-                                        <span className={`text-xs font-bold tracking-tight ${isDark ? "text-slate-300" : "text-slate-500"}`}>AI Inspector</span>
                                     </div>
                                 </div>
-
-                                <div className="flex-1 relative min-h-0">
+                                <div className="flex-1 min-h-0 bg-slate-950/20 shadow-inner">
                                     <CodeEditor
                                         code={code}
                                         setCode={setCode}
@@ -1004,14 +1010,15 @@ export default function CodeAnalysisPage() {
                             </div>
                         </div>
                     )}
-                </>
+                </motion.div>
             )}
-            <LimitFlash 
-                isVisible={isLimitFlashVisible} 
-                onClose={() => setIsLimitFlashVisible(false)} 
-                message="You've reached your daily AI Insight limit. Please check back tomorrow or upgrade for higher quotas."
-            />
-        </div>
+                </AnimatePresence>
+                <LimitFlash 
+                    isVisible={isLimitFlashVisible} 
+                    onClose={() => setIsLimitFlashVisible(false)} 
+                    message="You've reached your daily AI Insight limit. Please check back tomorrow or upgrade for higher quotas."
+                />
+            </>
     );
 }
 
