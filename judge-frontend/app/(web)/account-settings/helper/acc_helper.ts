@@ -15,6 +15,12 @@ export interface ProfileRecord {
   avatar_url: string | null;
 }
 
+export interface LeaderboardSettings {
+  user_id: string;
+  is_enabled: boolean;
+  last_toggled: string | null;
+}
+
 export interface ProfileFormValues {
   full_name: string;
   username: string;
@@ -225,4 +231,46 @@ export async function deleteAvatar(user: User): Promise<void> {
         throw new Error(`Failed to delete avatar: ${deleteError.message}`);
      }
   }
+}
+
+export async function getLeaderboardSettings(userId: string): Promise<LeaderboardSettings> {
+  const { data, error } = await supabase
+    .from('leaderboard_settings')
+    .select('user_id, is_enabled, last_toggled')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    return {
+      user_id: userId,
+      is_enabled: true, // Default to true if record doesn't exist
+      last_toggled: null,
+    };
+  }
+
+  return data;
+}
+
+export async function saveLeaderboardSettings(userId: string, isEnabled: boolean): Promise<LeaderboardSettings> {
+  const now = new Date().toISOString();
+  
+  const { data, error } = await supabase
+    .from('leaderboard_settings')
+    .upsert({
+      user_id: userId,
+      is_enabled: isEnabled,
+      last_toggled: now
+    }, { onConflict: 'user_id' })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 }

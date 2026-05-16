@@ -16,9 +16,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   ChevronDown,
-  Crown
+  Crown,
+  Trophy
 } from 'lucide-react';
-import { AdminUser, updateUserPlan, updateUserRole, updateUserModeration, resetUserLimits } from '@/app/lib/api/admin';
+import { AdminUser, updateUserPlan, updateUserRole, updateUserModeration, resetUserLimits, updateLeaderboardStatus } from '@/app/lib/api/admin';
+import { supabase } from '@/app/lib/api/supabase/client';
 
 interface UserManagementModalProps {
   user: AdminUser;
@@ -28,12 +30,13 @@ interface UserManagementModalProps {
 }
 
 export default function UserManagementModal({ user, isOpen, onClose, onUpdate }: UserManagementModalProps) {
-  const [activeTab, setActiveTab] = useState<'details' | 'subscription' | 'limits' | 'moderation'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'subscription' | 'limits' | 'moderation' | 'leaderboard'>('details');
   const [plan, setPlan] = useState(user.plan);
   const [tier, setTier] = useState(user.tier || 1);
   const [role, setRole] = useState(user.role);
   const [isBanned, setIsBanned] = useState(user.is_banned || false);
   const [banReason, setBanReason] = useState('');
+  const [isLeaderboardEnabled, setIsLeaderboardEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -44,6 +47,11 @@ export default function UserManagementModal({ user, isOpen, onClose, onUpdate }:
     setRole(user.role);
     setIsBanned(user.is_banned || false);
     setMessage(null);
+
+    // Fetch leaderboard status
+    supabase.from('leaderboard_settings').select('is_enabled').eq('user_id', user.id).maybeSingle().then(({ data }) => {
+      setIsLeaderboardEnabled(data?.is_enabled ?? true);
+    });
   }, [user]);
 
   const handleSavePlan = async () => {
@@ -90,6 +98,18 @@ export default function UserManagementModal({ user, isOpen, onClose, onUpdate }:
       onUpdate();
     } else {
       setMessage({ type: 'error', text: 'Moderation action failed' });
+    }
+    setIsSaving(false);
+  };
+
+  const handleLeaderboardUpdate = async () => {
+    setIsSaving(true);
+    const res = await updateLeaderboardStatus(user.id, !isLeaderboardEnabled);
+    if (res.success) {
+      setIsLeaderboardEnabled(!isLeaderboardEnabled);
+      setMessage({ type: 'success', text: !isLeaderboardEnabled ? 'Added to leaderboard' : 'Removed from leaderboard' });
+    } else {
+      setMessage({ type: 'error', text: 'Leaderboard update failed' });
     }
     setIsSaving(false);
   };
@@ -150,6 +170,7 @@ export default function UserManagementModal({ user, isOpen, onClose, onUpdate }:
               { id: 'details', label: 'Identity', icon: Shield, color: 'text-blue-400' },
               { id: 'subscription', label: 'Subscription', icon: Crown, color: 'text-purple-400' },
               { id: 'limits', label: 'Usage', icon: Zap, color: 'text-amber-400' },
+              { id: 'leaderboard', label: 'Leaderboard', icon: Trophy, color: 'text-indigo-400' },
               { id: 'moderation', label: 'Control', icon: Ban, color: 'text-rose-400' },
             ].map((tab) => (
               <button
@@ -186,6 +207,7 @@ export default function UserManagementModal({ user, isOpen, onClose, onUpdate }:
               {activeTab === 'details' && 'User Identity'}
               {activeTab === 'subscription' && 'Plan Management'}
               {activeTab === 'limits' && 'Resource Usage'}
+              {activeTab === 'leaderboard' && 'Leaderboard Control'}
               {activeTab === 'moderation' && 'Account Control'}
             </h2>
           </div>
@@ -366,6 +388,48 @@ export default function UserManagementModal({ user, isOpen, onClose, onUpdate }:
                         >
                           Reset Quota
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'leaderboard' && (
+                  <div className="space-y-8">
+                    <div className="rounded-[2rem] border border-white/5 bg-white/5 p-8">
+                      <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-4">
+                          <div className="rounded-2xl bg-indigo-500/10 p-4 text-indigo-400">
+                            <Trophy className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-black text-white uppercase tracking-tight">Leaderboard Standing</h4>
+                            <p className="text-xs font-medium text-slate-500 mt-1">Manually override user visibility on public rankings.</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={handleLeaderboardUpdate}
+                          disabled={isSaving}
+                          className={`rounded-2xl px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
+                            isLeaderboardEnabled 
+                              ? 'bg-rose-500/10 text-rose-500 hover:bg-rose-500/20' 
+                              : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_15px_30px_rgba(79,70,229,0.3)]'
+                          }`}
+                        >
+                          {isLeaderboardEnabled ? 'Remove from Leaderboard' : 'Add to Leaderboard'}
+                        </button>
+                      </div>
+
+                      <div className="rounded-xl bg-indigo-500/5 border border-indigo-500/10 p-6 flex items-start gap-4">
+                        <div className="mt-1 rounded-full bg-indigo-500/20 p-1">
+                          <AlertTriangle className="h-4 w-4 text-indigo-400" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-slate-200 uppercase tracking-wider">Admin Override Active</p>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            Executing this action will bypass the 24-hour cooldown restriction normally applied to users. 
+                            The change is instantaneous and will clear any existing wait timers.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

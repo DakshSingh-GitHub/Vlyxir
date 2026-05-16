@@ -3,7 +3,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef, type FormEvent } from "react";
-import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil, Zap } from "lucide-react";
+import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil, Zap, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/auth/context";
@@ -20,7 +20,10 @@ import {
   saveAccountProfile,
   uploadAvatar,
   deleteAvatar,
+  getLeaderboardSettings,
+  saveLeaderboardSettings,
   type ProfileRecord,
+  type LeaderboardSettings,
 } from "./helper/acc_helper";
 import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
@@ -49,6 +52,8 @@ export default function AccountSettingsPage() {
   const [forgeLimit, setForgeLimit] = useState(FORGE_FREE_LIMIT);
   const [aiUsage, setAiUsage] = useState(0);
   const [aiLimit, setAiLimit] = useState(0);
+  const [leaderboardSettings, setLeaderboardSettings] = useState<LeaderboardSettings | null>(null);
+  const [isTogglingLeaderboard, setIsTogglingLeaderboard] = useState(false);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -239,6 +244,10 @@ export default function AccountSettingsPage() {
       setAiUsage(res.count || 0);
       setAiLimit(res.limit || 0);
     });
+
+    getLeaderboardSettings(user.id).then((res) => {
+      setLeaderboardSettings(res);
+    });
   }, [user]);
 
   const initials = useMemo(() => {
@@ -295,6 +304,53 @@ export default function AccountSettingsPage() {
       setIsSaving(false);
     }
   };
+
+  const handleLeaderboardToggle = async () => {
+    if (!user || !leaderboardSettings || isTogglingLeaderboard) return;
+
+    // Cooldown check
+    if (leaderboardSettings.last_toggled) {
+      const lastToggled = new Date(leaderboardSettings.last_toggled).getTime();
+      const now = new Date().getTime();
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      if (now - lastToggled < twentyFourHours) {
+        return; // UI should have disabled it anyway
+      }
+    }
+
+    setIsTogglingLeaderboard(true);
+    try {
+      const newState = !leaderboardSettings.is_enabled;
+      const updated = await saveLeaderboardSettings(user.id, newState);
+      setLeaderboardSettings(updated);
+      setSuccessConfig({
+        title: newState ? "Joined Leaderboard" : "Left Leaderboard",
+        message: newState 
+          ? "You are now visible on the global leaderboard." 
+          : "You have been hidden from the global leaderboard. You must wait 24 hours to change this again."
+      });
+      setShowSuccessModal(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update leaderboard settings.");
+    } finally {
+      setIsTogglingLeaderboard(false);
+    }
+  };
+
+  const leaderboardCooldown = useMemo(() => {
+    if (!leaderboardSettings?.last_toggled) return null;
+    const lastToggled = new Date(leaderboardSettings.last_toggled).getTime();
+    const now = new Date().getTime();
+    const twentyFourHours = 24 * 60 * 60 * 1000;
+    const diff = now - lastToggled;
+    if (diff < twentyFourHours) {
+      const remaining = twentyFourHours - diff;
+      const hours = Math.floor(remaining / (60 * 60 * 1000));
+      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      return { hours, minutes };
+    }
+    return null;
+  }, [leaderboardSettings]);
 
   if (isAuthLoading || (user && isLoadingProfile)) {
     return (
@@ -720,6 +776,50 @@ export default function AccountSettingsPage() {
                     >
                       <span>Go to account controls</span>
                       <ArrowLeft className="h-3 w-3 rotate-180 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Preferences Section */}
+              <div className={`mt-8 rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
+                <div className="mb-6">
+                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Privacy & Preferences</p>
+                  <h2 className="mt-1 text-xl font-bold">Leaderboard Participation</h2>
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5 text-indigo-500" />
+                      <h3 className="font-bold">Join the leaderboard</h3>
+                    </div>
+                    <p className={`text-sm leading-relaxed ${mutedClass}`}>
+                      When enabled, your profile and total score will be visible on the global leaderboard. 
+                      Disabling this will hide you from public rankings.
+                    </p>
+                    {leaderboardCooldown && (
+                      <div className="mt-2 flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit border border-amber-500/20">
+                        <BadgeInfo size={12} />
+                        Cooldown active: {leaderboardCooldown.hours}h {leaderboardCooldown.minutes}m remaining
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleLeaderboardToggle}
+                      disabled={isTogglingLeaderboard || !!leaderboardCooldown}
+                      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed ${
+                        leaderboardSettings?.is_enabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
+                      } ${leaderboardCooldown ? 'opacity-50 grayscale-[0.5]' : ''}`}
+                    >
+                      <motion.span
+                        initial={false}
+                        animate={{ x: leaderboardSettings?.is_enabled ? 24 : 4 }}
+                        className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
+                      />
                     </button>
                   </div>
                 </div>

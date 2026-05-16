@@ -52,7 +52,8 @@ export default function LeaderboardPage() {
             try {
                 const { data, error } = await supabase
                     .from('profiles')
-                    .select('id, username, full_name, total_score, country, avatar_url')
+                    .select('id, username, full_name, total_score, country, avatar_url, leaderboard_settings!inner(is_enabled)')
+                    .eq('leaderboard_settings.is_enabled', true)
                     .order('total_score', { ascending: false })
                     .limit(50);
 
@@ -315,6 +316,7 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain, classN
                             src={user.avatar_url} 
                             alt={user.full_name} 
                             fill
+                            sizes="(max-width: 768px) 64px, 128px"
                             className="object-cover"
                         />
                     ) : (
@@ -388,6 +390,7 @@ function RankingRow({ user, rank }: { user: LeaderboardUser, rank: number }) {
                                 src={user.avatar_url} 
                                 alt={user.full_name} 
                                 fill
+                                sizes="36px"
                                 className="object-cover"
                             />
                         ) : (

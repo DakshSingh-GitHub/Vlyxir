@@ -153,6 +153,24 @@ export async function updateUserRole(userId: string, role: string) {
     }
 }
 
+export async function updateLeaderboardStatus(userId: string, isEnabled: boolean) {
+    try {
+        const { error } = await supabase
+            .from('leaderboard_settings')
+            .upsert({
+                user_id: userId,
+                is_enabled: isEnabled,
+                last_toggled: null // Admin action clears/bypasses the last_toggled for cooldown
+            }, { onConflict: 'user_id' });
+
+        if (error) throw error;
+        return { success: true };
+    } catch (err) {
+        console.error("Error updating leaderboard status:", err);
+        return { success: false, error: err };
+    }
+}
+
 export async function fetchPlatformStats(): Promise<PlatformStats> {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
