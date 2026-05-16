@@ -84,9 +84,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }, []);
 
     useEffect(() => {
-        const isJudgePath = pathname === "/code-judge" || pathname === "/code-judge-mde";
+        const isJudgePath = pathname === "/code-judge" || pathname === "/arena";
         if (!isJudgePath) return;
-        const targetPath = useNewUi ? "/code-judge-mde" : "/code-judge";
+        const targetPath = useNewUi ? "/arena" : "/code-judge";
         if (pathname !== targetPath) {
             router.replace(targetPath);
         }

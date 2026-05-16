@@ -9,7 +9,7 @@ import { useAppContext } from './lib/auth/context';
 import Footer from "@/components/General/Footer";
 
 export default function Home() {
-    const { isDark, codeJudgePath } = useAppContext();
+    const { isDark, codeJudgePath, codeIdePath, codeAnalysisPath } = useAppContext();
 
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
@@ -53,7 +53,7 @@ export default function Home() {
             title: "Vlyxir Forge",
             description: "The powerful IDE built for creation. Prototype your ideas, build projects, and write code in a professional-grade editor with multi-language support.",
             buttonText: "Start Forging",
-            href: "/code-ide",
+            href: codeIdePath,
             image: "/promo/forge.png",
             reverse: true
         },
@@ -61,7 +61,7 @@ export default function Home() {
             title: "Vlyxir Insights",
             description: "Deep-dive into your code's performance. Our AI-driven analysis helps you understand complexity, identify bottlenecks, and learn how to optimize every line.",
             buttonText: "Get Insights",
-            href: "/code-analysis",
+            href: codeAnalysisPath,
             image: "/promo/insights.png",
             reverse: false
         }
@@ -275,7 +275,7 @@ export default function Home() {
                     </Link>
 
                     {/* VLYXIR Forge */}
-                    <Link href="/code-ide" className="group">
+                    <Link href={codeIdePath} className="group">
                         <motion.div
                             variants={itemVariants}
                             className={`h-full p-8 rounded-[2.5rem] border ${isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200 bg-white/80"} backdrop-blur-xl transition-all duration-500 relative overflow-hidden flex flex-col hover:scale-[1.02] hover:shadow-2xl`}
@@ -299,7 +299,7 @@ export default function Home() {
                     </Link>
 
                     {/* VLYXIR Insight */}
-                    <Link href="/code-analysis" className="group">
+                    <Link href={codeAnalysisPath} className="group">
                         <motion.div
                             variants={itemVariants}
                             className={`h-full p-8 rounded-[2.5rem] border ${isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200 bg-white/80"} backdrop-blur-xl transition-all duration-500 relative overflow-hidden flex flex-col hover:scale-[1.02] hover:shadow-2xl`}

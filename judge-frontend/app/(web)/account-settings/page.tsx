@@ -26,7 +26,7 @@ import { checkProfanity } from "@/app/forum/forum-helper/helper";
 import ProfanityModal from "@/app/forum/forum-helper/ProfanityModal";
 import SuccessModal from "./SuccessModal";
 import AvatarActionModal from "./AvatarActionModal";
-import { checkForgeLimit, FORGE_FREE_LIMIT } from "../../lib/api/forge-limits";
+import { checkForgeLimit, checkAiLimit, FORGE_FREE_LIMIT } from "../../lib/api/forge-limits";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -47,6 +47,8 @@ export default function AccountSettingsPage() {
   const [forgeUsage, setForgeUsage] = useState(0);
   const [userRole, setUserRole] = useState("user");
   const [forgeLimit, setForgeLimit] = useState(FORGE_FREE_LIMIT);
+  const [aiUsage, setAiUsage] = useState(0);
+  const [aiLimit, setAiLimit] = useState(0);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -226,10 +228,16 @@ export default function AccountSettingsPage() {
 
   useEffect(() => {
     if (!user) return;
+    
     checkForgeLimit(user.id).then((res) => {
       setForgeUsage(res.count || 0);
       setUserRole(res.role || "user");
       setForgeLimit(res.limit || FORGE_FREE_LIMIT);
+    });
+
+    checkAiLimit(user.id).then((res) => {
+      setAiUsage(res.count || 0);
+      setAiLimit(res.limit || 0);
     });
   }, [user]);
 
@@ -644,21 +652,94 @@ export default function AccountSettingsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2 text-xs">
-                <BadgeInfo className="h-4 w-4" />
-                <span className={mutedClass}>Full name, username, bio, and country can be updated here.</span>
+            </form>
+
+            <div className="mt-12 space-y-8 pt-10 border-t border-slate-700/30">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Linked Accounts Section */}
+                <div className={`rounded-3xl border p-6 ${isDark ? "border-slate-800 bg-slate-950/40" : "border-slate-100 bg-slate-50/50"}`}>
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-white"}`}>
+                      <ShieldCheck className="h-5 w-5 text-indigo-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold">Linked Accounts</h3>
+                      <p className={`text-[10px] font-medium uppercase tracking-wider ${mutedClass}`}>Connectivity</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className={`flex items-center justify-between rounded-2xl border p-3 ${isDark ? "border-slate-800/50 bg-slate-900/30" : "border-slate-200/50 bg-white"}`}>
+                      <div className="flex items-center gap-3">
+                        {user?.app_metadata?.provider === 'google' ? (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                            <svg viewBox="0 0 24 24" className="h-4 w-4">
+                              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.25.81-.59z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                          </div>
+                        ) : (
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
+                            <Mail className="h-4 w-4" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-xs font-bold capitalize">{user?.app_metadata?.provider || 'Email'} Account</p>
+                          <p className={`text-[10px] font-medium ${mutedClass}`}>Primary authentication</p>
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-black uppercase text-emerald-500 tracking-widest">Active</span>
+                    </div>
+
+                    <p className={`text-[10px] leading-relaxed ${mutedClass}`}>
+                      Your account is secured via {user?.app_metadata?.provider || 'password'} authentication. 
+                      Social logins provide an extra layer of ease and security.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Danger Zone Section */}
+                <div className={`rounded-3xl border p-6 ${isDark ? "border-rose-900/20 bg-rose-950/5" : "border-rose-100 bg-rose-50/30"}`}>
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${isDark ? "border-rose-800/40 bg-rose-900/20" : "border-rose-200 bg-white"}`}>
+                      <Trash2 className="h-5 w-5 text-rose-500" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-rose-500">Danger Zone</h3>
+                      <p className={`text-[10px] font-medium uppercase tracking-wider text-rose-500/60`}>Account Deletion</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <p className={`text-xs leading-relaxed ${isDark ? "text-rose-200/60" : "text-rose-700/70"}`}>
+                      Deleting your account is permanent. All your progress, submissions, and profile data will be removed forever.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/account-controls')}
+                      className="group flex items-center gap-2 text-xs font-bold text-rose-500 transition-colors hover:text-rose-600"
+                    >
+                      <span>Go to account controls</span>
+                      <ArrowLeft className="h-3 w-3 rotate-180 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="pt-4">
+
+              <div className="flex items-center justify-between pt-6">
+                <div className="flex items-center gap-2 text-[10px] font-medium">
+                  <BadgeInfo className="h-3.5 w-3.5 text-indigo-500" />
+                  <span className={mutedClass}>Vlyxir ID: <span className="font-mono text-[9px]">{user.id}</span></span>
+                </div>
                 <button
                   type="button"
                   onClick={() => router.push("/")}
-                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-200 text-slate-900 hover:bg-slate-300"}`}
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4 text-indigo-500" />
                   Go Home
                 </button>
               </div>
-            </form>
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">
@@ -751,6 +832,44 @@ export default function AccountSettingsPage() {
                 </p>
               </div>
             </div>
+
+            {aiLimit > 0 && (
+              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+                <div className="mb-5 flex items-center gap-3">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
+                    <Sparkles className="h-5 w-5 text-indigo-500" />
+                  </div>
+                  <div>
+                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Daily Quota</p>
+                    <h2 className="text-lg font-bold">Insights runs</h2>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
+                    <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${aiUsage}/${aiLimit}`}</span>
+                  </div>
+                  {userRole !== 'super' ? (
+                    <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, (aiUsage / aiLimit) * 100)}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        className="h-full bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-2 w-full rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+                  )}
+                  <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
+                    {userRole === 'super' 
+                      ? "You have granted unlimited access to Vlyxir Insights. Analyze as much as you want." 
+                      : `Your daily quota of ${aiLimit} analysis runs resets every day at 00:00 UTC.`}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className={`flex-1 rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
               <div className="mb-3 flex items-center gap-3">

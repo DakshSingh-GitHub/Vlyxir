@@ -71,7 +71,7 @@ export default function Home() {
     const mobileSubmissionsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!useNewUi && pathname === "/code-judge-mde") {
+        if (!useNewUi && pathname === "/arena") {
             router.replace("/code-judge");
         }
     }, [pathname, router, useNewUi]);

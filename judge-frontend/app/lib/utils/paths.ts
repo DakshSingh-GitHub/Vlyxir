@@ -1,9 +1,9 @@
 export const CODE_JUDGE_PATH = "/code-judge";
-export const CODE_JUDGE_MDE_PATH = "/code-judge-mde";
+export const CODE_JUDGE_MDE_PATH = "/arena";
 export const CODE_IDE_PATH = "/code-ide";
-export const CODE_IDE_MDE_PATH = "/code-ide-mde";
+export const CODE_IDE_MDE_PATH = "/forge";
 export const CODE_ANALYSIS_PATH = "/code-analysis";
-export const CODE_ANALYSIS_MDE_PATH = "/code-analysis-mde";
+export const CODE_ANALYSIS_MDE_PATH = "/insights";
 
 export function getCodeJudgePath(useNewUi: boolean) {
   return useNewUi ? CODE_JUDGE_MDE_PATH : CODE_JUDGE_PATH;

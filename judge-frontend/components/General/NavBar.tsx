@@ -5,7 +5,7 @@ import { anime } from '../../app/lib/utils/anime';
 import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Users, Plus, X, Mail, Crown, MessageSquare, Trophy } from 'lucide-react';
 import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
-import { isCodeJudgePath } from '../../app/lib/utils/paths';
+import { isCodeJudgePath, isCodeIdePath, isCodeAnalysisPath } from '../../app/lib/utils/paths';
 import { useAuth } from '../../app/lib/auth/auth-context';
 import Image from 'next/image';
 
@@ -27,9 +27,9 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
         "Login";
     const avatarUrl = user?.user_metadata?.avatar_url;
     const isHomeRoute = pathname === '/';
-    const isCodeIDE = pathname === '/code-ide' || pathname === '/code-ide-mde';
+    const isCodeIDE = isCodeIdePath(pathname);
     const isCodeJudge = isCodeJudgePath(pathname);
-    const isCodeAnalysis = pathname === '/code-analysis' || pathname === '/code-analysis-mde';
+    const isCodeAnalysis = isCodeAnalysisPath(pathname);
     const headerRef = useRef<HTMLElement>(null);
     const navItemsRef = useRef<HTMLDivElement>(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -70,7 +70,7 @@ export default function Home() {
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-judge") {
-            router.replace("/code-judge-mde");
+            router.replace("/arena");
         }
     }, [pathname, router, useNewUi]);
 

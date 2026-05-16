@@ -162,7 +162,7 @@ export default function CodeAnalysisPage() {
     const analysisEmptyTextClass = isDark ? "text-xs text-slate-400" : "text-xs text-slate-600";
 
     useEffect(() => {
-        if (!useNewUi && pathname === "/code-analysis-mde") {
+        if (!useNewUi && pathname === "/insights") {
             router.replace(codeAnalysisPath);
         }
     }, [pathname, router, useNewUi, codeAnalysisPath]);

@@ -56,7 +56,7 @@ export default function CodeTestPage() {
     const mobileOutputRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!useNewUi && pathname === "/code-ide-mde") {
+        if (!useNewUi && pathname === "/forge") {
             router.replace("/code-ide");
         }
     }, [pathname, router, useNewUi]);

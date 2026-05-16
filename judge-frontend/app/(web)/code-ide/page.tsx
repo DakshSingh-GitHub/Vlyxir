@@ -49,7 +49,7 @@ export default function CodeTestPage() {
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-ide") {
-            router.replace("/code-ide-mde");
+            router.replace("/forge");
         }
     }, [pathname, router, useNewUi]);
 
