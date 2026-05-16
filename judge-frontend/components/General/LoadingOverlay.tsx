@@ -30,6 +30,7 @@ const LoadingOverlay = () => {
                             src="/logo.png" 
                             alt="Vlyxir" 
                             fill 
+                            sizes="80px"
                             className="object-contain"
                         />
                     </div>

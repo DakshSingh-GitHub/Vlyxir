@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction, Trash2, AlertTriangle, Loader2 } from 'lucide-react';
+import { Zap, Shield, BarChart, BrainCircuit, TriangleAlert, Sparkles, Lock, User, KeyRound, ChevronDown, Code2, Construction, Trash2, AlertTriangle, Loader2, RotateCcw } from 'lucide-react';
 import CodeEditor from '../../../components/Editor/CodeEditor';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../../lib/auth/context';
@@ -750,6 +750,18 @@ export default function CodeAnalysisPage() {
                                                 <p className="text-sm text-gray-500 dark:text-gray-400">{formatRecordTime(record.createdAt)}</p>
                                                 <div className="flex items-center gap-2">
                                                     <button
+                                                        onClick={() => {
+                                                            setCode(record.code);
+                                                            setAnalysisResult(record.result);
+                                                            closeRecordsModal();
+                                                        }}
+                                                        className="inline-flex items-center gap-1 rounded-md border border-indigo-200 dark:border-indigo-900/50 bg-indigo-50 dark:bg-indigo-950/20 px-2 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                                        title="Refill submission"
+                                                    >
+                                                        <RotateCcw className="w-3.5 h-3.5" />
+                                                        <span>Refill submission</span>
+                                                    </button>
+                                                    <button
                                                         onClick={(e) => handleDeleteRecord(record.id, e)}
                                                         className="inline-flex items-center gap-1 rounded-md border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 px-2 py-1 text-xs font-medium text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
                                                         title="Delete record"
@@ -768,14 +780,27 @@ export default function CodeAnalysisPage() {
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 xl:grid-cols-2 items-start gap-4 p-5">
-                                            <section className="h-fit rounded-xl border border-cyan-200/60 dark:border-cyan-700/40 bg-cyan-50/50 dark:bg-cyan-950/20 overflow-hidden">
-                                                <div className="px-4 py-2 border-b border-cyan-200/60 dark:border-cyan-700/40">
-                                                    <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Submitted Code</p>
-                                                </div>
-                                                <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
-                                                    {record.code}
-                                                </pre>
-                                            </section>
+                                            <div className="flex flex-col gap-4">
+                                                <section className="h-fit rounded-xl border border-cyan-200/60 dark:border-cyan-700/40 bg-cyan-50/50 dark:bg-cyan-950/20 overflow-hidden">
+                                                    <div className="px-4 py-2 border-b border-cyan-200/60 dark:border-cyan-700/40">
+                                                        <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-300">Submitted Code</p>
+                                                    </div>
+                                                    <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
+                                                        {record.code}
+                                                    </pre>
+                                                </section>
+
+                                                {expandedRecordId === record.id && tier >= 3 && record.result.recommendedCode && (
+                                                    <section className="h-fit rounded-xl border border-blue-200/60 dark:border-blue-700/40 bg-blue-50/50 dark:bg-blue-950/20 overflow-hidden">
+                                                        <div className="px-4 py-2 border-b border-blue-200/60 dark:border-blue-700/40">
+                                                            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Recommended Code</p>
+                                                        </div>
+                                                        <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
+                                                            {record.result.recommendedCode}
+                                                        </pre>
+                                                    </section>
+                                                )}
+                                            </div>
 
                                             <section className="rounded-xl border border-indigo-200/60 dark:border-indigo-700/40 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 space-y-3">
                                                 <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">Analysis Result</p>
@@ -794,7 +819,7 @@ export default function CodeAnalysisPage() {
 
                                                 <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                                                     <p>Static findings: {record.result.staticAnalysis.findings.length}</p>
-                                                    <p>Security findings: {record.result.security.findings.length}</p>
+                                                    {tier >= 3 && <p>Security findings: {record.result.security.findings.length}</p>}
                                                     <p>Suggestions: {record.result.suggestions.length}</p>
                                                 </div>
 
@@ -828,33 +853,35 @@ export default function CodeAnalysisPage() {
                                                             )}
                                                         </div>
 
-                                                        <div className="rounded-lg border border-rose-200/60 dark:border-rose-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
-                                                            <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">Security Vulnerabilities</p>
-                                                            <p className="text-sm text-gray-600 dark:text-gray-400">{record.result.security.overview}</p>
-                                                            {record.result.security.findings.length > 0 ? (
-                                                                <div className="space-y-2">
-                                                                    {record.result.security.findings.map((finding, findingIndex) => (
-                                                                        <div key={`security-${record.id}-${findingIndex}`} className="rounded-md border border-rose-100 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-2.5">
-                                                                            <div className="flex items-center justify-between gap-2">
-                                                                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{finding.title}</p>
-                                                                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${severityClasses(finding.severity)}`}>
-                                                                                    {finding.severity}
-                                                                                </span>
+                                                        {tier >= 3 && (
+                                                            <div className="rounded-lg border border-rose-200/60 dark:border-rose-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
+                                                                <p className="text-sm font-semibold text-rose-700 dark:text-rose-300">Security Vulnerabilities</p>
+                                                                <p className="text-sm text-gray-600 dark:text-gray-400">{record.result.security.overview}</p>
+                                                                {record.result.security.findings.length > 0 ? (
+                                                                    <div className="space-y-2">
+                                                                        {record.result.security.findings.map((finding, findingIndex) => (
+                                                                            <div key={`security-${record.id}-${findingIndex}`} className="rounded-md border border-rose-100 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 p-2.5">
+                                                                                <div className="flex items-center justify-between gap-2">
+                                                                                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{finding.title}</p>
+                                                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${severityClasses(finding.severity)}`}>
+                                                                                        {finding.severity}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 leading-relaxed">{finding.detail}</p>
+                                                                                {finding.location ? (
+                                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Location: {finding.location}</p>
+                                                                                ) : null}
+                                                                                {finding.suggestion ? (
+                                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Suggestion: {finding.suggestion}</p>
+                                                                                ) : null}
                                                                             </div>
-                                                                            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1 leading-relaxed">{finding.detail}</p>
-                                                                            {finding.location ? (
-                                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Location: {finding.location}</p>
-                                                                            ) : null}
-                                                                            {finding.suggestion ? (
-                                                                                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">Suggestion: {finding.suggestion}</p>
-                                                                            ) : null}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-xs text-gray-600 dark:text-gray-400">No security findings.</p>
-                                                            )}
-                                                        </div>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-400">No security findings.</p>
+                                                                )}
+                                                            </div>
+                                                        )}
 
                                                         <div className="rounded-lg border border-emerald-200/60 dark:border-emerald-700/40 bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
                                                             <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Suggestions</p>
