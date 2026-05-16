@@ -104,7 +104,7 @@ export default function NavDropdown() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className={`flex items-center gap-3 px-5 py-2.5 rounded-full border transition-all duration-300 group active:scale-95 ${isDark
+                className={`flex items-center gap-3 px-3 py-2 md:px-5 md:py-2.5 rounded-full border transition-all duration-300 group active:scale-95 ${isDark
                     ? "bg-slate-900/90 border-slate-700/70 text-slate-100 shadow-sm hover:shadow-[0_0_12px_rgba(99,102,241,0.25)]"
                     : "bg-white border-slate-200 text-slate-900 shadow-sm hover:shadow-[0_0_12px_rgba(99,102,241,0.18)]"
                     }`}
@@ -116,7 +116,7 @@ export default function NavDropdown() {
                         <span className="text-lg">{currentRoute.icon}</span>
                     )}
                 </div>
-                <span className={`text-xl font-black tracking-tighter ${isDark ? "text-white" : "text-slate-900"}`}>
+                <span className={`text-sm sm:text-lg font-black tracking-tighter whitespace-nowrap ${isDark ? "text-white" : "text-slate-900"}`}>
                     {currentRoute.name}
                 </span>
                 <svg

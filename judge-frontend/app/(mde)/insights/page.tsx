@@ -113,8 +113,8 @@ export default function CodeAnalysisPage() {
         ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(17,24,39,0.96),rgba(24,33,50,0.9))] shadow-[0_18px_48px_rgba(2,6,23,0.32)]"
         : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.08)]";
     const panelHeaderClass = isDark
-        ? "px-6 py-4 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/40"
-        : "px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70";
+        ? "px-4 lg:px-6 py-4 border-b border-slate-700/70 flex items-center justify-between bg-slate-900/40"
+        : "px-4 lg:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70";
     const titleClass = isDark ? "text-white" : "text-slate-900";
     const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
     const lighterMutedClass = isDark ? "text-slate-500" : "text-slate-600";
@@ -607,14 +607,14 @@ export default function CodeAnalysisPage() {
                                         <div className={`h-4 w-px ${isDark ? "bg-slate-700/70" : "bg-slate-200"}`} />
                                         <div className="flex items-center gap-2">
                                             <Code2 className={`w-4 h-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                            <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${mutedClass}`}>Source Analysis</span>
+                                            <span className={`text-[10px] font-black uppercase tracking-wider lg:tracking-[0.3em] ${mutedClass}`}>Source Analysis</span>
                                         </div>
                                     </div>
-                                    <div className="hidden lg:flex items-center gap-3">
+                                    <div className="flex items-center gap-2 lg:gap-3">
                                         <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? "bg-slate-900/60 border-slate-700/70" : "bg-slate-100 border-slate-200"}`}>
                                             <button
                                                 onClick={() => setProvider("groq")}
-                                                className={`px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "groq"
+                                                className={`px-2 lg:px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "groq"
                                                     ? isDark
                                                         ? "bg-slate-800 text-indigo-400 shadow-sm"
                                                         : "bg-white text-indigo-600 shadow-sm"
@@ -625,7 +625,7 @@ export default function CodeAnalysisPage() {
                                             </button>
                                             <button
                                                 onClick={() => setProvider("gemini")}
-                                                className={`px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "gemini"
+                                                className={`px-2 lg:px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "gemini"
                                                     ? isDark
                                                         ? "bg-slate-800 text-indigo-400 shadow-sm"
                                                         : "bg-white text-indigo-600 shadow-sm"

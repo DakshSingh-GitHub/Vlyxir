@@ -99,13 +99,14 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             {isCodeAnalysis && (
                                 <button
                                     onClick={() => window.dispatchEvent(new CustomEvent("open-code-analysis-records"))}
-                                    className={`flex items-center gap-2 rounded-full border px-5 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 ${isDark
+                                    className={`flex items-center gap-2 rounded-full border px-3 py-2 md:px-5 md:py-2.5 text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap ${isDark
                                         ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/15 hover:text-white backdrop-blur-md shadow-lg shadow-black/20"
                                         : "border-slate-900/10 bg-slate-900/5 text-slate-700 hover:border-slate-900/20 hover:bg-slate-900/10 hover:text-slate-900 backdrop-blur-md"
                                         }`}
                                     title="Show analysis records"
                                 >
-                                    <span>Show records</span>
+                                    <History className="h-4 w-4 md:hidden" />
+                                    <span className="hidden md:inline">Show records</span>
                                 </button>
                             )}
 
