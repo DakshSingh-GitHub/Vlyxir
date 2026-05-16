@@ -16,6 +16,7 @@ import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import { checkForgeLimit, recordForgeRun } from "../../lib/api/forge-limits";
 import LimitFlash from "../../../components/General/LimitFlash";
+import LoadingOverlay from "../../../components/General/LoadingOverlay";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
@@ -34,6 +35,7 @@ export default function CodeTestPage() {
     } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [mobileTab, setMobileTab] = useState<"code" | "output">("code");
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
@@ -53,9 +55,6 @@ export default function CodeTestPage() {
     const mobileCodeRef = useRef<HTMLDivElement>(null);
     const mobileOutputRef = useRef<HTMLDivElement>(null);
 
-    const loaderTitleRef = useRef<HTMLDivElement>(null);
-    const loaderBarRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         if (!useNewUi && pathname === "/code-ide-mde") {
             router.replace("/code-ide");
@@ -66,48 +65,47 @@ export default function CodeTestPage() {
         setIsMounted(true);
         setIsMobile(window.innerWidth <= 1024);
 
-        const savedCode = sessionStorage.getItem("code-ide-code");
-        if (savedCode) setCode(savedCode);
-
-        const savedInput = sessionStorage.getItem("code-ide-input");
-        if (savedInput) setInput(savedInput);
-
-        const savedOutput = sessionStorage.getItem("code-ide-output");
-        if (savedOutput) {
-            try {
-                setOutput(JSON.parse(savedOutput));
-            } catch (e) {
-                console.error("Failed to parse saved output", e);
-            }
-        }
-
         const savedLayout = localStorage.getItem(IDE_LAYOUT_STORAGE_KEY);
         if (savedLayout === "classic" || savedLayout === "wide") {
             setSelectedLayout(savedLayout);
         }
     }, []);
 
-    useEffect(() => {
-        if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {
-            anime({
-                targets: loaderTitleRef.current,
-                scale: [0.8, 1],
-                opacity: [0, 1],
-                duration: 500,
-                direction: 'alternate',
-                loop: true,
-                easing: 'easeInOutQuad'
-            });
+    const userId = user?.id;
 
-            anime({
-                targets: loaderBarRef.current,
-                translateX: ['-100%', '100%'],
-                duration: 1500,
-                loop: true,
-                easing: 'linear'
-            });
+    useEffect(() => {
+        if (isAuthLoading) return;
+
+        setIsHydrated(false);
+
+        const keySuffix = userId ? userId : "guest";
+        
+        const savedCode = sessionStorage.getItem(`code-ide-code-${keySuffix}`);
+        if (savedCode) setCode(savedCode);
+        else setCode("# Write your code here to test\nprint('Start with Vlyxir Forge!!')");
+
+        const savedInput = sessionStorage.getItem(`code-ide-input-${keySuffix}`);
+        if (savedInput) setInput(savedInput);
+        else setInput("");
+
+        const savedOutput = sessionStorage.getItem(`code-ide-output-${keySuffix}`);
+        if (savedOutput) {
+            try {
+                setOutput(JSON.parse(savedOutput));
+            } catch (e) {
+                console.error("Failed to parse saved output", e);
+                setOutput(null);
+            }
+        } else {
+            setOutput(null);
         }
-    }, [isMounted]);
+
+        setIsHydrated(true);
+    }, [userId, isAuthLoading]);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -241,12 +239,18 @@ export default function CodeTestPage() {
     }, [isMobile, mobileTab]);
 
     useEffect(() => {
-        if (isMounted) sessionStorage.setItem("code-ide-code", code);
-    }, [code, isMounted]);
+        if (isHydrated && isMounted) {
+            const keySuffix = userId ? userId : "guest";
+            sessionStorage.setItem(`code-ide-code-${keySuffix}`, code);
+        }
+    }, [code, isMounted, isHydrated, userId]);
 
     useEffect(() => {
-        if (isMounted) sessionStorage.setItem("code-ide-input", input);
-    }, [input, isMounted]);
+        if (isHydrated && isMounted) {
+            const keySuffix = userId ? userId : "guest";
+            sessionStorage.setItem(`code-ide-input-${keySuffix}`, input);
+        }
+    }, [input, isMounted, isHydrated, userId]);
 
     useEffect(() => {
         localStorage.setItem(IDE_LAYOUT_STORAGE_KEY, selectedLayout);
@@ -268,9 +272,10 @@ export default function CodeTestPage() {
     }, [isMobile]);
 
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || !isHydrated) return;
+        const keySuffix = userId ? userId : "guest";
         if (output) {
-            sessionStorage.setItem("code-ide-output", JSON.stringify(output));
+            sessionStorage.setItem(`code-ide-output-${keySuffix}`, JSON.stringify(output));
             if (outputRef.current) {
                 anime({
                     targets: outputRef.current,
@@ -281,9 +286,9 @@ export default function CodeTestPage() {
                 });
             }
         } else {
-            sessionStorage.removeItem("code-ide-output");
+            sessionStorage.removeItem(`code-ide-output-${keySuffix}`);
         }
-    }, [output, isMounted]);
+    }, [output, isMounted, isHydrated, userId]);
 
     const handleRun = async () => {
         if (!user) {
@@ -331,7 +336,7 @@ export default function CodeTestPage() {
         sessionStorage.removeItem("code-ide-output");
     };
 
-    if (!isMounted) return null;
+    if (!isMounted || isAuthLoading || !isHydrated) return null;
 
     const titlePanel = (
         <div className="flex flex-col gap-1 px-4">
@@ -537,23 +542,8 @@ export default function CodeTestPage() {
             <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-purple-900/20" : "bg-purple-200/60"}`} />
             <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${isDark ? "bg-slate-700/10" : "bg-slate-200/70"}`} />
 
-            {!isMounted ? (
-                <div className={`flex-1 flex flex-col items-center justify-center z-50 ${isDark ? "bg-slate-950/70" : "bg-white/80"}`}>
-                    <div
-                        ref={loaderTitleRef}
-                        className={`text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r ${isDark ? "from-white via-slate-300 to-slate-500" : "from-slate-900 via-slate-700 to-slate-500"}`}
-                    >
-                        {typeof TITLE === 'string' ? TITLE : "Code Judge"} IDE
-                    </div>
-                    <div
-                        className={`h-1 rounded-full mt-4 overflow-hidden w-48 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}
-                    >
-                        <div
-                            ref={loaderBarRef}
-                            className={`w-full h-full ${isDark ? "bg-white/30" : "bg-indigo-500/30"}`}
-                        />
-                    </div>
-                </div>
+            {!isMounted || isAuthLoading || !isHydrated ? (
+                <LoadingOverlay />
             ) : (
                 <>
                     <div className={`relative z-10 flex-1 flex flex-col p-4 md:p-6 lg:p-8 xl:p-10 ${isMobile && mobileTab === "output" ? "pb-20" : "pb-20"} md:pb-20 lg:pb-8 xl:pb-10 w-full min-h-0 h-full overflow-hidden`}>

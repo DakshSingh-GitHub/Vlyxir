@@ -11,6 +11,7 @@ import { useAppContext } from "../../lib/auth/context";
 import { FileText, Code, History, Check, X, PanelTop, List } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
+import LoadingOverlay from "../../../components/General/LoadingOverlay";
 
 import ClassicLayout from "./layouts/ClassicLayout";
 import StackedLayout from "./layouts/StackedLayout";
@@ -52,6 +53,7 @@ export default function Home() {
     const [mobileTab, setMobileTab] = useState<"problem" | "description" | "code" | "submissions">("problem");
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
     const [selectedLayout, setSelectedLayout] = useState<UiGridLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
 
@@ -62,8 +64,6 @@ export default function Home() {
     const [isResizing, setIsResizing] = useState(false);
     const requestRef = useRef<number>(null);
 
-    const loaderTitleRef = useRef<HTMLDivElement>(null);
-    const loaderBarRef = useRef<HTMLDivElement>(null);
     const verdictRef = useRef<HTMLDivElement>(null);
     const mobileProblemListRef = useRef<HTMLDivElement>(null);
     const mobileDescriptionRef = useRef<HTMLDivElement>(null);
@@ -77,26 +77,8 @@ export default function Home() {
     }, [pathname, router, useNewUi]);
 
     useEffect(() => {
-        if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {
-            anime({
-                targets: loaderTitleRef.current,
-                scale: [0.8, 1],
-                opacity: [0, 1],
-                duration: 500,
-                direction: 'alternate',
-                loop: true,
-                easing: 'easeInOutQuad'
-            });
-
-            anime({
-                targets: loaderBarRef.current,
-                translateX: ['-100%', '100%'],
-                duration: 1500,
-                loop: true,
-                easing: 'linear'
-            });
-        }
-    }, [isMounted]);
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         if (result && verdictRef.current) {
@@ -184,17 +166,19 @@ export default function Home() {
 
     // Save code changes
     useEffect(() => {
-        if (selectedProblemId) {
-            sessionStorage.setItem(`draft_code_${selectedProblemId}`, code);
+        if (isHydrated && selectedProblemId) {
+            const keySuffix = user?.id || "guest";
+            sessionStorage.setItem(`draft_code_${selectedProblemId}_${keySuffix}`, code);
         }
-    }, [code, selectedProblemId]);
+    }, [code, selectedProblemId, isHydrated, user]);
 
     const handleSelect = useCallback(async (id: string) => {
         setSelectedProblemId(id);
         setPastSubmissions([]);
         
         if (id) {
-            sessionStorage.setItem("last_selected_problem_id", id);
+            const keySuffix = user?.id || "guest";
+            sessionStorage.setItem(`last_selected_problem_id_${keySuffix}`, id);
         }
         if (isMobile) {
             setMobileTab("description");
@@ -208,7 +192,8 @@ export default function Home() {
             return;
         }
 
-        const savedCode = sessionStorage.getItem(`draft_code_${id}`);
+        const keySuffix = user?.id || "guest";
+        const savedCode = sessionStorage.getItem(`draft_code_${id}_${keySuffix}`);
         setCode(savedCode || DEFAULT_CODE);
         setResult(null);
 
@@ -227,13 +212,32 @@ export default function Home() {
         }
     }, [isMobile, setIsSidebarOpen]);
 
-    // State restoration on mount
+    // State restoration on mount and user change
     useEffect(() => {
-        const lastProblemId = sessionStorage.getItem("last_selected_problem_id");
-        if (lastProblemId && !selectedProblemId) {
-            handleSelect(lastProblemId).catch(console.error);
+        if (isAuthLoading) return;
+
+        setIsHydrated(false);
+        
+        const keySuffix = user?.id || "guest";
+        const lastProblemId = sessionStorage.getItem(`last_selected_problem_id_${keySuffix}`);
+        
+        if (lastProblemId) {
+            handleSelect(lastProblemId).then(() => {
+                setIsHydrated(true);
+            }).catch(err => {
+                console.error(err);
+                setIsHydrated(true);
+            });
+        } else {
+            // Reset state if no last problem for this user
+            setSelectedProblemId("");
+            setProblem(null);
+            setCode(DEFAULT_CODE);
+            setResult(null);
+            setPastSubmissions([]);
+            setIsHydrated(true);
         }
-    }, [selectedProblemId, handleSelect]);
+    }, [user?.id, isAuthLoading, handleSelect]);
 
     const handleTest = useCallback(async () => {
         if (!selectedProblemId || !problem) return;
@@ -725,23 +729,8 @@ export default function Home() {
             <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${isDark ? "bg-slate-800/40" : "bg-sky-200/40"}`} />
             <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${isDark ? "bg-slate-700/20" : "bg-cyan-200/35"}`} />
 
-            {!isMounted ? (
-                <div className={`flex-1 flex flex-col items-center justify-center z-50 ${isDark ? "bg-slate-950/70 dark:bg-[#07111d]" : "bg-white/80"}`}>
-                    <div
-                        ref={loaderTitleRef}
-                        className="text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white via-slate-300 to-slate-500"
-                    >
-                        {typeof TITLE === 'string' ? TITLE : JSON.stringify(TITLE || "Code Judge")}
-                    </div>
-                    <div
-                        className="h-1 bg-slate-700 rounded-full mt-4 overflow-hidden w-50"
-                    >
-                        <div
-                            ref={loaderBarRef}
-                            className="w-full h-full bg-white/30"
-                        />
-                    </div>
-                </div>
+            {!isMounted || isAuthLoading || !isHydrated ? (
+                <LoadingOverlay />
             ) : (
                 <>
                     {isMobile ? (

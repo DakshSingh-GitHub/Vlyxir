@@ -10,6 +10,7 @@ import { useAuth } from '../../lib/auth/auth-context';
 import { supabase } from '../../lib/api/supabase/client';
 import { checkForgeLimit, checkAiLimit, recordAiRun } from '../../lib/api/forge-limits';
 import LimitFlash from '../../../components/General/LimitFlash';
+import LoadingOverlay from '../../../components/General/LoadingOverlay';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -89,6 +90,11 @@ export default function CodeAnalysisPage() {
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [provider, setProvider] = useState<"groq" | "gemini">("groq");
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         if (useNewUi && pathname === "/code-analysis") {
@@ -111,6 +117,29 @@ export default function CodeAnalysisPage() {
             window.removeEventListener("unhandledrejection", handleUnhandledRejection);
         };
     }, []);
+
+    useEffect(() => {
+        if (!isMobile || reduceMotion || !mobileSwipeDirection) {
+            return;
+        }
+
+        const target = mobileTab === "code" ? codePanelRef.current : analysisPanelRef.current;
+        if (!target) {
+            return;
+        }
+
+        const fromX = mobileSwipeDirection === "left" ? 36 : -36;
+        target.animate(
+            [
+                { transform: `translateX(${fromX}px)`, opacity: 0.85 },
+                { transform: "translateX(0px)", opacity: 1 }
+            ],
+            {
+                duration: 280,
+                easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+            }
+        );
+    }, [mobileTab, isMobile, reduceMotion, mobileSwipeDirection]);
 
     const userId = user?.id;
 
@@ -150,13 +179,16 @@ export default function CodeAnalysisPage() {
         // Reset hydration state when userId changes to prevent saving old data to new user key
         setIsHydrated(false);
 
-        const seededCode = sessionStorage.getItem("code-analysis-code");
+        const keySuffix = userId ? userId : "guest";
+        const seededCodeKey = `code-analysis-code-${keySuffix}`;
+        const seededCode = sessionStorage.getItem(seededCodeKey);
+        
         if (seededCode && seededCode.trim().length > 0) {
             setCode(seededCode);
-            sessionStorage.removeItem("code-analysis-code");
+            sessionStorage.removeItem(seededCodeKey);
             setIsHydrated(true);
         } else {
-            const key = userId ? `code-analysis-state-${userId}` : "code-analysis-state-guest";
+            const key = `code-analysis-state-${keySuffix}`;
             const savedStateStr = localStorage.getItem(key);
             if (savedStateStr) {
                 try {
@@ -188,7 +220,8 @@ export default function CodeAnalysisPage() {
 
     useEffect(() => {
         if (isHydrated && !authLoading) {
-            const key = userId ? `code-analysis-state-${userId}` : "code-analysis-state-guest";
+            const keySuffix = userId ? userId : "guest";
+            const key = `code-analysis-state-${keySuffix}`;
             localStorage.setItem(key, JSON.stringify({
                 code,
                 analysisResult,
@@ -249,29 +282,6 @@ export default function CodeAnalysisPage() {
             mediaQuery.removeEventListener("change", updateIsMobile);
         };
     }, []);
-
-    useEffect(() => {
-        if (!isMobile || reduceMotion || !mobileSwipeDirection) {
-            return;
-        }
-
-        const target = mobileTab === "code" ? codePanelRef.current : analysisPanelRef.current;
-        if (!target) {
-            return;
-        }
-
-        const fromX = mobileSwipeDirection === "left" ? 36 : -36;
-        target.animate(
-            [
-                { transform: `translateX(${fromX}px)`, opacity: 0.85 },
-                { transform: "translateX(0px)", opacity: 1 }
-            ],
-            {
-                duration: 280,
-                easing: "cubic-bezier(0.22, 1, 0.36, 1)"
-            }
-        );
-    }, [mobileTab, isMobile, reduceMotion, mobileSwipeDirection]);
 
     const handleMobileTabChange = (nextTab: "code" | "analysis") => {
         if (nextTab === mobileTab) {
@@ -450,9 +460,9 @@ export default function CodeAnalysisPage() {
         }
     };
 
-    if (!isHydrated || authLoading || isFetchingPlan) {
+    if (!isMounted || authLoading || isFetchingPlan || !isHydrated) {
         return (
-            <div className="h-screen w-full bg-gray-50 dark:bg-gray-950" />
+            <LoadingOverlay />
         );
     }
 

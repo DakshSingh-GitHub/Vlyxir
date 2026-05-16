@@ -11,6 +11,7 @@ import { useAuth } from '../../lib/auth/auth-context';
 import { supabase } from '../../lib/api/supabase/client';
 import { checkForgeLimit, checkAiLimit, recordAiRun } from '../../lib/api/forge-limits';
 import LimitFlash from '../../../components/General/LimitFlash';
+import LoadingOverlay from '../../../components/General/LoadingOverlay';
 
 const DEFAULT_CODE = `def factorial(n):
     if n == 0:
@@ -91,9 +92,6 @@ export default function CodeAnalysisPage() {
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [provider, setProvider] = useState<"groq" | "gemini">("groq");
-
-    const loaderTitleRef = useRef<HTMLDivElement>(null);
-    const loaderBarRef = useRef<HTMLDivElement>(null);
 
     const shellClass = isDark
         ? "flex-1 flex flex-col min-h-0 text-slate-100 relative overflow-hidden font-sans selection:bg-slate-300/30"
@@ -186,26 +184,8 @@ export default function CodeAnalysisPage() {
     }, []);
 
     useEffect(() => {
-        if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {
-            anime({
-                targets: loaderTitleRef.current,
-                scale: [0.8, 1],
-                opacity: [0, 1],
-                duration: 500,
-                direction: 'alternate',
-                loop: true,
-                easing: 'easeInOutQuad'
-            });
-
-            anime({
-                targets: loaderBarRef.current,
-                translateX: ['-100%', '100%'],
-                duration: 1500,
-                loop: true,
-                easing: 'linear'
-            });
-        }
-    }, [isMounted]);
+        setIsMounted(true);
+    }, []);
 
     const userId = user?.id;
 
@@ -595,17 +575,7 @@ export default function CodeAnalysisPage() {
             <div className={`pointer-events-none absolute left-[35%] top-[22%] h-56 w-56 rounded-full blur-[140px] ${glowCenterClass}`} />
 
             {!isMounted ? (
-                <div className={`flex-1 flex flex-col items-center justify-center z-50 ${isDark ? "bg-slate-950/70" : "bg-white/80"}`}>
-                    <div
-                        ref={loaderTitleRef}
-                        className={`text-2xl md:text-4xl font-black tracking-tight bg-clip-text text-transparent bg-linear-to-r ${isDark ? "from-white via-slate-300 to-slate-500" : "from-slate-900 via-slate-700 to-slate-500"}`}
-                    >
-                        {typeof TITLE === 'string' ? TITLE : "Code Judge"} Analysis
-                    </div>
-                    <div className={`h-1 rounded-full mt-4 overflow-hidden w-48 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}>
-                        <div ref={loaderBarRef} className={`w-full h-full ${isDark ? "bg-white/30" : "bg-indigo-500/30"}`} />
-                    </div>
-                </div>
+                <LoadingOverlay />
             ) : (
                 <>
                     <div className={`relative z-10 flex-1 flex flex-col p-4 md:p-6 lg:p-8 xl:p-10 ${isMobile && mobileTab === "analysis" ? "pb-20" : "pb-20"} md:pb-20 lg:pb-8 xl:pb-10 w-full min-h-0 h-full overflow-hidden`}>

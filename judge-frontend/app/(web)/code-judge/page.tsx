@@ -18,7 +18,9 @@ import ProblemViewer from "../../../components/ProblemViewer";
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import PastSubmissions from "../../../components/Editor/PastSubmissions";
 import ResultModal from "./modals/resultModal";
+import MobileResultPanel from "../../../components/Editor/MobileResultPanel";
 import { useAuth } from "../../lib/auth/auth-context";
+import LoadingOverlay from "../../../components/General/LoadingOverlay";
 
 const DEFAULT_CODE = "#Write your code here";
 const LAYOUT_STORAGE_KEY = "codejudge_ui_grid_layout";
@@ -49,6 +51,7 @@ export default function Home() {
     const [mobileTab, setMobileTab] = useState<"problem" | "description" | "code" | "submissions">("problem");
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
     const [selectedLayout, setSelectedLayout] = useState<UiGridLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
 
@@ -59,8 +62,6 @@ export default function Home() {
     const [isResizing, setIsResizing] = useState(false);
     const requestRef = useRef<number>(null);
 
-    const loaderTitleRef = useRef<HTMLDivElement>(null);
-    const loaderBarRef = useRef<HTMLDivElement>(null);
     const verdictRef = useRef<HTMLDivElement>(null);
     const mobileProblemListRef = useRef<HTMLDivElement>(null);
     const mobileDescriptionRef = useRef<HTMLDivElement>(null);
@@ -74,26 +75,8 @@ export default function Home() {
     }, [pathname, router, useNewUi]);
 
     useEffect(() => {
-        if (!isMounted && loaderTitleRef.current && loaderBarRef.current) {
-            anime({
-                targets: loaderTitleRef.current,
-                scale: [0.8, 1],
-                opacity: [0, 1],
-                duration: 500,
-                direction: 'alternate',
-                loop: true,
-                easing: 'easeInOutQuad'
-            });
-
-            anime({
-                targets: loaderBarRef.current,
-                translateX: ['-100%', '100%'],
-                duration: 1500,
-                loop: true,
-                easing: 'linear'
-            });
-        }
-    }, [isMounted]);
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         if (result && verdictRef.current) {
@@ -151,7 +134,6 @@ export default function Home() {
             const currentIsMobile = width <= 1024;
             setIsMobile(currentIsMobile);
             setIsSidebarOpen(!currentIsMobile);
-            setIsMounted(true);
         }
 
         window.addEventListener("resize", checkScreenSize);
@@ -181,17 +163,19 @@ export default function Home() {
 
     // Save code changes
     useEffect(() => {
-        if (selectedProblemId) {
-            sessionStorage.setItem(`draft_code_${selectedProblemId}`, code);
+        if (isHydrated && selectedProblemId) {
+            const keySuffix = user?.id || "guest";
+            sessionStorage.setItem(`draft_code_${selectedProblemId}_${keySuffix}`, code);
         }
-    }, [code, selectedProblemId]);
+    }, [code, selectedProblemId, isHydrated, user]);
 
     const handleSelect = useCallback(async (id: string) => {
         setSelectedProblemId(id);
         setPastSubmissions([]);
         
         if (id) {
-            sessionStorage.setItem("last_selected_problem_id", id);
+            const keySuffix = user?.id || "guest";
+            sessionStorage.setItem(`last_selected_problem_id_${keySuffix}`, id);
         }
         if (isMobile) {
             setMobileTab("description");
@@ -205,7 +189,8 @@ export default function Home() {
             return;
         }
 
-        const savedCode = sessionStorage.getItem(`draft_code_${id}`);
+        const keySuffix = user?.id || "guest";
+        const savedCode = sessionStorage.getItem(`draft_code_${id}_${keySuffix}`);
         setCode(savedCode || DEFAULT_CODE);
         setResult(null);
 
@@ -224,13 +209,32 @@ export default function Home() {
         }
     }, [isMobile, setIsSidebarOpen]);
 
-    // State restoration on mount
+    // State restoration on mount and user change
     useEffect(() => {
-        const lastProblemId = sessionStorage.getItem("last_selected_problem_id");
-        if (lastProblemId && !selectedProblemId) {
-            handleSelect(lastProblemId).catch(console.error);
+        if (isAuthLoading) return;
+
+        setIsHydrated(false);
+
+        const keySuffix = user?.id || "guest";
+        const lastProblemId = sessionStorage.getItem(`last_selected_problem_id_${keySuffix}`);
+        
+        if (lastProblemId) {
+            handleSelect(lastProblemId).then(() => {
+                setIsHydrated(true);
+            }).catch(err => {
+                console.error(err);
+                setIsHydrated(true);
+            });
+        } else {
+            // Reset state if no last problem for this user
+            setSelectedProblemId("");
+            setProblem(null);
+            setCode(DEFAULT_CODE);
+            setResult(null);
+            setPastSubmissions([]);
+            setIsHydrated(true);
         }
-    }, [selectedProblemId, handleSelect]);
+    }, [user?.id, isAuthLoading, handleSelect]);
 
     const handleTest = useCallback(async () => {
         if (!selectedProblemId || !problem) return;
@@ -686,23 +690,8 @@ export default function Home() {
             <div className="absolute bottom-[-20%] left-[-10%] w-150 h-150 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[100px] pointer-events-none mix-blend-multiply dark:mix-blend-screen animate-pulse-slow delay-1000" />
             <div className="absolute top-[40%] left-[20%] w-100 h-100 bg-cyan-500/10 dark:bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none mix-blend-multiply dark:mix-blend-screen animate-pulse-slow delay-2000" />
 
-            {!isMounted ? (
-                <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-gray-900 z-50">
-                    <div
-                        ref={loaderTitleRef}
-                        className="text-2xl md:text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400"
-                    >
-                        {typeof TITLE === 'string' ? TITLE : JSON.stringify(TITLE || "Code Judge")}
-                    </div>
-                    <div
-                        className="h-1 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-4 overflow-hidden w-50"
-                    >
-                        <div
-                            ref={loaderBarRef}
-                            className="w-full h-full bg-white/30"
-                        />
-                    </div>
-                </div>
+            {!isMounted || isAuthLoading || !isHydrated ? (
+                <LoadingOverlay />
             ) : (
                 <>
                     {isMobile ? (

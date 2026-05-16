@@ -49,7 +49,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
   const [reduceMotion, setReduceMotionState] = useState(false);
   const [hardwareAcceleratedThemeAnimations, setHardwareAcceleratedThemeAnimationsState] = useState(true);
   const [autoHideMobilePills, setAutoHideMobilePillsState] = useState(true);
-  const [useNewUi, setUseNewUiState] = useState(false);
+  const [useNewUi, setUseNewUiState] = useState(true);
   const [mounted, setMounted] = useState(false);
   const themeSwitchTimeoutRef = useRef<number | null>(null);
   const supportsViewTransitionRef = useRef(false);

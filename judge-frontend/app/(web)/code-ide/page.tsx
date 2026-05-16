@@ -15,6 +15,7 @@ import { useAuth } from "../../lib/auth/auth-context";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import { checkForgeLimit, recordForgeRun } from "../../lib/api/forge-limits";
 import LimitFlash from "../../../components/General/LimitFlash";
+import LoadingOverlay from "../../../components/General/LoadingOverlay";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
@@ -33,6 +34,7 @@ export default function CodeTestPage() {
     } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [mobileTab, setMobileTab] = useState<"code" | "output">("code");
     const [isMobilePillVisible, setIsMobilePillVisible] = useState(true);
@@ -55,26 +57,43 @@ export default function CodeTestPage() {
         setIsMounted(true);
         setIsMobile(window.innerWidth <= 1024);
 
-        const savedCode = sessionStorage.getItem("code-ide-code");
-        if (savedCode) setCode(savedCode);
-
-        const savedInput = sessionStorage.getItem("code-ide-input");
-        if (savedInput) setInput(savedInput);
-
-        const savedOutput = sessionStorage.getItem("code-ide-output");
-        if (savedOutput) {
-            try {
-                setOutput(JSON.parse(savedOutput));
-            } catch (e) {
-                console.error("Failed to parse saved output", e);
-            }
-        }
-
         const savedLayout = localStorage.getItem(IDE_LAYOUT_STORAGE_KEY);
         if (savedLayout === "classic" || savedLayout === "wide") {
             setSelectedLayout(savedLayout);
         }
     }, []);
+
+    const userId = user?.id;
+
+    useEffect(() => {
+        if (isAuthLoading) return;
+
+        setIsHydrated(false);
+
+        const keySuffix = userId ? userId : "guest";
+        
+        const savedCode = sessionStorage.getItem(`code-ide-code-${keySuffix}`);
+        if (savedCode) setCode(savedCode);
+        else setCode("# Write your code here to test\nprint('Start with Vlyxir Forge!!')");
+
+        const savedInput = sessionStorage.getItem(`code-ide-input-${keySuffix}`);
+        if (savedInput) setInput(savedInput);
+        else setInput("");
+
+        const savedOutput = sessionStorage.getItem(`code-ide-output-${keySuffix}`);
+        if (savedOutput) {
+            try {
+                setOutput(JSON.parse(savedOutput));
+            } catch (e) {
+                console.error("Failed to parse saved output", e);
+                setOutput(null);
+            }
+        } else {
+            setOutput(null);
+        }
+
+        setIsHydrated(true);
+    }, [userId, isAuthLoading]);
 
     useEffect(() => {
         const onResize = () => setIsMobile(window.innerWidth <= 1024);
@@ -141,12 +160,18 @@ export default function CodeTestPage() {
     }, [isMobile, mobileTab]);
 
     useEffect(() => {
-        if (isMounted) sessionStorage.setItem("code-ide-code", code);
-    }, [code, isMounted]);
+        if (isHydrated && isMounted) {
+            const keySuffix = userId ? userId : "guest";
+            sessionStorage.setItem(`code-ide-code-${keySuffix}`, code);
+        }
+    }, [code, isMounted, isHydrated, userId]);
 
     useEffect(() => {
-        if (isMounted) sessionStorage.setItem("code-ide-input", input);
-    }, [input, isMounted]);
+        if (isHydrated && isMounted) {
+            const keySuffix = userId ? userId : "guest";
+            sessionStorage.setItem(`code-ide-input-${keySuffix}`, input);
+        }
+    }, [input, isMounted, isHydrated, userId]);
 
     useEffect(() => {
         localStorage.setItem(IDE_LAYOUT_STORAGE_KEY, selectedLayout);
@@ -168,9 +193,10 @@ export default function CodeTestPage() {
     }, [isMobile]);
 
     useEffect(() => {
-        if (!isMounted) return;
+        if (!isMounted || !isHydrated) return;
+        const keySuffix = userId ? userId : "guest";
         if (output) {
-            sessionStorage.setItem("code-ide-output", JSON.stringify(output));
+            sessionStorage.setItem(`code-ide-output-${keySuffix}`, JSON.stringify(output));
             if (outputRef.current) {
                 anime({
                     targets: outputRef.current,
@@ -181,9 +207,9 @@ export default function CodeTestPage() {
                 });
             }
         } else {
-            sessionStorage.removeItem("code-ide-output");
+            sessionStorage.removeItem(`code-ide-output-${keySuffix}`);
         }
-    }, [output, isMounted]);
+    }, [output, isMounted, isHydrated, userId]);
 
     const handleRun = async () => {
         if (!user) {
@@ -231,7 +257,7 @@ export default function CodeTestPage() {
         sessionStorage.removeItem("code-ide-output");
     };
 
-    if (!isMounted) return null;
+    if (!isMounted || isAuthLoading || !isHydrated) return <LoadingOverlay />;
 
     const titlePanel = (
         <div className="flex flex-col gap-1 px-4">
