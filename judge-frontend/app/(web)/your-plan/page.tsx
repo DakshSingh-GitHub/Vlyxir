@@ -223,16 +223,18 @@ export default function YourPlanPage() {
                                                 className="h-full bg-linear-to-r from-purple-500 via-indigo-500 to-purple-400 rounded-full"
                                             />
                                         </div>
-                                        <div className="flex flex-wrap gap-6">
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                                Security vulnerability scans
+                                        {planDetails?.tier && planDetails.tier >= 3 && (
+                                            <div className="flex flex-wrap gap-6">
+                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                                    Security vulnerability scans
+                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                                                    Logic optimization reports
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                                Logic optimization reports
-                                            </div>
-                                        </div>
+                                        )}
                                     </>
                                 ) : (
                                     <div className="p-8 rounded-2xl bg-white/[0.02] border border-dashed border-white/10 flex flex-col items-center justify-center text-center">
