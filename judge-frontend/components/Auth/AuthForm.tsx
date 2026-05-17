@@ -7,6 +7,7 @@ import { ArrowRight, Check, CircleAlert, Eye, EyeOff, Home, Loader2, Lock, Mail,
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { supabase } from "../../app/lib/api/supabase/client";
 import { useAuth } from "../../app/lib/auth/auth-context";
+import { useAppContext } from "../../app/lib/auth/context";
 import CountryDropdown from "../CountryDropdown";
 
 type AuthMode = "login" | "register";
@@ -15,6 +16,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoading } = useAuth();
+  const { isDark } = useAppContext();
   const reduceMotion = useReducedMotion();
 
   const [fullName, setFullName] = useState("");
@@ -312,7 +314,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
   };
 
   return (
-    <div className="relative isolate flex h-dvh w-full overflow-hidden bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] px-4 py-2 text-slate-100 md:py-4">
+    <div className={`relative isolate flex h-dvh w-full overflow-hidden px-4 py-2 transition-colors duration-500 md:py-4 ${
+      isDark 
+        ? "bg-[linear-gradient(180deg,#050816_0%,#0b1220_100%)] text-slate-100" 
+        : "bg-[linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-800"
+    }`}>
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(79,70,229,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(124,58,237,0.16),transparent_30%)]"
@@ -334,7 +340,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-3xl items-center">
         <motion.div
-          className="relative w-full rounded-[2.5rem] border border-slate-800/70 bg-[linear-gradient(180deg,rgba(8,12,20,0.96),rgba(15,23,42,0.92))] p-5 shadow-[0_28px_80px_rgba(2,6,23,0.45)] md:p-8"
+          className={`relative w-full rounded-[2.5rem] border p-5 shadow-2xl transition-all duration-300 md:p-8 ${
+            isDark 
+              ? "border-slate-800/70 bg-[linear-gradient(180deg,rgba(8,12,20,0.96),rgba(15,23,42,0.92))] shadow-[0_28px_80px_rgba(2,6,23,0.45)] text-slate-100" 
+              : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.95))] shadow-[0_28px_80px_rgba(15,23,42,0.06)] text-slate-800"
+          }`}
           variants={shellVariants}
           initial="hidden"
           animate="visible"
@@ -342,7 +352,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           <motion.div variants={itemVariants} className="absolute right-5 top-5 md:right-6 md:top-6">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700/60 bg-slate-950/50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-slate-300 transition hover:border-slate-500 hover:bg-slate-900 hover:text-white"
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] transition ${
+                isDark 
+                  ? "border-slate-700/60 bg-slate-950/50 text-slate-300 hover:border-slate-500 hover:bg-slate-900 hover:text-white" 
+                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-350 hover:bg-slate-50 hover:text-slate-900"
+              }`}
             >
               <Home className="h-3.5 w-3.5" />
               Home
@@ -351,17 +365,21 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
           <motion.div className="mb-5 md:mb-6" variants={itemVariants}>
             <motion.div
-              className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-700/70 bg-slate-900/70 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-slate-300"
+              className={`mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] ${
+                isDark 
+                  ? "border-slate-700/70 bg-slate-900/70 text-slate-300" 
+                  : "border-slate-200 bg-slate-100 text-slate-600"
+              }`}
               whileHover={reduceMotion ? undefined : { scale: 1.03, y: -1 }}
               transition={{ type: "spring", stiffness: 320, damping: 24 }}
             >
               <UserPlus className="h-3 w-3 text-indigo-400" />
               Join Us!
             </motion.div>
-            <motion.h1 className="text-3xl font-black tracking-tight text-white md:text-4xl" variants={itemVariants}>
+            <motion.h1 className={`text-3xl font-black tracking-tight md:text-4xl ${isDark ? "text-white" : "text-slate-950"}`} variants={itemVariants}>
               {pageTitle}
             </motion.h1>
-            <motion.p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400" variants={itemVariants}>
+            <motion.p className={`mt-2 max-w-2xl text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`} variants={itemVariants}>
               {pageDescription}
             </motion.p>
           </motion.div>
@@ -369,7 +387,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           <motion.form className="space-y-3 md:space-y-4" onSubmit={handleSubmit} variants={itemVariants}>
             {mode === "register" && (
               <motion.label className="block" variants={itemVariants}>
-                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Full Name</span>
+                <span className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Full Name</span>
                 <div className="relative">
                   <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                   <input
@@ -377,7 +395,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
                     placeholder="Your full name"
-                    className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                    className={`w-full rounded-2xl border py-2.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-600 focus:border-indigo-500 ${
+                      isDark 
+                        ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                        : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                    }`}
                     autoComplete="name"
                     required
                   />
@@ -386,10 +408,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             )}
 
             <motion.label className="block" variants={itemVariants}>
-              <span className="mb-1.5 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+              <span className={`mb-1.5 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
                 <span>Username</span>
                 {mode === "register" && (
-                  <span className="text-[9px] font-medium normal-case tracking-normal text-slate-500">
+                  <span className={`text-[9px] font-medium normal-case tracking-normal ${isDark ? "text-slate-500" : "text-slate-400"}`}>
                     a-z, 0-9, - and _ only
                   </span>
                 )}
@@ -403,7 +425,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                       value={username}
                       onChange={(event) => setUsername(normalizeUsername(event.target.value))}
                       placeholder="yourusername"
-                      className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                      className={`w-full rounded-2xl border py-2.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-600 focus:border-indigo-500 ${
+                        isDark 
+                          ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                          : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                      }`}
                       autoComplete="username"
                       required
                     />
@@ -424,12 +450,14 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                       }
                       className={`flex h-10.5 w-full items-center justify-center rounded-2xl border transition ${
                         isCheckingUsername
-                          ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                          ? "border-amber-500/30 bg-amber-500/10 text-amber-500 dark:text-amber-300"
                           : usernameAvailability === "available"
-                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500 dark:text-emerald-300"
                             : usernameAvailability === "taken"
-                              ? "border-rose-500/30 bg-rose-500/10 text-rose-300"
-                              : "border-slate-700/70 bg-slate-950/70 text-slate-500"
+                              ? "border-rose-500/30 bg-rose-500/10 text-rose-500 dark:text-rose-300"
+                              : isDark 
+                                ? "border-slate-700/70 bg-slate-950/70 text-slate-500" 
+                                : "border-slate-200 bg-slate-50 text-slate-400"
                       }`}
                     >
                       {isCheckingUsername ? (
@@ -454,7 +482,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     value={username}
                     onChange={(event) => setUsername(normalizeUsername(event.target.value))}
                     placeholder="yourusername"
-                    className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                    className={`w-full rounded-2xl border py-2.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-600 focus:border-indigo-500 ${
+                      isDark 
+                        ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                        : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                    }`}
                     autoComplete="username"
                     required
                   />
@@ -465,7 +497,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             {mode === "register" && (
               <motion.div className="grid gap-3 md:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]" variants={itemVariants}>
                 <label className="block">
-                  <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Email</span>
+                  <span className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Email</span>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                     <input
@@ -473,7 +505,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}
                       placeholder="you@example.com"
-                      className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                      className={`w-full rounded-2xl border py-2.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-650 focus:border-indigo-500 ${
+                        isDark 
+                          ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                          : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                      }`}
                       autoComplete="email"
                       required
                     />
@@ -481,11 +517,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 </label>
 
                 <div className="block">
-                  <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Country</span>
+                  <span className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Country</span>
                   <CountryDropdown
                     value={country}
                     onChange={setCountry}
-                    tone="dark"
+                    tone={isDark ? "dark" : "light"}
                     placeholder="Select your country"
                     searchPlaceholder="Search countries"
                   />
@@ -494,7 +530,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             )}
 
             <motion.label className="block" variants={itemVariants}>
-              <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Password</span>
+              <span className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Password</span>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                 <input
@@ -502,14 +538,20 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-11 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                  className={`w-full rounded-2xl border py-2.5 pl-11 pr-11 text-sm outline-none transition placeholder:text-slate-600 focus:border-indigo-500 ${
+                    isDark 
+                      ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                      : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                  }`}
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((value) => !value)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 transition hover:text-slate-300"
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 transition ${
+                    isDark ? "text-slate-500 hover:text-slate-350" : "text-slate-400 hover:text-slate-600"
+                  }`}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -517,13 +559,13 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                 </div>
                 {mode === "register" && (
                   <div className="mt-2 space-y-1.5">
-                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                    <div className={`flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
                       <span>Password strength</span>
-                      <span className={password ? "text-slate-300" : "text-slate-500"}>
+                      <span className={password ? (isDark ? "text-slate-300" : "text-slate-750") : "text-slate-500"}>
                         {passwordStrength.label || "Start typing"}
                       </span>
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
+                    <div className={`h-1.5 overflow-hidden rounded-full ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${passwordStrength.colorClass} ${passwordStrength.widthClass}`}
                       />
@@ -534,7 +576,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
 
             {mode === "register" && (
               <motion.label className="block" variants={itemVariants}>
-                <span className="mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Confirm Password</span>
+                <span className={`mb-1.5 block text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-slate-400" : "text-slate-500"}`}>Confirm Password</span>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
                   <input
@@ -542,7 +584,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
                     value={confirmPassword}
                     onChange={(event) => setConfirmPassword(event.target.value)}
                     placeholder="••••••••"
-                    className="w-full rounded-2xl border border-slate-700/70 bg-slate-950/70 py-2.5 pl-11 pr-4 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-indigo-500"
+                    className={`w-full rounded-2xl border py-2.5 pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-600 focus:border-indigo-500 ${
+                      isDark 
+                        ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600" 
+                        : "border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:bg-white"
+                    }`}
                     autoComplete="new-password"
                     required
                   />
@@ -594,17 +640,21 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
           <motion.div variants={itemVariants} className="mt-5">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700/60" />
+                <div className={`w-full border-t ${isDark ? "border-slate-700/60" : "border-slate-200"}`} />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-[#0f172a] px-4 text-slate-400">Or continue with</span>
+                <span className={`px-4 ${isDark ? "bg-[#0b1220] text-slate-400" : "bg-white text-slate-500"}`}>Or continue with</span>
               </div>
             </div>
 
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-700/70 bg-slate-900/50 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 hover:text-white"
+              className={`mt-4 flex w-full items-center justify-center gap-3 rounded-2xl border px-5 py-3 text-sm font-semibold transition ${
+                isDark 
+                  ? "border-slate-700/70 bg-slate-900/50 text-white hover:bg-slate-800 hover:text-white" 
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
+              }`}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -628,12 +678,12 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             </button>
           </motion.div>
 
-          <motion.div className="mt-5 flex items-center justify-between gap-4 text-xs text-slate-400" variants={itemVariants}>
+          <motion.div className={`mt-5 flex items-center justify-between gap-4 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`} variants={itemVariants}>
             {mode === "login" ? (
               <button
                 type="button"
                 onClick={handlePasswordReset}
-                className="font-semibold text-indigo-300 transition hover:text-indigo-200"
+                className={`font-semibold transition ${isDark ? "text-indigo-300 hover:text-indigo-205" : "text-indigo-600 hover:text-indigo-700"}`}
               >
                 Forgot Password?
               </button>
@@ -641,7 +691,9 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
               <span />
             )}
 
-            <Link href={mode === "login" ? "/register" : "/login"} className="inline-flex items-center gap-2 font-semibold text-slate-300 transition hover:text-white">
+            <Link href={mode === "login" ? "/register" : "/login"} className={`inline-flex items-center gap-2 font-semibold transition ${
+              isDark ? "text-slate-300 hover:text-white" : "text-slate-600 hover:text-slate-900"
+            }`}>
               {mode === "login" ? "Create Account" : "Already have an account?"}
               <ArrowRight className="h-4 w-4" />
             </Link>

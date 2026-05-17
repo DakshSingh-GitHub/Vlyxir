@@ -66,7 +66,7 @@ export default function MeetDeveloper() {
 
     return (
         <div
-            className="relative flex-1 overflow-y-auto overflow-x-hidden bg-white dark:bg-gray-950 transition-colors duration-500">
+            className="relative flex-1 overflow-y-auto overflow-x-hidden bg-white dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-500">
             {/* Ambient Background Elements */}
             <div
                 className="absolute top-0 left-1/4 w-120 h-120 bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
@@ -149,7 +149,7 @@ export default function MeetDeveloper() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="flex flex-col justify-center align-center md:w-[50%] w-[90%] mx-auto md:mb-20 bg-blue-300/5 md:p-20 rounded-4xl border-violet-900 border shadow-xl hover:border-violet-600 transition-all duration-300 hover:shadow-violet-800 hover:shadow-[0_0_30px_rgba(77,23,154,0.8)] mb-10 p-10"
+                className="flex flex-col justify-center align-center md:w-[50%] w-[90%] mx-auto md:mb-20 bg-blue-300/5 md:p-20 rounded-4xl border border-indigo-100 dark:border-violet-900 shadow-xl hover:border-indigo-400 dark:hover:border-violet-600 transition-all duration-300 hover:shadow-indigo-500/10 dark:hover:shadow-violet-800 dark:hover:shadow-[0_0_30px_rgba(77,23,154,0.8)] mb-10 p-10"
             >
                 <motion.h1
                     variants={itemVariants}
@@ -164,7 +164,7 @@ export default function MeetDeveloper() {
                     For any suggestions and improvements you are free to message me or connect to me on the following handles. My messages are always open to good vibes...:)
                 </motion.p>
 
-                <hr className="border" />
+                <hr className="border-gray-200 dark:border-gray-800" />
 
                 <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
 

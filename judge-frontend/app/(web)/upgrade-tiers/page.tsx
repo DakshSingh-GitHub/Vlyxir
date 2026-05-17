@@ -146,7 +146,7 @@ export default function UpgradeTiersPage() {
     }, [user]);
 
     return (
-        <div className="min-h-screen w-full bg-[#0B0C15] text-white p-4 sm:p-8 lg:p-12 font-sans relative overflow-hidden">
+        <div className={`min-h-screen w-full transition-colors duration-500 ${isDark ? "bg-[#0B0C15] text-white" : "bg-slate-50 text-slate-900"} p-4 sm:p-8 lg:p-12 font-sans relative overflow-hidden`}>
             {/* Ambient background effects */}
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -157,19 +157,25 @@ export default function UpgradeTiersPage() {
                     <div>
                         <button 
                             onClick={() => router.back()}
-                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4 group"
+                            className={`flex items-center gap-2 transition-colors mb-4 group ${
+                                isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900"
+                            }`}
                         >
                             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                             Back to settings
                         </button>
                         <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-                            Upgrade your <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 via-purple-400 to-cyan-400">Vlyxir experience</span>
+                            Upgrade your <span className={`text-transparent bg-clip-text bg-linear-to-r ${
+                                isDark ? "from-indigo-400 via-purple-400 to-cyan-400" : "from-indigo-600 via-purple-600 to-cyan-600"
+                            }`}>Vlyxir experience</span>
                         </h1>
-                        <p className="text-slate-400 text-lg max-w-2xl">
+                        <p className={`text-lg max-w-2xl ${isDark ? "text-slate-400" : "text-slate-600"}`}>
                             Select the plan that fits your coding workflow. Unlock higher execution limits and powerful AI insights.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-indigo-400 text-sm font-bold animate-pulse">
+                    <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-bold animate-pulse ${
+                        isDark ? "border-indigo-500/20 bg-indigo-500/5 text-indigo-400" : "border-indigo-200 bg-indigo-50 text-indigo-600"
+                    }`}>
                         <Sparkles className="w-4 h-4" />
                         Yet to be disclosed in all pricings
                     </div>
@@ -185,8 +191,10 @@ export default function UpgradeTiersPage() {
                             transition={{ delay: idx * 0.1 }}
                             className={`relative group p-6 rounded-3xl border transition-all duration-500 flex flex-col ${
                                 tier.recommended 
-                                ? "border-indigo-500/50 bg-indigo-500/5 shadow-2xl shadow-indigo-500/10 scale-105 z-10" 
-                                : "border-white/10 bg-white/5 hover:border-white/20"
+                                ? "border-indigo-500/50 bg-indigo-500/10 dark:bg-indigo-500/5 shadow-2xl shadow-indigo-500/10 dark:shadow-none scale-105 z-10" 
+                                : isDark
+                                    ? "border-white/10 bg-white/5 hover:border-white/20"
+                                    : "border-slate-200 bg-white hover:border-slate-350 shadow-md hover:shadow-lg"
                             }`}
                         >
                             {tier.recommended && (
@@ -195,23 +203,27 @@ export default function UpgradeTiersPage() {
                                 </div>
                             )}
 
-                            <div className={`w-12 h-12 rounded-2xl ${tier.glow} border border-white/10 flex items-center justify-center mb-6`}>
+                            <div className={`w-12 h-12 rounded-2xl ${tier.glow} border flex items-center justify-center mb-6 ${
+                                isDark ? "border-white/10" : "border-slate-200"
+                            }`}>
                                 <tier.icon className={`w-6 h-6 ${tier.color}`} />
                             </div>
 
-                            <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
+                            <h3 className={`text-xl font-bold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>{tier.name}</h3>
                             <div className="mb-4">
                                 {currentTierId === tier.id ? (
-                                    <span className="text-[10px] px-2 py-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-bold uppercase tracking-wider">
+                                    <span className="text-[10px] px-2 py-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 font-bold uppercase tracking-wider">
                                         Active Plan
                                     </span>
                                 ) : (
-                                    <span className="text-[10px] px-2 py-1 rounded-md border border-white/10 bg-white/5 text-slate-400 font-bold uppercase tracking-wider">
+                                    <span className={`text-[10px] px-2 py-1 rounded-md border font-bold uppercase tracking-wider ${
+                                        isDark ? "border-white/10 bg-white/5 text-slate-400" : "border-slate-200 bg-slate-100 text-slate-500"
+                                    }`}>
                                         Price to be disclosed
                                     </span>
                                 )}
                             </div>
-                            <p className="text-slate-400 text-sm mb-6 min-h-10">
+                            <p className={`text-sm mb-6 min-h-10 ${isDark ? "text-slate-400" : "text-slate-650"}`}>
                                 {tier.description}
                             </p>
 
@@ -219,21 +231,25 @@ export default function UpgradeTiersPage() {
                                 {tier.features.map((feature, fIdx) => (
                                     <div key={fIdx} className="flex items-center gap-3 text-sm">
                                         <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                            <Check className="w-3 h-3 text-emerald-400" />
+                                            <Check className="w-3 h-3 text-emerald-550 dark:text-emerald-400" />
                                         </div>
-                                        <span className="text-slate-300">{feature}</span>
+                                        <span className={isDark ? "text-slate-300" : "text-slate-700"}>{feature}</span>
                                     </div>
                                 ))}
                             </div>
 
                             <div className="mt-auto">
                                 {currentTierId === tier.id ? (
-                                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-sm">
+                                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400 font-bold text-sm">
                                         <Check className="w-4 h-4" />
                                         Your Current Plan
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/5 border border-white/10 text-slate-500 font-bold text-sm cursor-not-allowed group-hover:bg-white/10 transition-colors">
+                                    <div className={`flex items-center justify-center gap-2 py-3 rounded-2xl border font-bold text-sm cursor-not-allowed transition-colors ${
+                                        isDark 
+                                            ? "bg-white/5 border-white/10 text-slate-500 group-hover:bg-white/10" 
+                                            : "bg-slate-100 border-slate-200 text-slate-400 group-hover:bg-slate-200"
+                                    }`}>
                                         <Construction className="w-4 h-4" />
                                         Coming Soon
                                     </div>
@@ -245,52 +261,66 @@ export default function UpgradeTiersPage() {
 
                 {/* Comparison Table */}
                 <div className="mb-20">
-                    <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-                        <Shield className="w-8 h-8 text-indigo-500" />
+                    <h2 className={`text-3xl font-bold mb-8 flex items-center gap-3 ${isDark ? "text-white" : "text-slate-900"}`}>
+                        <Shield className={`w-8 h-8 ${isDark ? "text-indigo-500" : "text-indigo-650"}`} />
                         Detailed Comparison
                     </h2>
 
-                    <div className="overflow-x-auto rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
+                    <div className={`overflow-x-auto rounded-3xl border backdrop-blur-xl shadow-2xl dark:shadow-none ${
+                        isDark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"
+                    }`}>
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/10">
-                                    <th className="p-6 text-slate-400 font-bold uppercase tracking-widest text-xs">Features</th>
-                                    <th className="p-6 text-center font-black text-slate-300">Free</th>
-                                    <th className="p-6 text-center font-black text-blue-400">Tier 1</th>
-                                    <th className="p-6 text-center font-black text-indigo-400 bg-white/5">Tier 2</th>
-                                    <th className="p-6 text-center font-black text-amber-400">Tier 3</th>
+                                <tr className={`border-b ${isDark ? "border-white/10" : "border-slate-200"}`}>
+                                    <th className={`p-6 font-bold uppercase tracking-widest text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>Features</th>
+                                    <th className={`p-6 text-center font-black ${isDark ? "text-slate-300" : "text-slate-700"}`}>Free</th>
+                                    <th className={`p-6 text-center font-black ${isDark ? "text-blue-400" : "text-blue-650"}`}>Tier 1</th>
+                                    <th className={`p-6 text-center font-black bg-slate-100/50 dark:bg-white/5 ${isDark ? "text-indigo-400" : "text-indigo-650"}`}>Tier 2</th>
+                                    <th className={`p-6 text-center font-black ${isDark ? "text-amber-400" : "text-amber-650"}`}>Tier 3</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {COMPARISON_FEATURES.map((feature, idx) => (
-                                    <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                        <td className="p-6 font-bold text-slate-300">{feature.name}</td>
+                                    <tr key={idx} className={`border-b transition-colors ${
+                                        isDark 
+                                            ? "border-white/5 hover:bg-white/5" 
+                                            : "border-slate-100 hover:bg-slate-50"
+                                    }`}>
+                                        <td className={`p-6 font-bold ${isDark ? "text-slate-300" : "text-slate-800"}`}>{feature.name}</td>
                                         <td className="p-6 text-center">
                                             {typeof feature.free === 'boolean' ? (
-                                                feature.free ? <Check className="w-5 h-5 text-emerald-400 mx-auto" /> : <X className="w-5 h-5 text-slate-600 mx-auto" />
+                                                feature.free 
+                                                    ? <Check className="w-5 h-5 text-emerald-500 dark:text-emerald-400 mx-auto" /> 
+                                                    : <X className={`w-5 h-5 mx-auto ${isDark ? "text-slate-650" : "text-slate-400"}`} />
                                             ) : (
-                                                <span className="text-slate-400 font-medium">{feature.free}</span>
+                                                <span className={`font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>{feature.free}</span>
                                             )}
                                         </td>
                                         <td className="p-6 text-center">
                                             {typeof feature.tier1 === 'boolean' ? (
-                                                feature.tier1 ? <Check className="w-5 h-5 text-blue-400 mx-auto" /> : <X className="w-5 h-5 text-slate-600 mx-auto" />
+                                                feature.tier1 
+                                                    ? <Check className="w-5 h-5 text-blue-500 dark:text-blue-400 mx-auto" /> 
+                                                    : <X className={`w-5 h-5 mx-auto ${isDark ? "text-slate-650" : "text-slate-400"}`} />
                                             ) : (
-                                                <span className="text-blue-400 font-bold">{feature.tier1}</span>
+                                                <span className={`font-bold ${isDark ? "text-blue-400" : "text-blue-650"}`}>{feature.tier1}</span>
                                             )}
                                         </td>
-                                        <td className="p-6 text-center bg-white/5">
+                                        <td className="p-6 text-center bg-slate-100/30 dark:bg-white/5">
                                             {typeof feature.tier2 === 'boolean' ? (
-                                                feature.tier2 ? <Check className="w-5 h-5 text-indigo-400 mx-auto" /> : <X className="w-5 h-5 text-slate-600 mx-auto" />
+                                                feature.tier2 
+                                                    ? <Check className="w-5 h-5 text-indigo-500 dark:text-indigo-400 mx-auto" /> 
+                                                    : <X className={`w-5 h-5 mx-auto ${isDark ? "text-slate-650" : "text-slate-400"}`} />
                                             ) : (
-                                                <span className="text-indigo-400 font-bold">{feature.tier2}</span>
+                                                <span className={`font-bold ${isDark ? "text-indigo-400" : "text-indigo-650"}`}>{feature.tier2}</span>
                                             )}
                                         </td>
                                         <td className="p-6 text-center">
                                             {typeof feature.tier3 === 'boolean' ? (
-                                                feature.tier3 ? <Check className="w-5 h-5 text-amber-400 mx-auto" /> : <X className="w-5 h-5 text-slate-600 mx-auto" />
+                                                feature.tier3 
+                                                    ? <Check className="w-5 h-5 text-amber-500 dark:text-amber-400 mx-auto" /> 
+                                                    : <X className={`w-5 h-5 mx-auto ${isDark ? "text-slate-650" : "text-slate-400"}`} />
                                             ) : (
-                                                <span className="text-amber-400 font-bold">{feature.tier3}</span>
+                                                <span className={`font-bold ${isDark ? "text-amber-400" : "text-amber-650"}`}>{feature.tier3}</span>
                                             )}
                                         </td>
                                     </tr>
@@ -302,21 +332,29 @@ export default function UpgradeTiersPage() {
 
                 {/* FAQ / Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pb-20">
-                    <div className="p-8 rounded-3xl bg-linear-to-br from-indigo-500/10 to-transparent border border-indigo-500/20">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <Zap className="w-5 h-5 text-indigo-400" />
+                    <div className={`p-8 rounded-3xl border transition-all ${
+                        isDark 
+                            ? "bg-linear-to-br from-indigo-500/10 to-transparent border-indigo-500/20 text-white" 
+                            : "bg-linear-to-br from-indigo-50/50 to-transparent border-indigo-200 text-slate-900 shadow-sm"
+                    }`}>
+                        <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
+                            <Zap className={`w-5 h-5 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
                             How do Forge Submissions work?
                         </h3>
-                        <p className="text-slate-400 leading-relaxed">
+                        <p className={`leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
                             Forge submissions represent your daily quota for code execution on the Vlyxir cloud. Your quota resets every day at 00:00 UTC. Higher tiers allow for more intensive development sessions without interruption.
                         </p>
                     </div>
-                    <div className="p-8 rounded-3xl bg-linear-to-br from-purple-500/10 to-transparent border border-purple-500/20">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <BrainCircuit className="w-5 h-5 text-purple-400" />
+                    <div className={`p-8 rounded-3xl border transition-all ${
+                        isDark 
+                            ? "bg-linear-to-br from-purple-500/10 to-transparent border-purple-500/20 text-white" 
+                            : "bg-linear-to-br from-purple-50/50 to-transparent border-purple-200 text-slate-900 shadow-sm"
+                    }`}>
+                        <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
+                            <BrainCircuit className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`} />
                             What are AI Insights?
                         </h3>
-                        <p className="text-slate-400 leading-relaxed">
+                        <p className={`leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
                             AI Insights provide deep structural and security analysis of your code. Using advanced models, Vlyxir helps you find bugs, optimize performance, and ensure best practices. Tier 2 and Tier 3 users get a dedicated daily quota for these reports.
                         </p>
                     </div>

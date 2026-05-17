@@ -294,6 +294,7 @@ function StatCard({ icon, label, value, delay }: any) {
 }
 
 function TopThreeCard({ user, rank, delay, color, shadow, height, isMain, className }: any) {
+    const { isDark } = useAppContext();
     const titles = ["", "Grand Champion", "Elite Coder", "Rising Star"];
 
     return (
@@ -330,11 +331,15 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain, classN
 
             <div className="text-center mt-2 md:mt-3 z-20 w-full px-1">
                 <Link href={`/user/${user.username}`} className="group/info block">
-                    <h3 className="text-[10px] md:text-xl font-black tracking-tight group-hover/info:text-indigo-400 transition-colors truncate">{user.full_name}</h3>
-                    <p className="text-indigo-400 font-semibold text-[8px] md:text-sm">@{user.username}</p>
+                    <h3 className={`text-[10px] md:text-xl font-black tracking-tight transition-colors truncate ${
+                        isDark ? "group-hover/info:text-indigo-400" : "group-hover/info:text-indigo-650"
+                    }`}>{user.full_name}</h3>
+                    <p className={`font-semibold text-[8px] md:text-sm ${
+                        isDark ? "text-indigo-400" : "text-indigo-600"
+                    }`}>@{user.username}</p>
                 </Link>
                 <div className="mt-1 md:mt-1">
-                    <span className="text-base md:text-4xl font-black dark:text-slate-100 text-slate-900">
+                    <span className={`text-base md:text-4xl font-black ${isDark ? "text-slate-100" : "text-slate-950"}`}>
                         {user.total_score?.toLocaleString() || 0}
                     </span>
                     <span className="text-[10px] md:text-sm font-black text-slate-500 ml-0.5 md:ml-1 uppercase tracking-widest">pts</span>
@@ -342,7 +347,11 @@ function TopThreeCard({ user, rank, delay, color, shadow, height, isMain, classN
             </div>
 
             {/* Podium Base */}
-            <div className={`w-full ${height} rounded-t-3xl bg-linear-to-b from-white/10 to-transparent dark:from-slate-800/40 dark:to-transparent border-x border-t mt-2 backdrop-blur-md relative overflow-hidden flex flex-col items-center p-6 ${rank === 1 ? 'border-amber-500/30 dark:border-amber-500/20' : rank === 2 ? 'border-slate-400/30 dark:border-slate-400/20' : 'border-orange-500/30 dark:border-orange-500/20'}`}>
+            <div className={`w-full ${height} rounded-t-3xl border-x border-t mt-2 backdrop-blur-md relative overflow-hidden flex flex-col items-center p-6 ${
+                isDark 
+                    ? "from-slate-800/40 to-transparent border-slate-850 bg-linear-to-b" 
+                    : "from-slate-200/50 to-slate-50/10 border-slate-200 bg-linear-to-b shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.02)]"
+            } ${rank === 1 ? 'border-amber-500/30 dark:border-amber-500/20' : rank === 2 ? 'border-slate-400/30 dark:border-slate-400/20' : 'border-orange-500/30 dark:border-orange-500/20'}`}>
                 {/* Background Rank Number */}
                 <div className="absolute -bottom-4 md:-bottom-10 -right-2 md:-right-4 text-6xl md:text-9xl font-black text-slate-900/20 dark:text-white/5 select-none pointer-events-none">
                     {rank}

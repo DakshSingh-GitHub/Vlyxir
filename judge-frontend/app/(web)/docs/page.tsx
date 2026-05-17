@@ -120,7 +120,7 @@ export default function Documentation() {
     ];
 
     return (
-        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-white dark:bg-gray-950 transition-colors duration-500 selection:bg-indigo-500/30">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-white dark:bg-gray-950 text-gray-900 dark:text-white transition-colors duration-500 selection:bg-indigo-500/30">
             {/* Ambient Background Elements */}
             <div className="absolute top-0 right-0 w-150 h-150 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-[140px] pointer-events-none" />
             <div className="absolute top-0 left-0 w-125 h-125 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />

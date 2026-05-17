@@ -134,24 +134,31 @@ export default function Home() {
                     <div className="absolute bottom-1/3 right-1/2 w-1 h-1 bg-purple-400/30 rounded-full blur-[1px] animate-pulse" style={{ animationDelay: '2s' }} />
 
                     <div className="flex flex-col items-center text-center lg:items-start lg:text-left z-10 lg:-translate-x-8">
-                        <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
+                        <motion.div 
+                            variants={itemVariants} 
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-8 ${
+                                isDark 
+                                    ? "bg-indigo-500/10 border-indigo-500/20" 
+                                    : "bg-indigo-50 border-indigo-100"
+                            }`}
+                        >
                             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Next-Gen Platform</span>
+                            <span className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Next-Gen Platform</span>
                         </motion.div>
 
                         <motion.h1
                             variants={itemVariants}
-                            className="text-5xl md:text-6xl xl:text-[4.5rem] font-[900] tracking-tight mb-8 leading-[1.05] text-white"
+                            className={`text-5xl md:text-6xl xl:text-[4.5rem] font-[900] tracking-tight mb-8 leading-[1.05] ${isDark ? "text-white" : "text-slate-950"}`}
                         >
                             Master the <br /> Art of <br />
-                            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-400 via-cyan-400 to-purple-500 whitespace-nowrap">
+                            <span className="bg-clip-text text-transparent bg-linear-to-r from-indigo-500 via-cyan-500 to-purple-600 whitespace-nowrap dark:from-indigo-400 dark:via-cyan-400 dark:to-purple-500">
                                 Problem Solving
                             </span>
                         </motion.h1>
 
                         <motion.p
                             variants={itemVariants}
-                            className="text-sm md:text-base text-slate-400 max-w-lg mx-auto lg:mx-0 mb-8 font-medium leading-relaxed"
+                            className={`text-sm md:text-base max-w-lg mx-auto lg:mx-0 mb-8 font-medium leading-relaxed ${isDark ? "text-slate-400" : "text-slate-655"}`}
                         >
                             VLYXIR — a fast, secure, and intuitive platform designed for developers to sharpen their skills and ace technical interviews.
                         </motion.p>
@@ -170,7 +177,7 @@ export default function Home() {
                             ].map((pillar) => (
                                 <div key={pillar.w} className="flex items-center gap-1.5">
                                     <span className="text-[10px] font-black text-indigo-500">{pillar.l}</span>
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{pillar.w}</span>
+                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-450"}`}>{pillar.w}</span>
                                 </div>
                             ))}
                         </motion.div>
@@ -184,8 +191,23 @@ export default function Home() {
                             </Link>
                             {/* Discreet secondary links */}
                             <div className="flex items-center gap-6 ml-2">
-                                <Link href="https://github.com/DakshSingh-GitHub/Vlyxir" target="_blank" className="text-xs font-bold text-slate-500 hover:text-white transition-colors">VLYXIR</Link>
-                                <Link href="/docs" className="text-xs font-bold text-slate-500 hover:text-white transition-colors">Documentation</Link>
+                                <Link 
+                                    href="https://github.com/DakshSingh-GitHub/Vlyxir" 
+                                    target="_blank" 
+                                    className={`text-xs font-bold transition-colors ${
+                                        isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"
+                                    }`}
+                                >
+                                    VLYXIR
+                                </Link>
+                                <Link 
+                                    href="/docs" 
+                                    className={`text-xs font-bold transition-colors ${
+                                        isDark ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-slate-900"
+                                    }`}
+                                >
+                                    Documentation
+                                </Link>
                             </div>
                         </motion.div>
                     </div>
@@ -215,10 +237,20 @@ export default function Home() {
                             }}
                         >
                             {/* Glass Tablet Frame */}
-                            <div className="absolute -inset-1 bg-linear-to-tr from-white/20 via-white/5 to-transparent rounded-[2.5rem] blur-[2px] -z-10" />
-                            <div className="absolute -inset-[0.5px] bg-white/10 rounded-[2.5rem] -z-10" />
+                            <div className={`absolute -inset-1 rounded-[2.5rem] blur-[2px] -z-10 ${
+                                isDark 
+                                    ? "bg-linear-to-tr from-white/20 via-white/5 to-transparent" 
+                                    : "bg-linear-to-tr from-indigo-500/10 via-indigo-500/5 to-transparent"
+                            }`} />
+                            <div className={`absolute -inset-[0.5px] rounded-[2.5rem] -z-10 ${
+                                isDark ? "bg-white/10" : "bg-slate-200/50"
+                            }`} />
                             
-                            <div className="relative rounded-[2.2rem] border border-white/10 overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-slate-950/50 backdrop-blur-sm">
+                            <div className={`relative rounded-[2.2rem] border overflow-hidden backdrop-blur-sm ${
+                                isDark 
+                                    ? "border-white/10 bg-slate-950/50 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]" 
+                                    : "border-slate-200 bg-white/70 shadow-[0_38px_90px_-15px_rgba(15,23,42,0.12)]"
+                            }`}>
                                 <Image
                                     src="/hero_arena.png"
                                     alt="Vlyxir Arena UI"
