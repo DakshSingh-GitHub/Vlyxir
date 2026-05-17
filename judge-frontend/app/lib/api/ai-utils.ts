@@ -57,7 +57,8 @@ export function parseAnalysisResult(raw: string): CodeAnalysisResult {
         },
         suggestions: (data.suggestions || []).filter((item): item is string => typeof item === "string"),
         improvementRoadmap: (data.improvementRoadmap || []).filter((item): item is string => typeof item === "string"),
-        recommendedCode: data.recommendedCode || ""
+        recommendedCode: data.recommendedCode || "",
+        whatsChanged: data.whatsChanged || ""
     };
 }
 
@@ -72,8 +73,9 @@ export function getAnalysisPrompt(tier: number): string {
         jsonStructure += `,
   "security":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]},
   "improvementRoadmap":["..."],
-  "recommendedCode":"..."`;
-        tierRules = " For recommendedCode, you MUST always provide the optimized/corrected version of the submitted code. If the code is already optimal and requires no changes, you MUST return the exact message: \"This code is optimized, no need for changes\".";
+  "recommendedCode":"...",
+  "whatsChanged":"..."`;
+        tierRules = " For recommendedCode, you MUST always provide the optimized/corrected version of the submitted code. If the code is already optimal and requires no changes, you MUST return the exact message: \"This code is optimized, no need for changes\". For whatsChanged, you MUST describe what has been changed in the recommended code compared to the original code. If recommendedCode is \"This code is optimized, no need for changes\", then whatsChanged MUST be empty (\"\").";
     }
 
     jsonStructure += `\n}`;

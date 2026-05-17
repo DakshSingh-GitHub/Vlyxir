@@ -52,6 +52,7 @@ interface AnalysisResult {
     suggestions: string[];
     improvementRoadmap?: string[];
     recommendedCode?: string;
+    whatsChanged?: string;
 }
 
 interface AnalysisRecord {
@@ -650,6 +651,18 @@ export default function CodeAnalysisPage() {
                                                 </div>
                                             </div>
 
+                                            {tier >= 3 && analysisResult.whatsChanged && (
+                                                <div className="p-5 rounded-2xl border border-blue-200/50 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">What's Changed?</h3>
+                                                    </div>
+                                                    <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed">
+                                                        {analysisResult.whatsChanged}
+                                                    </p>
+                                                </div>
+                                            )}
+
                                             <div className="p-5 rounded-2xl border border-emerald-200/50 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-900/20">
                                                 <div className="flex items-center gap-3 mb-3">
                                                     <Construction className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
@@ -791,14 +804,27 @@ export default function CodeAnalysisPage() {
                                                 </section>
 
                                                 {expandedRecordId === record.id && tier >= 3 && (
-                                                    <section className="h-fit rounded-xl border border-blue-200/60 dark:border-blue-700/40 bg-blue-50/50 dark:bg-blue-950/20 overflow-hidden">
-                                                        <div className="px-4 py-2 border-b border-blue-200/60 dark:border-blue-700/40">
-                                                            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Recommended Code</p>
-                                                        </div>
-                                                        <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
-                                                            {record.result.recommendedCode || "This code is optimized, no need for changes"}
-                                                        </pre>
-                                                    </section>
+                                                    <>
+                                                        <section className="h-fit rounded-xl border border-blue-200/60 dark:border-blue-700/40 bg-blue-50/50 dark:bg-blue-950/20 overflow-hidden">
+                                                            <div className="px-4 py-2 border-b border-blue-200/60 dark:border-blue-700/40">
+                                                                <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Recommended Code</p>
+                                                            </div>
+                                                            <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
+                                                                {record.result.recommendedCode || "This code is optimized, no need for changes"}
+                                                            </pre>
+                                                        </section>
+
+                                                        {record.result.whatsChanged && (
+                                                            <section className="h-fit rounded-xl border border-indigo-200/60 dark:border-indigo-700/40 bg-indigo-50/50 dark:bg-indigo-950/20 overflow-hidden">
+                                                                <div className="px-4 py-2 border-b border-indigo-200/60 dark:border-indigo-700/40">
+                                                                    <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">What's Changed?</p>
+                                                                </div>
+                                                                <div className="p-4 text-[13px] leading-relaxed text-gray-800 dark:text-gray-200">
+                                                                    {record.result.whatsChanged}
+                                                                </div>
+                                                            </section>
+                                                        )}
+                                                    </>
                                                 )}
                                             </div>
 

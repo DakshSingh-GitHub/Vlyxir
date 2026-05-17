@@ -26,6 +26,7 @@ export interface CodeAnalysisResult {
     suggestions: string[];
     improvementRoadmap?: string[];
     recommendedCode?: string;
+    whatsChanged?: string;
 }
 
 export type AIProvider = "groq" | "gemini";
