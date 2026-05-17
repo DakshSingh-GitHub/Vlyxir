@@ -30,6 +30,7 @@ const TIERS = [
         aiInsights: null,
         features: [
             "Standard Code Execution",
+            "Problems on Arena",
             "Public Forums Access",
             "Vlyxir Forge",
             "Community Support"
@@ -46,6 +47,8 @@ const TIERS = [
         aiInsights: null,
         features: [
             "Increased Forge Quota",
+            "Early Access Features",
+            "Early Access to new UIs",
         ],
         icon: Zap,
         color: "text-blue-400",
@@ -61,8 +64,10 @@ const TIERS = [
         features: [
             "Higher Execution Quota",
             "10 Daily AI Insights",
+            "Static Findings",
             "Code Complexity Analysis",
-            "Early Access Features"
+            "Early Access Features",
+            "Early Access to new UIs",
         ],
         icon: BrainCircuit,
         color: "text-indigo-400",
@@ -78,7 +83,13 @@ const TIERS = [
         features: [
             "Maximum Forge Quota",
             "20 Daily AI Insights",
-            "Direct Technical Support"
+            "Direct Technical Support",
+            "Security Vulnerability Scans",
+            "Logic Optimization Reports",
+            "Early Access Features",
+            "Improvement Roadmap",
+            "Recommended Reference Code",
+            "Priority Support"
         ],
         icon: Crown,
         color: "text-amber-400",
@@ -87,10 +98,24 @@ const TIERS = [
 ];
 
 const COMPARISON_FEATURES = [
+    { name: "Problems on Arena", free: true, tier1: true, tier2: true, tier3: true },
+    { name: "Test Cases on problems", free:true, tier1:true, tier2:true, tier3:true },  
+    { name: "Test Cases / problem", free: "80-160", tier1:"80-160", tier2:"80-160", tier3:"80-160" }, 
     { name: "Vlyxir Forge", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Forge Submissions / day", free: "10", tier1: "25", tier2: "40", tier3: "100" },
+    { name: "Public Forums Access", free: true, tier1: true, tier2: true, tier3: true },
+    { name: "Community Support", free:true, tier1:true, tier2:true, tier3:true },
+    { name: "Private Leaderboard", free:true, tier1:true, tier2:true, tier3:true },
+    { name: "Early Access to new UIs", free: false, tier1: true, tier2: true, tier3: true },
+    { name: "Early Access Features", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },
     { name: "AI Insights / day", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
+    { name: "Complexity Analysis", free: false, tier1:false, tier2:true, tier3:true },
+    { name: "Static Findings", free: false, tier1:false, tier2:true, tier3:true },
+    { name: "Security Audit", free: false, tier1: false, tier2:false, tier3:true },
+    { name: "Logic Optimization", free: false, tier1: false, tier2:false, tier3:true },
+    { name: "Improvement Roadmap", free: false, tier1: false, tier2: false, tier3: true },
+    { name: "Direct Technical Support", free: false, tier1: false, tier2: false, tier3: true },
     { name: "Priority Support", free: false, tier1: false, tier2: true, tier3: true },
 ];
 
