@@ -13,6 +13,7 @@ export interface ProfileRecord {
   bio: string | null;
   country: string | null;
   avatar_url: string | null;
+  plan?: string | null;
 }
 
 export interface LeaderboardSettings {
@@ -74,6 +75,7 @@ export function buildFallbackProfile(user: User): ProfileRecord {
     bio,
     country,
     avatar_url: getMetadataString(user, "avatar_url") || "",
+    plan: "free",
   };
 }
 
@@ -93,7 +95,7 @@ export function formatAccountDate(value: string | null | undefined) {
 export async function getAccountProfile(user: User): Promise<ProfileRecord> {
   const { data, error } = await supabase
     .from(PROFILE_TABLE)
-    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url")
+    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url, plan")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -120,6 +122,7 @@ export async function getAccountProfile(user: User): Promise<ProfileRecord> {
     bio: data.bio ?? metadataBio ?? "",
     country: data.country ?? metadataCountry ?? "",
     avatar_url: data.avatar_url ?? getMetadataString(user, "avatar_url") ?? "",
+    plan: data.plan || "free",
   };
 }
 
@@ -164,7 +167,7 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
   const { data, error } = await supabase
     .from(PROFILE_TABLE)
     .upsert(profilePayload, { onConflict: "id" })
-    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url")
+    .select("id, full_name, username, email, created_at, updated_at, bio, country, avatar_url, plan")
     .single();
 
   if (error) {
@@ -196,6 +199,7 @@ export async function saveAccountProfile(user: User, values: ProfileFormValues):
     bio: data.bio ?? trimmedBio,
     country: data.country ?? trimmedCountry,
     avatar_url: data.avatar_url ?? values.avatar_url,
+    plan: data.plan || "free",
   };
 }
 

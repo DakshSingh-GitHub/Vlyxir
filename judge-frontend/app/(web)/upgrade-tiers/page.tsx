@@ -47,6 +47,7 @@ const TIERS = [
         aiInsights: null,
         features: [
             "Increased Forge Quota",
+            "Private Leaderboard",
             "Early Access Features",
             "Early Access to new UIs",
         ],
@@ -105,7 +106,7 @@ const COMPARISON_FEATURES = [
     { name: "Forge Submissions / day", free: "10", tier1: "25", tier2: "40", tier3: "100" },
     { name: "Public Forums Access", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Community Support", free:true, tier1:true, tier2:true, tier3:true },
-    { name: "Private Leaderboard", free:true, tier1:true, tier2:true, tier3:true },
+    { name: "Private Leaderboard", free:false, tier1:true, tier2:true, tier3:true },
     { name: "Early Access to new UIs", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access Features", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },

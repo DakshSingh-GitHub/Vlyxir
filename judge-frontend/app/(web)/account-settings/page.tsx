@@ -782,48 +782,50 @@ export default function AccountSettingsPage() {
               </div>
 
               {/* Preferences Section */}
-              <div className={`mt-8 rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-6">
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Privacy & Preferences</p>
-                  <h2 className="mt-1 text-xl font-bold">Leaderboard Participation</h2>
-                </div>
+              {profile?.plan === 'pro' && (
+                <div className={`mt-8 rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
+                  <div className="mb-6">
+                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Privacy & Preferences</p>
+                    <h2 className="mt-1 text-xl font-bold">Leaderboard Participation</h2>
+                  </div>
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5 text-indigo-500" />
-                      <h3 className="font-bold">Join the leaderboard</h3>
-                    </div>
-                    <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                      When enabled, your profile and total score will be visible on the global leaderboard. 
-                      Disabling this will hide you from public rankings.
-                    </p>
-                    {leaderboardCooldown && (
-                      <div className="mt-2 flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit border border-amber-500/20">
-                        <BadgeInfo size={12} />
-                        Cooldown active: {leaderboardCooldown.hours}h {leaderboardCooldown.minutes}m remaining
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-1 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-indigo-500" />
+                        <h3 className="font-bold">Join the leaderboard</h3>
                       </div>
-                    )}
-                  </div>
+                      <p className={`text-sm leading-relaxed ${mutedClass}`}>
+                        When enabled, your profile and total score will be visible on the global leaderboard. 
+                        Disabling this will hide you from public rankings.
+                      </p>
+                      {leaderboardCooldown && (
+                        <div className="mt-2 flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit border border-amber-500/20">
+                          <BadgeInfo size={12} />
+                          Cooldown active: {leaderboardCooldown.hours}h {leaderboardCooldown.minutes}m remaining
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="shrink-0">
-                    <button
-                      type="button"
-                      onClick={handleLeaderboardToggle}
-                      disabled={isTogglingLeaderboard || !!leaderboardCooldown}
-                      className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed ${
-                        leaderboardSettings?.is_enabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
-                      } ${leaderboardCooldown ? 'opacity-50 grayscale-[0.5]' : ''}`}
-                    >
-                      <motion.span
-                        initial={false}
-                        animate={{ x: leaderboardSettings?.is_enabled ? 24 : 4 }}
-                        className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
-                      />
-                    </button>
+                    <div className="shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleLeaderboardToggle}
+                        disabled={isTogglingLeaderboard || !!leaderboardCooldown}
+                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed ${
+                          leaderboardSettings?.is_enabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
+                        } ${leaderboardCooldown ? 'opacity-50 grayscale-[0.5]' : ''}`}
+                      >
+                        <motion.span
+                          initial={false}
+                          animate={{ x: leaderboardSettings?.is_enabled ? 24 : 4 }}
+                          className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="flex items-center justify-between pt-6">
                 <div className="flex items-center gap-2 text-[10px] font-medium">
