@@ -628,27 +628,27 @@ export default function CodeAnalysisPage() {
                                                 color="rose"
                                             />
 
-                                            {analysisResult.recommendedCode && (
-                                                <div className="p-5 rounded-2xl border border-blue-200/50 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20">
-                                                    <div className="flex items-center justify-between gap-3 mb-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <Code2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Recommended Code</h3>
-                                                        </div>
+                                            <div className="p-5 rounded-2xl border border-blue-200/50 dark:border-blue-500/30 bg-blue-50/60 dark:bg-blue-900/20">
+                                                <div className="flex items-center justify-between gap-3 mb-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <Code2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Recommended Code</h3>
+                                                    </div>
+                                                    {analysisResult.recommendedCode && analysisResult.recommendedCode !== "This code is optimized, no need for changes" && (
                                                         <button
                                                             onClick={() => setCode(analysisResult.recommendedCode || "")}
                                                             className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all active:scale-95"
                                                         >
                                                             Apply to editor
                                                         </button>
-                                                    </div>
-                                                    <div className="rounded-xl overflow-hidden border border-blue-200 dark:border-blue-800 shadow-sm">
-                                                        <pre className="p-4 text-sm font-mono text-gray-800 dark:text-gray-200 bg-white/50 dark:bg-gray-950/50 overflow-x-auto custom-scrollbar">
-                                                            {analysisResult.recommendedCode}
-                                                        </pre>
-                                                    </div>
+                                                    )}
                                                 </div>
-                                            )}
+                                                <div className="rounded-xl overflow-hidden border border-blue-200 dark:border-blue-800 shadow-sm">
+                                                    <pre className="p-4 text-sm font-mono text-gray-800 dark:text-gray-200 bg-white/50 dark:bg-gray-950/50 overflow-x-auto custom-scrollbar">
+                                                        {analysisResult.recommendedCode || "This code is optimized, no need for changes"}
+                                                    </pre>
+                                                </div>
+                                            </div>
 
                                             <div className="p-5 rounded-2xl border border-emerald-200/50 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-900/20">
                                                 <div className="flex items-center gap-3 mb-3">
@@ -790,13 +790,13 @@ export default function CodeAnalysisPage() {
                                                     </pre>
                                                 </section>
 
-                                                {expandedRecordId === record.id && tier >= 3 && record.result.recommendedCode && (
+                                                {expandedRecordId === record.id && tier >= 3 && (
                                                     <section className="h-fit rounded-xl border border-blue-200/60 dark:border-blue-700/40 bg-blue-50/50 dark:bg-blue-950/20 overflow-hidden">
                                                         <div className="px-4 py-2 border-b border-blue-200/60 dark:border-blue-700/40">
                                                             <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Recommended Code</p>
                                                         </div>
                                                         <pre className="max-h-105 overflow-auto p-4 text-[13px] leading-relaxed font-mono text-gray-800 dark:text-gray-200 whitespace-pre-wrap wrap-break-word">
-                                                            {record.result.recommendedCode}
+                                                            {record.result.recommendedCode || "This code is optimized, no need for changes"}
                                                         </pre>
                                                     </section>
                                                 )}

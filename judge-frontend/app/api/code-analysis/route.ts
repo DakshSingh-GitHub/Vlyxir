@@ -62,6 +62,10 @@ export async function POST(request: Request) {
             analysis = await analyzeCodeWithGroq(code, tier);
         }
 
+        if (tier >= 3 && !analysis.recommendedCode) {
+            analysis.recommendedCode = "This code is optimized, no need for changes";
+        }
+
         return NextResponse.json({ ok: true, analysis });
     } catch (error) {
         return NextResponse.json(

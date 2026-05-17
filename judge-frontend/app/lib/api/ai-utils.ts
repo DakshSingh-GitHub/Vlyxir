@@ -67,18 +67,20 @@ export function getAnalysisPrompt(tier: number): string {
   "complexity":{"time":"O(?)","space":"O(?)","explanation":"..."},
   "staticAnalysis":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]}`;
 
+    let tierRules = "";
     if (tier >= 3) {
         jsonStructure += `,
   "security":{"overview":"...","findings":[{"title":"...","detail":"...","severity":"low|medium|high|critical","location":"","suggestion":""}]},
   "improvementRoadmap":["..."],
   "recommendedCode":"..."`;
+        tierRules = " For recommendedCode, you MUST always provide the optimized/corrected version of the submitted code. If the code is already optimal and requires no changes, you MUST return the exact message: \"This code is optimized, no need for changes\".";
     }
 
     jsonStructure += `\n}`;
 
     return `Return ONLY minified JSON (no markdown) for code review:
 ${jsonStructure}
-Rules: concise, actionable; infer only from code; use [] for no findings.
+Rules: concise, actionable; infer only from code; use [] for no findings.${tierRules}
 Code:
 `;
 }

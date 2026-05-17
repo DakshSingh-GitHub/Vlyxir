@@ -756,27 +756,27 @@ export default function CodeAnalysisPage() {
                                                         isDark={isDark}
                                                     />
 
-                                                    {analysisResult.recommendedCode && (
-                                                        <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-blue-500/20 bg-blue-500/5 shadow-[inset_0_0_30px_rgba(59,130,246,0.05)]" : "border-blue-200 bg-blue-50/70"}`}>
-                                                            <div className="flex items-center justify-between gap-3 mb-4">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Code2 className={`w-4 h-4 ${isDark ? "text-blue-400" : "text-blue-600"}`} />
-                                                                    <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-blue-400" : "text-blue-600"}`}>Recommended Reference Code</p>
-                                                                </div>
+                                                    <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-blue-500/20 bg-blue-500/5 shadow-[inset_0_0_30px_rgba(59,130,246,0.05)]" : "border-blue-200 bg-blue-50/70"}`}>
+                                                        <div className="flex items-center justify-between gap-3 mb-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <Code2 className={`w-4 h-4 ${isDark ? "text-blue-400" : "text-blue-600"}`} />
+                                                                <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? "text-blue-400" : "text-blue-600"}`}>Recommended Reference Code</p>
+                                                            </div>
+                                                            {analysisResult.recommendedCode && analysisResult.recommendedCode !== "This code is optimized, no need for changes" && (
                                                                 <button
                                                                     onClick={() => setCode(analysisResult.recommendedCode || "")}
                                                                     className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${isDark ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:brightness-110" : "bg-blue-600 text-white shadow-sm hover:bg-blue-700"} active:scale-95`}
                                                                 >
                                                                     Apply to editor
                                                                 </button>
-                                                            </div>
-                                                            <div className={`rounded-2xl border ${isDark ? "border-blue-500/10 bg-slate-950/50" : "border-blue-100 bg-white/50"} overflow-hidden shadow-inner`}>
-                                                                <pre className={`p-4 text-xs font-mono whitespace-pre-wrap break-words custom-scrollbar ${isDark ? "text-blue-100" : "text-blue-900"}`}>
-                                                                    {analysisResult.recommendedCode}
-                                                                </pre>
-                                                            </div>
+                                                            )}
                                                         </div>
-                                                    )}
+                                                        <div className={`rounded-2xl border ${isDark ? "border-blue-500/10 bg-slate-950/50" : "border-blue-100 bg-white/50"} overflow-hidden shadow-inner`}>
+                                                            <pre className={`p-4 text-xs font-mono whitespace-pre-wrap break-words custom-scrollbar ${isDark ? "text-blue-100" : "text-blue-900"}`}>
+                                                                {analysisResult.recommendedCode || "This code is optimized, no need for changes"}
+                                                            </pre>
+                                                        </div>
+                                                    </div>
 
                                                     <div className={`p-6 rounded-[1.75rem] border ${isDark ? "border-emerald-500/20 bg-emerald-500/5" : "border-emerald-200 bg-emerald-50/70"}`}>
                                                         <div className="flex items-center gap-2 mb-4">
@@ -933,13 +933,13 @@ export default function CodeAnalysisPage() {
                                                             </pre>
                                                         </div>
 
-                                                        {expandedRecordId === record.id && tier >= 3 && record.result.recommendedCode && (
+                                                        {expandedRecordId === record.id && tier >= 3 && (
                                                             <div className={`${recordCodeClass} border-indigo-500/30 dark:border-indigo-500/20`}>
                                                                 <div className={`px-4 py-2 border-b ${isDark ? "border-indigo-500/20 bg-indigo-500/5" : "border-indigo-100 bg-indigo-50/30"}`}>
                                                                     <p className={`text-[10px] font-black uppercase tracking-widest ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>Recommended Code</p>
                                                                 </div>
                                                                 <pre className={`${recordCodePreClass} ${isDark ? "text-indigo-200" : "text-indigo-900"}`}>
-                                                                    {record.result.recommendedCode}
+                                                                    {record.result.recommendedCode || "This code is optimized, no need for changes"}
                                                                 </pre>
                                                             </div>
                                                         )}
