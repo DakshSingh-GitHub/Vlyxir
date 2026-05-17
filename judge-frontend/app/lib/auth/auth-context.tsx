@@ -13,6 +13,8 @@ type AuthContextValue = {
   savedAccounts: SavedAccount[];
   switchAccount: (userId: string) => Promise<void>;
   removeAccount: (userId: string) => Promise<void>;
+  dbProfile?: any | null;
+  refreshProfile?: () => Promise<void>;
 };
 
 export type SavedAccount = {
@@ -21,6 +23,7 @@ export type SavedAccount = {
   username: string;
   avatarUrl: string;
   provider: string;
+  providers?: string[];
   session: Session;
 };
 
@@ -30,6 +33,78 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isReloading, setIsReloading] = useState(false);
+  const [dbProfile, setDbProfile] = useState<any>(null);
+
+  const refreshProfile = async () => {
+    if (!session?.user) return;
+    try {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, avatar_url, username")
+        .eq("id", session.user.id)
+        .maybeSingle();
+      if (data) {
+        setDbProfile(data);
+        setSavedAccounts(prev => {
+          const newAccounts = [...prev];
+          const index = newAccounts.findIndex(a => a.userId === session.user.id);
+          if (index >= 0) {
+            newAccounts[index] = {
+              ...newAccounts[index],
+              username: data.username || data.full_name || newAccounts[index].username,
+              avatarUrl: data.avatar_url || newAccounts[index].avatarUrl
+            };
+            localStorage.setItem("vlyxir_saved_accounts", JSON.stringify(newAccounts));
+          }
+          return newAccounts;
+        });
+      }
+    } catch (e) {
+      console.warn("Failed to refresh profile:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (!session?.user) {
+      setDbProfile(null);
+      return;
+    }
+
+    let mounted = true;
+    Promise.resolve(
+      supabase
+        .from("profiles")
+        .select("full_name, avatar_url, username")
+        .eq("id", session.user.id)
+        .maybeSingle()
+    )
+      .then(({ data }) => {
+        if (mounted && data) {
+          setDbProfile(data);
+          setSavedAccounts(prev => {
+            const newAccounts = [...prev];
+            const index = newAccounts.findIndex(a => a.userId === session.user.id);
+            if (index >= 0) {
+              newAccounts[index] = {
+                ...newAccounts[index],
+                username: data.username || data.full_name || newAccounts[index].username,
+                avatarUrl: data.avatar_url || newAccounts[index].avatarUrl
+              };
+              localStorage.setItem("vlyxir_saved_accounts", JSON.stringify(newAccounts));
+            }
+            return newAccounts;
+          });
+        }
+      })
+      .catch((e: unknown) => {
+        console.warn("Error loading profile in AuthProvider:", e);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [session?.user]);
+
   const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem("vlyxir_saved_accounts");
@@ -59,7 +134,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setIsLoading(false);
-
+ 
+      // Clean up empty hash (#) left by OAuth redirects
+      if (typeof window !== "undefined" && window.location.hash === "#") {
+        const cleanUrl = window.location.pathname + window.location.search;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+ 
       if (nextSession?.user) {
         // Update or add the current user to saved accounts
         setSavedAccounts(prev => {
@@ -71,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username: nextSession.user.user_metadata?.username || nextSession.user.user_metadata?.full_name || nextSession.user.email?.split('@')[0] || "User",
             avatarUrl: nextSession.user.user_metadata?.avatar_url || "",
             provider: nextSession.user.app_metadata?.provider || "email",
+            providers: nextSession.user.identities?.map(id => id.provider) || [nextSession.user.app_metadata?.provider || "email"],
             session: nextSession
           };
 
@@ -85,9 +167,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted && mounted) {
+        setIsLoading(false);
+      }
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
 
@@ -133,9 +224,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user.id === userId) {
           await supabase.auth.signOut();
         }
-      }
+      },
+      dbProfile,
+      refreshProfile
     };
-  }, [session, isLoading, savedAccounts]);
+  }, [session, isLoading, savedAccounts, dbProfile]);
 
   return (
     <AuthContext.Provider value={value}>

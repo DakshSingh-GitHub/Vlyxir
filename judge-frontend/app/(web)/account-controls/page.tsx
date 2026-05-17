@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -21,6 +21,7 @@ import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
 import { formatAccountDate } from "../account-settings/helper/acc_helper";
 import DeleteAccountModal from "../../../components/Account/DeleteAccountModal";
+import ErrorModal from "../account-settings/ErrorModal";
 import { Trash2 } from "lucide-react";
 import { supabase } from "../../lib/api/supabase/client";
 
@@ -40,6 +41,122 @@ export default function AccountControlsPage() {
   const { user, isLoading: isAuthLoading, signOut } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLinkingGoogle, setIsLinkingGoogle] = useState(false);
+  const [identities, setIdentities] = useState<any[]>([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorConfig, setErrorConfig] = useState({ title: "Linking Failed", message: "This email has already in use." });
+  const [isSafetyTimeoutReached, setIsSafetyTimeoutReached] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSafetyTimeoutReached(true);
+    }, 1500); // 1.5 seconds safety valve to avoid infinite loading skeletons
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Check for linking/authentication errors in URL hash or query params
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const hash = window.location.hash;
+    const search = window.location.search;
+
+    const params = new URLSearchParams(
+      hash.startsWith("#") ? hash.substring(1) : search
+    );
+
+    const errorParam = params.get("error") || new URLSearchParams(search).get("error");
+    const errorDesc = params.get("error_description") || new URLSearchParams(search).get("error_description");
+
+    if (errorParam) {
+      console.log("Authentication error detected in controls:", errorParam, errorDesc);
+      
+      const isAlreadyLinked = 
+        errorParam.includes("identity_already_linked") || 
+        errorParam.includes("email_exists") || 
+        errorParam.includes("email_already_in_use") ||
+        errorDesc?.toLowerCase().includes("already linked") ||
+        errorDesc?.toLowerCase().includes("already in use") ||
+        errorDesc?.toLowerCase().includes("already exists");
+
+      if (isAlreadyLinked) {
+        setErrorConfig({
+          title: "Email Already in Use",
+          message: "This email has already in use. It is associated with another account and cannot be linked."
+        });
+      } else {
+        setErrorConfig({
+          title: "Linking Failed",
+          message: errorDesc || "An error occurred while linking your account."
+        });
+      }
+      setShowErrorModal(true);
+
+      // Clean up the URL hash/search to prevent the modal from re-triggering on reload
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.auth.getUserIdentities().then((res) => {
+      setIdentities(res.data?.identities || []);
+    }).catch(err => {
+      console.warn("Failed to fetch identities:", err);
+    });
+  }, [user]);
+
+  const handleLinkGoogle = async () => {
+    if (!user || isLinkingGoogle) return;
+    setIsLinkingGoogle(true);
+    try {
+      const { error } = await supabase.auth.linkIdentity({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/account-controls`,
+        },
+      });
+      if (error) {
+        alert(error.message);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to link Google account.");
+    } finally {
+      setIsLinkingGoogle(false);
+    }
+  };
+
+  const handleUnlinkGoogle = async () => {
+    if (!user || isLinkingGoogle) return;
+
+    const googleId = identities.find((id) => id.provider === "google");
+    if (!googleId) {
+      alert("No linked Google account found to unlink.");
+      return;
+    }
+
+    if (identities.length < 2) {
+      alert("For your security, you must have at least two login methods (e.g. Email and Google) to unlink your Google account.");
+      return;
+    }
+
+    setIsLinkingGoogle(true);
+    try {
+      const { error } = await supabase.auth.unlinkIdentity(googleId);
+      if (error) {
+        alert(error.message);
+      } else {
+        const res = await supabase.auth.getUserIdentities();
+        setIdentities(res.data?.identities || []);
+        alert("Google account unlinked successfully!");
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to unlink Google account.");
+    } finally {
+      setIsLinkingGoogle(false);
+    }
+  };
 
   const shellClass = "relative flex-1 font-sans";
   const ambientClass = isDark
@@ -108,7 +225,7 @@ export default function AccountControlsPage() {
     }
   };
 
-  if (isAuthLoading) {
+  if (!isSafetyTimeoutReached && isAuthLoading) {
     return (
       <div className={shellClass}>
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -388,9 +505,53 @@ export default function AccountControlsPage() {
                 </p>
               </button>
             </div>
+
+            <div className={`mt-8 rounded-3xl border p-6 ${isDark ? "border-slate-800/80 bg-slate-950/50" : "border-slate-200/60 bg-white/50"}`}>
+              <div className="mb-4 flex items-center gap-3">
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
+                  <Shield className="h-5 w-5 text-indigo-500" />
+                </div>
+                <div>
+                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Backup Login</p>
+                  <h2 className="text-lg font-bold">Google Connectivity</h2>
+                </div>
+              </div>
+              <p className={`text-sm leading-relaxed ${mutedClass} mb-4`}>
+                Link your account to Google to ensure you can always recover your profile and progress, even if you lose your password.
+              </p>
+
+              <div className="space-y-3">
+                <div className={`flex items-center justify-between rounded-2xl border p-3 ${isDark ? "border-slate-800/50 bg-slate-900/30" : "border-slate-200/50 bg-white"}`}>
+                  <span className="text-xs font-bold">Status:</span>
+                  {identities.some((id) => id.provider === "google") ? (
+                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[9px] font-black uppercase text-emerald-500 tracking-widest">Linked</span>
+                  ) : (
+                    <span className="rounded-full bg-slate-500/10 px-2.5 py-1 text-[9px] font-black uppercase text-slate-400 tracking-widest">Not Linked</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={handleLinkGoogle}
+                    disabled={isLinkingGoogle || identities.some((id) => id.provider === "google")}
+                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 enabled:hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 enabled:hover:brightness-110"} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    Link Google
+                  </button>
+
+                  <button
+                    onClick={handleUnlinkGoogle}
+                    disabled={isLinkingGoogle || !identities.some((id) => id.provider === "google")}
+                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold transition active:scale-[0.98] ${isDark ? "border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" : "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100/70"} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    Unlink Google
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6 lg:justify-between lg:h-full">
             <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
               <div className="mb-5 flex items-center gap-3">
                 <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
@@ -451,7 +612,9 @@ export default function AccountControlsPage() {
                 </div>
               </div>
               <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                Permanently remove your profile, submissions, and all associated data. This action cannot be undone.
+                Permanently delete your public profile, past arena code submissions, forum posts, upvotes, and comments. 
+                This action is irreversible and all your hard-earned progress, stats, and historical activity will be permanently wiped from the database. 
+                Please proceed with absolute caution.
               </p>
               <button
                 onClick={() => setIsDeleteModalOpen(true)}
@@ -471,6 +634,12 @@ export default function AccountControlsPage() {
         onConfirm={handleDeleteAccount}
         currentUsername={user?.user_metadata?.username || "confirm"}
         isDark={isDark}
+      />
+      <ErrorModal 
+        isOpen={showErrorModal} 
+        onClose={() => setShowErrorModal(false)} 
+        title={errorConfig.title}
+        message={errorConfig.message}
       />
     </div>
   );

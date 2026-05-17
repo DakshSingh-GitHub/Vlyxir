@@ -278,3 +278,32 @@ export async function saveLeaderboardSettings(userId: string, isEnabled: boolean
 
   return data;
 }
+
+export async function getUserIdentities() {
+  const { data, error } = await supabase.auth.getUserIdentities();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data?.identities || [];
+}
+
+export async function linkGoogleIdentity(redirectToPath = "/account-settings") {
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}${redirectToPath}`,
+    },
+  });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+export async function unlinkGoogleIdentity(identity: any) {
+  const { data, error } = await supabase.auth.unlinkIdentity(identity);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+}
