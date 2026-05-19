@@ -53,6 +53,7 @@ interface AnalysisResult {
     improvementRoadmap?: string[];
     recommendedCode?: string;
     whatsChanged?: string;
+    modelName?: string;
 }
 
 interface AnalysisRecord {
@@ -478,7 +479,18 @@ export default function CodeAnalysisPage() {
                 throw new Error(payload?.error || "Analysis failed.");
             }
 
-            const nextResult = payload.analysis as AnalysisResult;
+            const modelLabel = provider === "groq"
+                ? "Groq"
+                : (selectedModel === "gemini-2.5-flash"
+                    ? "Gemini 2.5"
+                    : selectedModel === "gemini-3-flash"
+                        ? "Gemini 3"
+                        : "Gemini 3.1 Flash Lite");
+
+            const nextResult: AnalysisResult = {
+                ...(payload.analysis as AnalysisResult),
+                modelName: modelLabel
+            };
             setAnalysisResult(nextResult);
 
             if (user) {
@@ -993,10 +1005,22 @@ export default function CodeAnalysisPage() {
                                         records.map((record, index) => (
                                             <article key={record.id} className={recordCardClass}>
                                                 <div className={recordHeaderClass}>
-                                                    <div className="flex items-center gap-3">
+                                                    <div className="flex items-center gap-3 flex-wrap">
                                                         <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md border ${isDark ? "text-indigo-400 bg-indigo-500/10 border-indigo-500/20" : "text-indigo-600 bg-indigo-50 border-indigo-100"}`}>IDX #{records.length - index}</span>
                                                         <div className={`h-3 w-px ${isDark ? "bg-slate-700" : "bg-slate-200"}`} />
                                                         <p className={`text-xs font-bold tracking-tight uppercase ${recordMutedClass}`}>{formatRecordTime(record.createdAt)}</p>
+                                                        {record.result.modelName && (
+                                                            <>
+                                                                <div className={`h-3 w-px ${isDark ? "bg-slate-700" : "bg-slate-200"}`} />
+                                                                <span className={`text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                                                    record.result.modelName.toLowerCase().includes("groq")
+                                                                        ? isDark ? "text-amber-400 bg-amber-500/10 border border-amber-500/20" : "text-amber-700 bg-amber-50 border border-amber-100"
+                                                                        : isDark ? "text-indigo-400 bg-indigo-500/10 border-indigo-500/20" : "text-indigo-600 bg-indigo-50 border-indigo-100"
+                                                                }`}>
+                                                                    {record.result.modelName}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <button
