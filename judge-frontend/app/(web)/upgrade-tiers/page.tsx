@@ -84,6 +84,7 @@ const TIERS = [
         features: [
             "Maximum Forge Quota",
             "20 Daily AI Insights",
+            "Model Selection choice between Gemini and Groq models",
             "Direct Technical Support",
             "Security Vulnerability Scans",
             "Logic Optimization Reports",
@@ -116,6 +117,7 @@ const COMPARISON_FEATURES = [
     { name: "Security Audit", free: false, tier1: false, tier2:false, tier3:true },
     { name: "Logic Optimization", free: false, tier1: false, tier2:false, tier3:true },
     { name: "Improvement Roadmap", free: false, tier1: false, tier2: false, tier3: true },
+    { name: "Model Selection choice", free: false, tier1: false, tier2: false, tier3: true },
     { name: "Direct Technical Support", free: false, tier1: false, tier2: false, tier3: true },
     { name: "Priority Support", free: false, tier1: false, tier2: true, tier3: true },
 ];
