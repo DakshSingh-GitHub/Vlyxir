@@ -32,6 +32,8 @@ const LoadingOverlay = () => {
                             fill 
                             sizes="80px"
                             className="object-contain"
+                            loading="eager"
+                            priority
                         />
                     </div>
                 </div>

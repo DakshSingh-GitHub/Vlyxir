@@ -80,7 +80,7 @@ export function getAnalysisPrompt(tier: number): string {
 
     jsonStructure += `\n}`;
 
-    return `Return ONLY minified JSON (no markdown) for code review:
+    return `You are a professional code review assistant. Return a valid JSON object matching this structure:
 ${jsonStructure}
 Rules: concise, actionable; infer only from code; use [] for no findings.${tierRules}
 Code:

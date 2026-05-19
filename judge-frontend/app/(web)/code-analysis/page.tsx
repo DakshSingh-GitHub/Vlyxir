@@ -93,6 +93,9 @@ export default function CodeAnalysisPage() {
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [provider, setProvider] = useState<"groq" | "gemini">("groq");
+    const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-flash");
+    const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
+    const modelDropdownRef = useRef<HTMLDivElement>(null);
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -238,6 +241,8 @@ export default function CodeAnalysisPage() {
 
         if (!userId) {
             setPlan(null);
+            setTier(0);
+            setProvider("groq");
             setIsFetchingPlan(false);
             return;
         }
@@ -251,12 +256,16 @@ export default function CodeAnalysisPage() {
                 if (mounted) {
                     setPlan(details.plan);
                     setTier(details.tier);
+                    if (details.tier < 3) {
+                        setProvider("groq");
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching plan:", err);
                 if (mounted) {
                     setPlan("free");
                     setTier(0);
+                    setProvider("groq");
                 }
             } finally {
                 if (mounted) setIsFetchingPlan(false);
@@ -269,6 +278,24 @@ export default function CodeAnalysisPage() {
             mounted = false;
         };
     }, [userId, authLoading]);
+
+    useEffect(() => {
+        if (tier < 3) {
+            setProvider("groq");
+        }
+    }, [tier]);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (modelDropdownRef.current && !modelDropdownRef.current.contains(event.target as Node)) {
+                setIsModelDropdownOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -380,7 +407,7 @@ export default function CodeAnalysisPage() {
                     "Content-Type": "application/json",
                     ...(session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {})
                 },
-                body: JSON.stringify({ code, provider })
+                body: JSON.stringify({ code, provider, model: provider === "gemini" ? selectedModel : undefined })
             });
 
             const payload = await response.json();
@@ -529,29 +556,99 @@ export default function CodeAnalysisPage() {
                                 <div className="flex-1 min-h-0 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-inner">
                                     <CodeEditor code={code} setCode={setCode} isDark={isDark} isDisabled={false} />
                                 </div>
-                                <div className="mt-4 flex items-center justify-center gap-3">
-                                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Provider:</span>
-                                    <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
-                                        <button
-                                            onClick={() => setProvider("groq")}
-                                            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "groq"
-                                                    ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                                                }`}
-                                        >
-                                            Groq
-                                        </button>
-                                        <button
-                                            onClick={() => setProvider("gemini")}
-                                            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "gemini"
-                                                    ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                                                }`}
-                                        >
-                                            Gemini
-                                        </button>
+                                {tier >= 3 && (
+                                    <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                                        {/* Model Dropdown Selection */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Model:</span>
+                                            <div ref={modelDropdownRef} className="relative flex items-center">
+                                                <div 
+                                                    onClick={() => provider !== "groq" && setIsModelDropdownOpen(!isModelDropdownOpen)}
+                                                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border transition-all duration-300 ${
+                                                        provider === "groq"
+                                                            ? isDark
+                                                                ? "bg-slate-900/40 border-slate-800/50 text-slate-500"
+                                                                : "bg-gray-50 border-gray-150 text-gray-400"
+                                                            : isDark 
+                                                                ? "bg-slate-900/60 border-slate-800/80 hover:border-slate-700/80 text-indigo-400 cursor-pointer select-none" 
+                                                                : "bg-gray-50 border-gray-200 hover:border-gray-300 text-indigo-650 cursor-pointer select-none"
+                                                    }`}
+                                                >
+                                                    <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1">
+                                                        {provider === "groq" ? "None" : (selectedModel === "gemini-2.5-flash" ? "Gemini 2.5" : selectedModel === "gemini-3-flash" ? "Gemini 3" : "Gemini 3.1 Flash Lite")}
+                                                        {provider !== "groq" && <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isModelDropdownOpen ? "rotate-180" : ""}`} />}
+                                                    </span>
+                                                </div>
+
+                                                <AnimatePresence>
+                                                    {isModelDropdownOpen && provider !== "groq" && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                                                            transition={{ duration: 0.15 }}
+                                                            className={`absolute bottom-full mb-2 left-0 z-[100] w-48 rounded-xl border shadow-xl backdrop-blur-2xl p-1 flex flex-col gap-0.5 ${
+                                                                isDark 
+                                                                    ? "bg-slate-900/95 border-slate-700/70 shadow-black/40 text-slate-100" 
+                                                                    : "bg-white/95 border-slate-200 shadow-slate-200/50 text-slate-900"
+                                                            }`}
+                                                        >
+                                                            {[
+                                                                { label: "Gemini 2.5", value: "gemini-2.5-flash" },
+                                                                { label: "Gemini 3", value: "gemini-3-flash" },
+                                                                { label: "Gemini 3.1 Flash Lite", value: "gemini-3.1-flash-lite" }
+                                                            ].map((opt) => (
+                                                                <button
+                                                                    key={opt.value}
+                                                                    onClick={() => {
+                                                                        setSelectedModel(opt.value);
+                                                                        setIsModelDropdownOpen(false);
+                                                                    }}
+                                                                    className={`w-full px-3 py-2 rounded-lg text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 ${
+                                                                        selectedModel === opt.value
+                                                                            ? isDark
+                                                                                ? "bg-indigo-500/20 text-indigo-400"
+                                                                                : "bg-indigo-50 text-indigo-600"
+                                                                            : isDark
+                                                                                ? "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                                                                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                                                    }`}
+                                                                >
+                                                                    {opt.label}
+                                                                </button>
+                                                            ))}
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </div>
+
+                                        {/* Provider Selection */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Provider:</span>
+                                            <div className="flex items-center gap-1 p-1 rounded-xl bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                                                <button
+                                                    onClick={() => setProvider("groq")}
+                                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "groq"
+                                                            ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                                            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                                        }`}
+                                                >
+                                                    Groq
+                                                </button>
+                                                <button
+                                                    onClick={() => setProvider("gemini")}
+                                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${provider === "gemini"
+                                                            ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                                                            : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                                        }`}
+                                                >
+                                                    Gemini
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <button
                                     onClick={handleAnalyze}
                                     disabled={isLoading}

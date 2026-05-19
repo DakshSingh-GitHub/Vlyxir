@@ -47,6 +47,10 @@ export async function POST(request: Request) {
         const body = await request.json();
         const code = typeof body?.code === "string" ? body.code.trim() : "";
         const provider = (body?.provider as AIProvider) || "groq";
+        let modelName = undefined;
+        if (provider === "gemini" && tier >= 3 && typeof body?.model === "string") {
+            modelName = body.model;
+        }
 
         if (!code) {
             return NextResponse.json(
@@ -57,7 +61,7 @@ export async function POST(request: Request) {
 
         let analysis;
         if (provider === "gemini") {
-            analysis = await analyzeCodeWithGemini(code, tier);
+            analysis = await analyzeCodeWithGemini(code, tier, modelName);
         } else {
             analysis = await analyzeCodeWithGroq(code, tier);
         }
