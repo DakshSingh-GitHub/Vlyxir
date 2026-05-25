@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
     Crown, 
     Zap, 
@@ -14,7 +14,12 @@ import {
     LayoutGrid,
     History,
     ChevronRight,
-    ArrowLeft
+    ArrowLeft,
+    Cpu,
+    Lock,
+    Globe,
+    Info,
+    RefreshCw
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../lib/auth/auth-context";
@@ -36,10 +41,11 @@ export default function YourPlanPage() {
     const { isDark } = useAppContext();
     const [planDetails, setPlanDetails] = useState<PlanDetails | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    useEffect(() => {
-        async function fetchPlan() {
-            if (user) {
+    const fetchPlan = async () => {
+        if (user) {
+            try {
                 const [details, aiDetails] = await Promise.all([
                     checkForgeLimit(user.id),
                     checkAiLimit(user.id)
@@ -53,20 +59,50 @@ export default function YourPlanPage() {
                     count: details.count || 0,
                     aiCount: aiDetails.count || 0
                 });
+            } catch (error) {
+                console.error("Failed to fetch plan stats:", error);
+            } finally {
                 setLoading(false);
-            } else if (!authLoading) {
-                setLoading(false);
+                setIsRefreshing(false);
             }
+        } else if (!authLoading) {
+            setLoading(false);
+            setIsRefreshing(false);
         }
+    };
+
+    useEffect(() => {
         fetchPlan();
     }, [user, authLoading]);
 
+    const handleRefresh = () => {
+        setIsRefreshing(true);
+        fetchPlan();
+    };
+
     if (loading || authLoading) {
         return (
-            <div className={`min-h-screen flex items-center justify-center transition-colors duration-500 ${isDark ? "bg-[#0B0C15]" : "bg-slate-50"}`}>
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-                    <p className={`font-bold animate-pulse ${isDark ? "text-slate-400" : "text-slate-500"}`}>Initializing your dashboard...</p>
+            <div className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-500 relative overflow-hidden ${
+                isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+            }`}>
+                {/* Background Blobs */}
+                <div className="absolute top-[25%] left-[25%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[100px] animate-pulse" />
+                <div className="absolute bottom-[25%] right-[25%] w-[40%] h-[40%] bg-purple-500/10 rounded-full blur-[100px] animate-pulse" />
+                
+                <div className="relative z-10 flex flex-col items-center gap-6">
+                    <div className="relative flex items-center justify-center">
+                        <div className="w-20 h-20 border-4 border-indigo-500/10 border-t-indigo-500 rounded-full animate-spin" />
+                        <div className="absolute w-12 h-12 border-4 border-purple-500/20 border-b-purple-500 rounded-full animate-spin animate-reverse" />
+                        <Cpu className={`absolute w-6 h-6 ${isDark ? "text-indigo-400" : "text-indigo-600"} animate-pulse`} />
+                    </div>
+                    <div className="text-center space-y-2">
+                        <h3 className={`text-lg font-black tracking-wider uppercase ${isDark ? "text-white" : "text-slate-900"}`}>
+                            Syncing Telemetry
+                        </h3>
+                        <p className={`text-xs font-bold ${isDark ? "text-slate-400" : "text-slate-500"} animate-pulse`}>
+                            Querying Vlyxir Cloud Infrastructure...
+                        </p>
+                    </div>
                 </div>
             </div>
         );
@@ -74,20 +110,48 @@ export default function YourPlanPage() {
 
     if (!user) {
         return (
-            <div className={`min-h-screen flex items-center justify-center p-6 text-center transition-colors duration-500 ${isDark ? "bg-[#0B0C15]" : "bg-slate-50"}`}>
-                <div className="max-w-md">
-                    <div className="w-20 h-20 bg-rose-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-rose-500/20">
-                        <Shield className="w-10 h-10 text-rose-500" />
+            <div className={`min-h-screen flex items-center justify-center p-6 text-center transition-colors duration-500 relative overflow-hidden ${
+                isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+            }`}>
+                {/* Cyber backdrop */}
+                <div className="absolute top-[10%] left-[10%] w-[60%] h-[60%] bg-rose-500/5 rounded-full blur-[140px] pointer-events-none" />
+                <div className="absolute bottom-[10%] right-[10%] w-[60%] h-[60%] bg-indigo-500/5 rounded-full blur-[140px] pointer-events-none" />
+
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className={`max-w-md w-full p-8 md:p-10 rounded-[32px] border backdrop-blur-2xl shadow-2xl relative z-10 ${
+                        isDark ? "border-rose-500/20 bg-black/40" : "border-slate-200 bg-white/90"
+                    }`}
+                >
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+                        <div className="w-16 h-16 bg-gradient-to-tr from-rose-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20 ring-4 ring-rose-500/10">
+                            <Shield className="w-8 h-8 text-white animate-pulse" />
+                        </div>
                     </div>
-                    <h1 className={`text-2xl font-black mb-4 ${isDark ? "text-white" : "text-slate-900"}`}>Access Restricted</h1>
-                    <p className={`mb-8 font-medium ${isDark ? "text-slate-400" : "text-slate-500"}`}>Please sign in to view your plan details and usage statistics.</p>
+                    
+                    <div className="mt-6 space-y-4">
+                        <span className="text-[10px] tracking-widest font-black uppercase text-rose-500 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
+                            Security Core AccessDenied
+                        </span>
+                        <h1 className={`text-2xl md:text-3xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                            Access Restricted
+                        </h1>
+                        <p className={`text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+                            Your developer telemetry, active forge limit counters, and logic insights reports are locked behind terminal clearance.
+                        </p>
+                    </div>
+
+                    <div className="h-px bg-linear-to-r from-transparent via-slate-500/20 to-transparent my-8" />
+
                     <button 
                         onClick={() => router.push('/login')}
-                        className="w-full py-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 text-white font-black transition-all shadow-xl shadow-indigo-500/20"
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-black text-sm tracking-widest uppercase transition-all duration-300 shadow-xl shadow-indigo-650/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                     >
-                        Sign In Now
+                        Sign In to Access Dashboard
                     </button>
-                </div>
+                </motion.div>
             </div>
         );
     }
@@ -103,214 +167,513 @@ export default function YourPlanPage() {
         <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
             isDark ? "bg-[#0B0C15] text-white" : "bg-slate-50 text-slate-900"
         }`}>
-            {/* Background elements */}
-            <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none" />
+            {/* Immersive mesh backgrounds */}
+            <div className="absolute top-[-25%] right-[-10%] w-[70%] h-[70%] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.08] rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute bottom-[-25%] left-[-10%] w-[70%] h-[70%] bg-purple-500/[0.04] dark:bg-purple-500/[0.08] rounded-full blur-[150px] pointer-events-none" />
+            <div className="absolute top-[30%] left-[20%] w-[50%] h-[50%] bg-cyan-500/[0.02] dark:bg-cyan-500/[0.04] rounded-full blur-[180px] pointer-events-none" />
 
             <div className="max-w-6xl mx-auto relative z-10">
-                {/* Back button */}
-                <button 
-                    onClick={() => router.back()}
-                    className={`flex items-center gap-2 transition-colors mb-8 group ${
-                        isDark ? "text-slate-500 hover:text-white" : "text-slate-500 hover:text-slate-900"
-                    }`}
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm font-bold tracking-tight">Return to Previous</span>
-                </button>
-
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
-                    <div>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${
-                                isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-550/10 border-indigo-200 text-indigo-600"
-                            }`}>
-                                Billing Overview
-                            </div>
-                            <div className={`w-1 h-1 rounded-full ${isDark ? "bg-slate-700" : "bg-slate-300"}`} />
-                            <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">vlyxir ecosystem</span>
-                        </div>
-                        <h1 className="text-4xl md:text-6xl font-black tracking-tighter">
-                            Your <span className={`text-transparent bg-clip-text bg-linear-to-r ${
-                                isDark ? "from-indigo-400 via-purple-400 to-cyan-400" : "from-indigo-600 via-purple-600 to-cyan-600"
-                            }`}>Vlyxir Plan</span>
-                        </h1>
-                    </div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={`p-6 rounded-3xl border flex items-center gap-6 ${
-                            isPro 
-                                ? "border-amber-500/30 bg-amber-500/10 dark:bg-amber-500/5" 
-                                : isDark 
-                                    ? "border-slate-800 bg-slate-800/20" 
-                                    : "border-slate-200 bg-slate-100/50"
+                {/* Navigation and Actions Row */}
+                <div className="flex items-center justify-between mb-10">
+                    <button 
+                        onClick={() => router.back()}
+                        className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                            isDark 
+                                ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10 hover:bg-white/[0.04]" 
+                                : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
                         }`}
                     >
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-                            isPro ? "bg-amber-500/20" : isDark ? "bg-slate-700/30" : "bg-slate-200"
-                        }`}>
-                            {isPro ? <Crown className="w-8 h-8 text-amber-500" /> : <Terminal className={`w-8 h-8 ${isDark ? "text-slate-400" : "text-slate-600"}`} />}
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Current Membership</p>
-                            <h2 className={`text-2xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>
-                                {isPro ? `Vlyxir Pro (${tierName})` : "Vlyxir Free"}
-                            </h2>
-                        </div>
-                    </motion.div>
+                        <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                        <span>Back</span>
+                    </button>
+
+                    <button 
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 text-xs font-black uppercase tracking-wider ${
+                            isRefreshing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                        } ${
+                            isDark 
+                                ? "text-indigo-400 border-indigo-500/10 bg-indigo-500/[0.03] hover:text-indigo-300 hover:border-indigo-500/20 hover:bg-indigo-500/[0.06]" 
+                                : "text-indigo-600 border-indigo-200 bg-indigo-50 hover:text-indigo-700 hover:border-indigo-350 shadow-xs"
+                        }`}
+                    >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : "group-hover:rotate-180 transition-transform"}`} />
+                        <span>{isRefreshing ? "Refreshing..." : "Sync Cloud"}</span>
+                    </button>
                 </div>
 
-                {/* Usage Stats Section */}
-                <div className="grid grid-cols-1 gap-8 mb-12">
-                    <div className={`p-8 md:p-12 rounded-[40px] border backdrop-blur-2xl relative overflow-hidden group shadow-lg dark:shadow-none ${
-                        isDark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/70"
-                    }`}>
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
-                        
-                        <div className="space-y-16">
-                            {/* Vlyxir Forge */}
-                            <div>
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
-                                            isDark ? "bg-indigo-500/10 border-indigo-500/20" : "bg-indigo-50 border-indigo-100"
-                                        }`}>
-                                            <Zap className={`w-6 h-6 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
-                                        </div>
-                                        <div>
-                                            <h3 className={`text-xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>Vlyxir Forge</h3>
-                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Daily Execution Limit</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        <span className={`text-2xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>{planDetails?.count}</span>
-                                        <span className="text-slate-500 text-sm font-bold"> / {planDetails?.limit === Infinity ? "∞" : planDetails?.limit}</span>
-                                    </div>
-                                </div>
-
-                                <div className={`h-4 w-full rounded-full overflow-hidden border mb-6 ${
-                                    isDark ? "bg-slate-800/50 border-white/5" : "bg-slate-200 border-slate-100"
-                                }`}>
-                                    <motion.div 
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${forgeUsagePercent}%` }}
-                                        className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-indigo-400 rounded-full"
-                                    />
-                                </div>
-                                <p className={`text-xs font-bold leading-relaxed max-w-2xl ${isDark ? "text-slate-500" : "text-slate-500"}`}>
-                                    Your forge quota resets every day at 00:00 UTC. Execution units are consumed each time you build or run code within the ecosystem.
-                                </p>
-                            </div>
-
-                            {/* Divider */}
-                            <div className={`h-px w-full ${isDark ? "bg-white/5" : "bg-slate-200"}`} />
-
-                            {/* Vlyxir Insights */}
-                            <div>
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
-                                            isDark ? "bg-purple-500/10 border-purple-500/20" : "bg-purple-50 border-purple-100"
-                                        }`}>
-                                            <BrainCircuit className={`w-6 h-6 ${isDark ? "text-purple-400" : "text-purple-600"}`} />
-                                        </div>
-                                        <div>
-                                            <h3 className={`text-xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>Vlyxir Insights</h3>
-                                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Daily structural reports</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right">
-                                        {planDetails?.aiLimit && planDetails.aiLimit > 0 ? (
-                                            <>
-                                                <span className={`text-2xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>{planDetails.aiCount}</span>
-                                                <span className="text-slate-500 text-sm font-bold"> / {planDetails.aiLimit === Infinity ? "∞" : planDetails.aiLimit}</span>
-                                            </>
-                                        ) : (
-                                            <span className={`text-xs font-black uppercase tracking-widest px-3 py-1 rounded-lg border ${
-                                                isDark ? "text-slate-600 bg-white/5 border-white/5" : "text-slate-400 bg-slate-100 border-slate-200"
-                                            }`}>
-                                                Locked
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {planDetails?.aiLimit && planDetails.aiLimit > 0 ? (
-                                    <>
-                                        <div className={`h-4 w-full rounded-full overflow-hidden border mb-6 ${
-                                            isDark ? "bg-slate-800/50 border-white/5" : "bg-slate-200 border-slate-100"
-                                        }`}>
-                                            <motion.div 
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${aiUsagePercent}%` }}
-                                                className="h-full bg-linear-to-r from-purple-500 via-indigo-500 to-purple-400 rounded-full"
-                                            />
-                                        </div>
-                                        {planDetails?.tier && planDetails.tier >= 3 && (
-                                            <div className="flex flex-wrap gap-6">
-                                                <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                                    Security vulnerability scans
-                                                </div>
-                                                <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-600"}`}>
-                                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                                                    Logic optimization reports
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className={`p-8 rounded-2xl border border-dashed flex flex-col items-center justify-center text-center ${
-                                        isDark ? "bg-white/[0.02] border-white/10" : "bg-slate-100/50 border-slate-300"
-                                    }`}>
-                                        <Shield className={`w-8 h-8 mb-3 ${isDark ? "text-slate-600" : "text-slate-450"}`} />
-                                        <p className={`font-bold text-sm ${isDark ? "text-slate-500" : "text-slate-600"}`}>Vlyxir Insights is not included in your current plan.</p>
-                                        <button 
-                                            onClick={() => router.push('/upgrade-tiers')}
-                                            className={`mt-4 text-[10px] font-black uppercase tracking-widest transition-colors ${
-                                                isDark ? "text-indigo-400 hover:text-indigo-300" : "text-indigo-600 hover:text-indigo-700"
-                                            }`}
-                                        >
-                                            Upgrade to unlock
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                {/* Cyber Header & Badge Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 items-center">
+                    <div className="lg:col-span-7 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <span className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+                                isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                            }`}>
+                                Infrastructure Telemetry
+                            </span>
+                            <div className={`w-1.5 h-1.5 rounded-full ${isDark ? "bg-slate-700" : "bg-slate-350"}`} />
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-550"}`}>
+                                node.vlyxir-us-east
+                            </span>
                         </div>
-                    </div>
-                </div>
-
-                {/* Upsell / Info Section */}
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-                    <div className={`p-8 rounded-4xl border transition-all group shadow-sm hover:shadow-md ${
-                        isDark ? "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]" : "border-slate-200 bg-slate-100/50 hover:bg-slate-200/50"
-                    }`}>
-                        <h4 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-                            <Sparkles className={`w-5 h-5 ${isDark ? "text-indigo-400" : "text-indigo-650"}`} />
-                            Looking for more?
-                        </h4>
-                        <p className={`text-sm mb-8 leading-relaxed ${isDark ? "text-slate-500" : "text-slate-500"}`}>
-                            Need higher limits or dedicated resources for your professional projects? Our tiered pro plans offer maximum flexibility.
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none">
+                            System <span className={`text-transparent bg-clip-text bg-linear-to-r ${
+                                isDark ? "from-indigo-400 via-purple-400 to-cyan-400" : "from-indigo-600 via-purple-600 to-cyan-600"
+                            }`}>Allocation</span>
+                        </h1>
+                        <p className={`text-sm sm:text-base font-bold leading-relaxed max-w-xl ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                            Review active server allocations, compiler execution pools, daily execution quotas, and AI-powered logic optimization capabilities.
                         </p>
-                        <button 
-                            onClick={() => router.push('/upgrade-tiers')}
-                            className={`flex items-center gap-2 font-black text-sm uppercase tracking-widest hover:gap-4 transition-all ${
-                                isDark ? "text-indigo-400 hover:text-indigo-300" : "text-indigo-600 hover:text-indigo-750"
+                    </div>
+                    
+                    <div className="lg:col-span-5">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                            className={`p-6 rounded-[32px] border relative overflow-hidden backdrop-blur-xl group ${
+                                isPro 
+                                    ? "border-amber-500/30 bg-gradient-to-br from-amber-500/[0.08] to-transparent dark:from-amber-500/[0.04]" 
+                                    : isDark 
+                                        ? "border-slate-800 bg-slate-900/40" 
+                                        : "border-slate-200 bg-white shadow-md hover:shadow-lg"
                             }`}
                         >
-                            View Tier Comparisons
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
+                            {/* Inner ambient glows */}
+                            {isPro && (
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-[40px] pointer-events-none animate-pulse" />
+                            )}
+
+                            <div className="flex items-center gap-5 relative z-10">
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-300 ${
+                                    isPro 
+                                        ? "bg-amber-500/20 border-amber-400/30 text-amber-500 dark:text-amber-400 shadow-lg shadow-amber-500/10" 
+                                        : isDark 
+                                            ? "bg-slate-800/80 border-slate-700/50 text-slate-400" 
+                                            : "bg-slate-100 border-slate-200 text-slate-650"
+                                }`}>
+                                    {isPro ? (
+                                        <Crown className="w-7 h-7 text-amber-500 dark:text-amber-400 animate-pulse" />
+                                    ) : (
+                                        <Terminal className="w-7 h-7" />
+                                    )}
+                                </div>
+                                <div className="space-y-1">
+                                    <span className={`text-[9px] font-black uppercase tracking-widest ${isPro ? "text-amber-500 dark:text-amber-400" : "text-slate-500"}`}>
+                                        Active Clearance Level
+                                    </span>
+                                    <h2 className={`text-xl sm:text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                                        {isPro ? `Vlyxir Pro (${tierName})` : "Vlyxir Free"}
+                                    </h2>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
+                </div>
+
+                {/* Dashboard Metrics Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                    
+                    {/* Forge Telemetry Card */}
+                    <motion.div 
+                        whileHover={{ y: -4 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className={`p-6 sm:p-8 rounded-[40px] border backdrop-blur-2xl relative overflow-hidden transition-shadow duration-300 ${
+                            isDark ? "border-white/[0.07] bg-white/[0.03]" : "border-slate-200 bg-white hover:shadow-xl shadow-md"
+                        }`}
+                    >
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-[80px] pointer-events-none" />
+                        
+                        <div className="flex flex-col h-full justify-between gap-8 relative z-10">
+                            <div>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
+                                            isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-600"
+                                        }`}>
+                                            <Zap className="w-6 h-6 animate-pulse" />
+                                        </div>
+                                        <div>
+                                            <h3 className={`text-lg font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                                                Vlyxir Forge
+                                            </h3>
+                                            <p className={`text-[9px] font-black uppercase tracking-widest ${isDark ? "text-indigo-400" : "text-indigo-650"}`}>
+                                                DAILY EXECUTION CORES
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="text-right">
+                                        <span className={`text-2xl sm:text-3xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>
+                                            {planDetails?.count}
+                                        </span>
+                                        <span className={`text-xs font-bold ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                            {" "}/ {planDetails?.limit === Infinity ? "∞" : planDetails?.limit}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Custom Glowing Gauge Track */}
+                                <div className="space-y-3 mb-6">
+                                    <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                        <span>Submissions Quota</span>
+                                        <span className={isDark ? "text-indigo-400" : "text-indigo-650"}>
+                                            {Math.round(forgeUsagePercent)}% Consumed
+                                        </span>
+                                    </div>
+                                    <div className={`h-3 w-full rounded-full overflow-hidden border p-0.5 ${
+                                        isDark ? "bg-slate-950/80 border-white/5" : "bg-slate-100 border-slate-200"
+                                    }`}>
+                                        <motion.div 
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${forgeUsagePercent}%` }}
+                                            transition={{ duration: 0.8, ease: "easeOut" }}
+                                            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 rounded-full shadow-lg shadow-indigo-500/20"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Features list */}
+                            <div className="space-y-4">
+                                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                                    ACTIVE ALLOCATIONS
+                                </span>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                        <span>Daily Reset 00:00 UTC</span>
+                                    </div>
+                                    <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                        <span>Isolated Execution Core</span>
+                                    </div>
+                                    {isPro ? (
+                                        <>
+                                            <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                <span>Priority Compilation</span>
+                                            </div>
+                                            <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                <span>Custom Compiler Flags</span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className={`flex items-center gap-2 text-xs font-bold opacity-60 ${isDark ? "text-slate-500" : "text-slate-500"}`}>
+                                                <Lock className="w-3.5 h-3.5 shrink-0" />
+                                                <span>Standard Compilation</span>
+                                            </div>
+                                            <div className={`flex items-center gap-2 text-xs font-bold opacity-60 ${isDark ? "text-slate-500" : "text-slate-500"}`}>
+                                                <Lock className="w-3.5 h-3.5 shrink-0" />
+                                                <span>Shared Execution Core</span>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Insights Telemetry Card */}
+                    <motion.div 
+                        whileHover={{ y: -4 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className={`p-6 sm:p-8 rounded-[40px] border backdrop-blur-2xl relative overflow-hidden transition-shadow duration-300 ${
+                            isDark ? "border-white/[0.07] bg-white/[0.03]" : "border-slate-200 bg-white hover:shadow-xl shadow-md"
+                        }`}
+                    >
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 rounded-full blur-[80px] pointer-events-none" />
+                        
+                        <div className="flex flex-col h-full justify-between gap-8 relative z-10">
+                            {planDetails?.aiLimit && planDetails.aiLimit > 0 ? (
+                                <>
+                                    {/* Unlocked Interface */}
+                                    <div className="flex flex-col h-full justify-between gap-8">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
+                                                        isDark ? "bg-purple-500/10 border-purple-500/20 text-purple-400" : "bg-purple-50 border-purple-100 text-purple-600"
+                                                    }`}>
+                                                        <BrainCircuit className="w-6 h-6 animate-pulse" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className={`text-lg font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                                                            Vlyxir Insights
+                                                        </h3>
+                                                        <p className={`text-[9px] font-black uppercase tracking-widest ${isDark ? "text-purple-400" : "text-purple-650"}`}>
+                                                            COGNITIVE STRUCTURAL SANITY
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="text-right">
+                                                    <span className={`text-2xl sm:text-3xl font-black ${isDark ? "text-white" : "text-slate-900"}`}>
+                                                        {planDetails.aiCount}
+                                                    </span>
+                                                    <span className={`text-xs font-bold ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                                        {" "}/ {planDetails.aiLimit === Infinity ? "∞" : planDetails.aiLimit}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* AI Progress Bar */}
+                                            <div className="space-y-3 mb-6">
+                                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-500">
+                                                    <span>Reports Quota</span>
+                                                    <span className={isDark ? "text-purple-400" : "text-purple-650"}>
+                                                        {Math.round(aiUsagePercent)}% Consumed
+                                                    </span>
+                                                </div>
+                                                <div className={`h-3 w-full rounded-full overflow-hidden border p-0.5 ${
+                                                    isDark ? "bg-slate-950/80 border-white/5" : "bg-slate-100 border-slate-200"
+                                                }`}>
+                                                    <motion.div 
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${aiUsagePercent}%` }}
+                                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                                        className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-400 rounded-full shadow-lg shadow-purple-500/20"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* AI Subsystems */}
+                                        <div className="space-y-4">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">
+                                                ACTIVE COGNITIVE MODULES
+                                            </span>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                    <span>Static Findings Engine</span>
+                                                </div>
+                                                <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                    <span>Code Complexity Review</span>
+                                                </div>
+                                                {planDetails.tier >= 3 ? (
+                                                    <>
+                                                        <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                            <span>Vulnerability Scanners</span>
+                                                        </div>
+                                                        <div className={`flex items-center gap-2 text-xs font-bold ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                                                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                                            <span>Logic Refactor Reports</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className={`flex items-center gap-2 text-xs font-bold opacity-60 ${isDark ? "text-slate-500" : "text-slate-500"}`}>
+                                                            <Lock className="w-3.5 h-3.5 shrink-0" />
+                                                            <span>Vulnerability Scanners</span>
+                                                        </div>
+                                                        <div className={`flex items-center gap-2 text-xs font-bold opacity-60 ${isDark ? "text-slate-500" : "text-slate-500"}`}>
+                                                            <Lock className="w-3.5 h-3.5 shrink-0" />
+                                                            <span>Refactor Engine (T3 Only)</span>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Locked Interface */}
+                                    <div className="flex flex-col justify-between h-full gap-8">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center ${
+                                                isDark ? "bg-slate-800/80 border-slate-700/50 text-slate-550" : "bg-slate-100 border-slate-200 text-slate-400"
+                                            }`}>
+                                                <BrainCircuit className="w-6 h-6 opacity-40" />
+                                            </div>
+                                            <div>
+                                                <h3 className={`text-lg font-black tracking-tight opacity-40 ${isDark ? "text-white" : "text-slate-900"}`}>
+                                                    Vlyxir Insights
+                                                </h3>
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                                    COGNITIVE MODULE OFFLINE
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className={`p-6 rounded-3xl border border-dashed text-center flex flex-col items-center justify-center gap-3 ${
+                                            isDark ? "bg-black/[0.15] border-white/5" : "bg-slate-50/50 border-slate-200"
+                                        }`}>
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                                                isDark ? "bg-white/[0.02] text-slate-500" : "bg-slate-100 text-slate-400"
+                                            }`}>
+                                                <Lock className="w-5 h-5" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className={`text-sm font-bold ${isDark ? "text-slate-350" : "text-slate-800"}`}>
+                                                    Insights Capabilities Locked
+                                                </h4>
+                                                <p className={`text-xs leading-relaxed max-w-sm ${isDark ? "text-slate-500" : "text-slate-500"}`}>
+                                                    Activate neural code insights, security scans, and optimal runtime analysis by upgrading your server clearance.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            onClick={() => router.push('/upgrade-tiers')}
+                                            className={`w-full py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest border transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] cursor-pointer ${
+                                                isDark 
+                                                    ? "text-indigo-400 border-indigo-500/20 bg-indigo-500/[0.05] hover:bg-indigo-500/[0.08] hover:border-indigo-500/30" 
+                                                    : "text-indigo-650 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 hover:border-indigo-300 shadow-sm"
+                                            }`}
+                                        >
+                                            Unlock Cognitive Telemetry
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </motion.div>
+
+                </div>
+
+                {/* Cyber Action Center */}
+                <div className="space-y-6 mb-12">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className={`w-4 h-4 ${isDark ? "text-indigo-400" : "text-indigo-650"}`} />
+                        <h4 className={`text-xs font-black uppercase tracking-wider ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                            Telemetry Action Center
+                        </h4>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        {/* Action 1: Upgrade */}
+                        <motion.div 
+                            whileHover={{ y: -3 }}
+                            onClick={() => router.push('/upgrade-tiers')}
+                            className={`p-6 rounded-3xl border transition-all duration-300 group cursor-pointer flex flex-col justify-between min-h-52 ${
+                                isDark 
+                                    ? "border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-indigo-500/20" 
+                                    : "border-slate-200 bg-slate-100/30 hover:bg-white hover:border-indigo-300 shadow-xs hover:shadow-md"
+                            }`}
+                        >
+                            <div className="space-y-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${
+                                    isDark 
+                                        ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20" 
+                                        : "bg-indigo-50 border-indigo-150 text-indigo-650 group-hover:bg-indigo-100"
+                                }`}>
+                                    <Cpu className="w-5 h-5" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h5 className={`text-base font-black ${isDark ? "text-white" : "text-slate-900"}`}>
+                                        Elevate Infrastructure
+                                    </h5>
+                                    <p className={`text-xs leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
+                                        View professional tiers comparisons to unlock dedicated memory and execution parameters.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest mt-6 text-indigo-500 dark:text-indigo-400">
+                                <span>Upgrade Tiers</span>
+                                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </motion.div>
+
+                        {/* Action 2: Documentation */}
+                        <motion.div 
+                            whileHover={{ y: -3 }}
+                            onClick={() => router.push('/docs')}
+                            className={`p-6 rounded-3xl border transition-all duration-300 group cursor-pointer flex flex-col justify-between min-h-52 ${
+                                isDark 
+                                    ? "border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-purple-500/20" 
+                                    : "border-slate-200 bg-slate-100/30 hover:bg-white hover:border-purple-300 shadow-xs hover:shadow-md"
+                            }`}
+                        >
+                            <div className="space-y-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${
+                                    isDark 
+                                        ? "bg-purple-500/10 border-purple-500/20 text-purple-400 group-hover:bg-purple-500/20" 
+                                        : "bg-purple-50 border-purple-150 text-purple-650 group-hover:bg-purple-100"
+                                }`}>
+                                    <Terminal className="w-5 h-5" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h5 className={`text-base font-black ${isDark ? "text-white" : "text-slate-900"}`}>
+                                        Technical Guidelines
+                                    </h5>
+                                    <p className={`text-xs leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
+                                        Review technical boundaries, API structures, compile limits, and runtime requirements.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest mt-6 text-purple-500 dark:text-purple-400">
+                                <span>Read Specs</span>
+                                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </motion.div>
+
+                        {/* Action 3: Forums */}
+                        <motion.div 
+                            whileHover={{ y: -3 }}
+                            onClick={() => router.push('/forum')}
+                            className={`p-6 rounded-3xl border transition-all duration-300 group cursor-pointer flex flex-col justify-between min-h-52 ${
+                                isDark 
+                                    ? "border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] hover:border-cyan-500/20" 
+                                    : "border-slate-200 bg-slate-100/30 hover:bg-white hover:border-cyan-300 shadow-xs hover:shadow-md"
+                            }`}
+                        >
+                            <div className="space-y-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${
+                                    isDark 
+                                        ? "bg-cyan-500/10 border-cyan-500/20 text-cyan-400 group-hover:bg-cyan-500/20" 
+                                        : "bg-cyan-50 border-cyan-150 text-cyan-650 group-hover:bg-cyan-100"
+                                }`}>
+                                    <LayoutGrid className="w-5 h-5" />
+                                </div>
+                                <div className="space-y-1">
+                                    <h5 className={`text-base font-black ${isDark ? "text-white" : "text-slate-900"}`}>
+                                        Developer Alliance
+                                    </h5>
+                                    <p className={`text-xs leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
+                                        Engage with other developers, share benchmarks, and solve high-performance challenges.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest mt-6 text-cyan-500 dark:text-cyan-400">
+                                <span>Enter Portal</span>
+                                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                        </motion.div>
+
+                    </div>
+                </div>
+
+                {/* Telemetry Information Box */}
+                <div className={`p-4 sm:p-5 rounded-2xl border flex items-start gap-4 ${
+                    isDark ? "bg-indigo-500/[0.02] border-indigo-500/10" : "bg-indigo-50/30 border-indigo-100/80"
+                }`}>
+                    <Info className={`w-5 h-5 shrink-0 mt-0.5 ${isDark ? "text-indigo-400" : "text-indigo-600"}`} />
+                    <p className={`text-xs leading-relaxed ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                        Execution units represent computation limits optimized to prevent server overload. Daily allocations reset strictly at <strong>00:00 UTC</strong>. High priority and heavy workload requests may require scaling up execution memory cores. For assistance or enterprise queries, contact tech support directly.
+                    </p>
                 </div>
             </div>
 
-            {/* Footer decoration */}
-            <div className="mt-20 text-center opacity-20 pointer-events-none">
-                <p className="text-[10px] font-black uppercase tracking-[1em] text-slate-500">VLYXIR PLATFORM INFRASTRUCTURE</p>
+            {/* Footer Telemetry Decoration */}
+            <div className="mt-20 mb-8 text-center opacity-30 select-none pointer-events-none space-y-1.5">
+                <div className="flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.6em] text-slate-500">
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>Vlyxir Sovereign Cloud Environment</span>
+                </div>
+                <p className="text-[8px] font-bold tracking-widest text-slate-500 opacity-60">
+                    SYS-BUILD: 7.3.20 // REGION: GLOBAL-EAST // SECURITY VERIFIED
+                </p>
             </div>
         </div>
     );
