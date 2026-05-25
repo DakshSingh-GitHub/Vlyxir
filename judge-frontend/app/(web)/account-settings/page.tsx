@@ -3,8 +3,30 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef, type FormEvent } from "react";
-import { ArrowLeft, BadgeInfo, CalendarDays, LockKeyhole, Mail, Save, ShieldCheck, Sparkles, User, UserRound, Trash2, Pencil, Zap, Trophy } from "lucide-react";
-import { motion } from "framer-motion";
+import { 
+  ArrowLeft, 
+  BadgeInfo, 
+  CalendarDays, 
+  LockKeyhole, 
+  Mail, 
+  Save, 
+  ShieldCheck, 
+  Sparkles, 
+  User, 
+  UserRound, 
+  Trash2, 
+  Pencil, 
+  Zap, 
+  Trophy,
+  Globe,
+  Camera,
+  Cpu,
+  Clock,
+  KeyRound,
+  Info,
+  ChevronRight
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
@@ -105,6 +127,7 @@ export default function AccountSettingsPage() {
       window.history.replaceState({}, document.title, newUrl);
     }
   }, []);
+
   const [forgeUsage, setForgeUsage] = useState(0);
   const [userRole, setUserRole] = useState("user");
   const [forgeLimit, setForgeLimit] = useState(FORGE_FREE_LIMIT);
@@ -206,13 +229,10 @@ export default function AccountSettingsPage() {
                   const sizeKB = blob.size / 1024;
                   // Target range: 150KB - 250KB
                   if (sizeKB > 250 && q > 0.1) {
-                    // Too large, decrease quality
                     attemptCompression(q - 0.1);
                   } else if (sizeKB < 150 && q < 0.9) {
-                    // Too small, increase quality
                     attemptCompression(q + 0.1);
                   } else {
-                    // Range met or quality limits reached
                     resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
                   }
                 } else {
@@ -231,27 +251,6 @@ export default function AccountSettingsPage() {
     });
   };
 
-
-  const shellClass = "relative flex-1 font-sans";
-  const ambientClass = isDark
-    ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
-    : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]";
-  const glowTopClass = isDark ? "bg-slate-900/40" : "bg-white/60";
-  const glowBottomClass = isDark ? "bg-slate-800/40" : "bg-sky-200/40";
-  const surfaceClass = isDark
-    ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] text-slate-100 shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
-    : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-900 shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
-  const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
-  const labelClass = isDark ? "text-slate-300" : "text-slate-600";
-  const inputClass = isDark
-    ? "border-slate-700/70 bg-slate-950/70 text-slate-100 placeholder:text-slate-600 focus:border-indigo-500"
-    : "border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-indigo-500";
-  const readOnlyClass = isDark
-    ? "border-slate-700/70 bg-slate-900/60 text-slate-200"
-    : "border-slate-200 bg-slate-50 text-slate-700";
-  const skeletonBar = isDark ? "bg-slate-700/80" : "bg-slate-200";
-  const skeletonCard = isDark ? "border-slate-700/70 bg-slate-950/60" : "border-slate-200 bg-white/90";
-
   useEffect(() => {
     if (!user) {
       setProfile(null);
@@ -260,7 +259,6 @@ export default function AccountSettingsPage() {
       return;
     }
 
-    // Prevent re-fetching if we already have the correct profile loaded
     if (profile?.id === user.id) {
       setIsLoadingProfile(false);
       return;
@@ -348,7 +346,6 @@ export default function AccountSettingsPage() {
     }
 
     setError(null);
-
     setSuccess(null);
     setIsSaving(true);
 
@@ -377,13 +374,12 @@ export default function AccountSettingsPage() {
   const handleLeaderboardToggle = async () => {
     if (!user || !leaderboardSettings || isTogglingLeaderboard) return;
 
-    // Cooldown check
     if (leaderboardSettings.last_toggled) {
       const lastToggled = new Date(leaderboardSettings.last_toggled).getTime();
       const now = new Date().getTime();
       const twentyFourHours = 24 * 60 * 60 * 1000;
       if (now - lastToggled < twentyFourHours) {
-        return; // UI should have disabled it anyway
+        return;
       }
     }
 
@@ -462,153 +458,61 @@ export default function AccountSettingsPage() {
     return null;
   }, [leaderboardSettings]);
 
+  const skeletonBar = isDark ? "bg-slate-800" : "bg-slate-200 animate-pulse";
+  const skeletonCard = isDark ? "border-white/5 bg-white/[0.02]" : "border-slate-200 bg-white shadow-xs";
+
   if (!isSafetyTimeoutReached && (isAuthLoading || (user && isLoadingProfile))) {
     return (
-      <div className={shellClass}>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className={ambientClass} />
-          <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-          <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
-        </div>
+      <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
+        isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+      }`}>
+        <div className="absolute top-[-25%] right-[-10%] w-[70%] h-[70%] bg-indigo-500/[0.04] rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-25%] left-[-10%] w-[70%] h-[70%] bg-purple-500/[0.04] rounded-full blur-[150px]" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-          <div className={`rounded-4xl border p-5 md:p-6 backdrop-blur-2xl ${surfaceClass}`}>
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className={`h-10 w-24 rounded-2xl ${skeletonBar} animate-pulse`} />
-                <div className="space-y-2">
-                  <div className={`h-3 w-32 rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`h-5 w-52 rounded-full ${skeletonBar} animate-pulse`} />
-                </div>
+        <div className="max-w-7xl mx-auto space-y-8 relative z-10 animate-pulse">
+          {/* Header Skeleton */}
+          <div className={`rounded-3xl border p-5 flex items-center justify-between ${skeletonCard}`}>
+            <div className="flex items-center gap-4">
+              <div className={`h-10 w-24 rounded-2xl ${skeletonBar}`} />
+              <div className="space-y-2">
+                <div className={`h-3.5 w-48 rounded-md ${skeletonBar}`} />
+                <div className={`h-3 w-32 rounded-md ${skeletonBar}`} />
               </div>
-              <div className={`h-9 w-28 rounded-full ${skeletonBar} animate-pulse`} />
             </div>
+            <div className={`h-10 w-32 rounded-full ${skeletonBar}`} />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
-            <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div className="space-y-2">
-                  <div className={`h-3 w-36 rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`h-6 w-48 rounded-full ${skeletonBar} animate-pulse`} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-6">
+              <div className={`rounded-[36px] border p-6 sm:p-8 space-y-6 ${skeletonCard}`}>
+                <div className="flex items-center justify-between">
+                  <div className={`h-6 w-48 rounded-md ${skeletonBar}`} />
+                  <div className={`h-12 w-32 rounded-2xl ${skeletonBar}`} />
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className={`h-12 w-36 rounded-2xl ${skeletonBar} animate-pulse`} />
-                  <div className={`h-14 w-14 rounded-2xl ${skeletonBar} animate-pulse`} />
-                </div>
-              </div>
-
-              <div className="space-y-5">
+                <div className="h-px bg-slate-500/10 w-full" />
                 <div className="flex flex-col md:flex-row gap-8">
-                  <div className="flex-1 space-y-5">
+                  <div className="flex-1 space-y-4">
                     <div className="space-y-2">
-                      <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
-                      <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                      <div className={`h-3 w-20 rounded-md ${skeletonBar}`} />
+                      <div className={`h-12 w-full rounded-2xl ${skeletonBar}`} />
                     </div>
                     <div className="space-y-2">
-                      <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
-                      <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                      <div className={`h-3 w-20 rounded-md ${skeletonBar}`} />
+                      <div className={`h-12 w-full rounded-2xl ${skeletonBar}`} />
                     </div>
                   </div>
-                  <div className={`h-40 w-40 shrink-0 rounded-4xl border ${skeletonBar} animate-pulse`} />
+                  <div className={`w-36 h-36 rounded-[32px] ${skeletonBar} self-center md:self-auto`} />
                 </div>
-
                 <div className="space-y-2">
-                  <div className={`h-3 w-14 rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`min-h-40 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
+                  <div className={`h-3 w-20 rounded-md ${skeletonBar}`} />
+                  <div className={`h-32 w-full rounded-2xl ${skeletonBar}`} />
                 </div>
-
-                <div className="space-y-2">
-                  <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`h-12 rounded-2xl ${skeletonCard} border ${skeletonBar} animate-pulse`} />
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className={`rounded-2xl border p-4 ${skeletonCard}`}>
-                    <div className="mb-3 flex items-center gap-2">
-                      <div className={`h-4 w-4 rounded-full ${skeletonBar} animate-pulse`} />
-                      <div className={`h-3 w-14 rounded-full ${skeletonBar} animate-pulse`} />
-                    </div>
-                    <div className={`h-4 w-full rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`mt-3 h-3 w-4/5 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                  <div className={`rounded-2xl border p-4 ${skeletonCard}`}>
-                    <div className="mb-3 flex items-center gap-2">
-                      <div className={`h-4 w-4 rounded-full ${skeletonBar} animate-pulse`} />
-                      <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
-                    </div>
-                    <div className={`h-4 w-2/3 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`mt-3 h-3 w-11/12 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-
-                <div className={`h-4 w-72 rounded-full ${skeletonBar} animate-pulse`} />
               </div>
             </div>
-
-            <div className="space-y-6">
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-5 flex items-center gap-3">
-                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
-                  <div className="space-y-2">
-                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className={`h-3 w-12 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-36 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-40 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-3 w-8 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-48 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-32 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-              </div>
-
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-4 flex items-center gap-3">
-                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
-                  <div className="space-y-2">
-                    <div className={`h-3 w-20 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-28 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-3 w-24 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-4 w-28 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-              </div>
-
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={`h-11 w-11 rounded-2xl ${skeletonBar} animate-pulse`} />
-                  <div className="space-y-2">
-                    <div className={`h-3 w-16 rounded-full ${skeletonBar} animate-pulse`} />
-                    <div className={`h-5 w-28 rounded-full ${skeletonBar} animate-pulse`} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className={`h-4 w-full rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`h-4 w-11/12 rounded-full ${skeletonBar} animate-pulse`} />
-                  <div className={`h-4 w-5/6 rounded-full ${skeletonBar} animate-pulse`} />
-                </div>
-              </div>
+            
+            <div className="lg:col-span-4 space-y-6">
+              <div className={`rounded-[36px] border p-6 ${skeletonCard} h-72 ${skeletonBar}`} />
+              <div className={`rounded-[36px] border p-6 ${skeletonCard} h-60 ${skeletonBar}`} />
             </div>
           </div>
         </div>
@@ -618,11 +522,16 @@ export default function AccountSettingsPage() {
 
   if (!user) {
     return (
-      <div className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="w-full max-w-xl">
+      <div className={`min-h-screen flex items-center justify-center p-6 text-center transition-colors duration-500 relative overflow-hidden ${
+        isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+      }`}>
+        <div className="absolute top-[10%] left-[10%] w-[60%] h-[60%] bg-indigo-500/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-[10%] right-[10%] w-[60%] h-[60%] bg-purple-500/5 rounded-full blur-[140px] pointer-events-none" />
+        
+        <div className="max-w-xl w-full relative z-10">
           <LoginPrompt
-            title="Login to manage your account"
-            description="Your profile details live in your account. Sign in to update your name, username, bio, and country."
+            title="Access Developer Console"
+            description="Your profile details, live telemetry metrics, and leaderboard visibilities reside inside Vlyxir auth cores. Authenticate to sync settings."
             nextPath="/account-settings"
           />
         </div>
@@ -631,521 +540,705 @@ export default function AccountSettingsPage() {
   }
 
   return (
-    <div className={shellClass}>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className={ambientClass} />
-        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
-      </div>
+    <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
+      isDark ? "bg-[#0B0C15] text-white" : "bg-slate-50 text-slate-900"
+    }`}>
+      {/* Visual background blurred light orbs */}
+      <div className="absolute top-[-25%] right-[-10%] w-[70%] h-[70%] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.08] rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-[-25%] left-[-10%] w-[70%] h-[70%] bg-purple-500/[0.04] dark:bg-purple-500/[0.08] rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-[35%] left-[25%] w-[50%] h-[50%] bg-cyan-500/[0.02] dark:bg-cyan-500/[0.04] rounded-full blur-[180px] pointer-events-none" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-        <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
-          <div className="flex items-center gap-4">
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Modern Interactive Navigation & Profile Title Header */}
+        <div className={`flex flex-wrap items-center justify-between gap-4 rounded-3xl border p-4 sm:p-5 backdrop-blur-2xl mb-8 ${
+          isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white/90 shadow-sm"
+        }`}>
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => router.back()}
-              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                isDark 
+                  ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10 hover:bg-white/[0.04]" 
+                  : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
+              }`}
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+              <span>Back</span>
             </button>
             <button
               onClick={() => router.push("/")}
-              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                isDark 
+                  ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10" 
+                  : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
+              }`}
             >
-              <Sparkles className="h-4 w-4" />
-              Home
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Home</span>
             </button>
+            
+            <div className="hidden sm:block w-px h-8 bg-slate-500/10 mx-2" />
+
             <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account settings</p>
-              <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your profile</h1>
+              <span className={`text-[9px] font-black uppercase tracking-[0.25em] ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>
+                VLYXIR CREDENTIAL CORE
+              </span>
+              <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                Manage Profile settings
+              </h1>
             </div>
           </div>
-          <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] ${isDark ? "border-slate-700/70 bg-slate-900/70 text-emerald-400" : "border-slate-200 bg-white text-emerald-600"}`}>
-            <ShieldCheck className="h-4 w-4 text-emerald-500" />
-            Signed in
+
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+            isDark ? "border-emerald-500/20 bg-emerald-500/[0.04] text-emerald-400" : "border-emerald-250 bg-emerald-50 text-emerald-650"
+          }`}>
+            <ShieldCheck className="w-4 h-4 text-emerald-500 animate-pulse" />
+            <span>authenticated connection</span>
           </div>
         </div>
 
         {error && (
-          <div className={`rounded-2xl border px-4 py-3 text-sm ${isDark ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-rose-200 bg-rose-50 text-rose-700"}`}>
-            {error}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`rounded-2xl border px-5 py-4 text-xs font-bold mb-6 flex items-center gap-3 ${
+              isDark ? "border-rose-500/30 bg-rose-500/[0.06] text-rose-200" : "border-rose-200 bg-rose-50/80 text-rose-700"
+            }`}
+          >
+            <Info className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>{error}</span>
+          </motion.div>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
-          <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Form & Connectors */}
+          <div className="lg:col-span-8 space-y-8">
+            <div className={`rounded-[40px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-8 pb-6 border-b border-slate-500/10">
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Profile details</p>
-                  <h2 className="mt-1 text-xl font-bold">Edit your account</h2>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">
+                    Telemetry settings Form
+                  </span>
+                  <h2 className={`text-xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Edit Profile Details
+                  </h2>
                 </div>
+                
                 <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/")}
-                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition active:scale-[0.98] ${isDark ? "border border-slate-700/70 bg-slate-900/70 text-slate-200 hover:bg-slate-800/80" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
-                  >
-                    <Sparkles className="h-4 w-4 text-indigo-500" />
-                    Home
-                  </button>
                   <button
                     type="submit"
                     form="account-settings-form"
                     disabled={isSaving || !hasChanges}
-                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 enabled:hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 enabled:hover:brightness-110"} ${isSaving || !hasChanges ? "cursor-not-allowed opacity-40 grayscale-[0.5]" : ""}`}
-                >
-                  <Save className="h-4 w-4" />
-                  {isSaving ? "Saving..." : "Save changes"}
-                </button>
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <span className="text-lg font-black">{initials}</span>
+                    className={`flex items-center justify-center gap-2 py-3 px-6 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all duration-300 shadow-xl cursor-pointer ${
+                      isDark 
+                        ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20 active:scale-[0.98]" 
+                        : "bg-indigo-750 hover:bg-indigo-850 shadow-indigo-650/15 active:scale-[0.98]"
+                    } ${isSaving || !hasChanges ? "cursor-not-allowed opacity-40 grayscale-[0.6] hover:scale-100 active:scale-100" : "hover:scale-[1.02]"}`}
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{isSaving ? "Syncing..." : "Save changes"}</span>
+                  </button>
+                  
+                  <div className={`w-12 h-12 rounded-xl border flex items-center justify-center font-black text-sm select-none ${
+                    isDark ? "border-white/10 bg-white/5 text-indigo-400" : "border-slate-200 bg-slate-100 text-indigo-600"
+                  }`}>
+                    {initials}
+                  </div>
                 </div>
+              </div>
+
+              {/* Form content */}
+              <form id="account-settings-form" className="space-y-6" onSubmit={handleSubmit}>
+                <div className="flex flex-col md:flex-row gap-8">
+                  {/* Text Inputs */}
+                  <div className="flex-1 space-y-6">
+                    <label className="block space-y-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">
+                        Full Name
+                      </span>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500 pointer-events-none" />
+                        <input
+                          value={formValues.full_name}
+                          onChange={(event) => setFormValues((prev) => ({ ...prev, full_name: event.target.value }))}
+                          className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition duration-300 font-bold text-sm focus:ring-4 focus:ring-indigo-500/10 ${
+                            isDark 
+                              ? "border-white/5 bg-slate-950/70 text-white focus:border-indigo-500 focus:bg-slate-950" 
+                              : "border-slate-200 bg-white text-slate-900 focus:border-indigo-500 shadow-xs"
+                          }`}
+                          placeholder="Daksh Singh"
+                        />
+                      </div>
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">
+                        Username
+                      </span>
+                      <div className="relative">
+                        <UserRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500 pointer-events-none" />
+                        <input
+                          value={formValues.username}
+                          onChange={(event) => setFormValues((prev) => ({ ...prev, username: normalizeUsername(event.target.value) }))}
+                          className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition duration-300 font-bold text-sm focus:ring-4 focus:ring-indigo-500/10 ${
+                            isDark 
+                              ? "border-white/5 bg-slate-950/70 text-white focus:border-indigo-500 focus:bg-slate-950" 
+                              : "border-slate-200 bg-white text-slate-900 focus:border-indigo-500 shadow-xs"
+                          }`}
+                          placeholder="dakshsingh"
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Avatar Upload Frame */}
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 self-start md:self-center">
+                      Profile Picture
+                    </span>
+                    
+                    <div className={`group relative h-36 w-40 overflow-hidden rounded-[32px] border-2 transition-all duration-300 hover:scale-[1.02] ${
+                      isDark ? "bg-slate-950/80 border-indigo-500/20 hover:border-indigo-500/40" : "bg-slate-50 border-slate-200 hover:border-indigo-400 shadow-sm"
+                    }`}>
+                      {formValues.avatar_url ? (
+                        <Image
+                          src={formValues.avatar_url}
+                          alt="Profile picture"
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center font-black text-3xl text-slate-400 select-none">
+                          {initials}
+                        </div>
+                      )}
+                      
+                      {/* Avatar Edit Action Portal Button */}
+                      <button
+                        type="button"
+                        onClick={() => setShowAvatarActionModal(true)}
+                        className="absolute bottom-3 left-3 flex h-8 w-8 items-center justify-center rounded-full border border-indigo-500/30 bg-slate-950/80 text-indigo-400 shadow-xl backdrop-blur-md transition-all duration-300 hover:bg-indigo-500 hover:text-white hover:scale-110 active:scale-95 z-20 cursor-pointer"
+                        title="Edit profile photo"
+                      >
+                        <Camera size={14} className="animate-pulse" />
+                      </button>
+
+                      {/* Cover overlay click trigger */}
+                      <div 
+                        onClick={() => setShowAvatarActionModal(true)}
+                        className="absolute inset-0 cursor-pointer bg-black/10 dark:bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      />
+                    </div>
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+
+                <label className="block space-y-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">
+                    Personal Biography
+                  </span>
+                  <textarea
+                    value={formValues.bio}
+                    onChange={(event) => setFormValues((prev) => ({ ...prev, bio: event.target.value }))}
+                    className={`min-h-36 w-full rounded-2xl border px-4 py-3 outline-none transition duration-300 font-bold text-sm leading-relaxed focus:ring-4 focus:ring-indigo-500/10 ${
+                      isDark 
+                        ? "border-white/5 bg-slate-950/70 text-white focus:border-indigo-500 focus:bg-slate-950" 
+                        : "border-slate-200 bg-white text-slate-900 focus:border-indigo-500 shadow-xs"
+                    }`}
+                    placeholder="Tell other developers about what systems you build or programming languages you practice..."
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">
+                    Region/Country
+                  </span>
+                  <CountryDropdown
+                    value={formValues.country}
+                    onChange={(value) => setFormValues((prev) => ({ ...prev, country: value }))}
+                    tone={isDark ? "dark" : "light"}
+                    placeholder="Select active region"
+                    searchPlaceholder="Search countries..."
+                  />
+                </label>
+
+                {/* Read only sensitive account specifications */}
+                <div className="grid gap-4 md:grid-cols-2 pt-4">
+                  <div className={`rounded-2xl border p-4 transition-colors duration-300 ${
+                    isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"
+                  }`}>
+                    <div className="mb-1.5 flex items-center gap-2 text-slate-500">
+                      <Mail className="h-4 w-4 shrink-0" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Linked Email</span>
+                    </div>
+                    <p className={`text-sm font-black break-all ${isDark ? "text-slate-300" : "text-slate-800"}`}>
+                      {profile?.email || user.email}
+                    </p>
+                    <p className="mt-2 text-[9.5px] font-bold text-slate-500">
+                      Read-only. Email configurations are managed externally.
+                    </p>
+                  </div>
+                  
+                  <div className={`rounded-2xl border p-4 transition-colors duration-300 ${
+                    isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"
+                  }`}>
+                    <div className="mb-1.5 flex items-center gap-2 text-slate-500">
+                      <LockKeyhole className="h-4 w-4 shrink-0" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Password parameters</span>
+                    </div>
+                    <p className={`text-sm font-black ${isDark ? "text-slate-300" : "text-slate-800"}`}>
+                      ••••••••••••••••
+                    </p>
+                    <p className="mt-2 text-[9.5px] font-bold text-slate-500">
+                      Managed through secure auth pools.
+                    </p>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            {/* Linked Accounts Portal */}
+            <div className={`rounded-[36px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="mb-6 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                }`}>
+                  <KeyRound className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-lg font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Identity providers
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    OAUTH CREDENTIAL PORTAL CONNECTION
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Email primary identity */}
+                <div className={`flex items-center justify-between rounded-2xl border p-4 transition-colors duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/30"
+                }`}>
+                  <div className="flex items-center gap-3.5">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                      isDark ? "bg-slate-800/80 border-slate-700/50 text-slate-400" : "bg-slate-100 border-slate-200 text-slate-600"
+                    }`}>
+                      <Mail className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <p className={`text-xs font-black tracking-wide ${isDark ? "text-white" : "text-slate-800"}`}>
+                        Email login profile
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-500">
+                        {user?.email || "No email address registered"}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-[8px] font-black uppercase text-emerald-555 dark:text-emerald-400 tracking-widest">
+                    Primary
+                  </span>
+                </div>
+
+                {/* Google identity provider */}
+                <div className={`flex items-center justify-between rounded-2xl border p-4 transition-colors duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/30"
+                }`}>
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-slate-250/50 shrink-0">
+                      <svg viewBox="0 0 24 24" className="h-4.5 w-4.5">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.25.81-.59z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className={`text-xs font-black tracking-wide ${isDark ? "text-white" : "text-slate-800"}`}>
+                        Google Credentials
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-500">
+                        {identities.some((id) => id.provider === "google") ? "Linked successfully to profile" : "Authentication path disconnected"}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {identities.some((id) => id.provider === "google") ? (
+                    <button
+                      type="button"
+                      disabled={isLinkingGoogle}
+                      onClick={handleUnlinkGoogle}
+                      className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-[9px] font-black uppercase text-rose-500 tracking-widest hover:bg-rose-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      Unlink
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isLinkingGoogle}
+                      onClick={handleLinkGoogle}
+                      className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 text-[9px] font-black uppercase text-indigo-500 tracking-widest hover:bg-indigo-500/20 transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      Link Account
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-[10.5px] leading-relaxed text-slate-500">
+                  Linking identity providers grants alternative Single Sign-On (SSO) channels while preserving all your scores, forum metrics, and developer parameters intact.
+                </p>
               </div>
             </div>
 
-            <form id="account-settings-form" className="space-y-5" onSubmit={handleSubmit}>
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="flex-1 space-y-5">
-                  <label className="block">
-                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Full name</span>
-                    <div className="relative">
-                      <User className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                      <input
-                        value={formValues.full_name}
-                        onChange={(event) => setFormValues((prev) => ({ ...prev, full_name: event.target.value }))}
-                        className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                        placeholder="Your full name"
-                      />
-                    </div>
-                  </label>
-
-                  <label className="block">
-                    <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Username</span>
-                    <div className="relative">
-                      <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                      <input
-                        value={formValues.username}
-                        onChange={(event) => setFormValues((prev) => ({ ...prev, username: normalizeUsername(event.target.value) }))}
-                        className={`w-full rounded-2xl border py-3.5 pl-12 pr-4 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                        placeholder="yourusername"
-                      />
-                    </div>
-                  </label>
-                </div>
-
-                <div className="flex flex-col items-center gap-4">
-                  <div className="flex w-40 items-center justify-between pl-1">
-                    <span className={`block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile Image</span>
+            {/* Privacy & Global Leaderboard preferences (exclusive to pro users) */}
+            {profile?.plan === 'pro' && (
+              <div className={`rounded-[36px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+                isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+              }`}>
+                <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-500/10">
+                  <div>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">
+                      Leaderboard parameters
+                    </span>
+                    <h3 className={`text-lg font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                      Global Rankings
+                    </h3>
                   </div>
-                  <div className={`group relative h-36 w-40 overflow-hidden rounded-4xl border-2 border-indigo-500/40 transition-all hover:border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.15)] ${isDark ? "bg-slate-900/70" : "bg-slate-50"}`}>
-                    {formValues.avatar_url ? (
-                      <Image
-                        src={formValues.avatar_url}
-                        alt="Profile"
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <span className="text-4xl font-black text-slate-400">{initials}</span>
-                      </div>
-                    )}
+                  
+                  <div className="shrink-0 flex items-center gap-3">
+                    <span className={`text-[10px] font-black uppercase tracking-wider text-slate-500`}>
+                      {leaderboardSettings?.is_enabled ? "Visible on rankings" : "Rankings Hidden"}
+                    </span>
                     
-                    {/* Action Button (Pencil) */}
                     <button
                       type="button"
-                      onClick={() => setShowAvatarActionModal(true)}
-                      className="absolute bottom-3 left-3 flex h-8 w-8 items-center justify-center rounded-full border border-indigo-500/50 bg-slate-950/80 text-indigo-400 shadow-xl backdrop-blur-md transition-all hover:bg-indigo-600 hover:text-white hover:scale-110 active:scale-95 z-20"
-                      title="Edit profile picture"
+                      onClick={handleLeaderboardToggle}
+                      disabled={isTogglingLeaderboard || !!leaderboardCooldown}
+                      className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors focus:outline-none disabled:cursor-not-allowed ${
+                        leaderboardSettings?.is_enabled ? 'bg-indigo-500' : 'bg-slate-350 dark:bg-slate-800'
+                      } ${leaderboardCooldown ? 'opacity-40' : ''} cursor-pointer`}
                     >
-                      <Pencil size={14} />
+                      <motion.span
+                        initial={false}
+                        animate={{ x: leaderboardSettings?.is_enabled ? 24 : 4 }}
+                        className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
+                      />
                     </button>
-
-                    {/* Simple hover overlay */}
-                    <div 
-                      onClick={() => setShowAvatarActionModal(true)}
-                      className="absolute inset-0 cursor-pointer bg-black/10 opacity-0 transition-opacity group-hover:opacity-100"
-                    />
-                  </div>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    accept="image/*"
-                    className="hidden"
-                  />
-                </div>
-              </div>
-
-              <label className="block">
-                <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Bio</span>
-                <textarea
-                  value={formValues.bio}
-                  onChange={(event) => setFormValues((prev) => ({ ...prev, bio: event.target.value }))}
-                  className={`min-h-40 w-full rounded-2xl border px-4 py-3 outline-none transition placeholder:text-slate-500 focus:ring-4 focus:ring-indigo-500/10 ${inputClass}`}
-                  placeholder="Tell people a little about what you build, learn, or care about."
-                />
-              </label>
-
-              <label className="block">
-                <span className={`mb-2 block text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Country</span>
-                <CountryDropdown
-                  value={formValues.country}
-                  onChange={(value) => setFormValues((prev) => ({ ...prev, country: value }))}
-                  tone={isDark ? "dark" : "light"}
-                  placeholder="Select your country"
-                  searchPlaceholder="Search countries"
-                />
-              </label>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className={`rounded-2xl border p-4 ${readOnlyClass}`}>
-                  <div className="mb-2 flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">Email</span>
-                  </div>
-                  <p className="break-all text-sm font-medium">{profile?.email || user.email}</p>
-                  <p className={`mt-2 text-xs ${mutedClass}`}>Read-only. Email changes are handled outside this page.</p>
-                </div>
-                <div className={`rounded-2xl border p-4 ${readOnlyClass}`}>
-                  <div className="mb-2 flex items-center gap-2">
-                    <LockKeyhole className="h-4 w-4" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">Password</span>
-                  </div>
-                  <p className="text-sm font-medium">Managed through authentication.</p>
-                  <p className={`mt-2 text-xs ${mutedClass}`}>Use the login flow to reset or change your password.</p>
-                </div>
-              </div>
-
-            </form>
-
-            <div className="mt-12 space-y-8 pt-10 border-t border-slate-700/30">
-              {/* Linked Accounts Section */}
-              <div className={`rounded-3xl border p-6 ${isDark ? "border-slate-800 bg-slate-950/40" : "border-slate-100 bg-slate-50/50"}`}>
-                <div className="mb-4 flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-white"}`}>
-                    <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold">Linked Accounts</h3>
-                    <p className={`text-[10px] font-medium uppercase tracking-wider ${mutedClass}`}>Connectivity</p>
                   </div>
                 </div>
-                
-                <div className="space-y-3">
-                  {/* Email Account */}
-                  <div className={`flex items-center justify-between rounded-2xl border p-3 ${isDark ? "border-slate-800/50 bg-slate-900/30" : "border-slate-200/50 bg-white"}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
-                        <Mail className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold">Email Account</p>
-                        <p className={`text-[10px] font-medium ${mutedClass}`}>{user?.email || "Email address"}</p>
-                      </div>
-                    </div>
-                    <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[9px] font-black uppercase text-emerald-500 tracking-widest">Primary</span>
-                  </div>
 
-                  {/* Google Account */}
-                  <div className={`flex items-center justify-between rounded-2xl border p-3 ${isDark ? "border-slate-800/50 bg-slate-900/30" : "border-slate-200/50 bg-white"}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
-                        <svg viewBox="0 0 24 24" className="h-4 w-4">
-                          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.25.81-.59z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
+                <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+                  <div className="space-y-3 flex-1">
+                    <p className={`text-xs sm:text-sm leading-relaxed ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                      Participation permits your profile username, flag, and complete Arena telemetry points to be visible on public lists. Disabling this removes you immediately from public listings.
+                    </p>
+                    
+                    {leaderboardCooldown && (
+                      <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20">
+                        <BadgeInfo size={13} className="shrink-0" />
+                        <span>Toggle cooldown active: {leaderboardCooldown.hours}h {leaderboardCooldown.minutes}m remaining</span>
                       </div>
-                      <div>
-                        <p className="text-xs font-bold">Google Account</p>
-                        <p className={`text-[10px] font-medium ${mutedClass}`}>
-                          {identities.some((id) => id.provider === "google") ? "Linked" : "Not Linked"}
-                        </p>
-                      </div>
-                    </div>
-                    {identities.some((id) => id.provider === "google") ? (
-                      <button
-                        type="button"
-                        disabled={isLinkingGoogle}
-                        onClick={handleUnlinkGoogle}
-                        className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 text-[9px] font-black uppercase text-rose-500 tracking-widest hover:bg-rose-500/20 transition-all disabled:opacity-50"
-                      >
-                        Unlink
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled={isLinkingGoogle}
-                        onClick={handleLinkGoogle}
-                        className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-[9px] font-black uppercase text-indigo-500 tracking-widest hover:bg-indigo-500/20 transition-all disabled:opacity-50"
-                      >
-                        Link
-                      </button>
                     )}
                   </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-                  <p className={`text-[10px] leading-relaxed ${mutedClass}`}>
-                    Link a Google account to log in with a single click and ensure your progress is always safe.
+          {/* Right Column: Summaries & Telemetry Gauges */}
+          <div className="lg:col-span-4 space-y-8">
+            
+            {/* Live Profile Summary Preview Card */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+            }`}>
+              <div className="mb-6 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-600"
+                }`}>
+                  <User className="w-5 h-5 animate-pulse" />
+                </div>
+                <div>
+                  <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Live Preview
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    REALTIME SUMMARY RADAR
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Full Name</span>
+                  <p className={`text-sm font-black mt-0.5 ${isDark ? "text-white" : "text-slate-800"}`}>
+                    {profile?.full_name || <span className="text-slate-500 italic">Not specified</span>}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Developer Tag</span>
+                  <p className={`text-sm font-black mt-0.5 text-indigo-500 dark:text-indigo-400`}>
+                    @{profile?.username || "unknown"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Biography</span>
+                  <p className={`text-xs mt-0.5 leading-relaxed font-bold break-words whitespace-pre-wrap ${
+                    isDark ? "text-slate-400" : "text-slate-650"
+                  }`}>
+                    {profile?.bio || <span className="text-slate-500 italic">No biography declared yet.</span>}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Country / Core Region</span>
+                  <p className={`text-sm font-black mt-0.5 ${isDark ? "text-white" : "text-slate-800"}`}>
+                    {profile?.country || <span className="text-slate-500 italic">Not set</span>}
                   </p>
                 </div>
               </div>
             </div>
 
-              {/* Preferences Section */}
-              {profile?.plan === 'pro' && (
-                <div className={`mt-8 rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-                  <div className="mb-6">
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Privacy & Preferences</p>
-                    <h2 className="mt-1 text-xl font-bold">Leaderboard Participation</h2>
+            {/* Account Activity Timeline Card */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="mb-6 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-600"
+                }`}>
+                  <CalendarDays className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Activity logs
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    REGISTRATION TIMESTAMPS
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="relative pl-6 border-l-2 border-slate-500/10 py-1.5 space-y-1">
+                  <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-indigo-500" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Node initialized</span>
+                  <p className={`text-xs font-black ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                    {formatAccountDate(profile?.created_at)}
+                  </p>
+                </div>
+                
+                <div className="relative pl-6 border-l-2 border-slate-500/10 py-1.5 space-y-1">
+                  <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500" />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Last Telemetry update</span>
+                  <p className={`text-xs font-black ${isDark ? "text-slate-350" : "text-slate-700"}`}>
+                    {formatAccountDate(profile?.updated_at)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Vlyxir Forge Runs Quota Gauge */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                    isDark ? "bg-amber-500/10 border-amber-500/20 text-amber-500" : "bg-amber-50 border-amber-200 text-amber-600"
+                  }`}>
+                    <Zap className="w-5 h-5 animate-pulse" />
                   </div>
-
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="space-y-1 flex-1">
-                      <div className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-indigo-500" />
-                        <h3 className="font-bold">Join the leaderboard</h3>
-                      </div>
-                      <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                        When enabled, your profile and total score will be visible on the global leaderboard. 
-                        Disabling this will hide you from public rankings.
-                      </p>
-                      {leaderboardCooldown && (
-                        <div className="mt-2 flex items-center gap-2 text-[10px] font-bold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-3 py-1.5 rounded-lg w-fit border border-amber-500/20">
-                          <BadgeInfo size={12} />
-                          Cooldown active: {leaderboardCooldown.hours}h {leaderboardCooldown.minutes}m remaining
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="shrink-0">
-                      <button
-                        type="button"
-                        onClick={handleLeaderboardToggle}
-                        disabled={isTogglingLeaderboard || !!leaderboardCooldown}
-                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed ${
-                          leaderboardSettings?.is_enabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'
-                        } ${leaderboardCooldown ? 'opacity-50 grayscale-[0.5]' : ''}`}
-                      >
-                        <motion.span
-                          initial={false}
-                          animate={{ x: leaderboardSettings?.is_enabled ? 24 : 4 }}
-                          className="inline-block h-5 w-5 rounded-full bg-white shadow-md"
-                        />
-                      </button>
-                    </div>
+                  <div>
+                    <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                      Forge runs
+                    </h3>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      DAILY COMPILE POOL LIMIT
+                    </p>
                   </div>
                 </div>
-              )}
-
-              <div className="flex items-center justify-between pt-6">
-                <div className="flex items-center gap-2 text-[10px] font-medium">
-                  <BadgeInfo className="h-3.5 w-3.5 text-indigo-500" />
-                  <span className={mutedClass}>Vlyxir ID: <span className="font-mono text-[9px]">{user.id}</span></span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => router.push("/")}
-                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-slate-200 text-slate-900 hover:bg-slate-300"}`}
-                >
-                  <Sparkles className="h-4 w-4 text-indigo-500" />
-                  Go Home
-                </button>
-              </div>
-            </div>
-
-
-          <div className="flex flex-col gap-6">
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-5 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Sparkles className="h-5 w-5 text-indigo-500" />
-                </div>
-                <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account card</p>
-                  <h2 className="text-lg font-bold">Profile summary</h2>
-                </div>
+                
+                <span className="text-xs font-black">
+                  {userRole === 'super' ? 'Unlimited' : `${forgeUsage} / ${forgeLimit}`}
+                </span>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Name</p>
-                  <p className="mt-1 text-sm font-semibold">{profile?.full_name || "Not set"}</p>
-                </div>
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Username</p>
-                  <p className="mt-1 text-sm font-semibold">@{profile?.username || "unknown"}</p>
-                </div>
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Bio</p>
-                  <p className={`mt-1 whitespace-pre-wrap text-sm leading-relaxed ${mutedClass}`}>{profile?.bio || "No bio yet."}</p>
-                </div>
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Country</p>
-                  <p className="mt-1 text-sm font-semibold">{profile?.country || "Not set"}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <CalendarDays className="h-5 w-5 text-indigo-500" />
-                </div>
-                <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Timestamps</p>
-                  <h2 className="text-lg font-bold">Account activity</h2>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Created at</p>
-                  <p className={`mt-1 text-sm ${mutedClass}`}>{formatAccountDate(profile?.created_at)}</p>
-                </div>
-                <div>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Updated at</p>
-                  <p className={`mt-1 text-sm ${mutedClass}`}>{formatAccountDate(profile?.updated_at)}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-5 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Zap className="h-5 w-5 text-amber-500" />
-                </div>
-                <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Daily Quota</p>
-                  <h2 className="text-lg font-bold">Forge runs</h2>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
-                  <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${forgeUsage}/${forgeLimit}`}</span>
-                </div>
+              <div className="space-y-3.5">
                 {userRole !== 'super' ? (
-                  <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
+                  <div className={`h-2.5 w-full rounded-full overflow-hidden p-0.5 border ${
+                    isDark ? "bg-slate-950/80 border-white/5" : "bg-slate-100 border-slate-200"
+                  }`}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(100, (forgeUsage / forgeLimit) * 100)}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className="h-full bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
+                      className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
                     />
                   </div>
                 ) : (
-                  <div className="h-2 w-full rounded-full bg-linear-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_15px_rgba(245,158,11,0.4)]" />
+                  <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_15px_rgba(245,158,11,0.45)] border border-amber-400/20 animate-pulse" />
                 )}
-                <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
+                
+                <p className={`text-[10px] font-bold leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
                   {userRole === 'super' 
-                    ? "You have granted unlimited access to Vlyxir Forge. Happy coding, Daksh." 
-                    : `Your daily quota of ${forgeLimit} runs resets every day at 00:00 UTC.`}
+                    ? "Sovereign admin clearance detected. Unlimited cloud compiler cores allocated. Welcome back, Daksh." 
+                    : `Your allocation of ${forgeLimit} daily forge compilations resets strictly at 00:00 UTC.`}
                 </p>
               </div>
             </div>
 
+            {/* Vlyxir Insights Runs Quota Gauge (rendered if aiLimit > 0) */}
             {aiLimit > 0 && (
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-5 flex items-center gap-3">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                    <Sparkles className="h-5 w-5 text-indigo-500" />
+              <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+                isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+              }`}>
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                      isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                    }`}>
+                      <Sparkles className="w-5 h-5 animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                        Insights runs
+                      </h3>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                        DAILY COGNITIVE CORES LIMIT
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Daily Quota</p>
-                    <h2 className="text-lg font-bold">Insights runs</h2>
-                  </div>
+                  
+                  <span className="text-xs font-black">
+                    {userRole === 'super' ? 'Unlimited' : `${aiUsage} / ${aiLimit}`}
+                  </span>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs font-black uppercase tracking-widest ${labelClass}`}>Usage</span>
-                    <span className="text-xs font-bold">{userRole === 'super' ? 'Unlimited' : `${aiUsage}/${aiLimit}`}</span>
-                  </div>
+                <div className="space-y-3.5">
                   {userRole !== 'super' ? (
-                    <div className={`h-2 w-full rounded-full overflow-hidden ${isDark ? "bg-slate-800" : "bg-slate-200"}`}>
+                    <div className={`h-2.5 w-full rounded-full overflow-hidden p-0.5 border ${
+                      isDark ? "bg-slate-950/80 border-white/5" : "bg-slate-100 border-slate-200"
+                    }`}>
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${Math.min(100, (aiUsage / aiLimit) * 100)}%` }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="h-full bg-linear-to-r from-cyan-500 via-blue-500 to-indigo-500"
+                        className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-full"
                       />
                     </div>
                   ) : (
-                    <div className="h-2 w-full rounded-full bg-linear-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_15px_rgba(6,182,212,0.4)]" />
+                    <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 shadow-[0_0_15px_rgba(6,182,212,0.45)] border border-cyan-400/20 animate-pulse" />
                   )}
-                  <p className={`text-[10px] font-medium leading-relaxed ${mutedClass}`}>
+                  
+                  <p className={`text-[10px] font-bold leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
                     {userRole === 'super' 
-                      ? "You have granted unlimited access to Vlyxir Insights. Analyze as much as you want." 
-                      : `Your daily quota of ${aiLimit} analysis runs resets every day at 00:00 UTC.`}
+                      ? "Unlimited structural audit quotas granted. Maintain analysis parameters as required." 
+                      : `Your cognitive quota of ${aiLimit} structural analyses resets strictly at 00:00 UTC.`}
                   </p>
                 </div>
               </div>
             )}
 
-            <div className={`flex-1 rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-3 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Mail className="h-5 w-5 text-indigo-500" />
+            {/* Technical spec edit details box */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="mb-4 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-600"
+                }`}>
+                  <Info className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Notes</p>
-                  <h2 className="text-lg font-bold">What you can edit</h2>
+                  <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    General Specifications
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    EDIT Clearance bounds
+                  </p>
                 </div>
               </div>
-              <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                On this page, you can customize your public profile information. This includes your 
-                <span className="font-bold text-indigo-500"> full name</span>, 
-                <span className="font-bold text-indigo-500"> username</span>, 
-                <span className="font-bold text-indigo-500"> bio</span>, and 
-                <span className="font-bold text-indigo-500"> country</span>.
-                <br /><br />
-                Sensitive account details like your registered email and password are managed 
-                through our secure authentication flow and cannot be modified directly here.
+              
+              <p className={`text-xs leading-relaxed ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                Vlyxir profiles permit local changes to public keys: <strong>Full Name</strong>, <strong>Username tag</strong>, <strong>Personal Bio</strong>, and <strong>Active Region</strong>. Modifying email registers or encryption parameters must go through secure SSO portals.
               </p>
             </div>
 
             {/* Danger Zone Section */}
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${isDark ? "border-rose-950 bg-rose-950/15" : "border-rose-100 bg-rose-50/20"}`}>
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden transition-all duration-300 ${
+              isDark 
+                ? "border-rose-500/20 bg-rose-500/[0.03] hover:bg-rose-500/[0.05]" 
+                : "border-rose-200 bg-rose-50/30 hover:shadow-md shadow-xs"
+            }`}>
               <div className="mb-4 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-rose-800/40 bg-rose-900/20" : "border-rose-200 bg-white"}`}>
-                  <Trash2 className="h-5 w-5 text-rose-500" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-rose-500/25 border-rose-500/30 text-rose-400 animate-pulse" : "bg-rose-100 border-rose-200 text-rose-650"
+                }`}>
+                  <Trash2 className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] text-rose-500/60`}>Danger Zone</p>
-                  <h2 className="text-lg font-bold text-rose-500">Danger Zone</h2>
+                  <h3 className="text-base font-black tracking-tight text-rose-500">
+                    Danger Zone
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-rose-500/60">
+                    IRREVERSIBLE PROCEDURES
+                  </p>
                 </div>
               </div>
               
               <div className="space-y-4">
-                <p className={`text-sm leading-relaxed ${isDark ? "text-rose-200/60" : "text-rose-700/70"}`}>
-                  Deleting your account is permanent. All your progress, submissions, and profile data will be removed forever.
+                <p className={`text-xs leading-relaxed font-bold ${isDark ? "text-rose-200/60" : "text-rose-700/70"}`}>
+                  Profile deletion completely purges all Arena submissions, scores, forum statistics, and credentials keys forever.
                 </p>
+                
                 <button
                   type="button"
                   onClick={() => router.push('/account-controls')}
-                  className="group flex items-center gap-2 text-xs font-bold text-rose-500 transition-colors hover:text-rose-600"
+                  className="group flex items-center gap-2 text-xs font-black uppercase tracking-wider text-rose-500 transition-colors hover:text-rose-650 cursor-pointer"
                 >
                   <span>Go to account controls</span>
-                  <ArrowLeft className="h-3 w-3 rotate-180 transition-transform group-hover:translate-x-1" />
+                  <ArrowLeft className="h-3 w-3 rotate-180 transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
               </div>
             </div>
+
           </div>
         </div>
+
+        {/* Dynamic Modals Portal */}
         <ProfanityModal isOpen={showProfanityModal} onClose={() => setShowProfanityModal(false)} />
+        
         <SuccessModal 
           isOpen={showSuccessModal} 
           onClose={() => setShowSuccessModal(false)} 
           title={successConfig.title}
           message={successConfig.message}
         />
+        
         <ErrorModal 
           isOpen={showErrorModal} 
           onClose={() => setShowErrorModal(false)} 
           title={errorConfig.title}
           message={errorConfig.message}
         />
+        
         <AvatarActionModal 
           isOpen={showAvatarActionModal}
           onClose={() => setShowAvatarActionModal(false)}
@@ -1154,6 +1247,18 @@ export default function AccountSettingsPage() {
           onResetToProvider={user?.app_metadata?.provider === "google" || user?.user_metadata?.picture ? () => handleResetPicture(true) : undefined}
           providerName={user?.app_metadata?.provider === "google" ? "Google" : "Provider"}
         />
+
+        {/* Global Footer Details */}
+        <div className="mt-20 mb-8 text-center opacity-30 select-none pointer-events-none space-y-1.5">
+          <div className="flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.6em] text-slate-500">
+            <Globe className="w-3.5 h-3.5" />
+            <span>Vlyxir Sovereign Cloud Environment</span>
+          </div>
+          <p className="text-[8px] font-bold tracking-widest text-slate-500 opacity-60">
+            SYS-BUILD: 7.3.20 // REGION: GLOBAL-EAST // SECURITY VERIFIED
+          </p>
+        </div>
+
       </div>
     </div>
   );

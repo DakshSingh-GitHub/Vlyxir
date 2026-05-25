@@ -15,14 +15,22 @@ import {
   Sparkles,
   Settings,
   UserRound,
+  Trash2,
+  Globe,
+  KeyRound,
+  Info,
+  CalendarDays,
+  ShieldCheck,
+  RefreshCw,
+  AlertTriangle
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
 import { formatAccountDate } from "../account-settings/helper/acc_helper";
 import DeleteAccountModal from "../../../components/Account/DeleteAccountModal";
 import ErrorModal from "../account-settings/ErrorModal";
-import { Trash2 } from "lucide-react";
 import { supabase } from "../../lib/api/supabase/client";
 
 function getDisplayName(user: ReturnType<typeof useAuth>["user"]) {
@@ -158,21 +166,6 @@ export default function AccountControlsPage() {
     }
   };
 
-  const shellClass = "relative flex-1 font-sans";
-  const ambientClass = isDark
-    ? "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(51,65,85,0.32),transparent_38%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%,rgba(15,23,42,0.3)_100%)]"
-    : "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.85),transparent_38%),linear-gradient(135deg,rgba(241,245,249,0.8),transparent_35%,rgba(226,232,240,0.8)_100%)]";
-  const glowTopClass = isDark ? "bg-slate-900/40" : "bg-white/60";
-  const glowBottomClass = isDark ? "bg-slate-800/40" : "bg-sky-200/40";
-  const surfaceClass = isDark
-    ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] text-slate-100 shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
-    : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] text-slate-900 shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
-  const mutedClass = isDark ? "text-slate-400" : "text-slate-500";
-  const labelClass = isDark ? "text-slate-300" : "text-slate-600";
-  const softCardClass = isDark
-    ? "border-slate-700/70 bg-slate-950/55"
-    : "border-slate-200 bg-white/90";
-
   const displayName = useMemo(() => getDisplayName(user), [user]);
   const memberSince = formatAccountDate(user?.created_at);
   const provider = user?.app_metadata?.provider || "auth";
@@ -205,7 +198,6 @@ export default function AccountControlsPage() {
         const { error } = await supabase.from(table.name).delete().eq(table.col, user.id);
         if (error) {
           console.warn(`Could not delete from ${table.name}:`, error.message);
-          // We continue anyway as some tables might be empty or have different RLS
         }
       }
 
@@ -221,50 +213,51 @@ export default function AccountControlsPage() {
       router.replace("/");
     } catch (err) {
       console.error("Deletion error:", err);
-      throw err; // This will be caught by the modal and shown to the user
+      throw err;
     }
   };
 
+  const skeletonBar = isDark ? "bg-slate-800" : "bg-slate-200 animate-pulse";
+  const skeletonCard = isDark ? "border-white/5 bg-white/[0.02]" : "border-slate-200 bg-white shadow-xs";
+
   if (!isSafetyTimeoutReached && isAuthLoading) {
     return (
-      <div className={shellClass}>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className={ambientClass} />
-          <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-          <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
-        </div>
+      <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
+        isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+      }`}>
+        <div className="absolute top-[-25%] right-[-10%] w-[70%] h-[70%] bg-indigo-500/[0.04] rounded-full blur-[150px]" />
+        <div className="absolute bottom-[-25%] left-[-10%] w-[70%] h-[70%] bg-purple-500/[0.04] rounded-full blur-[150px]" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-          <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="space-y-3">
-                <div className={`h-3 w-28 rounded-full ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
-                <div className={`h-7 w-64 rounded-full ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
-                <div className={`h-4 w-96 max-w-full rounded-full ${isDark ? "bg-slate-700/60" : "bg-slate-200"} animate-pulse`} />
+        <div className="max-w-7xl mx-auto space-y-8 relative z-10 animate-pulse">
+          {/* Header Skeleton */}
+          <div className={`rounded-3xl border p-5 flex items-center justify-between ${skeletonCard}`}>
+            <div className="flex items-center gap-4">
+              <div className={`h-10 w-24 rounded-2xl ${skeletonBar}`} />
+              <div className="space-y-2">
+                <div className={`h-3.5 w-48 rounded-md ${skeletonBar}`} />
+                <div className={`h-3 w-32 rounded-md ${skeletonBar}`} />
               </div>
-              <div className={`h-11 w-36 rounded-full ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
             </div>
+            <div className={`h-10 w-32 rounded-full ${skeletonBar}`} />
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.25fr_0.95fr]">
-            <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-6 flex items-center justify-between gap-4">
-                <div className="space-y-2">
-                  <div className={`h-3 w-36 rounded-full ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
-                  <div className={`h-6 w-44 rounded-full ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-6">
+              <div className={`rounded-[36px] border p-6 sm:p-8 space-y-6 ${skeletonCard}`}>
+                <div className="flex items-center justify-between">
+                  <div className={`h-6 w-48 rounded-md ${skeletonBar}`} />
+                  <div className={`h-12 w-12 rounded-2xl ${skeletonBar}`} />
                 </div>
-                <div className={`h-14 w-14 rounded-2xl ${isDark ? "bg-slate-700/80" : "bg-slate-200"} animate-pulse`} />
-              </div>
-              <div className="space-y-5">
-                <div className={`h-20 rounded-3xl border ${softCardClass} animate-pulse`} />
-                <div className={`h-20 rounded-3xl border ${softCardClass} animate-pulse`} />
-                <div className={`h-20 rounded-3xl border ${softCardClass} animate-pulse`} />
-                <div className={`h-12 rounded-2xl border ${softCardClass} animate-pulse`} />
+                <div className="h-px bg-slate-500/10 w-full" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={`h-24 rounded-2xl ${skeletonBar}`} />
+                  <div className={`h-24 rounded-2xl ${skeletonBar}`} />
+                </div>
               </div>
             </div>
-            <div className="space-y-6">
-              <div className={`h-52 rounded-4xl border ${softCardClass} animate-pulse`} />
-              <div className={`h-40 rounded-4xl border ${softCardClass} animate-pulse`} />
+            
+            <div className="lg:col-span-4 space-y-6">
+              <div className={`rounded-[36px] border p-6 ${skeletonCard} h-72 ${skeletonBar}`} />
             </div>
           </div>
         </div>
@@ -274,103 +267,153 @@ export default function AccountControlsPage() {
 
   if (!user) {
     return (
-      <div className={shellClass}>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className={ambientClass} />
-          <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-          <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
-        </div>
+      <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
+        isDark ? "bg-[#0B0C15]" : "bg-slate-50"
+      }`}>
+        {/* Glow meshes */}
+        <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[60%] h-[60%] bg-purple-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-          <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
+        <div className="max-w-7xl mx-auto relative z-10 space-y-8">
+          {/* Header */}
+          <div className={`flex flex-wrap items-center justify-between gap-3 rounded-3xl border p-4 backdrop-blur-2xl ${
+            isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white/90 shadow-sm"
+          }`}>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push("/")}
-                className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+                className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                  isDark 
+                    ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10 hover:bg-white/[0.04]" 
+                    : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
+                }`}
               >
-                <ArrowLeft className="h-4 w-4" />
-                Home
+                <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                <span>Home</span>
               </button>
               <div>
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account controls</p>
-                <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your session</h1>
+                <span className={`text-[9px] font-black uppercase tracking-[0.25em] ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>
+                  SESSION OVERRIDES
+                </span>
+                <h1 className={`text-xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                  Account Session
+                </h1>
               </div>
             </div>
-            <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] ${isDark ? "border-slate-700/70 bg-slate-900/70 text-slate-300" : "border-slate-200 bg-white text-slate-500"}`}>
-              <Shield className="h-4 w-4 text-indigo-500" />
-              Guest mode
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+              isDark ? "border-white/10 bg-white/5 text-slate-400" : "border-slate-200 bg-white text-slate-500"
+            }`}>
+              <Shield className="w-4 h-4 text-indigo-500" />
+              <span>guest clearance</span>
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div className="space-y-2">
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Welcome back</p>
-                  <h2 className="text-2xl font-black tracking-tight md:text-3xl">Sign in to unlock account tools</h2>
-                  <p className={`max-w-2xl text-sm leading-relaxed ${mutedClass}`}>
-                    Account controls live behind authentication so you can safely review your session, jump to profile settings,
-                    and sign out when you are done.
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-7">
+              <div className={`rounded-[40px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+                isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+              }`}>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1.5">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Welcome Developer</span>
+                      <h2 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                        Authenticate to unlock session controls
+                      </h2>
+                    </div>
+                    <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center ${
+                      isDark ? "border-white/10 bg-white/5 text-indigo-400" : "border-slate-200 bg-slate-50 text-indigo-600"
+                    }`}>
+                      <Sparkles className="w-6 h-6 animate-pulse" />
+                    </div>
+                  </div>
+                  <p className={`text-xs sm:text-sm leading-relaxed font-bold ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                    To review active profiles, credentials parameters, unlinking portals, and Danger Zone settings, please sign in.
                   </p>
+                  
+                  <div className="max-w-xl pt-4">
+                    <LoginPrompt
+                      title="Login to manage your account"
+                      description="Sign in to open your account controls, review your session, and jump back into profile settings."
+                      nextPath="/account-controls"
+                      compact
+                    />
+                  </div>
                 </div>
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Sparkles className="h-6 w-6 text-indigo-500" />
-                </div>
-              </div>
-
-              <div className="max-w-xl">
-                <LoginPrompt
-                  title="Login to manage your account"
-                  description="Sign in to open your account controls, review your session, and jump back into profile settings."
-                  nextPath="/account-controls"
-                  compact
-                />
               </div>
             </div>
 
-            <div className="grid gap-6 self-start">
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-5 flex items-center gap-3">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                    <LockKeyhole className="h-5 w-5 text-indigo-500" />
+            <div className="lg:col-span-5 space-y-6">
+              <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+                isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+              }`}>
+                <div className="mb-6 flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                    isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-600"
+                  }`}>
+                    <LockKeyhole className="w-5 h-5 text-indigo-500" />
                   </div>
                   <div>
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Access</p>
-                    <h2 className="text-lg font-bold">What you get after login</h2>
+                    <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                      Locked clearance
+                    </h3>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      SECURED CREDENTIAL WIDGETS
+                    </p>
                   </div>
                 </div>
-                <div className="space-y-4 text-sm leading-relaxed">
-                  <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Session</p>
-                    <p className={`mt-1 ${mutedClass}`}>See who is signed in and quickly end the browser session.</p>
+
+                <div className="space-y-4 text-xs font-bold">
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Session</span>
+                    <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Identify signed-in users and terminate active cookies securely.</p>
                   </div>
-                  <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile</p>
-                    <p className={`mt-1 ${mutedClass}`}>Jump to account settings to update your name, username, bio, and country.</p>
+                  
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Profile</span>
+                    <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Jump directly to customizable profile elements including avatar uploads.</p>
                   </div>
-                  <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                    <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Security</p>
-                    <p className={`mt-1 ${mutedClass}`}>Authentication, email, and password management stay in the login flow.</p>
+
+                  <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Security Controls</span>
+                    <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Review linked Google identity connections and primary parameters.</p>
                   </div>
                 </div>
               </div>
 
-              <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-                <div className="mb-3 flex items-center gap-3">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                    <ExternalLink className="h-5 w-5 text-indigo-500" />
+              <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+                isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+              }`}>
+                <div className="mb-4 flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                    isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                  }`}>
+                    <ExternalLink className="w-5 h-5 text-indigo-500" />
                   </div>
                   <div>
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Shortcut</p>
-                    <h2 className="text-lg font-bold">Jump straight to sign in</h2>
+                    <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                      Direct SSO Shortcut
+                    </h3>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                      BYPASS TO AUTH OVERRIDE
+                    </p>
                   </div>
                 </div>
+                
+                <p className={`text-xs leading-relaxed mb-6 font-bold ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                  Jump directly to the primary login console to link or authenticate your active developer ID.
+                </p>
+
                 <Link
                   href="/login?next=%2Faccount-controls"
-                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+                  className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all duration-300 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
+                    isDark 
+                      ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20" 
+                      : "bg-indigo-750 hover:bg-indigo-850 shadow-indigo-650/15"
+                  }`}
                 >
-                  Go to login
-                  <ChevronRight className="h-4 w-4" />
+                  <span>Go to Login flow</span>
+                  <ChevronRight className="w-4 h-4 shrink-0" />
                 </Link>
               </div>
             </div>
@@ -381,160 +424,249 @@ export default function AccountControlsPage() {
   }
 
   return (
-    <div className={shellClass}>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className={ambientClass} />
-        <div className={`pointer-events-none absolute left-[-8%] top-[12%] h-72 w-72 rounded-full blur-[130px] ${glowTopClass}`} />
-        <div className={`pointer-events-none absolute bottom-[-6%] right-[-5%] h-80 w-80 rounded-full blur-[150px] ${glowBottomClass}`} />
-      </div>
+    <div className={`min-h-screen w-full transition-colors duration-500 p-4 sm:p-8 lg:p-12 relative overflow-hidden ${
+      isDark ? "bg-[#0B0C15] text-white" : "bg-slate-50 text-slate-900"
+    }`}>
+      {/* Blurred glow backdrops */}
+      <div className="absolute top-[-25%] right-[-10%] w-[70%] h-[70%] bg-indigo-500/[0.04] dark:bg-indigo-500/[0.08] rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-[-25%] left-[-10%] w-[70%] h-[70%] bg-purple-500/[0.04] dark:bg-purple-500/[0.08] rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-        <div className={`flex flex-wrap items-center justify-between gap-3 rounded-4xl border px-5 py-4 backdrop-blur-2xl ${surfaceClass}`}>
-          <div className="flex items-center gap-4">
+      <div className="max-w-7xl mx-auto relative z-10 space-y-8">
+        
+        {/* Navigation & Header Portal */}
+        <div className={`flex flex-wrap items-center justify-between gap-4 rounded-3xl border p-4 sm:p-5 backdrop-blur-2xl ${
+          isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white/90 shadow-sm"
+        }`}>
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => router.push("/account-settings")}
-              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                isDark 
+                  ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10 hover:bg-white/[0.04]" 
+                  : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
+              }`}
             >
-              <ArrowLeft className="h-4 w-4" />
-              Account settings
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+              <span>Settings</span>
             </button>
             <button
               onClick={() => router.push("/")}
-              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-semibold transition ${isDark ? "border-slate-700/70 bg-slate-900/70 hover:bg-slate-800/80" : "border-slate-200 bg-white hover:bg-slate-50"}`}
+              className={`flex items-center gap-2 py-2 px-4 rounded-xl border transition-all duration-300 group text-xs font-black uppercase tracking-wider ${
+                isDark 
+                  ? "text-slate-400 border-white/5 bg-white/[0.02] hover:text-white hover:border-white/10" 
+                  : "text-slate-650 border-slate-200 bg-white hover:text-slate-900 hover:border-slate-300 shadow-xs"
+              }`}
             >
-              <Sparkles className="h-4 w-4" />
-              Home
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Home</span>
             </button>
+            
+            <div className="hidden sm:block w-px h-8 bg-slate-500/10 mx-2" />
+
             <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Account controls</p>
-              <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">Manage your session</h1>
+              <span className={`text-[9px] font-black uppercase tracking-[0.25em] ${isDark ? "text-indigo-400" : "text-indigo-600"}`}>
+                SESSION CONSOLE MANAGER
+              </span>
+              <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                Manage Session overrides
+              </h1>
             </div>
           </div>
-          <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] ${isDark ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
-            <Shield className="h-4 w-4" />
-            Signed in
+
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+            isDark ? "border-emerald-500/20 bg-emerald-500/[0.04] text-emerald-400" : "border-emerald-250 bg-emerald-50 text-emerald-650"
+          }`}>
+            <ShieldCheck className="w-4 h-4 text-emerald-500 animate-pulse" />
+            <span>Session Secured</span>
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className={`rounded-4xl border p-6 md:p-8 backdrop-blur-2xl ${surfaceClass}`}>
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="space-y-2">
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Session overview</p>
-                <h2 className="text-2xl font-black tracking-tight md:text-3xl">Keep your account in hand</h2>
-                <p className={`max-w-2xl text-sm leading-relaxed ${mutedClass}`}>
-                  This page keeps the high-level controls close by so you can inspect the current session, jump back to profile
-                  edits, or sign out with one click.
-                </p>
+        {/* Dashboard grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column: Details & Connectors */}
+          <div className="lg:col-span-8 space-y-8">
+            
+            {/* Session console details card */}
+            <div className={`rounded-[40px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
+              
+              <div className="flex items-center justify-between pb-6 border-b border-slate-500/10 mb-6">
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">
+                    Session Telemetry
+                  </span>
+                  <h2 className={`text-xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Inspect active connection parameters
+                  </h2>
+                </div>
+                <div className={`w-12 h-12 rounded-xl border flex items-center justify-center text-indigo-500 ${
+                  isDark ? "border-white/10 bg-white/5" : "border-slate-200 bg-slate-50"
+                }`}>
+                  <Fingerprint className="w-6 h-6" />
+                </div>
               </div>
-              <div className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                <Fingerprint className="h-6 w-6 text-indigo-500" />
-              </div>
-            </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className={`rounded-3xl border p-4 ${softCardClass}`}>
-                <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile</p>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                    <UserRound className="h-5 w-5 text-indigo-500" />
+              {/* Grid matrix of telemetry */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className={`rounded-2xl border p-4 transition-all duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/40 shadow-xs"
+                }`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Display Profile</span>
+                  <div className="mt-2.5 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs uppercase border ${
+                      isDark ? "border-white/5 bg-white/5 text-indigo-400" : "border-slate-200 bg-slate-100 text-indigo-650"
+                    }`}>
+                      {displayName.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="space-y-0.5 max-w-[calc(100%-3rem)]">
+                      <p className={`text-xs font-black truncate ${isDark ? "text-white" : "text-slate-800"}`}>{displayName}</p>
+                      <p className="text-[10px] font-bold text-slate-500 truncate">{user.email || "No email bound"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`rounded-2xl border p-4 transition-all duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/40 shadow-xs"
+                }`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Session state</span>
+                  <p className={`mt-2.5 text-sm font-black tracking-wide uppercase ${isDark ? "text-white" : "text-slate-800"}`}>
+                    Active connection
+                  </p>
+                  <p className="text-[10px] font-bold text-slate-500 mt-1">Provider pool: {provider.toUpperCase()}</p>
+                </div>
+
+                <div className={`rounded-2xl border p-4 transition-all duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/40 shadow-xs"
+                }`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Sovereign registration</span>
+                  <p className={`mt-2.5 text-sm font-black ${isDark ? "text-white" : "text-slate-800"}`}>
+                    {memberSince}
+                  </p>
+                  <p className="text-[10px] font-bold text-slate-500 mt-1">Based on cloud auth record.</p>
+                </div>
+
+                <div className={`rounded-2xl border p-4 transition-all duration-300 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/40 shadow-xs"
+                }`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Telemetry account id</span>
+                  <p className={`mt-2.5 font-mono text-[9px] font-black truncate select-all px-2.5 py-1.5 rounded-lg border ${
+                    isDark ? "bg-slate-950/80 border-white/5 text-indigo-400" : "bg-slate-100 border-slate-200 text-indigo-650"
+                  }`}>
+                    {user.id}
+                  </p>
+                  <p className="text-[9.5px] font-bold text-slate-500 mt-1">Direct system identifier.</p>
+                </div>
+              </div>
+
+              {/* Commands panel */}
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-500/10 pt-6">
+                <Link
+                  href="/account-settings"
+                  className={`group rounded-2xl border p-4 flex flex-col justify-between min-h-36 transition-all duration-300 ${
+                    isDark 
+                      ? "border-white/[0.04] bg-white/[0.01] hover:border-indigo-500/20 hover:bg-white/[0.03]" 
+                      : "border-slate-200 bg-slate-100/20 hover:border-indigo-300 hover:bg-white shadow-xs hover:shadow-md"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <Settings className="w-5 h-5 text-indigo-500" />
+                    <ChevronRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 text-slate-500`} />
                   </div>
                   <div>
-                    <p className="text-base font-bold">{displayName}</p>
-                    <p className={`text-sm ${mutedClass}`}>{user.email || "No email available"}</p>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest">Settings page</h4>
+                    <p className="text-[10.5px] font-bold text-slate-500 mt-1 leading-relaxed">Update bio, username, country details.</p>
                   </div>
-                </div>
-              </div>
+                </Link>
 
-              <div className={`rounded-3xl border p-4 ${softCardClass}`}>
-                <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Session state</p>
-                <p className="mt-2 text-base font-bold">Active in this browser</p>
-                <p className={`mt-1 text-sm ${mutedClass}`}>Provider: {provider.toUpperCase()}</p>
-              </div>
+                <Link
+                  href="/"
+                  className={`group rounded-2xl border p-4 flex flex-col justify-between min-h-36 transition-all duration-300 ${
+                    isDark 
+                      ? "border-white/[0.04] bg-white/[0.01] hover:border-indigo-500/20 hover:bg-white/[0.03]" 
+                      : "border-slate-200 bg-slate-100/20 hover:border-indigo-300 hover:bg-white shadow-xs hover:shadow-md"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <Sparkles className="w-5 h-5 text-indigo-500" />
+                    <ChevronRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 text-slate-500`} />
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest">Home Portal</h4>
+                    <p className="text-[10.5px] font-bold text-slate-500 mt-1 leading-relaxed">Return to Vlyxir workspace tools.</p>
+                  </div>
+                </Link>
 
-              <div className={`rounded-3xl border p-4 ${softCardClass}`}>
-                <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Member since</p>
-                <p className="mt-2 text-base font-bold">{memberSince}</p>
-                <p className={`mt-1 text-sm ${mutedClass}`}>Based on your current authentication record.</p>
-              </div>
-
-              <div className={`rounded-3xl border p-4 ${softCardClass}`}>
-                <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Account ID</p>
-                <p className="mt-2 break-all text-base font-bold">{user.id}</p>
-                <p className={`mt-1 text-sm ${mutedClass}`}>Useful when debugging or reporting account issues.</p>
+                <button
+                  onClick={handleSignOut}
+                  disabled={isSigningOut}
+                  className={`group rounded-2xl border p-4 text-left flex flex-col justify-between min-h-36 transition-all duration-300 active:scale-[0.99] cursor-pointer ${
+                    isDark 
+                      ? "border-rose-500/10 bg-rose-500/[0.02] hover:border-rose-500/30 hover:bg-rose-500/[0.05]" 
+                      : "border-rose-200 bg-rose-50/30 hover:border-rose-300 hover:bg-white shadow-xs hover:shadow-md"
+                  } ${isSigningOut ? "cursor-not-allowed opacity-60 active:scale-100" : ""}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <LogOut className="w-5 h-5 text-rose-500" />
+                    <ChevronRight className={`w-4 h-4 transition-transform group-hover:translate-x-1 ${isDark ? "text-rose-300" : "text-rose-550"}`} />
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-500">Sign Out</h4>
+                    <p className={`text-[10.5px] font-bold mt-1 leading-relaxed ${isDark ? "text-rose-200/60" : "text-rose-700/65"}`}>
+                      Terminate current active browser session safely.
+                    </p>
+                  </div>
+                </button>
               </div>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <Link
-                href="/account-settings"
-                className={`group rounded-3xl border p-4 transition ${isDark ? "border-slate-700/70 bg-slate-950/55 hover:border-indigo-500/30 hover:bg-slate-900/70" : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50"}`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <Settings className="h-5 w-5 text-indigo-500" />
-                  <ChevronRight className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 ${mutedClass}`} />
-                </div>
-                <p className="mt-4 text-sm font-black uppercase tracking-[0.2em]">Profile settings</p>
-                <p className={`mt-2 text-sm leading-relaxed ${mutedClass}`}>Update your name, username, bio, and country.</p>
-              </Link>
-
-              <Link
-                href="/"
-                className={`group rounded-3xl border p-4 transition ${isDark ? "border-slate-700/70 bg-slate-950/55 hover:border-indigo-500/30 hover:bg-slate-900/70" : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-slate-50"}`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <Sparkles className="h-5 w-5 text-indigo-500" />
-                  <ChevronRight className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 ${mutedClass}`} />
-                </div>
-                <p className="mt-4 text-sm font-black uppercase tracking-[0.2em]">Home</p>
-                <p className={`mt-2 text-sm leading-relaxed ${mutedClass}`}>Return to the main workspace and recent tools.</p>
-              </Link>
-
-              <button
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                className={`group rounded-3xl border p-4 text-left transition active:scale-[0.99] ${isDark ? "border-rose-500/20 bg-rose-500/5 hover:border-rose-500/35 hover:bg-rose-500/10" : "border-rose-200 bg-rose-50 hover:border-rose-300 hover:bg-rose-100/70"} ${isSigningOut ? "cursor-not-allowed opacity-70" : ""}`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <LogOut className="h-5 w-5 text-rose-500" />
-                  <ChevronRight className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 ${isDark ? "text-rose-300" : "text-rose-500"}`} />
-                </div>
-                <p className="mt-4 text-sm font-black uppercase tracking-[0.2em] text-rose-600">Sign out</p>
-                <p className={`mt-2 text-sm leading-relaxed ${isDark ? "text-rose-200/80" : "text-rose-700/80"}`}>
-                  End this browser session and return to the login screen.
-                </p>
-              </button>
-            </div>
-
-            <div className={`mt-8 rounded-3xl border p-6 ${isDark ? "border-slate-800/80 bg-slate-950/50" : "border-slate-200/60 bg-white/50"}`}>
-              <div className="mb-4 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Shield className="h-5 w-5 text-indigo-500" />
+            {/* Google Connectivity card */}
+            <div className={`rounded-[36px] border p-6 sm:p-8 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
+              <div className="mb-6 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                }`}>
+                  <Shield className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Backup Login</p>
-                  <h2 className="text-lg font-bold">Google Connectivity</h2>
+                  <h3 className={`text-lg font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Backup Identity Portal
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    SSO GOOGLE CONNECTIVITY MANAGEMENT
+                  </p>
                 </div>
               </div>
-              <p className={`text-sm leading-relaxed ${mutedClass} mb-4`}>
-                Link your account to Google to ensure you can always recover your profile and progress, even if you lose your password.
+              
+              <p className={`text-xs leading-relaxed font-bold mb-6 ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                Establish single-click sign-in to recover your data pools in the event of credential losses.
               </p>
 
-              <div className="space-y-3">
-                <div className={`flex items-center justify-between rounded-2xl border p-3 ${isDark ? "border-slate-800/50 bg-slate-900/30" : "border-slate-200/50 bg-white"}`}>
-                  <span className="text-xs font-bold">Status:</span>
+              <div className="space-y-4">
+                <div className={`flex items-center justify-between rounded-2xl border p-4 ${
+                  isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"
+                }`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Google link status</span>
                   {identities.some((id) => id.provider === "google") ? (
-                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[9px] font-black uppercase text-emerald-500 tracking-widest">Linked</span>
+                    <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-[8px] font-black uppercase text-emerald-500 tracking-widest animate-pulse">Linked</span>
                   ) : (
-                    <span className="rounded-full bg-slate-500/10 px-2.5 py-1 text-[9px] font-black uppercase text-slate-400 tracking-widest">Not Linked</span>
+                    <span className="rounded-full bg-slate-500/10 border border-slate-200 px-3 py-1 text-[8px] font-black uppercase text-slate-400 tracking-widest">Disconnected</span>
                   )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     onClick={handleLinkGoogle}
                     disabled={isLinkingGoogle || identities.some((id) => id.provider === "google")}
-                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-xs font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 enabled:hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 enabled:hover:brightness-110"} disabled:opacity-40 disabled:cursor-not-allowed`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all duration-300 shadow-xl cursor-pointer ${
+                      isDark 
+                        ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20" 
+                        : "bg-indigo-750 hover:bg-indigo-850 shadow-indigo-650/15"
+                    } disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     Link Google
                   </button>
@@ -542,7 +674,11 @@ export default function AccountControlsPage() {
                   <button
                     onClick={handleUnlinkGoogle}
                     disabled={isLinkingGoogle || !identities.some((id) => id.provider === "google")}
-                    className={`flex-1 inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-semibold transition active:scale-[0.98] ${isDark ? "border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" : "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100/70"} disabled:opacity-40 disabled:cursor-not-allowed`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl border font-black text-xs uppercase tracking-widest transition-all duration-300 cursor-pointer ${
+                      isDark 
+                        ? "border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20" 
+                        : "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100/70"
+                    } disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     Unlink Google
                   </button>
@@ -551,96 +687,154 @@ export default function AccountControlsPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 lg:justify-between lg:h-full">
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+          {/* Right Column: Timelines & Safety Checklists */}
+          <div className="lg:col-span-4 space-y-8">
+            
+            {/* Session Checklist before departure */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md"
+            }`}>
               <div className="mb-5 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <Clock3 className="h-5 w-5 text-indigo-500" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                }`}>
+                  <Clock3 className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Checklist</p>
-                  <h2 className="text-lg font-bold">Before you leave</h2>
+                  <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Console Checklist
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    departure safety rules
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-4 text-sm leading-relaxed">
-                <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Profile updates</p>
-                  <p className={`mt-1 ${mutedClass}`}>Use account settings if you need to change your public profile details.</p>
+              <div className="space-y-4 text-xs font-bold leading-relaxed">
+                <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Unsaved updates</span>
+                  <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Ensure to submit profile parameters before ending session logs.</p>
                 </div>
-                <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Password changes</p>
-                  <p className={`mt-1 ${mutedClass}`}>Password and email actions remain in the authentication flow.</p>
+                
+                <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Password overrides</span>
+                  <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Password configurations live inside auth portals for safety clearance.</p>
                 </div>
-                <div className={`rounded-2xl border p-4 ${softCardClass}`}>
-                  <p className={`text-xs font-black uppercase tracking-[0.2em] ${labelClass}`}>Session safety</p>
-                  <p className={`mt-1 ${mutedClass}`}>Sign out when using a shared device or before switching accounts.</p>
+                
+                <div className={`rounded-2xl border p-4 ${isDark ? "border-white/[0.04] bg-white/[0.01]" : "border-slate-150 bg-slate-50/50"}`}>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 block">Session safety</span>
+                  <p className={`mt-1 ${isDark ? "text-slate-400" : "text-slate-650"}`}>Sign out securely when developing on public or shared terminals.</p>
                 </div>
               </div>
             </div>
 
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
+            {/* Quick settings shortcut box */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden ${
+              isDark ? "border-white/[0.06] bg-white/[0.02]" : "border-slate-200 bg-white shadow-md hover:shadow-lg transition-shadow duration-300"
+            }`}>
               <div className="mb-4 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-slate-700/70 bg-slate-900/70" : "border-slate-200 bg-slate-50"}`}>
-                  <ExternalLink className="h-5 w-5 text-indigo-500" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                }`}>
+                  <ExternalLink className="w-5 h-5 text-indigo-500" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Quick link</p>
-                  <h2 className="text-lg font-bold">Open profile settings</h2>
+                  <h3 className={`text-base font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    Profile Shortcut
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">
+                    QUICK ACCESS TO PROFILE
+                  </p>
                 </div>
               </div>
-              <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                If you came here to change your profile, jump into the settings screen and keep the account card in sync.
+              
+              <p className={`text-xs leading-relaxed mb-6 font-bold ${isDark ? "text-slate-400" : "text-slate-650"}`}>
+                Jump directly back into the Profile settings to customize bio updates, region flags, or username parameters.
               </p>
+
               <Link
                 href="/account-settings"
-                className={`mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#2563eb,#7c3aed)] shadow-lg shadow-indigo-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#1d4ed8,#7c3aed)] shadow-lg shadow-indigo-500/20 hover:brightness-110"}`}
+                className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all duration-300 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
+                  isDark 
+                    ? "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-500/20" 
+                    : "bg-indigo-750 hover:bg-indigo-850 shadow-indigo-650/15"
+                }`}
               >
-                Edit profile
-                <ChevronRight className="h-4 w-4" />
+                <span>Edit profile</span>
+                <ChevronRight className="w-4 h-4 shrink-0" />
               </Link>
             </div>
 
-            <div className={`rounded-4xl border p-6 backdrop-blur-2xl ${surfaceClass}`}>
-              <div className="mb-3 flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${isDark ? "border-rose-500/20 bg-rose-500/10" : "border-rose-200 bg-rose-50"}`}>
-                  <Trash2 className="h-5 w-5 text-rose-500" />
+            {/* IRREVERSIBLE DANGER ZONE CORE */}
+            <div className={`rounded-[36px] border p-6 backdrop-blur-2xl relative overflow-hidden transition-all duration-300 ${
+              isDark 
+                ? "border-rose-500/20 bg-rose-500/[0.03] hover:bg-rose-500/[0.05]" 
+                : "border-rose-200 bg-rose-50/30 hover:shadow-md shadow-xs"
+            }`}>
+              <div className="mb-4 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
+                  isDark ? "bg-rose-500/25 border-rose-500/30 text-rose-400 animate-pulse" : "bg-rose-100 border-rose-200 text-rose-650"
+                }`}>
+                  <Trash2 className="w-4.5 h-4.5" />
                 </div>
                 <div>
-                  <p className={`text-[10px] font-semibold uppercase tracking-[0.35em] ${mutedClass}`}>Danger Zone</p>
-                  <h2 className="text-lg font-bold">Delete your account</h2>
+                  <h3 className="text-base font-black tracking-tight text-rose-500">
+                    Danger Zone
+                  </h3>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-rose-500/60">
+                    IRREVERSIBLE SYSTEM COMMAND
+                  </p>
                 </div>
               </div>
-              <p className={`text-sm leading-relaxed ${mutedClass}`}>
-                Permanently delete your public profile, past arena code submissions, forum posts, upvotes, and comments. 
-                This action is irreversible and all your hard-earned progress, stats, and historical activity will be permanently wiped from the database. 
-                Please proceed with absolute caution.
+              
+              <p className={`text-xs leading-relaxed font-bold mb-6 ${isDark ? "text-rose-200/60" : "text-rose-700/70"}`}>
+                Profile purging deletes all submissions, scores, comments, upvotes, and credentials keys forever. Proceed with absolute caution.
               </p>
+
               <button
                 onClick={() => setIsDeleteModalOpen(true)}
-                className={`mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white transition active:scale-[0.98] ${isDark ? "bg-[linear-gradient(135deg,#e11d48,#9f1239)] shadow-lg shadow-rose-500/25 hover:brightness-110" : "bg-[linear-gradient(135deg,#e11d48,#be123c)] shadow-lg shadow-rose-500/20 hover:brightness-110"}`}
+                className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest text-white transition-all duration-300 shadow-xl cursor-pointer hover:scale-[1.02] active:scale-[0.98] ${
+                  isDark 
+                    ? "bg-rose-600 hover:bg-rose-700 shadow-rose-500/20 animate-pulse" 
+                    : "bg-rose-700 hover:bg-rose-800 shadow-rose-650/15"
+                }`}
               >
-                <Trash2 className="h-4 w-4" />
-                Delete Account
+                <Trash2 className="w-4 h-4 shrink-0" />
+                <span>Delete Account</span>
               </button>
             </div>
+
           </div>
         </div>
-      </div>
 
-      <DeleteAccountModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteAccount}
-        currentUsername={user?.user_metadata?.username || "confirm"}
-        isDark={isDark}
-      />
-      <ErrorModal 
-        isOpen={showErrorModal} 
-        onClose={() => setShowErrorModal(false)} 
-        title={errorConfig.title}
-        message={errorConfig.message}
-      />
+        {/* Dynamic Modals Portal */}
+        <DeleteAccountModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteAccount}
+          currentUsername={user?.user_metadata?.username || "confirm"}
+          isDark={isDark}
+        />
+        
+        <ErrorModal 
+          isOpen={showErrorModal} 
+          onClose={() => setShowErrorModal(false)} 
+          title={errorConfig.title}
+          message={errorConfig.message}
+        />
+
+        {/* Global Footer Details */}
+        <div className="mt-20 mb-8 text-center opacity-30 select-none pointer-events-none space-y-1.5">
+          <div className="flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-[0.6em] text-slate-500">
+            <Globe className="w-3.5 h-3.5" />
+            <span>Vlyxir Sovereign Cloud Environment</span>
+          </div>
+          <p className="text-[8px] font-bold tracking-widest text-slate-500 opacity-60">
+            SYS-BUILD: 7.3.20 // REGION: GLOBAL-EAST // SECURITY VERIFIED
+          </p>
+        </div>
+
+      </div>
     </div>
   );
 }

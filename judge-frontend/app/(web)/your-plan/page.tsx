@@ -147,7 +147,7 @@ export default function YourPlanPage() {
 
                     <button 
                         onClick={() => router.push('/login')}
-                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-indigo-600 hover:from-rose-600 hover:to-indigo-700 text-white font-black text-sm tracking-widest uppercase transition-all duration-300 shadow-xl shadow-indigo-650/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                        className="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm tracking-widest uppercase transition-all duration-300 shadow-xl shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                     >
                         Sign In to Access Dashboard
                     </button>
