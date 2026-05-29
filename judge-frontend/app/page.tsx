@@ -13,211 +13,226 @@ import {
 import { useAppContext } from './lib/auth/context';
 import Footer from "@/components/General/Footer";
 
-// Typing Terminal Simulation Component for Hero Section
-function CodeTerminalSimulation({ isDark }: { isDark: boolean }) {
-    const pythonCode = [
-        "def solve(nums, target):",
-        "    # Find two indices that sum to target",
-        "    seen = {}",
-        "    for i, num in enumerate(nums):",
-        "        diff = target - num",
-        "        if diff in seen:",
-        "            return [seen[diff], i]",
-        "        seen[num] = i",
-        "    return []"
-    ];
+// Sleek, Minimalist Interactive Code Sandbox Simulation
+function CyberCoreDeck({ isDark }: { isDark: boolean }) {
+  const [phase, setPhase] = useState<"idle" | "compiling" | "testing" | "success">("idle");
+  const [progress, setProgress] = useState(0);
+  const [testCases, setTestCases] = useState(0);
 
-    const [currentLine, setCurrentLine] = useState(0);
-    const [currentChar, setCurrentChar] = useState(0);
-    const [typedCode, setTypedCode] = useState<string[]>([
-        pythonCode[0].match(/^\s*/)?.[0] || ""
-    ]);
-    const [step, setStep] = useState<"typing" | "running" | "success">("typing");
+  const activePayload = {
+    fileName: "two_sum.py",
+    langName: "Python 3.10",
+    runtime: "12 ms",
+    complexity: "O(N)",
+    accent: "indigo",
+    code: [
+      "def solve(nums, target):",
+      "    seen = {}",
+      "    for i, num in enumerate(nums):",
+      "        diff = target - num",
+      "        if diff in seen:",
+      "            return [seen[diff], i]",
+      "        seen[num] = i",
+      "    return []"
+    ]
+  };
 
-    useEffect(() => {
-        if (step === "typing") {
-            if (currentLine < pythonCode.length) {
-                const targetText = pythonCode[currentLine];
-                const leadingSpaces = targetText.match(/^\s*/)?.[0] || "";
-                const actualText = targetText.slice(leadingSpaces.length);
+  const triggerRun = () => {
+    if (phase !== 'idle' && phase !== 'success') return;
+    setPhase('compiling');
+    setProgress(0);
+    setTestCases(0);
+  };
 
-                if (currentChar < actualText.length) {
-                    const timer = setTimeout(() => {
-                        setTypedCode(prev => {
-                            const newCode = [...prev];
-                            newCode[currentLine] = leadingSpaces + actualText.slice(0, currentChar + 1);
-                            return newCode;
-                        });
-                        setCurrentChar(prev => prev + 1);
-                    }, 20);
-                    return () => clearTimeout(timer);
-                } else {
-                    const timer = setTimeout(() => {
-                        const nextLineIndex = currentLine + 1;
-                        if (nextLineIndex < pythonCode.length) {
-                            const nextLeadingSpaces = pythonCode[nextLineIndex].match(/^\s*/)?.[0] || "";
-                            setTypedCode(prev => [...prev, nextLeadingSpaces]);
-                        } else {
-                            setTypedCode(prev => [...prev, ""]);
-                        }
-                        setCurrentLine(prev => prev + 1);
-                        setCurrentChar(0);
-                    }, 100);
-                    return () => clearTimeout(timer);
-                }
-            } else {
-                const timer = setTimeout(() => {
-                    setStep("running");
-                }, 400);
-                return () => clearTimeout(timer);
-            }
-        } else if (step === "running") {
-            const timer = setTimeout(() => {
-                setStep("success");
-            }, 1000);
-            return () => clearTimeout(timer);
-        } else if (step === "success") {
-            const timer = setTimeout(() => {
-                const firstLineLeading = pythonCode[0].match(/^\s*/)?.[0] || "";
-                setTypedCode([firstLineLeading]);
-                setCurrentLine(0);
-                setCurrentChar(0);
-                setStep("typing");
-            }, 6000);
-            return () => clearTimeout(timer);
-        }
-    }, [step, currentLine, currentChar]);
+  useEffect(() => {
+    if (phase === 'compiling') {
+      const interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setPhase('testing');
+            return 100;
+          }
+          return prev + 20;
+        });
+      }, 60);
+      return () => clearInterval(interval);
+    } else if (phase === 'testing') {
+      const interval = setInterval(() => {
+        setTestCases(prev => {
+          if (prev >= 50) {
+            clearInterval(interval);
+            setPhase('success');
+            return 50;
+          }
+          return prev + 10;
+        });
+      }, 85);
+      return () => clearInterval(interval);
+    }
+  }, [phase]);
 
-    const borderStyle = isDark 
-        ? "border-slate-800 bg-slate-950/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.8)]" 
-        : "border-slate-200 bg-white/90 shadow-[0_25px_60px_-15px_rgba(99,102,241,0.08)]";
 
-    return (
-        <div className={`w-full rounded-2xl border backdrop-blur-md overflow-hidden transition-all duration-300 ${borderStyle}`}>
-            {/* Window Header */}
-            <div className={`flex items-center justify-between px-4 py-3 border-b ${isDark ? "border-slate-900 bg-slate-950/50" : "border-slate-100 bg-slate-50/50"}`}>
-                <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-rose-500/80" />
-                    <span className="w-3 h-3 rounded-full bg-amber-500/80" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                </div>
-                <span className={`text-[11px] font-mono font-medium ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-                    vlyxir_sandbox.py
-                </span>
-                <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold ${
-                        isDark ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" : "bg-indigo-50 text-indigo-600 border border-indigo-100"
-                    }`}>
-                        Python 3.10
-                    </span>
-                </div>
-            </div>
 
-            {/* Code Body */}
-            <div className="p-5 font-mono text-[11px] sm:text-xs leading-relaxed overflow-x-auto h-[320px] flex flex-col justify-between select-none">
-                {/* Code Lines Container (Fixed Height) */}
-                <div className="h-[180px] overflow-y-auto no-scrollbar">
-                    {typedCode.map((line, idx) => (
-                        <div key={idx} className="flex">
-                            <span className={`w-6 select-none text-right pr-3 ${isDark ? "text-slate-700" : "text-slate-350"}`}>
-                                {idx + 1}
-                            </span>
-                            <span className={`whitespace-pre ${isDark ? "text-slate-300" : "text-slate-700"}`}>
-                                {line.startsWith("def ") ? (
-                                    <>
-                                        <span className="text-pink-500">def</span> {line.slice(4)}
-                                    </>
-                                ) : line.includes("#") ? (
-                                    <span className={isDark ? "text-slate-550" : "text-slate-400"}>{line}</span>
-                                ) : line.includes("return ") ? (
-                                    <>
-                                        {line.slice(0, line.indexOf("return "))}
-                                        <span className="text-pink-500">return</span>
-                                        {line.slice(line.indexOf("return ") + 6)}
-                                    </>
-                                ) : line.includes("for ") || line.includes("if ") || line.includes("in ") ? (
-                                    // simple highlighting
-                                    <span className={isDark ? "text-slate-300" : "text-slate-700"}>{line}</span>
-                                ) : (
-                                    line
-                                )}
-                                {idx === typedCode.length - 1 && step === "typing" && (
-                                    <span className="inline-block w-1.5 h-3.5 bg-indigo-500 ml-0.5 animate-pulse" />
-                                )}
-                            </span>
-                        </div>
-                    ))}
-                </div>
+  const containerStyle = isDark
+    ? "border-slate-900 bg-slate-950/70 shadow-[0_20px_50px_rgba(0,0,0,0.5)] shadow-indigo-500/2"
+    : "border-slate-200/80 bg-white/90 shadow-[0_20px_50px_rgba(99,102,241,0.03)]";
 
-                {/* Simulated Terminal Status & Output (Fixed Height) */}
-                <div className="h-[90px] mt-4 pt-3 border-t border-dashed border-slate-800/40 flex flex-col justify-center overflow-hidden">
-                    <AnimatePresence mode="wait">
-                        {step === "typing" && (
-                            <motion.div 
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.7 }}
-                                exit={{ opacity: 0 }}
-                                className={`flex items-center gap-2 ${isDark ? "text-slate-500" : "text-slate-400"}`}
-                            >
-                                <Terminal className="w-3.5 h-3.5" />
-                                <span>Waiting for code completion...</span>
-                            </motion.div>
-                        )}
-
-                        {step === "running" && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0 }}
-                                className="space-y-1"
-                            >
-                                <div className="flex items-center gap-2 text-indigo-400 font-bold">
-                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                                    <span>Vlyxir Judge: Evaluating solution...</span>
-                                </div>
-                                <div className={`pl-5 ${isDark ? "text-slate-500" : "text-slate-400"}`}>
-                                    Executing test cases...
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {step === "success" && (
-                            <motion.div 
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="space-y-2"
-                            >
-                                <div className="flex items-center gap-2 text-emerald-500 font-bold">
-                                    <CheckCircle2 className="w-4 h-4" />
-                                    <span>All tests passed successfully! (Accepted)</span>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pl-6 mt-1">
-                                    <div className={`p-2 rounded-lg border text-[10px] ${
-                                        isDark ? "bg-slate-900/30 border-slate-900 text-slate-400" : "bg-slate-50 border-slate-100 text-slate-600"
-                                    }`}>
-                                        <span className="block opacity-60">Runtime</span>
-                                        <span className="font-bold text-emerald-500">14 ms</span>
-                                    </div>
-                                    <div className={`p-2 rounded-lg border text-[10px] ${
-                                        isDark ? "bg-slate-900/30 border-slate-900 text-slate-400" : "bg-slate-50 border-slate-100 text-slate-600"
-                                    }`}>
-                                        <span className="block opacity-60">Test Cases</span>
-                                        <span className="font-bold text-indigo-500">50 / 50 Passed</span>
-                                    </div>
-                                    <div className={`p-2 rounded-lg border text-[10px] ${
-                                        isDark ? "bg-slate-900/30 border-slate-900 text-slate-400" : "bg-slate-50 border-slate-100 text-slate-600"
-                                    }`}>
-                                        <span className="block opacity-60">Status</span>
-                                        <span className="font-bold text-purple-400">Accepted</span>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
+  return (
+    <div className={`w-full rounded-2xl border backdrop-blur-xl overflow-hidden transition-all duration-300 ${containerStyle} min-h-[380px] flex flex-col font-mono`}>
+      {/* Editor Top Bar */}
+      <div className={`flex items-center justify-between px-4 py-2.5 border-b ${isDark ? "border-slate-900 bg-slate-950/45" : "border-slate-100 bg-slate-50/50"}`}>
+        {/* Left dots */}
+        <div className="flex items-center gap-1.5 shrink-0 select-none">
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
         </div>
-    );
+        
+        {/* Editor Tabs */}
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar mx-4">
+          <button
+            className="px-3 py-1 text-xs border-b-2 font-bold transition-all duration-200 text-indigo-400 border-indigo-500 select-none shrink-0"
+          >
+            {activePayload.fileName}
+          </button>
+        </div>
+
+        {/* Compile / Trigger button */}
+        <button
+          onClick={triggerRun}
+          disabled={phase !== 'idle' && phase !== 'success'}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] font-black uppercase transition-all duration-200 ${
+            phase !== 'idle' && phase !== 'success'
+              ? "opacity-40 cursor-not-allowed border-slate-800 text-slate-500"
+              : isDark
+              ? "border-slate-855 hover:border-slate-800 bg-slate-900/30 hover:bg-slate-900/60 text-slate-300 cursor-pointer"
+              : "border-slate-205 hover:border-slate-250 bg-slate-50/50 hover:bg-slate-50 text-slate-650 cursor-pointer"
+          }`}
+        >
+          <Play className="w-2.5 h-2.5 fill-current" />
+        </button>
+      </div>
+
+      {/* Editor split workspace */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden min-h-[300px]">
+        {/* Left Side: Code Editor (7 Columns) */}
+        <div className={`md:col-span-7 p-5 text-[11px] sm:text-xs leading-relaxed overflow-y-auto max-h-[300px] border-r text-left ${
+          isDark ? "border-slate-900 text-slate-300 bg-slate-950/20" : "border-slate-100 text-slate-750 bg-slate-50/10"
+        }`}>
+          {activePayload.code.map((line, idx) => (
+            <div key={idx} className="flex">
+              <span className={`w-6 select-none text-right pr-3.5 ${isDark ? "text-slate-800" : "text-slate-300"}`}>
+                {idx + 1}
+              </span>
+              <span className="whitespace-pre">
+                {line.startsWith("def ") ? (
+                  <>
+                    <span className="text-pink-500">def</span> {line.slice(4)}
+                  </>
+                ) : line.includes("return ") ? (
+                  <>
+                    {line.slice(0, line.indexOf("return "))}
+                    <span className="text-pink-500">return</span>
+                    {line.slice(line.indexOf("return ") + 6)}
+                  </>
+                ) : (
+                  line
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Right Side: Execution Telemetry (5 Columns) */}
+        <div className={`md:col-span-5 p-5 text-[10px] sm:text-xs leading-relaxed flex flex-col justify-between ${
+          isDark ? "bg-slate-950/40 text-slate-400" : "bg-slate-50/50 text-slate-600"
+        } min-h-[160px]`}>
+          <div className="space-y-4 text-left">
+            {/* Status indicators */}
+            <div className={`flex items-center justify-between border-b pb-2.5 ${isDark ? "border-slate-900" : "border-slate-100"}`}>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RUN STATUS</span>
+              <span className="flex items-center gap-1.5">
+                {phase === 'success' ? (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-extrabold text-emerald-500 uppercase text-[9px] tracking-wider">ACCEPTED</span>
+                  </>
+                ) : phase === 'testing' ? (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                    <span className="font-extrabold text-amber-500 uppercase text-[9px] tracking-wider">EVALUATING</span>
+                  </>
+                ) : phase === 'compiling' ? (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                    <span className="font-extrabold text-indigo-400 uppercase text-[9px] tracking-wider">COMPILING</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                    <span className="font-bold text-slate-500 uppercase text-[9px] tracking-wider">STANDBY</span>
+                  </>
+                )}
+              </span>
+            </div>
+
+            {/* Performance metrics list */}
+            <div className="space-y-2.5 text-[11px]">
+              <div className="flex items-center justify-between">
+                <span className="opacity-60 font-semibold">Benchmark Runtime</span>
+                <span className={`font-bold font-mono ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                  {phase === 'success' ? activePayload.runtime : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="opacity-60 font-semibold">Big-O Complexity</span>
+                <span className={`font-bold font-mono ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                  {phase === 'success' ? activePayload.complexity : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="opacity-60 font-semibold">Test Cases Passed</span>
+                <span className={`font-bold font-mono ${phase === 'success' ? 'text-emerald-500' : isDark ? "text-slate-200" : "text-slate-800"}`}>
+                  {phase === 'success' ? "50 / 50 passed" : phase === 'testing' ? `${testCases} / 50` : "—"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Test Case Verification checklist */}
+          <div className={`mt-4 pt-3.5 border-t border-dashed ${isDark ? "border-slate-900" : "border-slate-150"} text-left`}>
+            {phase === 'success' ? (
+              <div className="flex flex-col gap-1 text-[10px] text-emerald-500 font-bold font-mono">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px]">✔</span> <span>50 / 50 test cases passed</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-500 font-medium">
+                  <span className="text-[11px]">✔</span> <span>Memory bounds verified secure</span>
+                </div>
+              </div>
+            ) : phase === 'testing' ? (
+              <div className="space-y-1">
+                <span className="text-[9px] text-amber-500 font-bold uppercase tracking-wider">RUNNING TEST SUITES: {testCases}/50</span>
+                <div className="w-full bg-slate-900/40 rounded-full h-1 overflow-hidden">
+                  <div className="h-full bg-amber-500 transition-all duration-150" style={{ width: `${(testCases / 50) * 100}%` }} />
+                </div>
+              </div>
+            ) : phase === 'compiling' ? (
+              <div className="space-y-1">
+                <span className="text-[9px] text-indigo-400 font-bold uppercase tracking-wider">RESOLVING DEPENDENCIES: {progress}%</span>
+                <div className="w-full bg-slate-900/40 rounded-full h-1 overflow-hidden">
+                  <div className="h-full bg-indigo-500 transition-all duration-100" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
+            ) : (
+              <span className="text-[10px] text-slate-500 opacity-60 font-mono">Press execute button to verify sandbox compilation runtime.</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -334,62 +349,50 @@ export default function Home() {
                     className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-36 pt-4 min-h-[75vh]"
                 >
                     {/* Hero Text */}
-                    <div className="lg:col-span-7 flex flex-col items-center text-center lg:items-start lg:text-left">
-                        {/* Glow Badge */}
-                        {/* <motion.div 
-                            variants={itemVariants} 
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border mb-8 ${
-                                isDark 
-                                    ? "bg-indigo-500/10 border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]" 
-                                    : "bg-indigo-50 border-indigo-150 shadow-sm"
-                            }`}
-                        >
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                            </span>
-                            <span className={`text-[10px] font-black uppercase tracking-[0.25em] ${isDark ? "text-indigo-400" : "text-indigo-650"}`}>
-                                Release 2.0 • Advanced Sandbox
-                            </span>
-                        </motion.div> */}
+                    <div className="lg:col-span-6 flex flex-col items-center text-center lg:items-start lg:text-left">
+
 
                         {/* Title */}
                         <motion.h1
                             variants={itemVariants}
-                            className={`text-5xl md:text-6xl xl:text-7xl font-black tracking-tight mb-8 leading-[1.02] ${isDark ? "text-white" : "text-slate-900"}`}
+                            className={`text-5xl md:text-6xl xl:text-7xl font-black tracking-tight mb-6 leading-[0.98] ${isDark ? "text-white" : "text-slate-900"}`}
                         >
                             Master the <br /> Art of <br />
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-cyan-500 to-purple-600 dark:from-indigo-400 dark:via-cyan-400 dark:to-purple-400 whitespace-nowrap">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 whitespace-nowrap relative inline-block">
                                 Problem Solving
+                                <span className="absolute -bottom-1 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 rounded-full blur-[1px]" />
                             </span>
                         </motion.h1>
 
                         {/* Description */}
                         <motion.p
                             variants={itemVariants}
-                            className={`text-base md:text-lg max-w-xl mx-auto lg:mx-0 mb-10 font-medium leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}
+                            className={`text-sm md:text-base max-w-xl mx-auto lg:mx-0 mb-8 font-semibold leading-relaxed ${isDark ? "text-slate-400" : "text-slate-650"}`}
                         >
-                            Vlyxir is a state-of-the-art playground engineered for modern developers. Write, execute, and analyze your algorithms with unparalleled security and AI insights.
+                            Vlyxir is a state-of-the-art secure playground engineered for competitive engineers. Compile, execute, and analyze your algorithms with isolated hardware-level sandboxes and static Big-O diagnostics.
                         </motion.p>
 
                         {/* Quick Specs List */}
                         <motion.div
                             variants={itemVariants}
-                            className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 mb-10 w-full max-w-lg"
+                            className="grid grid-cols-3 gap-3 mb-8 w-full max-w-lg font-mono text-left"
                         >
                             {[
-                                { title: "Questions", value: "500+" },
-                                { title: "Performance", value: "Low Latency" },
-                                { title: "Analytics", value: "Big-O Analysis" }
+                                { title: "ENG_DB", value: "500+ PROBLEMS", sub: "Handpicked algos" },
+                                { title: "EXEC_NET", value: "SANDBOX SECURE", sub: "Isolated VM layers" },
+                                { title: "DIAG_AI", value: "BIG-O RUNTIME", sub: "Static complexity" }
                             ].map((spec, i) => (
-                                <div key={i} className={`p-3 rounded-xl border ${
-                                    isDark ? "bg-slate-900/20 border-slate-900/60" : "bg-white/50 border-slate-100"
+                                <div key={i} className={`p-3 rounded-2xl border transition-all duration-300 hover:border-indigo-500/20 ${
+                                    isDark ? "bg-slate-950/40 border-slate-900/60" : "bg-white/80 border-slate-100"
                                 }`}>
-                                    <span className={`block text-[10px] uppercase font-bold tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>
+                                    <span className="block text-[8px] font-black text-slate-500 tracking-wider">
                                         {spec.title}
                                     </span>
-                                    <span className={`text-xs font-bold ${isDark ? "text-slate-200" : "text-slate-800"}`}>
+                                    <span className={`block text-[10px] font-black mt-1 ${isDark ? "text-slate-200" : "text-slate-800"}`}>
                                         {spec.value}
+                                    </span>
+                                    <span className="block text-[7px] text-slate-500 mt-0.5">
+                                        {spec.sub}
                                     </span>
                                 </div>
                             ))}
@@ -399,31 +402,38 @@ export default function Home() {
                         <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 w-full">
                             <Link
                                 href={codeJudgePath}
-                                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-base shadow-xl shadow-indigo-600/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2 group"
+                                className="relative px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black uppercase tracking-wider text-xs shadow-xl shadow-indigo-600/10 hover:shadow-indigo-600/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2 group overflow-hidden border border-indigo-500/30"
                             >
-                                Get Started <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                <motion.span
+                                    initial={{ x: "-100%" }}
+                                    whileHover={{ x: "100%" }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none"
+                                />
+                                <span>Enter the Arena</span>
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                             <Link 
                                 href="https://github.com/DakshSingh-GitHub/Vlyxir" 
                                 target="_blank" 
-                                className={`px-6 py-4 rounded-xl border font-bold text-base transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2 ${
+                                className={`px-6 py-4 rounded-2xl border font-black uppercase tracking-wider text-xs transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center gap-2 ${
                                     isDark 
-                                        ? "border-slate-800 bg-slate-900/30 hover:border-slate-700 hover:bg-slate-900/60 text-slate-350" 
-                                        : "border-slate-250 bg-white hover:bg-slate-50 text-slate-750"
+                                        ? "border-slate-800 bg-slate-950/30 hover:border-slate-700 hover:bg-slate-900/60 text-slate-400" 
+                                        : "border-slate-200 bg-white hover:bg-slate-50 text-slate-775"
                                 }`}
                             >
-                                <Github className="w-4 h-4" /> Github
+                                <Github className="w-4 h-4" /> <span>Source Code</span>
                             </Link>
                         </motion.div>
                     </div>
 
-                    {/* Interactive Code Simulator Visual (Col Span 5) */}
+                    {/* Interactive Code Simulator Visual (Col Span 6) */}
                     <motion.div
                         variants={itemVariants}
-                        className="lg:col-span-5 w-full relative z-20"
+                        className="lg:col-span-6 w-full relative z-20"
                     >
                         <div className="absolute -inset-4 bg-indigo-500/5 blur-xl rounded-[2.5rem] pointer-events-none" />
-                        <CodeTerminalSimulation isDark={isDark} />
+                        <CyberCoreDeck isDark={isDark} />
                         
                         {/* Decorative Badge Overlay */}
                         <div className={`absolute -bottom-6 -right-4 p-4 rounded-xl border backdrop-blur-xl shadow-lg hidden sm:flex items-center gap-3 ${
