@@ -8,10 +8,12 @@ import {
     Code, Scale, Zap, Shield, Globe, Cpu, ArrowRight, Github, 
     BookOpen, BrainCircuit, Coffee, Terminal, CheckCircle2, Play, 
     Sparkles, Server, Flame, GitBranch, RefreshCw, BarChart3, 
-    MessageSquare, Eye, Layers, HelpCircle
+    MessageSquare, Eye, Layers, HelpCircle, Trophy, Calendar, X
 } from 'lucide-react';
 import { useAppContext } from './lib/auth/context';
 import Footer from "@/components/General/Footer";
+import { getProblems } from './lib/api/api';
+import { Problem } from './lib/types/types';
 
 // Sleek, Minimalist Interactive Code Sandbox Simulation
 function CyberCoreDeck({ isDark }: { isDark: boolean }) {

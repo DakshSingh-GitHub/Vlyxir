@@ -45,6 +45,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         setAutoHideMobilePills,
         useNewUi,
         setUseNewUi,
+        dailyProblemEnabled,
+        setDailyProblemEnabled,
         resetUiSettings
     } = useAppContext();
     const router = useRouter();
@@ -303,7 +305,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <div className="flex items-center gap-2 mb-1">
                             <Sliders className="w-4 h-4 text-slate-500" />
                             <h4 className="text-xs font-black uppercase tracking-wider text-slate-550 dark:text-slate-450">
-                              Cognitive & Motion parameters
+                              Preferences & Habits
                             </h4>
                         </div>
 
@@ -374,6 +376,30 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 <span
                                     className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${
                                         autoHideMobilePills ? 'translate-x-6' : 'translate-x-1'
+                                    }`}
+                                />
+                            </button>
+                        </div>
+
+                        {/* Switch 4: Daily Problem Recommendation */}
+                        <div className="flex items-center justify-between rounded-3xl border border-slate-200 dark:border-white/[0.05] p-4 transition-colors duration-300 hover:border-slate-300 dark:hover:border-white/[0.08] bg-slate-500/[0.01]">
+                            <div className="space-y-1 pr-4">
+                                <p className="text-sm font-black text-slate-900 dark:text-white">Daily Challenge popups</p>
+                                <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                                  Features one recommended challenge every 24 hours with leaderboard bonus opportunities.
+                                </p>
+                            </div>
+                            
+                            <button
+                                type="button"
+                                onClick={() => setDailyProblemEnabled(!dailyProblemEnabled)}
+                                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none disabled:cursor-not-allowed ${
+                                    dailyProblemEnabled ? 'bg-indigo-500' : 'bg-slate-250 dark:bg-slate-800'
+                                } cursor-pointer`}
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${
+                                        dailyProblemEnabled ? 'translate-x-6' : 'translate-x-1'
                                     }`}
                                 />
                             </button>

@@ -2,11 +2,12 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/utils/anime';
-import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Users, Plus, X, Mail, Crown, MessageSquare, Trophy } from 'lucide-react';
+import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Users, Plus, X, Mail, Crown, MessageSquare, Trophy, Flame, Check } from 'lucide-react';
 import NavDropdown from './NavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath, isCodeIdePath, isCodeAnalysisPath } from '../../app/lib/utils/paths';
 import { useAuth } from '../../app/lib/auth/auth-context';
+import { useAppContext } from '../../app/lib/auth/context';
 import Image from 'next/image';
 
 interface NavBarProps {
@@ -20,6 +21,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     const pathname = usePathname();
     const router = useRouter();
     const { user, isLoading, signOut, savedAccounts, switchAccount, removeAccount, dbProfile } = useAuth();
+    const { isDark, isDailyModalOpen, setIsDailyModalOpen, dailyProblemEnabled, dailyProblemSolved } = useAppContext();
     const [imageError, setImageError] = useState(false);
 
     const displayName =
@@ -151,6 +153,31 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                     {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
                         <div className="hidden h-6 w-px bg-gray-100 dark:bg-gray-800 md:block" />
                     )}
+
+                            {dailyProblemEnabled && (
+                                <button
+                                    onClick={() => setIsDailyModalOpen(!isDailyModalOpen)}
+                                    className={`hidden sm:flex items-center justify-center rounded-full border transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap cursor-pointer ${
+                                        dailyProblemSolved
+                                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 p-2"
+                                            : isDailyModalOpen
+                                            ? "border-indigo-500 bg-indigo-500/10 text-indigo-400 px-3.5 py-2 text-[9px] font-black uppercase tracking-widest gap-1.5"
+                                            : isDark
+                                            ? "border-amber-500/20 bg-amber-500/5 text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/10 shadow-sm px-3.5 py-2 text-[9px] font-black uppercase tracking-widest gap-1.5"
+                                            : "border-amber-200 bg-amber-50/50 text-amber-700 hover:border-amber-300 hover:bg-amber-100/60 shadow-sm px-3.5 py-2 text-[9px] font-black uppercase tracking-widest gap-1.5"
+                                    }`}
+                                    title={dailyProblemSolved ? "Daily Challenge Completed!" : "Open Today's Challenge"}
+                                >
+                                    {dailyProblemSolved ? (
+                                        <Check className="h-3.5 w-3.5 text-emerald-500 stroke-[3px]" />
+                                    ) : (
+                                        <>
+                                            <Flame className={`h-3.5 w-3.5 fill-current text-amber-500 ${isDailyModalOpen ? '' : 'animate-pulse'}`} />
+                                            <span>Today's challenge</span>
+                                        </>
+                                    )}
+                                </button>
+                            )}
 
                             <div className="relative" ref={profileRef}>
                                 <button

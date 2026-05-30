@@ -219,7 +219,12 @@ export default function Home() {
         setIsHydrated(false);
         
         const keySuffix = user?.id || "guest";
-        const lastProblemId = sessionStorage.getItem(`last_selected_problem_id_${keySuffix}`);
+        
+        // Retrieve problem ID from URL query parameters if present
+        const params = new URLSearchParams(window.location.search);
+        const urlProblemId = params.get("problem") || params.get("id");
+        
+        const lastProblemId = urlProblemId || sessionStorage.getItem(`last_selected_problem_id_${keySuffix}`);
         
         if (lastProblemId) {
             handleSelect(lastProblemId).then(() => {

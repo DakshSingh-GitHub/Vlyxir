@@ -27,6 +27,14 @@ interface AppContextType {
   setAutoHideMobilePills: (enabled: boolean) => void;
   useNewUi: boolean;
   setUseNewUi: (enabled: boolean) => void;
+  dailyProblemEnabled: boolean;
+  setDailyProblemEnabled: (enabled: boolean) => void;
+  isDailyModalOpen: boolean;
+  setIsDailyModalOpen: (isOpen: boolean) => void;
+  dailyProblem: any | null;
+  setDailyProblem: (problem: any | null) => void;
+  dailyProblemSolved: boolean;
+  setDailyProblemSolved: (solved: boolean) => void;
   codeJudgePath: string;
   codeIdePath: string;
   codeAnalysisPath: string;
@@ -50,6 +58,10 @@ export function AppWrapper({ children }: { children: ReactNode }) {
   const [hardwareAcceleratedThemeAnimations, setHardwareAcceleratedThemeAnimationsState] = useState(true);
   const [autoHideMobilePills, setAutoHideMobilePillsState] = useState(true);
   const [useNewUi, setUseNewUiState] = useState(true);
+  const [dailyProblemEnabled, setDailyProblemEnabledState] = useState(true);
+  const [isDailyModalOpen, setIsDailyModalOpen] = useState(false);
+  const [dailyProblem, setDailyProblem] = useState<any | null>(null);
+  const [dailyProblemSolved, setDailyProblemSolved] = useState(false);
   const [mounted, setMounted] = useState(false);
   const themeSwitchTimeoutRef = useRef<number | null>(null);
   const supportsViewTransitionRef = useRef(false);
@@ -78,6 +90,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       const savedHardwareAcceleration = localStorage.getItem("hardware_accel_theme_animations");
       const savedAutoHidePills = localStorage.getItem("autohide_mobile_pills");
       const savedUseNewUi = localStorage.getItem("use_new_ui") !== "0";
+      const savedDailyProblem = localStorage.getItem("daily_problem_enabled") !== "0";
 
       let initialThemeMode: ThemeMode = "system";
       if (savedThemeMode === "light" || savedThemeMode === "dark" || savedThemeMode === "system") {
@@ -94,6 +107,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       setHardwareAcceleratedThemeAnimationsState(savedHardwareAcceleration === null ? true : savedHardwareAcceleration === "1");
       setAutoHideMobilePillsState(savedAutoHidePills === null ? true : savedAutoHidePills === "1");
       setUseNewUiState(savedUseNewUi);
+      setDailyProblemEnabledState(savedDailyProblem);
     }
   }, []);
 
@@ -155,6 +169,11 @@ export function AppWrapper({ children }: { children: ReactNode }) {
     localStorage.setItem("use_new_ui", useNewUi ? "1" : "0");
   }, [useNewUi, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("daily_problem_enabled", dailyProblemEnabled ? "1" : "0");
+  }, [dailyProblemEnabled, mounted]);
+
   const setThemeMode = (mode: ThemeMode) => {
     if (typeof window === 'undefined') return;
     const root = document.documentElement;
@@ -201,6 +220,7 @@ export function AppWrapper({ children }: { children: ReactNode }) {
     setHardwareAcceleratedThemeAnimationsState(true);
     setAutoHideMobilePillsState(true);
     setUseNewUiState(true);
+    setDailyProblemEnabledState(true);
   };
 
   return (
@@ -225,6 +245,14 @@ export function AppWrapper({ children }: { children: ReactNode }) {
       setAutoHideMobilePills: setAutoHideMobilePillsState,
       useNewUi,
       setUseNewUi: setUseNewUiState,
+      dailyProblemEnabled,
+      setDailyProblemEnabled: setDailyProblemEnabledState,
+      isDailyModalOpen,
+      setIsDailyModalOpen,
+      dailyProblem,
+      setDailyProblem,
+      dailyProblemSolved,
+      setDailyProblemSolved,
       codeJudgePath: getCodeJudgePath(useNewUi),
       codeIdePath: getCodeIdePath(useNewUi),
       codeAnalysisPath: getCodeAnalysisPath(useNewUi),
