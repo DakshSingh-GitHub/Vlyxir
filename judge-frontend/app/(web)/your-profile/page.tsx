@@ -370,10 +370,71 @@ export default function YourProfilePage() {
         };
     }, [submissionCountsByDate]);
 
+    const activityInsights = useMemo(() => {
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayCounts = Array(7).fill(0);
+        
+        allSubmissions.forEach(sub => {
+            if (sub.created_at) {
+                const day = new Date(sub.created_at).getDay();
+                dayCounts[day]++;
+            }
+        });
+
+        let maxDayIdx = 3; // default to Wednesday
+        let maxCount = 0;
+        dayCounts.forEach((count, idx) => {
+            if (count > maxCount) {
+                maxCount = count;
+                maxDayIdx = idx;
+            }
+        });
+
+        const activeDays = streakStats.activeDays;
+        let title = "Rising Coder";
+        let color = "text-emerald-555 dark:text-emerald-400";
+        let bg = "bg-emerald-500/10";
+        let border = "border-emerald-500/20";
+        
+        if (activeDays >= 150) {
+            title = "Elite Coder";
+            color = "text-amber-550 dark:text-amber-400";
+            bg = "bg-amber-500/10";
+            border = "border-amber-500/20 animate-pulse";
+        } else if (activeDays >= 75) {
+            title = "Unstoppable";
+            color = "text-purple-555 dark:text-purple-400";
+            bg = "bg-purple-500/10";
+            border = "border-purple-500/20";
+        } else if (activeDays >= 30) {
+            title = "Consistent Coder";
+            color = "text-indigo-555 dark:text-indigo-400";
+            bg = "bg-indigo-500/10";
+            border = "border-indigo-500/20";
+        } else if (activeDays >= 10) {
+            title = "Active Dev";
+            color = "text-blue-555 dark:text-blue-450";
+            bg = "bg-blue-500/10";
+            border = "border-blue-500/20";
+        }
+
+        const yearSubmissions = allSubmissions.filter(s => {
+            const oneYearAgo = new Date();
+            oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+            return new Date(s.created_at) >= oneYearAgo;
+        }).length;
+
+        return {
+            mostActiveDay: maxCount > 0 ? daysOfWeek[maxDayIdx] : 'None yet',
+            weeklyAverage: (yearSubmissions / 52).toFixed(1),
+            badge: { title, color, bg, border }
+        };
+    }, [allSubmissions, streakStats.activeDays]);
+
     const { daySquares, monthLabels } = useMemo(() => {
         const today = new Date();
         const startDate = new Date();
-        startDate.setDate(today.getDate() - 364); // 364 days ago
+        startDate.setDate(today.getDate() - 230); // 36 weeks ago (252 days)
         // Align to start of week (Sunday)
         const dayOfWeek = startDate.getDay();
         startDate.setDate(startDate.getDate() - dayOfWeek);
@@ -393,16 +454,23 @@ export default function YourProfilePage() {
         // Month labels with column indices
         const monthLabels: { label: string; colIndex: number }[] = [];
         let lastMonth = -1;
+        let lastColIndex = -10;
 
         for (let i = 0; i < daySquares.length; i += 7) {
-            const weekDate = daySquares[i].date;
+            // Use middle of the week to get the dominant month for that week column
+            const weekDate = daySquares[Math.min(i + 3, daySquares.length - 1)].date;
             const month = weekDate.getMonth();
+            const colIndex = Math.floor(i / 7);
             if (month !== lastMonth) {
-                monthLabels.push({
-                    label: format(weekDate, 'MMM'),
-                    colIndex: Math.floor(i / 7)
-                });
-                lastMonth = month;
+                // Prevent overlapping by ensuring at least 3 weeks separation between consecutive month labels
+                if (colIndex - lastColIndex >= 3) {
+                    monthLabels.push({
+                        label: format(weekDate, 'MMM'),
+                        colIndex: colIndex
+                    });
+                    lastMonth = month;
+                    lastColIndex = colIndex;
+                }
             }
         }
 
@@ -751,72 +819,136 @@ export default function YourProfilePage() {
                         </div>
                     </div>
 
-                    {/* Heatmap Grid */}
-                    <div className="overflow-x-auto pb-2 custom-scrollbar select-none">
-                        <div className="min-w-[700px] space-y-1.5 pl-1">
-                            {/* Month labels header */}
-                            <div className="relative h-4 text-[9px] font-black text-slate-400 uppercase tracking-wider mb-0.5">
-                                {monthLabels.map((m, idx) => (
-                                    <span 
-                                        key={idx} 
-                                        className="absolute" 
-                                        style={{ left: `${m.colIndex * 12.8}px` }}
-                                    >
-                                        {m.label}
-                                    </span>
-                                ))}
+                    {/* Heatmap Layout split: Calendar Heatmap on Left, Gamified Activity Insights on Right */}
+                    <div className="flex flex-col xl:flex-row gap-6">
+                        {/* Heatmap Grid & Legend wrapper */}
+                        <div className="flex-1 min-w-0">
+                            {/* Heatmap Grid */}
+                            <div className="overflow-x-auto pb-2 custom-scrollbar select-none">
+                                <div className="min-w-[340px] sm:min-w-[570px] space-y-1.5 pl-1 [--label-offset:24px] [--col-width:12px] sm:[--label-offset:30px] sm:[--col-width:15px]">
+                                    {/* Month labels header */}
+                                    <div className="relative h-4 text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3.5">
+                                        {monthLabels.map((m, idx) => (
+                                            <span 
+                                                key={idx} 
+                                                className="absolute" 
+                                                style={{ left: `calc(var(--label-offset, 24px) + ${m.colIndex} * var(--col-width, 12px))` }}
+                                            >
+                                                {m.label}
+                                            </span>
+                                        ))}
+                                    </div>
+
+                                    {/* Grid wrapper */}
+                                    <div className="flex gap-1 sm:gap-1.5">
+                                        {/* Day labels column */}
+                                        <div className="grid grid-rows-7 h-[81px] sm:h-[105px] text-[8px] font-black text-slate-455 dark:text-slate-500 justify-between items-center pr-1.5 w-5 sm:w-6 sm:pr-2 uppercase leading-none">
+                                            <span>Sun</span>
+                                            <span className="opacity-0">Mon</span>
+                                            <span>Tue</span>
+                                            <span className="opacity-0">Wed</span>
+                                            <span>Thu</span>
+                                            <span className="opacity-0">Fri</span>
+                                            <span>Sat</span>
+                                        </div>
+
+                                        {/* Contribution cells (grid-flow-col grids) */}
+                                        <div className="grid grid-flow-col grid-rows-7 gap-[2px] sm:gap-1 h-[81px] sm:h-[105px]">
+                                            {daySquares.map((daySquare, idx) => {
+                                                const count = submissionCountsByDate[daySquare.dateStr] || 0;
+                                                const colorClass = getContributionColorClass(count);
+                                                return (
+                                                    <div key={idx} className="relative group cursor-pointer">
+                                                        <div className={`w-[9px] h-[9px] sm:w-[11px] sm:h-[11px] rounded-xs transition-colors duration-150 ${colorClass}`} />
+                                                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-50 bg-slate-900 border border-slate-800 text-[9px] text-white px-2 py-1 rounded shadow-lg whitespace-nowrap leading-none">
+                                                            {count === 0 ? 'No' : count} {count === 1 ? 'submission' : 'submissions'} on {format(daySquare.date, 'MMM d, yyyy')}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Grid wrapper */}
-                            <div className="flex gap-1.5">
-                                {/* Day labels column */}
-                                <div className="grid grid-rows-7 h-[105px] text-[8px] font-black text-slate-450 dark:text-slate-500 justify-between items-center pr-2 w-6 uppercase leading-none">
-                                    <span>Sun</span>
-                                    <span className="opacity-0">Mon</span>
-                                    <span>Tue</span>
-                                    <span className="opacity-0">Wed</span>
-                                    <span>Thu</span>
-                                    <span className="opacity-0">Fri</span>
-                                    <span>Sat</span>
-                                </div>
-
-                                {/* Contribution cells (grid-flow-col grids) */}
-                                <div className="grid grid-flow-col grid-rows-7 gap-1 h-[105px]">
-                                    {daySquares.map((daySquare, idx) => {
-                                        const count = submissionCountsByDate[daySquare.dateStr] || 0;
-                                        const colorClass = getContributionColorClass(count);
-                                        return (
-                                            <div key={idx} className="relative group cursor-pointer">
-                                                <div className={`w-[11px] h-[11px] rounded-xs transition-colors duration-150 ${colorClass}`} />
-                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block z-50 bg-slate-900 border border-slate-800 text-[9px] text-white px-2 py-1 rounded shadow-lg whitespace-nowrap leading-none">
-                                                    {count === 0 ? 'No' : count} {count === 1 ? 'submission' : 'submissions'} on {format(daySquare.date, 'MMM d, yyyy')}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                            {/* Legend bar */}
+                            <div className="flex justify-between items-center mt-3 text-[10px] text-slate-400 font-bold border-t border-slate-100 dark:border-slate-800 pt-3">
+                                <span className="flex items-center gap-1.5">
+                                    <Flame className="text-orange-400" size={12} />
+                                    {allSubmissions.filter(s => {
+                                        const oneYearAgo = new Date();
+                                        oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+                                        return new Date(s.created_at) >= oneYearAgo;
+                                    }).length} submissions in the last year
+                                </span>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <span>Less</span>
+                                    <div className="w-[10px] h-[10px] rounded-xs bg-slate-200/70 dark:bg-violet-950/35 border border-slate-300/30 dark:border-violet-900/30" />
+                                    <div className="w-[10px] h-[10px] rounded-xs bg-violet-200 dark:bg-violet-900/50 border border-violet-300/50 dark:border-violet-800/30" />
+                                    <div className="w-[10px] h-[10px] rounded-xs bg-violet-400/80 dark:bg-violet-700/70 border border-violet-400/50 dark:border-violet-600/40" />
+                                    <div className="w-[10px] h-[10px] rounded-xs bg-violet-600/90 dark:bg-violet-500 border border-violet-600/40 dark:border-violet-400/40" />
+                                    <div className="w-[10px] h-[10px] rounded-xs bg-violet-800 dark:bg-violet-300 border border-violet-900/50 dark:border-violet-200/40" />
+                                    <span>More</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Legend bar */}
-                    <div className="flex justify-between items-center mt-3 text-[10px] text-slate-400 font-bold border-t border-slate-100 dark:border-slate-800 pt-3">
-                        <span className="flex items-center gap-1.5">
-                            <Flame className="text-orange-400" size={12} />
-                            {allSubmissions.filter(s => {
-                                const oneYearAgo = new Date();
-                                oneYearAgo.setDate(oneYearAgo.getDate() - 365);
-                                return new Date(s.created_at) >= oneYearAgo;
-                            }).length} submissions in the last year
-                        </span>
-                        <div className="flex items-center gap-1 shrink-0">
-                            <span>Less</span>
-                            <div className="w-[10px] h-[10px] rounded-xs bg-slate-200/70 dark:bg-violet-950/35 border border-slate-300/30 dark:border-violet-900/30" />
-                            <div className="w-[10px] h-[10px] rounded-xs bg-violet-200 dark:bg-violet-900/50 border border-violet-300/50 dark:border-violet-800/30" />
-                            <div className="w-[10px] h-[10px] rounded-xs bg-violet-400/80 dark:bg-violet-700/70 border border-violet-400/50 dark:border-violet-600/40" />
-                            <div className="w-[10px] h-[10px] rounded-xs bg-violet-600/90 dark:bg-violet-500 border border-violet-600/40 dark:border-violet-400/40" />
-                            <div className="w-[10px] h-[10px] rounded-xs bg-violet-800 dark:bg-violet-300 border border-violet-900/50 dark:border-violet-200/40" />
-                            <span>More</span>
+                        {/* Divider line for wide screens */}
+                        <div className="hidden xl:block w-px bg-slate-200/50 dark:bg-slate-800/80 self-stretch my-1" />
+
+                        {/* Right Panel: Streak Status & Gamified Activity Insights */}
+                        <div className="w-full xl:w-[240px] shrink-0 flex flex-col justify-between">
+                            <div className="p-4 rounded-2xl bg-slate-500/5 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between h-full space-y-4 shadow-2xs">
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Activity Level</span>
+                                        <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${activityInsights.badge.border} ${activityInsights.badge.bg} ${activityInsights.badge.color}`}>
+                                            {activityInsights.badge.title}
+                                        </span>
+                                    </div>
+
+                                    {/* Circular gauge or nice central visual */}
+                                    <div className="flex items-center gap-3 bg-white dark:bg-slate-950/40 p-3 rounded-xl border border-slate-100 dark:border-slate-900 shadow-2xs">
+                                        <div className="relative flex items-center justify-center shrink-0">
+                                            <div className="h-10 w-10 rounded-full bg-orange-500/10 flex items-center justify-center animate-pulse">
+                                                <Flame className="text-orange-500 animate-pulse" size={20} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider leading-none mb-1">Current Streak</p>
+                                            <p className="text-lg font-black text-slate-800 dark:text-white leading-none tabular-nums">
+                                                {streakStats.currentStreak} <span className="text-xs font-bold text-slate-400">days</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center justify-between text-xs border-b border-slate-100 dark:border-slate-800/40 pb-2">
+                                        <span className="text-slate-400 font-bold flex items-center gap-1.5">
+                                            <Clock size={12} className="text-indigo-400" />
+                                            Active Day
+                                        </span>
+                                        <span className="font-bold text-slate-700 dark:text-slate-200">{activityInsights.mostActiveDay}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs border-b border-slate-100 dark:border-slate-800/40 pb-2">
+                                        <span className="text-slate-400 font-bold flex items-center gap-1.5">
+                                            <TrendingUp size={12} className="text-indigo-400" />
+                                            Weekly Avg
+                                        </span>
+                                        <span className="font-bold text-slate-700 dark:text-slate-200 tabular-nums">{activityInsights.weeklyAverage} / wk</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="text-slate-400 font-bold flex items-center gap-1.5">
+                                            <Target size={12} className="text-indigo-400" />
+                                            Consistency
+                                        </span>
+                                        <span className="font-bold text-slate-700 dark:text-slate-200 tabular-nums">
+                                            {Math.round((streakStats.activeDays / 365) * 100)}%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
