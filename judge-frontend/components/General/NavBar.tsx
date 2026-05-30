@@ -193,6 +193,13 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                             {user ? (
                                                 <>
                                                     <button
+                                                        onClick={() => { router.push('/your-profile'); setIsProfileOpen(false); }}
+                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
+                                                    >
+                                                        <User className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" />
+                                                        Your profile
+                                                    </button>
+                                                    <button
                                                         onClick={() => { router.push('/account-settings'); setIsProfileOpen(false); }}
                                                         className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-colors group"
                                                     >
