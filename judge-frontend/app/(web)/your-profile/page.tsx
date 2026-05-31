@@ -340,8 +340,9 @@ export default function YourProfilePage() {
 
                 const rawDuelResults = (duelResultsData || []) as any[];
                 const opponentIds = Array.from(new Set(rawDuelResults.map(res => {
-                    const creatorId = res.duel_sessions?.creator_id;
-                    const opponentId = res.duel_sessions?.opponent_id;
+                    const session = Array.isArray(res.duel_sessions) ? res.duel_sessions[0] : res.duel_sessions;
+                    const creatorId = session?.creator_id;
+                    const opponentId = session?.opponent_id;
                     return creatorId === currentUser.id ? opponentId : creatorId;
                 }).filter(Boolean)));
 
@@ -358,7 +359,7 @@ export default function YourProfilePage() {
                 }
 
                 const resolvedDuels = rawDuelResults.map(res => {
-                    const session = res.duel_sessions;
+                    const session = Array.isArray(res.duel_sessions) ? res.duel_sessions[0] : res.duel_sessions;
                     const pId = session?.problem_id;
                     const prob = problemsList.find((p: any) => p.id === pId);
                     

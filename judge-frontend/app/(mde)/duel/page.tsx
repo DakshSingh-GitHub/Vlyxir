@@ -54,7 +54,7 @@ function DuelArenaContent() {
 
     // UI States: "lobby" | "searching" | "battle" | "results"
     const [uiState, setUiState] = useState<"lobby" | "searching" | "battle" | "results">("lobby");
-    
+
     // Matchmaking / Lobby states
     const [challengeTargetProfile, setChallengeTargetProfile] = useState<any | null>(null);
     const [incomingChallenge, setIncomingChallenge] = useState<any | null>(null);
@@ -67,7 +67,7 @@ function DuelArenaContent() {
     const [currentProblem, setCurrentProblem] = useState<Problem | null>(null);
     const [opponent, setOpponent] = useState<any | null>(null);
     const [gameActive, setGameActive] = useState(false);
-    
+
     // Coding battle states
     const [code, setCode] = useState("# Write your solution in Python here\n\n");
     const [isRunning, setIsRunning] = useState(false);
@@ -128,22 +128,117 @@ function DuelArenaContent() {
     // Mobile Active Tab State & Result DB Save Protection
     const [activeMobileTab, setActiveMobileTab] = useState<"arena" | "forge" | "insights">("forge");
     const hasSavedResult = useRef(false);
+    const sessionIdRef = useRef<string | null>(null);
+    const isHostRef = useRef<boolean>(false);
+
+    // Resizing & layout states
+    const [leftWidth, setLeftWidth] = useState(33.33); // in %
+    const [centerWidth, setCenterWidth] = useState(41.67); // in %
+    const [isMobile, setIsMobile] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const handleLeftResize = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startLeftWidth = leftWidth;
+        const startCenterWidth = centerWidth;
+        const containerWidth = containerRef.current?.getBoundingClientRect().width || 1200;
+
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            const deltaX = moveEvent.clientX - startX;
+            const deltaPercentage = (deltaX / containerWidth) * 100;
+
+            let newLeftWidth = startLeftWidth + deltaPercentage;
+            let newCenterWidth = startCenterWidth - deltaPercentage;
+
+            if (newLeftWidth < 15) {
+                const diff = 15 - newLeftWidth;
+                newLeftWidth = 15;
+                newCenterWidth -= diff;
+            } else if (newCenterWidth < 15) {
+                const diff = 15 - newCenterWidth;
+                newCenterWidth = 15;
+                newLeftWidth -= diff;
+            }
+
+            setLeftWidth(newLeftWidth);
+            setCenterWidth(newCenterWidth);
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    };
+
+    const handleRightResize = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startCenterWidth = centerWidth;
+        const startLeftWidth = leftWidth;
+        const rightWidth = 100 - startLeftWidth - startCenterWidth;
+        const containerWidth = containerRef.current?.getBoundingClientRect().width || 1200;
+
+        const onMouseMove = (moveEvent: MouseEvent) => {
+            const deltaX = moveEvent.clientX - startX;
+            const deltaPercentage = (deltaX / containerWidth) * 100;
+
+            let newCenterWidth = startCenterWidth + deltaPercentage;
+            let newRightWidth = rightWidth - deltaPercentage;
+
+            if (newCenterWidth < 15) {
+                const diff = 15 - newCenterWidth;
+                newCenterWidth = 15;
+                newRightWidth -= diff;
+            } else if (newRightWidth < 15) {
+                const diff = 15 - newRightWidth;
+                newRightWidth = 15;
+                newCenterWidth -= diff;
+            }
+
+            setCenterWidth(newCenterWidth);
+        };
+
+        const onMouseUp = () => {
+            window.removeEventListener("mousemove", onMouseMove);
+            window.removeEventListener("mouseup", onMouseUp);
+        };
+
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    };
 
     // Helper to store participant duel statistics and final outcome
     const saveParticipantResult = async (resOutcome: "victory" | "defeat" | "draw", scorePassed: number, scoreTotal: number) => {
-        if (!user || !sessionId || hasSavedResult.current) return;
+        const sId = sessionIdRef.current || sessionId;
+        if (!user || !sId || hasSavedResult.current) return;
         hasSavedResult.current = true;
         try {
-            await supabase
+            const { error } = await supabase
                 .from("duel_participant_results")
                 .insert([{
-                    duel_id: sessionId,
+                    duel_id: sId,
                     user_id: user.id,
                     code: code,
                     passed: scorePassed,
                     total: scoreTotal,
                     result: resOutcome
                 }]);
+            if (error) {
+                console.error("Supabase duel_participant_results insert failed:", error.message, error.details);
+            }
         } catch (err) {
             console.error("Error inserting participant results:", err);
         }
@@ -152,7 +247,7 @@ function DuelArenaContent() {
     // 1. Fetch direct challenge profile if present in URL
     useEffect(() => {
         if (!challengeTargetId || authLoading) return;
-        
+
         async function fetchTarget() {
             const { data } = await supabase
                 .from("profiles")
@@ -180,7 +275,7 @@ function DuelArenaContent() {
                     .from('follows')
                     .select('follower_id')
                     .eq('following_id', currentUserId);
-                
+
                 if (followersData && followersData.length > 0) {
                     const followerIds = followersData.map((f: any) => f.follower_id);
                     const { data: profiles } = await supabase
@@ -197,7 +292,7 @@ function DuelArenaContent() {
                     .from('follows')
                     .select('following_id')
                     .eq('follower_id', currentUserId);
-                
+
                 if (followingData && followingData.length > 0) {
                     const followingIds = followingData.map((f: any) => f.following_id);
                     const { data: profiles } = await supabase
@@ -306,7 +401,7 @@ function DuelArenaContent() {
                         }
                     }
                 });
-                
+
                 const opponentProfile = {
                     id: data.hostId,
                     username: data.hostUsername,
@@ -394,7 +489,7 @@ function DuelArenaContent() {
                         }
                     }
                     const selectedProblem = pythonProblems[Math.floor(Math.random() * pythonProblems.length)] || { id: "1" };
-                    
+
                     const newSessionId = crypto.randomUUID();
 
                     lobbyChannelRef.current.send({
@@ -465,7 +560,7 @@ function DuelArenaContent() {
         if (!lobbyChannelRef.current || !user || !incomingChallenge) return;
 
         const newSessionId = crypto.randomUUID();
-        
+
         // Pick a random problem from local cache
         let pythonProblems = allProblems.filter((p: any) => p.difficulty);
         if (pythonProblems.length === 0) {
@@ -511,12 +606,31 @@ function DuelArenaContent() {
     // 3. Initialize Battle Session
     const startBattleSession = async (sId: string, opponentProfile: any, problemId: string) => {
         setSessionId(sId);
+        sessionIdRef.current = sId;
+        const isHost = user && user.id > opponentProfile.id;
+        isHostRef.current = !!isHost;
         setOpponent(opponentProfile);
         setUiState("battle");
         setGameActive(true);
         setCode("# Enter your solution in Python here\n\n");
         setSubmitResult(null);
         setTestResults([]);
+
+        // Host inserts the active session immediately to prevent foreign key constraints errors down the line
+        if (isHost) {
+            supabase
+                .from("duel_sessions")
+                .insert([{
+                    id: sId,
+                    problem_id: problemId,
+                    creator_id: user.id,
+                    opponent_id: opponentProfile.id,
+                    status: "active"
+                }])
+                .then(({ error }) => {
+                    if (error) console.error("Failed to initialize active duel session:", error);
+                });
+        }
 
         // Reset submission states
         setHasSubmitted(false);
@@ -764,19 +878,17 @@ function DuelArenaContent() {
             // Save my forfeit defeat result to history
             saveParticipantResult("defeat", 0, 0);
 
-            // Insert into history
-            if (user.id > opponent.id) {
+            // Update existing session to completed in history
+            if (isHostRef.current) {
                 try {
+                    const sId = sessionIdRef.current || sessionId;
                     await supabase
                         .from("duel_sessions")
-                        .insert([{
-                            id: sessionId, // Use the generated UUID!
-                            problem_id: currentProblem.id,
-                            creator_id: user.id,
-                            opponent_id: opponent.id,
+                        .update({
                             status: "completed",
                             winner_id: opponent.id
-                        }]);
+                        })
+                        .eq("id", sId);
                 } catch (e) {
                     console.error(e);
                 }
@@ -828,20 +940,18 @@ function DuelArenaContent() {
             // Save my participant result row to history
             saveParticipantResult(outcome, mine, myTotal);
 
-            // Insert into history
-            if (user.id > opponent.id) {
+            // Update the existing session in history
+            if (isHostRef.current) {
+                const sId = sessionIdRef.current || sessionId;
                 supabase
                     .from("duel_sessions")
-                    .insert([{
-                        id: sessionId, // Use the generated UUID!
-                        problem_id: currentProblem.id,
-                        creator_id: user.id,
-                        opponent_id: opponent.id,
+                    .update({
                         status: "completed",
                         winner_id: outcome === "victory" ? user.id : (outcome === "defeat" ? opponent.id : null)
-                    }])
+                    })
+                    .eq("id", sId)
                     .then(({ error }) => {
-                        if (error) console.error("Failed to insert completed duel record", error);
+                        if (error) console.error("Failed to update completed duel record", error);
                     });
             }
         }
@@ -869,6 +979,18 @@ function DuelArenaContent() {
         setOpponentSubmitted(false);
         setOpponentFinalScore(null);
         setOpponentTotalCount(null);
+
+        // If the problem changes, update the problem_id on the active session (for host)
+        if (isHostRef.current) {
+            const sId = sessionIdRef.current || sessionId;
+            supabase
+                .from("duel_sessions")
+                .update({ problem_id: problemId })
+                .eq("id", sId)
+                .then(({ error }) => {
+                    if (error) console.error("Failed to update problem ID on active duel session:", error);
+                });
+        }
 
         try {
             const fullProb = await getProblemById(problemId);
@@ -993,7 +1115,7 @@ function DuelArenaContent() {
             <div className={`pointer-events-none absolute inset-0 ${isDark
                 ? "bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.15),transparent_40%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%)]"
                 : "bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.1),transparent_40%),linear-gradient(135deg,rgba(255,255,255,0.5),transparent_36%)]"
-            }`} />
+                }`} />
 
             {/* Float Emojis Layer */}
             <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
@@ -1216,343 +1338,365 @@ function DuelArenaContent() {
                                 </div>
                             </motion.div>
                         )}
-                        <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 w-full">
+                        <div ref={containerRef} className="flex-1 flex flex-col lg:flex-row gap-6 lg:gap-0 min-h-0 w-full">
                             {/* LEFT PANEL: PROBLEM SPECS */}
-                        <div className={`w-full lg:w-1/3 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl p-6 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "arena" ? "flex" : "hidden lg:flex"}`}>
-                            {currentProblem ? (
-                                <div className="flex-1 flex flex-col min-h-0">
-                                    <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
-                                        <div className="flex items-center gap-2 min-w-0">
-                                            <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0`}>
-                                                {currentProblem.difficulty || "Medium"}
-                                            </span>
-                                            <h2 className="text-sm font-black tracking-tight text-slate-900 dark:text-white truncate">{currentProblem.title}</h2>
-                                        </div>
-                                        {!hasRequestedQuestionChange && !hasSubmitted && !opponentSubmitted && (
-                                            pendingQuestionChangeRequest ? (
-                                                <span className="text-[9px] font-bold text-amber-500 animate-pulse bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg">
-                                                    Pending...
+                            <div
+                                style={isMobile ? undefined : { width: `calc(${leftWidth}% - 11px)` }}
+                                className={`w-full lg:w-1/3 flex-1 lg:flex-none h-full lg:h-auto flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl p-6 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "arena" ? "flex" : "hidden lg:flex"}`}
+                            >
+                                {currentProblem ? (
+                                    <div className="flex-1 flex flex-col min-h-0">
+                                        <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0`}>
+                                                    {currentProblem.difficulty || "Medium"}
                                                 </span>
-                                            ) : (
-                                                <button
-                                                    onClick={handleOpenQuestionChangeModal}
-                                                    className="px-2.5 py-1 rounded-lg text-[9px] font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shrink-0"
-                                                >
-                                                    Change Question
-                                                </button>
-                                            )
-                                        )}
-                                    </div>
-                                    {pendingQuestionChangeRequest && (
-                                        <div className="mb-4 p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-500 text-[10px] font-bold flex items-center justify-between shrink-0">
-                                            <span>Waiting for opponent to approve change to "{pendingQuestionChangeRequest.title}"</span>
-                                            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+                                                <h2 className="text-sm font-black tracking-tight text-slate-900 dark:text-white truncate">{currentProblem.title}</h2>
+                                            </div>
+                                            {!hasRequestedQuestionChange && !hasSubmitted && !opponentSubmitted && (
+                                                pendingQuestionChangeRequest ? (
+                                                    <span className="text-[9px] font-bold text-amber-500 animate-pulse bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg">
+                                                        Pending...
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        onClick={handleOpenQuestionChangeModal}
+                                                        className="px-2.5 py-1 rounded-lg text-[9px] font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all cursor-pointer shrink-0"
+                                                    >
+                                                        Change Question
+                                                    </button>
+                                                )
+                                            )}
                                         </div>
-                                    )}
-                                    <div className={`flex-1 overflow-y-auto text-xs leading-relaxed pr-2 custom-scrollbar ${isDark ? "text-slate-350" : "text-slate-600"}`}>
-                                        <p className="font-semibold text-slate-900 dark:text-white mb-2 uppercase tracking-widest text-[10px]">Problem Description</p>
-                                        <p className="mb-4 whitespace-pre-wrap">{currentProblem.description}</p>
-                                        
-                                        {currentProblem.input_format && (
-                                            <>
-                                                <p className="font-semibold text-slate-900 dark:text-white mb-1 uppercase tracking-widest text-[10px]">Input Format</p>
-                                                <p className="mb-4">{currentProblem.input_format}</p>
-                                            </>
-                                        )}
-
-                                        {currentProblem.output_format && (
-                                            <>
-                                                <p className="font-semibold text-slate-900 dark:text-white mb-1 uppercase tracking-widest text-[10px]">Output Format</p>
-                                                <p className="mb-4">{currentProblem.output_format}</p>
-                                            </>
-                                        )}
-
-                                        {currentProblem.sample_test_cases && currentProblem.sample_test_cases.length > 0 && (
-                                            <div className="mt-4 space-y-3">
-                                                <p className="font-semibold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Sample Test Cases</p>
-                                                {currentProblem.sample_test_cases.map((tc, idx) => (
-                                                    <div key={idx} className={`p-3 rounded-2xl border font-mono text-[10px] space-y-1.5 ${isDark ? "bg-slate-950/40 border-slate-800/40" : "bg-white border-slate-200"}`}>
-                                                        <p><strong className="text-indigo-400">Input:</strong> {tc.input}</p>
-                                                        <p><strong className="text-emerald-400">Output:</strong> {tc.output}</p>
-                                                    </div>
-                                                ))}
+                                        {pendingQuestionChangeRequest && (
+                                            <div className="mb-4 p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-amber-500 text-[10px] font-bold flex items-center justify-between shrink-0">
+                                                <span>Waiting for opponent to approve change to "{pendingQuestionChangeRequest.title}"</span>
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
                                             </div>
                                         )}
-                                        {currentProblem.constraints && (
-                                            <div className="mt-4 space-y-2">
-                                                <p className="font-semibold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Constraints</p>
-                                                <pre className="p-3 rounded-2xl border font-mono text-[10px] whitespace-pre-wrap bg-slate-950/40 border-slate-850/40 text-slate-300">
-                                                    <code>
-                                                        {typeof currentProblem.constraints === 'object' ? (
-                                                            Object.entries(currentProblem.constraints)
-                                                                .map(([key, value]) => `${key}: ${typeof value === 'object' ? JSON.stringify(value) : String(value)}`)
-                                                                .join('\n')
-                                                        ) : (
-                                                            String(currentProblem.constraints)
-                                                        )}
-                                                    </code>
-                                                </pre>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40">
-                                    <Loader2 className="w-8 h-8 animate-spin text-slate-400 mb-2" />
-                                    <p className="text-xs font-bold uppercase tracking-widest">Loading Battle Specs...</p>
-                                </div>
-                            )}
-                        </div>
+                                        <div className={`flex-1 overflow-y-auto text-xs leading-relaxed pr-2 custom-scrollbar ${isDark ? "text-slate-350" : "text-slate-600"}`}>
+                                            <p className="font-semibold text-slate-900 dark:text-white mb-2 uppercase tracking-widest text-[10px]">Problem Description</p>
+                                            <p className="mb-4 whitespace-pre-wrap">{currentProblem.description}</p>
 
-                        {/* CENTER PANEL: MONACO EDITOR */}
-                        <div className={`w-full lg:w-5/12 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl overflow-hidden ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "forge" ? "flex" : "hidden lg:flex"}`}>
-                            {/* Editor Header */}
-                            <div className={`px-5 py-3 border-b flex items-center justify-between ${isDark ? "border-slate-850 bg-slate-950/20" : "border-slate-200 bg-slate-50/70"}`}>
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-wider">playground.py (PYTHON RUNTIME)</span>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={handleGiveUp}
-                                        disabled={isRunning}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shrink-0"
-                                    >
-                                        <Flag size={10} />
-                                        GIVE UP
-                                    </button>
-                                    <button
-                                        onClick={handleSubmitCode}
-                                        disabled={isRunning || !currentProblem || hasSubmitted}
-                                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-[10px] font-black text-white bg-indigo-650 hover:bg-indigo-755 active:scale-95 transition-all cursor-pointer shrink-0"
-                                    >
-                                        {hasSubmitted ? (
-                                            <>
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                SUBMITTED
-                                            </>
-                                        ) : isRunning ? (
-                                            <>
-                                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                                RUNNING...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Play size={10} fill="currentColor" />
-                                                SUBMIT CODE
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="flex-1 relative min-h-0">
-                                <CodeEditor
-                                    code={code}
-                                    setCode={(val) => {
-                                        setCode(val);
-                                        syncTelemetry(submitResult?.summary?.passed || 0, submitResult?.summary?.total || 0, val, cursorLine, false);
-                                    }}
-                                    isDisabled={isRunning || hasSubmitted}
-                                    isDark={isDark}
-                                />
-                                {hasSubmitted && (
-                                    <div className="absolute inset-0 bg-[#07080E]/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20">
-                                        <div className="relative flex items-center justify-center h-20 w-20 mb-6">
-                                            {/* Glowing ripple effects */}
-                                            <div className="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping opacity-75" />
-                                            <div className="absolute inset-2 rounded-full border border-purple-500/20 animate-pulse" />
-                                            <div className="absolute inset-4 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                                                <Swords className="w-8 h-8 animate-pulse text-white" />
-                                            </div>
+                                            {currentProblem.input_format && (
+                                                <>
+                                                    <p className="font-semibold text-slate-900 dark:text-white mb-1 uppercase tracking-widest text-[10px]">Input Format</p>
+                                                    <p className="mb-4">{currentProblem.input_format}</p>
+                                                </>
+                                            )}
+
+                                            {currentProblem.output_format && (
+                                                <>
+                                                    <p className="font-semibold text-slate-900 dark:text-white mb-1 uppercase tracking-widest text-[10px]">Output Format</p>
+                                                    <p className="mb-4">{currentProblem.output_format}</p>
+                                                </>
+                                            )}
+
+                                            {currentProblem.sample_test_cases && currentProblem.sample_test_cases.length > 0 && (
+                                                <div className="mt-4 space-y-3">
+                                                    <p className="font-semibold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Sample Test Cases</p>
+                                                    {currentProblem.sample_test_cases.map((tc, idx) => (
+                                                        <div key={idx} className={`p-3 rounded-2xl border font-mono text-[10px] space-y-1.5 ${isDark ? "bg-slate-950/40 border-slate-800/40" : "bg-white border-slate-200"}`}>
+                                                            <p><strong className="text-indigo-400">Input:</strong> {tc.input}</p>
+                                                            <p><strong className="text-emerald-400">Output:</strong> {tc.output}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {currentProblem.constraints && (
+                                                <div className="mt-4 space-y-2">
+                                                    <p className="font-semibold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Constraints</p>
+                                                    <pre className="p-3 rounded-2xl border font-mono text-[10px] whitespace-pre-wrap bg-slate-950/40 border-slate-850/40 text-slate-300">
+                                                        <code>
+                                                            {typeof currentProblem.constraints === 'object' ? (
+                                                                Object.entries(currentProblem.constraints)
+                                                                    .map(([key, value]) => `${key}: ${typeof value === 'object' ? JSON.stringify(value) : String(value)}`)
+                                                                    .join('\n')
+                                                            ) : (
+                                                                String(currentProblem.constraints)
+                                                            )}
+                                                        </code>
+                                                    </pre>
+                                                </div>
+                                            )}
                                         </div>
-                                        <h3 className="text-sm font-black text-white tracking-widest uppercase flex items-center gap-1.5 justify-center">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                                            Solution Locked In
-                                        </h3>
-                                        <p className="text-[10px] text-slate-400 mt-2 max-w-[240px] leading-relaxed">
-                                            Your code has been compiled and saved. Waiting for your opponent to complete their submission...
-                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40">
+                                        <Loader2 className="w-8 h-8 animate-spin text-slate-400 mb-2" />
+                                        <p className="text-xs font-bold uppercase tracking-widest">Loading Battle Specs...</p>
                                     </div>
                                 )}
                             </div>
-                        </div>
 
-                        {/* RIGHT PANEL: DYNAMIC LIVE COMPETITIVE DASHBOARD */}
-                        <div className={`w-full lg:w-1/4 flex flex-col gap-4 min-h-0 ${activeMobileTab === "insights" ? "flex" : "hidden lg:flex"}`}>
-                            {/* Opponent Status panel */}
-                            <div className={`p-5 rounded-4xl border backdrop-blur-2xl flex flex-col justify-between shrink-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <User className="text-indigo-400" size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Competitor Status</span>
+                            {/* RESIZER 1 (Left to Center) */}
+                            {!isMobile && (
+                                <div
+                                    onMouseDown={handleLeftResize}
+                                    className="hidden lg:flex w-4 shrink-0 hover:bg-indigo-500/5 active:bg-indigo-500/15 transition-all cursor-col-resize items-center justify-center self-stretch z-30 select-none"
+                                >
+                                    <div className="w-[1.5px] h-10 bg-slate-800/50 dark:bg-slate-700/40 rounded-full" />
                                 </div>
+                            )}
 
-                                <div className="space-y-4">
-                                    {/* Opponent Card */}
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
-                                            {opponent?.username[0].toUpperCase()}
-                                        </div>
-                                        <div className="truncate min-w-0">
-                                            <p className="font-bold text-xs truncate text-slate-800 dark:text-slate-200">{opponent?.full_name}</p>
-                                            <p className="text-[10px] text-slate-455 dark:text-slate-400">@{opponent?.username}</p>
-                                        </div>
+                            {/* CENTER PANEL: MONACO EDITOR */}
+                            <div
+                                style={isMobile ? undefined : { width: `calc(${centerWidth}% - 11px)` }}
+                                className={`w-full lg:w-5/12 flex-1 lg:flex-none h-full lg:h-auto flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl overflow-hidden ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "forge" ? "flex" : "hidden lg:flex"}`}>
+                                {/* Editor Header */}
+                                <div className={`px-3 py-2.5 sm:px-5 sm:py-3 border-b flex flex-col sm:flex-row gap-2.5 sm:gap-2 items-stretch sm:items-center justify-between ${isDark ? "border-slate-800/40 bg-slate-950/20" : "border-slate-200 bg-slate-50/70"}`}>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[10px] font-black uppercase tracking-wider">playground.py <span className="hidden sm:inline">(PYTHON RUNTIME)</span></span>
                                     </div>
-
-                                    {opponentSubmitted ? (
-                                        <div className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 text-center uppercase tracking-wider shrink-0 mt-2">
-                                            Opponent Submitted!
-                                        </div>
-                                    ) : (
-                                        <div className="text-[10px] font-black text-indigo-400 bg-indigo-500/5 px-2.5 py-1 rounded-lg border border-indigo-500/10 text-center uppercase tracking-wider shrink-0 mt-2 animate-pulse">
-                                            Opponent is Coding...
-                                        </div>
-                                    )}
-
-                                    {/* Test cases passed progress bar */}
-                                    <div className="space-y-1">
-                                        <div className="flex justify-between text-[10px] font-black">
-                                            <span className="text-slate-455 dark:text-slate-400">Progress</span>
-                                            <span className="text-indigo-400">
-                                                {(hasSubmitted && opponentSubmitted) 
-                                                    ? `${opponentProgress.passCount} / ${opponentProgress.totalCount || 0} Solved`
-                                                    : "Hidden until both submit"}
-                                            </span>
-                                        </div>
-                                        <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-indigo-500 rounded-full transition-all duration-300"
-                                                style={{
-                                                    width: `${
-                                                        (hasSubmitted && opponentSubmitted) && opponentProgress.totalCount > 0
-                                                            ? (opponentProgress.passCount / opponentProgress.totalCount) * 100
-                                                            : 0
-                                                    }%`
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Other live diagnostics */}
-                                    <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-455 dark:text-slate-400">
-                                        <div className="p-2 rounded-xl bg-white/40 dark:bg-slate-500/5 border border-slate-200/50 dark:border-slate-800/40 flex flex-col">
-                                            <span>Cursor Line</span>
-                                            <span className="text-slate-900 dark:text-white font-black mt-1 font-mono">
-                                                Line {opponentProgress.cursorLine}
-                                            </span>
-                                        </div>
-                                        <div className="p-2 rounded-xl bg-white/40 dark:bg-slate-500/5 border border-slate-200/50 dark:border-slate-800/40 flex flex-col">
-                                            <span>Keystrokes</span>
-                                            <span className="text-slate-900 dark:text-white font-black mt-1 font-mono">
-                                                {opponentProgress.charCount} chars
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Local Submission Tests log */}
-                            <div className={`flex-1 p-5 rounded-4xl border backdrop-blur-2xl flex flex-col min-h-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
-                                <div className="flex items-center gap-2 mb-3 shrink-0">
-                                    <Terminal className="text-indigo-400" size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Compiler Test Log</span>
-                                </div>
-                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                                    {testResults.length > 0 ? (
-                                        <div className="space-y-2">
-                                            {testResults.map((tc, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className={`p-3 rounded-2xl border text-[10px] font-mono flex items-center justify-between ${
-                                                        tc.status === "Success"
-                                                            ? isDark
-                                                                ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400"
-                                                                : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                                                            : isDark
-                                                            ? "bg-rose-500/5 border-rose-500/10 text-rose-400"
-                                                            : "bg-rose-50 border-rose-100 text-rose-600"
-                                                    }`}
-                                                >
-                                                    <div className="flex items-center gap-2">
-                                                        {tc.status === "Success" ? (
-                                                            <CheckCircle2 size={12} />
-                                                        ) : (
-                                                            <XCircle size={12} />
-                                                        )}
-                                                        <span>Case #{tc.test_case}</span>
-                                                    </div>
-                                                    <span className="font-bold">{tc.status}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
-                                            <Cpu size={24} className="mb-2" />
-                                            <p className="text-[9px] uppercase tracking-widest font-black">Submit code to compile</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Floating emote reactions triggers */}
-                            <div className={`p-4 rounded-4xl border backdrop-blur-2xl shrink-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Smile className="text-indigo-400" size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Duel Emotes</span>
-                                </div>
-                                <div className="grid grid-cols-4 gap-2">
-                                    {DUEL_EMOTES.map((emoji) => (
+                                    <div className="flex gap-2">
                                         <button
-                                            key={emoji}
-                                            onClick={() => handleSendEmote(emoji)}
-                                            className={`p-2 rounded-xl text-xl hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors cursor-pointer active:scale-90`}
+                                            onClick={handleGiveUp}
+                                            disabled={isRunning}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black text-white bg-rose-600 hover:bg-rose-700 active:scale-95 transition-all cursor-pointer shrink-0"
                                         >
-                                            {emoji}
+                                            <Flag size={10} />
+                                            GIVE UP
                                         </button>
-                                    ))}
+                                        <button
+                                            onClick={handleSubmitCode}
+                                            disabled={isRunning || !currentProblem || hasSubmitted}
+                                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-[10px] font-black text-white bg-indigo-650 hover:bg-indigo-755 active:scale-95 transition-all cursor-pointer shrink-0"
+                                        >
+                                            {hasSubmitted ? (
+                                                <>
+                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    SUBMITTED
+                                                </>
+                                            ) : isRunning ? (
+                                                <>
+                                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                    RUNNING...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Play size={10} fill="currentColor" />
+                                                    SUBMIT CODE
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 relative min-h-0">
+                                    <CodeEditor
+                                        code={code}
+                                        setCode={(val) => {
+                                            setCode(val);
+                                            syncTelemetry(submitResult?.summary?.passed || 0, submitResult?.summary?.total || 0, val, cursorLine, false);
+                                        }}
+                                        isDisabled={isRunning || hasSubmitted}
+                                        isDark={isDark}
+                                    />
+                                    {hasSubmitted && (
+                                        <div className="absolute inset-0 bg-[#07080E]/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20">
+                                            <div className="relative flex items-center justify-center h-20 w-20 mb-6">
+                                                {/* Glowing ripple effects */}
+                                                <div className="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping opacity-75" />
+                                                <div className="absolute inset-2 rounded-full border border-purple-500/20 animate-pulse" />
+                                                <div className="absolute inset-4 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                                                    <Swords className="w-8 h-8 animate-pulse text-white" />
+                                                </div>
+                                            </div>
+                                            <h3 className="text-sm font-black text-white tracking-widest uppercase flex items-center gap-1.5 justify-center">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                                                Solution Locked In
+                                            </h3>
+                                            <p className="text-[10px] text-slate-400 mt-2 max-w-[240px] leading-relaxed">
+                                                Your code has been compiled and saved. Waiting for your opponent to complete their submission...
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* RESIZER 2 (Center to Right) */}
+                            {!isMobile && (
+                                <div
+                                    onMouseDown={handleRightResize}
+                                    className="hidden lg:flex w-4 shrink-0 hover:bg-indigo-500/5 active:bg-indigo-500/15 transition-all cursor-col-resize items-center justify-center self-stretch z-30 select-none"
+                                >
+                                    <div className="w-[1.5px] h-10 bg-slate-800/50 dark:bg-slate-700/40 rounded-full" />
+                                </div>
+                            )}
+
+                            {/* RIGHT PANEL: DYNAMIC LIVE COMPETITIVE DASHBOARD */}
+                            <div
+                                style={isMobile ? undefined : { width: `calc(${100 - leftWidth - centerWidth}% - 11px)` }}
+                                className={`w-full lg:w-1/4 flex-1 lg:flex-none h-full lg:h-auto flex flex-col gap-4 min-h-0 ${activeMobileTab === "insights" ? "flex" : "hidden lg:flex"}`}>
+                                {/* Opponent Status panel */}
+                                <div className={`p-5 rounded-4xl border backdrop-blur-2xl flex flex-col justify-between shrink-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <User className="text-indigo-400" size={16} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Competitor Status</span>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {/* Opponent Card */}
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
+                                                {opponent?.username[0].toUpperCase()}
+                                            </div>
+                                            <div className="truncate min-w-0">
+                                                <p className="font-bold text-xs truncate text-slate-800 dark:text-slate-200">{opponent?.full_name}</p>
+                                                <p className="text-[10px] text-slate-455 dark:text-slate-400">@{opponent?.username}</p>
+                                            </div>
+                                        </div>
+
+                                        {opponentSubmitted ? (
+                                            <div className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20 text-center uppercase tracking-wider shrink-0 mt-2">
+                                                Opponent Submitted!
+                                            </div>
+                                        ) : (
+                                            <div className="text-[10px] font-black text-indigo-400 bg-indigo-500/5 px-2.5 py-1 rounded-lg border border-indigo-500/10 text-center uppercase tracking-wider shrink-0 mt-2 animate-pulse">
+                                                Opponent is Coding...
+                                            </div>
+                                        )}
+
+                                        {/* Test cases passed progress bar */}
+                                        <div className="space-y-1">
+                                            <div className="flex justify-between text-[10px] font-black">
+                                                <span className="text-slate-455 dark:text-slate-400">Progress</span>
+                                                <span className="text-indigo-400">
+                                                    {(hasSubmitted && opponentSubmitted)
+                                                        ? `${opponentProgress.passCount} / ${opponentProgress.totalCount || 0} Solved`
+                                                        : "Hidden until both submit"}
+                                                </span>
+                                            </div>
+                                            <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+                                                    style={{
+                                                        width: `${(hasSubmitted && opponentSubmitted) && opponentProgress.totalCount > 0
+                                                                ? (opponentProgress.passCount / opponentProgress.totalCount) * 100
+                                                                : 0
+                                                            }%`
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Other live diagnostics */}
+                                        <div className="grid grid-cols-2 gap-2 text-[10px] font-bold text-slate-455 dark:text-slate-400">
+                                            <div className="p-2 rounded-xl bg-white/40 dark:bg-slate-500/5 border border-slate-200/50 dark:border-slate-800/40 flex flex-col">
+                                                <span>Cursor Line</span>
+                                                <span className="text-slate-900 dark:text-white font-black mt-1 font-mono">
+                                                    Line {opponentProgress.cursorLine}
+                                                </span>
+                                            </div>
+                                            <div className="p-2 rounded-xl bg-white/40 dark:bg-slate-500/5 border border-slate-200/50 dark:border-slate-800/40 flex flex-col">
+                                                <span>Keystrokes</span>
+                                                <span className="text-slate-900 dark:text-white font-black mt-1 font-mono">
+                                                    {opponentProgress.charCount} chars
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Local Submission Tests log */}
+                                <div className={`flex-1 p-5 rounded-4xl border backdrop-blur-2xl flex flex-col min-h-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
+                                    <div className="flex items-center gap-2 mb-3 shrink-0">
+                                        <Terminal className="text-indigo-400" size={16} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Compiler Test Log</span>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                        {testResults.length > 0 ? (
+                                            <div className="space-y-2">
+                                                {testResults.map((tc, idx) => (
+                                                    <div
+                                                        key={idx}
+                                                        className={`p-3 rounded-2xl border text-[10px] font-mono flex items-center justify-between ${tc.status === "Success"
+                                                                ? isDark
+                                                                    ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400"
+                                                                    : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                                                : isDark
+                                                                    ? "bg-rose-500/5 border-rose-500/10 text-rose-400"
+                                                                    : "bg-rose-50 border-rose-100 text-rose-600"
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            {tc.status === "Success" ? (
+                                                                <CheckCircle2 size={12} />
+                                                            ) : (
+                                                                <XCircle size={12} />
+                                                            )}
+                                                            <span>Case #{tc.test_case}</span>
+                                                        </div>
+                                                        <span className="font-bold">{tc.status}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
+                                                <Cpu size={24} className="mb-2" />
+                                                <p className="text-[9px] uppercase tracking-widest font-black">Submit code to compile</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Floating emote reactions triggers */}
+                                <div className={`p-4 rounded-4xl border backdrop-blur-2xl shrink-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Smile className="text-indigo-400" size={16} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-300">Duel Emotes</span>
+                                    </div>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {DUEL_EMOTES.map((emoji) => (
+                                            <button
+                                                key={emoji}
+                                                onClick={() => handleSendEmote(emoji)}
+                                                className={`p-2 rounded-xl text-xl hover:bg-slate-200/50 dark:hover:bg-slate-800 transition-colors cursor-pointer active:scale-90`}
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Mobile Bottom Tab Bar */}
+                        <div className="lg:hidden shrink-0 mt-3 p-2 rounded-2xl border flex justify-around items-center glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200/50 dark:border-slate-800/80">
+                            <button
+                                onClick={() => setActiveMobileTab("arena")}
+                                className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${activeMobileTab === "arena"
+                                        ? "text-indigo-500 dark:text-indigo-400 font-black scale-105"
+                                        : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                                    }`}
+                            >
+                                <BookOpen size={16} />
+                                <span className="text-[9px] uppercase tracking-wider font-black">Arena</span>
+                            </button>
+
+                            <button
+                                onClick={() => setActiveMobileTab("forge")}
+                                className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${activeMobileTab === "forge"
+                                        ? "text-indigo-500 dark:text-indigo-400 font-black scale-105"
+                                        : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                                    }`}
+                            >
+                                <Terminal size={16} />
+                                <span className="text-[9px] uppercase tracking-wider font-black">Forge</span>
+                            </button>
+
+                            <button
+                                onClick={() => setActiveMobileTab("insights")}
+                                className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${activeMobileTab === "insights"
+                                        ? "text-indigo-500 dark:text-indigo-400 font-black scale-105"
+                                        : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                                    }`}
+                            >
+                                <Swords size={16} />
+                                <span className="text-[9px] uppercase tracking-wider font-black">Insights</span>
+                            </button>
+                        </div>
                     </div>
-
-                    {/* Mobile Bottom Tab Bar */}
-                    <div className="lg:hidden shrink-0 mt-3 p-2 rounded-2xl border flex justify-around items-center glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200/50 dark:border-slate-800/80">
-                        <button
-                            onClick={() => setActiveMobileTab("arena")}
-                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
-                                activeMobileTab === "arena" 
-                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
-                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
-                            }`}
-                        >
-                            <BookOpen size={16} />
-                            <span className="text-[9px] uppercase tracking-wider font-black">Arena</span>
-                        </button>
-
-                        <button
-                            onClick={() => setActiveMobileTab("forge")}
-                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
-                                activeMobileTab === "forge" 
-                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
-                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
-                            }`}
-                        >
-                            <Terminal size={16} />
-                            <span className="text-[9px] uppercase tracking-wider font-black">Forge</span>
-                        </button>
-
-                        <button
-                            onClick={() => setActiveMobileTab("insights")}
-                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
-                                activeMobileTab === "insights" 
-                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
-                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
-                            }`}
-                        >
-                            <Swords size={16} />
-                            <span className="text-[9px] uppercase tracking-wider font-black">Insights</span>
-                        </button>
-                    </div>
-                </div>
                 )}
 
                 {/* 4. GAME OVER RESULTS PANEL STATE */}
@@ -1648,8 +1792,8 @@ function DuelArenaContent() {
 
                             <div className="flex-1 overflow-y-auto py-4 pr-1 space-y-2.5 custom-scrollbar min-h-0">
                                 {allProblems
-                                    .filter((prob) => 
-                                        prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) || 
+                                    .filter((prob) =>
+                                        prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) ||
                                         prob.difficulty?.toLowerCase().includes(problemSearchQuery.toLowerCase())
                                     )
                                     .map((prob) => (
@@ -1667,12 +1811,12 @@ function DuelArenaContent() {
                                             </span>
                                         </div>
                                     ))}
-                                {allProblems.filter((prob) => 
-                                    prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) || 
+                                {allProblems.filter((prob) =>
+                                    prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) ||
                                     prob.difficulty?.toLowerCase().includes(problemSearchQuery.toLowerCase())
                                 ).length === 0 && (
-                                    <div className="text-center py-10 text-xs font-semibold text-slate-455">No matching problems found</div>
-                                )}
+                                        <div className="text-center py-10 text-xs font-semibold text-slate-455">No matching problems found</div>
+                                    )}
                             </div>
 
                             <div className="pt-4 border-t border-slate-200/50 dark:border-slate-800 shrink-0 text-right">

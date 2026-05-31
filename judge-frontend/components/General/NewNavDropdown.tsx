@@ -47,12 +47,12 @@ export default function NavDropdown() {
             subtext: "Now look at what you did",
             aliases: [CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH]
         },
-        // {
-        //     name: "VLYXIR Duel",
-        //     path: "/duel",
-        //     icon: "⚔️",
-        //     subtext: "Challenge others"
-        // },
+        {
+            name: "VLYXIR Duel",
+            path: "/duel",
+            icon: "⚔️",
+            subtext: "Challenge others"
+        },
     ];
 
     const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];
