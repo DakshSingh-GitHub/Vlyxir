@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Trophy, X, Calendar, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '../../app/lib/auth/auth-context';
 
 interface Problem {
     id: string;
@@ -36,7 +37,9 @@ export default function DailyProblemModal({
     isDark,
     codeJudgePath
 }: DailyProblemModalProps) {
-    if (!isOpen || !problem) return null;
+    const { user } = useAuth();
+
+    if (!isOpen || !problem || !user) return null;
 
     return (
         <AnimatePresence>
