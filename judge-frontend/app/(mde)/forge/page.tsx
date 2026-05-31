@@ -6,7 +6,7 @@ import { anime } from "../../lib/utils/anime";
 import { useAppContext } from "../../lib/auth/context";
 import { runCode } from "../../lib/api/api";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History } from "lucide-react";
+import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History, Download } from "lucide-react";
 
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import { ideLayoutOptions, IdeUiLayout } from "./layoutOptions";
@@ -42,6 +42,7 @@ export default function CodeTestPage() {
     const [selectedLayout, setSelectedLayout] = useState<IdeUiLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
     const [showLimitFlash, setShowLimitFlash] = useState(false);
+    const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
     const [mainContentWidth, setMainContentWidth] = useState(65); // percentage for editor
     const [secondaryContentWidth, setSecondaryContentWidth] = useState(45); // percentage for input/output in wide
@@ -336,6 +337,35 @@ export default function CodeTestPage() {
         sessionStorage.removeItem("code-ide-output");
     };
 
+    const handleDownload = () => {
+        setIsDownloadModalOpen(true);
+    };
+
+    const confirmDownload = () => {
+        setIsDownloadModalOpen(false);
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        const dateStr = `${year}-${month}-${day}`;
+        const timeStr = `${hours}-${minutes}-${seconds}`;
+        const fileName = `playground_${dateStr}_${timeStr}.py`;
+
+        const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     if (!isMounted || isAuthLoading || !isHydrated) return null;
 
     const titlePanel = (
@@ -376,6 +406,16 @@ export default function CodeTestPage() {
                             }`}
                     >
                         <RotateCcw className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={handleDownload}
+                        title="Download Code"
+                        className={`p-2 rounded-xl transition-all duration-200 active:scale-95 ${isDark
+                            ? "bg-slate-800/50 border border-slate-700/50 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/30"
+                            : "bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-sm"
+                            }`}
+                    >
+                        <Download className="w-4 h-4" />
                     </button>
                     <button
                         onClick={handleRun}
@@ -667,6 +707,49 @@ export default function CodeTestPage() {
                                             <p className={`mt-1 text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{option.description}</p>
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {isDownloadModalOpen && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                            <button
+                                onClick={() => setIsDownloadModalOpen(false)}
+                                className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/60" : "bg-black/40"}`}
+                                aria-label="Close download confirmation"
+                            />
+                            <div className={`relative z-10 w-full max-w-sm rounded-4xl border backdrop-blur-2xl p-6 transition-all duration-300 ${isDark
+                                ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,15,26,0.95))] shadow-[0_18px_48px_rgba(2,6,23,0.35)]"
+                                : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] shadow-[0_18px_48px_rgba(15,23,42,0.14)]"
+                                }`}>
+                                <div className="flex items-start gap-4 mb-5">
+                                    <div className={`p-3 rounded-2xl border flex-none ${isDark ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-400" : "bg-indigo-50 border-indigo-100 text-indigo-600"}`}>
+                                        <Download className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className={`text-lg font-semibold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>Download Code?</h3>
+                                        <p className={`mt-1 text-xs leading-relaxed ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                                            Are you sure you want to download your playground code as a Python (.py) file?
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 justify-end">
+                                    <button
+                                        onClick={() => setIsDownloadModalOpen(false)}
+                                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 border ${isDark
+                                            ? "border-slate-700/70 text-slate-300 hover:bg-slate-800/50"
+                                            : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                                            }`}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={confirmDownload}
+                                        className="px-4 py-2 rounded-xl text-xs font-bold text-white transition-all duration-200 active:scale-95 bg-[linear-gradient(135deg,#4f46e5,#7c3aed)] hover:brightness-110 shadow-[0_4px_12px_rgba(79,70,229,0.2)]"
+                                    >
+                                        Download
+                                    </button>
                                 </div>
                             </div>
                         </div>
