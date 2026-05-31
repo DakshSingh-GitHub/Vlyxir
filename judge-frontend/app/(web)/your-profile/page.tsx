@@ -1375,17 +1375,17 @@ export default function YourProfilePage() {
                                                 {duel.opponent.avatarUrl ? (
                                                     <Image 
                                                         src={duel.opponent.avatarUrl} 
-                                                        alt={duel.opponent.fullName} 
+                                                        alt={duel.opponent.fullName || "Opponent"} 
                                                         fill
                                                         className="object-cover"
                                                     />
                                                 ) : (
-                                                    duel.opponent.fullName[0].toUpperCase()
+                                                    (duel.opponent.fullName?.[0] || "?").toUpperCase()
                                                 )}
                                             </div>
                                             <div className="truncate min-w-0">
-                                                <p className="font-bold text-xs truncate leading-none text-slate-850 dark:text-slate-200">
-                                                    vs {duel.opponent.fullName}
+                                                <p className="font-bold text-xs truncate leading-none text-slate-855 dark:text-slate-200">
+                                                    vs {duel.opponent.fullName || "Opponent"}
                                                 </p>
                                                 <p className="text-[9px] text-slate-455 dark:text-slate-400 mt-0.5 leading-none">
                                                     @{duel.opponent.username}

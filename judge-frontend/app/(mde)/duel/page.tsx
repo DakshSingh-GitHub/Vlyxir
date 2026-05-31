@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -58,6 +58,7 @@ function DuelArenaContent() {
     // Matchmaking / Lobby states
     const [challengeTargetProfile, setChallengeTargetProfile] = useState<any | null>(null);
     const [incomingChallenge, setIncomingChallenge] = useState<any | null>(null);
+    const [customAlert, setCustomAlert] = useState<{ title: string; message: string; type?: "info" | "warning" | "error" } | null>(null);
     const [lobbyPlayersCount, setLobbyPlayersCount] = useState(0);
     const [searchTime, setSearchTime] = useState(0);
     const [matchmakingTimeout, setMatchmakingTimeout] = useState(false);
@@ -221,7 +222,7 @@ function DuelArenaContent() {
     };
 
     // Helper to store participant duel statistics and final outcome
-    const saveParticipantResult = async (resOutcome: "victory" | "defeat" | "draw", scorePassed: number, scoreTotal: number) => {
+    const saveParticipantResult = useCallback(async (resOutcome: "victory" | "defeat" | "draw", scorePassed: number, scoreTotal: number) => {
         const sId = sessionIdRef.current || sessionId;
         if (!user || !sId || hasSavedResult.current) return;
         hasSavedResult.current = true;
@@ -242,7 +243,7 @@ function DuelArenaContent() {
         } catch (err) {
             console.error("Error inserting participant results:", err);
         }
-    };
+    }, [user, sessionId, code]);
 
     // 1. Fetch direct challenge profile if present in URL
     useEffect(() => {
@@ -261,6 +262,39 @@ function DuelArenaContent() {
         }
         fetchTarget();
     }, [challengeTargetId, authLoading]);
+
+    // Fetch and initialize session if redirected with session params (e.g. accepted invite from another page)
+    useEffect(() => {
+        const urlSessionId = searchParams.get("sessionId");
+        const urlOpponentId = searchParams.get("opponentId");
+        const urlProblemId = searchParams.get("problemId");
+
+        if (!urlSessionId || !urlOpponentId || !urlProblemId || authLoading || !user) return;
+
+        async function initializeRedirectedSession() {
+            try {
+                // Fetch opponent profile
+                const { data: opponentProfile } = await supabase
+                    .from("profiles")
+                    .select("id, username, full_name, avatar_url")
+                    .eq("id", urlOpponentId)
+                    .maybeSingle();
+
+                if (opponentProfile) {
+                    const opponentData = {
+                        id: opponentProfile.id,
+                        username: opponentProfile.username,
+                        full_name: opponentProfile.full_name || opponentProfile.username || "Opponent"
+                    };
+                    startBattleSession(urlSessionId!, opponentData, urlProblemId!);
+                }
+            } catch (err) {
+                console.error("Failed to initialize redirected battle session:", err);
+            }
+        }
+
+        initializeRedirectedSession();
+    }, [searchParams, authLoading, user?.id]);
 
     // Fetch followers and following for in-lobby direct challenges - prevented refetches on browser focus loss via user?.id
     useEffect(() => {
@@ -371,9 +405,14 @@ function DuelArenaContent() {
 
             // Challenge Invite Declined
             if (data.type === "challenge_decline" && data.challengerId === user.id) {
-                alert(`${challengeTargetProfile?.username || "Opponent"} declined the challenge request.`);
+                const opponentUsername = challengeTargetProfile?.username || "Opponent";
                 setUiState("lobby");
                 setChallengeTargetProfile(null);
+                setCustomAlert({
+                    title: "Challenge Declined",
+                    message: `@${opponentUsername} has declined your 1v1 coding duel request.`,
+                    type: "warning"
+                });
             }
 
             // Direct Challenge Invite Accepted
@@ -616,20 +655,30 @@ function DuelArenaContent() {
         setSubmitResult(null);
         setTestResults([]);
 
+        // Unsubscribe from previous session channel to prevent memory leaks and duplicate listeners
+        if (sessionChannelRef.current) {
+            sessionChannelRef.current.unsubscribe();
+        }
+
         // Host inserts the active session immediately to prevent foreign key constraints errors down the line
         if (isHost) {
-            supabase
-                .from("duel_sessions")
-                .insert([{
-                    id: sId,
-                    problem_id: problemId,
-                    creator_id: user.id,
-                    opponent_id: opponentProfile.id,
-                    status: "active"
-                }])
-                .then(({ error }) => {
-                    if (error) console.error("Failed to initialize active duel session:", error);
-                });
+            Promise.resolve(
+                supabase
+                    .from("duel_sessions")
+                    .insert([{
+                        id: sId,
+                        problem_id: problemId,
+                        creator_id: user.id,
+                        opponent_id: opponentProfile.id,
+                        status: "active"
+                    }])
+            )
+            .then(({ error }) => {
+                if (error) console.error("Failed to initialize active duel session:", error);
+            })
+            .catch((err) => {
+                console.error("Unhandled error initializing active duel session:", err);
+            });
         }
 
         // Reset submission states
@@ -721,7 +770,11 @@ function DuelArenaContent() {
                 }
 
                 if (data.type === "decline_question_change" && data.senderId !== user?.id) {
-                    alert("Opponent declined your request to change the question.");
+                    setCustomAlert({
+                        title: "Request Declined",
+                        message: "Your opponent declined the request to change the question.",
+                        type: "info"
+                    });
                     setHasRequestedQuestionChange(true);
                     setPendingQuestionChangeRequest(null);
                 }
@@ -841,7 +894,11 @@ function DuelArenaContent() {
                 });
             }
         } catch (e: any) {
-            alert(e.message || "Failed to execute and submit code");
+            setCustomAlert({
+                title: "Execution Error",
+                message: e.message || "Failed to execute and submit code",
+                type: "error"
+            });
         } finally {
             setIsRunning(false);
         }
@@ -886,7 +943,8 @@ function DuelArenaContent() {
                         .from("duel_sessions")
                         .update({
                             status: "completed",
-                            winner_id: opponent.id
+                            winner_id: opponent.id,
+                            completed_at: new Date().toISOString()
                         })
                         .eq("id", sId);
                 } catch (e) {
@@ -943,19 +1001,25 @@ function DuelArenaContent() {
             // Update the existing session in history
             if (isHostRef.current) {
                 const sId = sessionIdRef.current || sessionId;
-                supabase
-                    .from("duel_sessions")
-                    .update({
-                        status: "completed",
-                        winner_id: outcome === "victory" ? user.id : (outcome === "defeat" ? opponent.id : null)
-                    })
-                    .eq("id", sId)
-                    .then(({ error }) => {
-                        if (error) console.error("Failed to update completed duel record", error);
-                    });
+                Promise.resolve(
+                    supabase
+                        .from("duel_sessions")
+                        .update({
+                            status: "completed",
+                            winner_id: outcome === "victory" ? user.id : (outcome === "defeat" ? opponent.id : null),
+                            completed_at: new Date().toISOString()
+                        })
+                        .eq("id", sId)
+                )
+                .then(({ error }) => {
+                    if (error) console.error("Failed to update completed duel record", error);
+                })
+                .catch((err) => {
+                    console.error("Unhandled error updating completed duel record:", err);
+                });
             }
         }
-    }, [hasSubmitted, opponentSubmitted, myFinalScore, opponentFinalScore, myTotalCount, opponentTotalCount, user, currentProblem, opponent, sessionId]);
+    }, [hasSubmitted, opponentSubmitted, myFinalScore, opponentFinalScore, myTotalCount, opponentTotalCount, user, currentProblem, opponent, sessionId, saveParticipantResult]);
 
     const handleChallengePlayer = (targetPlayer: any) => {
         setChallengeTargetProfile(targetPlayer);
@@ -983,13 +1047,18 @@ function DuelArenaContent() {
         // If the problem changes, update the problem_id on the active session (for host)
         if (isHostRef.current) {
             const sId = sessionIdRef.current || sessionId;
-            supabase
-                .from("duel_sessions")
-                .update({ problem_id: problemId })
-                .eq("id", sId)
-                .then(({ error }) => {
-                    if (error) console.error("Failed to update problem ID on active duel session:", error);
-                });
+            Promise.resolve(
+                supabase
+                    .from("duel_sessions")
+                    .update({ problem_id: problemId })
+                    .eq("id", sId)
+            )
+            .then(({ error }) => {
+                if (error) console.error("Failed to update problem ID on active duel session:", error);
+            })
+            .catch((err) => {
+                console.error("Unhandled error updating problem ID on active duel session:", err);
+            });
         }
 
         try {
@@ -1183,7 +1252,7 @@ function DuelArenaContent() {
                                         >
                                             <div className="flex items-center gap-2.5 min-w-0">
                                                 <div className="h-8 w-8 rounded-lg bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
-                                                    {player.username[0].toUpperCase()}
+                                                    {(player.username?.[0] || "?").toUpperCase()}
                                                 </div>
                                                 <div className="truncate text-left">
                                                     <p className="font-bold text-xs truncate leading-none mb-0.5 text-slate-800 dark:text-slate-200">{player.full_name}</p>
@@ -1264,7 +1333,7 @@ function DuelArenaContent() {
                                     </p>
                                     <div className="mt-6 p-4 rounded-2xl border flex items-center gap-3 bg-white/50 border-slate-200 dark:bg-slate-800/10 dark:border-slate-800 max-w-xs mx-auto">
                                         <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-black relative overflow-hidden">
-                                            {challengeTargetProfile.username[0].toUpperCase()}
+                                            {(challengeTargetProfile.username?.[0] || "?").toUpperCase()}
                                         </div>
                                         <div className="text-left truncate">
                                             <p className="font-bold text-xs truncate text-slate-800 dark:text-slate-250">{challengeTargetProfile.full_name}</p>
@@ -1292,6 +1361,18 @@ function DuelArenaContent() {
 
                             <button
                                 onClick={() => {
+                                    if (challengeTargetProfile && lobbyChannelRef.current && user) {
+                                        lobbyChannelRef.current.send({
+                                            type: "broadcast",
+                                            event: "lobby_event",
+                                            payload: {
+                                                type: "challenge_cancel",
+                                                challengerId: user.id,
+                                                challengerUsername: user.user_metadata?.username || user.email?.split("@")[0] || "challenger",
+                                                targetId: challengeTargetProfile.id
+                                            }
+                                        });
+                                    }
                                     setUiState("lobby");
                                     setChallengeTargetProfile(null);
                                 }}
@@ -1830,6 +1911,44 @@ function DuelArenaContent() {
                         </motion.div>
                     </div>
                 )}
+            {/* Custom Designed Alert / Notification Modal */}
+            {customAlert && (
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs h-screen w-screen left-0 top-0">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={`w-full max-w-sm p-6 rounded-4xl border shadow-2xl flex flex-col gap-4 text-center backdrop-blur-2xl ${
+                            isDark ? "border-slate-800 bg-[#0F101A]" : "border-slate-200 bg-white"
+                        }`}
+                    >
+                        <div className="text-center">
+                            <div className={`h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
+                                customAlert.type === "error" 
+                                    ? "bg-rose-500/10 text-rose-500" 
+                                    : customAlert.type === "warning" 
+                                    ? "bg-amber-500/10 text-amber-500" 
+                                    : "bg-indigo-500/10 text-indigo-500"
+                            }`}>
+                                <span className="text-xl">
+                                    {customAlert.type === "error" ? "⚠️" : customAlert.type === "warning" ? "⚔️" : "ℹ️"}
+                                </span>
+                            </div>
+                            <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                                {customAlert.title}
+                            </h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                                {customAlert.message}
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setCustomAlert(null)}
+                            className="w-full py-2.5 rounded-xl text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition-all shadow-md cursor-pointer mt-2 animate-pulse"
+                        >
+                            Okay
+                        </button>
+                    </motion.div>
+                </div>
+            )}
             </main>
         </div>
     );
