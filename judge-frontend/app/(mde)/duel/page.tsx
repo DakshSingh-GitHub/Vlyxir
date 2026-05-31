@@ -18,12 +18,13 @@ import {
     ArrowLeft,
     Cpu,
     Flame,
-    Flag
+    Flag,
+    BookOpen
 } from "lucide-react";
 import { supabase } from "../../lib/api/supabase/client";
 import { useAuth } from "../../lib/auth/auth-context";
 import { useAppContext } from "../../lib/auth/context";
-import { getProblems, submitCode } from "../../lib/api/api";
+import { getProblems, getProblemById, submitCode } from "../../lib/api/api";
 import { Problem } from "../../lib/types/types";
 import CodeEditor from "../../../components/Editor/CodeEditor";
 
@@ -98,6 +99,7 @@ function DuelArenaContent() {
     // Question change request states
     const [allProblems, setAllProblems] = useState<Problem[]>([]);
     const [showChangeModal, setShowChangeModal] = useState(false);
+    const [problemSearchQuery, setProblemSearchQuery] = useState("");
     const [hasRequestedQuestionChange, setHasRequestedQuestionChange] = useState(false);
     const [pendingQuestionChangeRequest, setPendingQuestionChangeRequest] = useState<any | null>(null);
     const [incomingQuestionChangeRequest, setIncomingQuestionChangeRequest] = useState<any | null>(null);
@@ -122,6 +124,30 @@ function DuelArenaContent() {
     const sessionChannelRef = useRef<any>(null);
     const timerIntervalRef = useRef<any>(null);
     const searchIntervalRef = useRef<any>(null);
+
+    // Mobile Active Tab State & Result DB Save Protection
+    const [activeMobileTab, setActiveMobileTab] = useState<"arena" | "forge" | "insights">("forge");
+    const hasSavedResult = useRef(false);
+
+    // Helper to store participant duel statistics and final outcome
+    const saveParticipantResult = async (resOutcome: "victory" | "defeat" | "draw", scorePassed: number, scoreTotal: number) => {
+        if (!user || !sessionId || hasSavedResult.current) return;
+        hasSavedResult.current = true;
+        try {
+            await supabase
+                .from("duel_participant_results")
+                .insert([{
+                    duel_id: sessionId,
+                    user_id: user.id,
+                    code: code,
+                    passed: scorePassed,
+                    total: scoreTotal,
+                    result: resOutcome
+                }]);
+        } catch (err) {
+            console.error("Error inserting participant results:", err);
+        }
+    };
 
     // 1. Fetch direct challenge profile if present in URL
     useEffect(() => {
@@ -190,6 +216,20 @@ function DuelArenaContent() {
         }
 
         fetchSocial();
+    }, [user?.id]);
+
+    // Pre-fetch all python problems once for local caching in matchmaking queue
+    useEffect(() => {
+        if (!user) return;
+        async function loadLobbyProblems() {
+            try {
+                const problemsData = await getProblems();
+                setAllProblems(problemsData.problems || []);
+            } catch (err) {
+                console.error("Failed to pre-fetch problems:", err);
+            }
+        }
+        loadLobbyProblems();
     }, [user?.id]);
 
     // 2. Initialize unified Lobby Channel - prevented reconnect disconnect loops via user?.id dependency
@@ -344,12 +384,18 @@ function DuelArenaContent() {
                 const shouldHost = user.id > opponentPlayer.id;
 
                 if (shouldHost) {
-                    // Load problems list and pick one
-                    const problemsData = await getProblems();
-                    const pythonProblems = (problemsData.problems || []).filter((p: any) => p.difficulty);
+                    let pythonProblems = allProblems.filter((p: any) => p.difficulty);
+                    if (pythonProblems.length === 0) {
+                        try {
+                            const problemsData = await getProblems();
+                            pythonProblems = (problemsData.problems || []).filter((p: any) => p.difficulty);
+                        } catch (err) {
+                            console.error("Matchmaking fallback API error:", err);
+                        }
+                    }
                     const selectedProblem = pythonProblems[Math.floor(Math.random() * pythonProblems.length)] || { id: "1" };
                     
-                    const newSessionId = `session_${Math.random().toString(36).substring(2, 10)}`;
+                    const newSessionId = crypto.randomUUID();
 
                     lobbyChannelRef.current.send({
                         type: "broadcast",
@@ -373,7 +419,7 @@ function DuelArenaContent() {
                 clearInterval(searchIntervalRef.current);
             }
         };
-    }, [uiState, challengeTargetId, user?.id]);
+    }, [uiState, challengeTargetId, user?.id, allProblems]);
 
     // Handle Direct Challenge action (Inviter side)
     const handleSendChallenge = async () => {
@@ -418,11 +464,18 @@ function DuelArenaContent() {
     const handleAcceptChallenge = async () => {
         if (!lobbyChannelRef.current || !user || !incomingChallenge) return;
 
-        const newSessionId = `session_${Math.random().toString(36).substring(2, 10)}`;
+        const newSessionId = crypto.randomUUID();
         
-        // Pick a random problem
-        const problemsData = await getProblems();
-        const pythonProblems = (problemsData.problems || []).filter((p: any) => p.difficulty);
+        // Pick a random problem from local cache
+        let pythonProblems = allProblems.filter((p: any) => p.difficulty);
+        if (pythonProblems.length === 0) {
+            try {
+                const problemsData = await getProblems();
+                pythonProblems = (problemsData.problems || []).filter((p: any) => p.difficulty);
+            } catch (err) {
+                console.error("Accept challenge fallback API error:", err);
+            }
+        }
         const selectedProblem = pythonProblems[Math.floor(Math.random() * pythonProblems.length)] || { id: "1" };
 
         const myProfile = {
@@ -478,15 +531,22 @@ function DuelArenaContent() {
         setPendingQuestionChangeRequest(null);
         setIncomingQuestionChangeRequest(null);
 
-        // Load targeted problem details
+        // Reset results database save lock
+        hasSavedResult.current = false;
+
+        // Load targeted problem details (render cache instantly, then fetch full formats/constraints)
+        const cachedProb = allProblems.find((p: any) => p.id === problemId);
+        if (cachedProb) {
+            setCurrentProblem(cachedProb);
+        }
+
         try {
-            const problems = await getProblems();
-            const targetProb = (problems.problems || []).find((p: any) => p.id === problemId);
-            if (targetProb) {
-                setCurrentProblem(targetProb);
+            const fullProb = await getProblemById(problemId);
+            if (fullProb) {
+                setCurrentProblem(fullProb);
             }
         } catch (e) {
-            console.error("Failed to load battle problem:", e);
+            console.error("Failed to load full battle problem:", e);
         }
 
         // Connect to Private Session Realtime Channel
@@ -535,6 +595,7 @@ function DuelArenaContent() {
                         won: true,
                         msg: "Opponent gave up and left the challenge!"
                     });
+                    saveParticipantResult("victory", myFinalScore || 0, myTotalCount || 0);
                 }
 
                 if (data.type === "request_question_change" && data.senderId !== user?.id) {
@@ -565,6 +626,7 @@ function DuelArenaContent() {
                         won: true,
                         msg: "Opponent has disconnected from the duel!"
                     });
+                    saveParticipantResult("victory", myFinalScore || 0, myTotalCount || 0);
                 }
             })
             .on("presence", { event: "leave" }, ({ key }) => {
@@ -576,6 +638,7 @@ function DuelArenaContent() {
                         won: true,
                         msg: "Opponent has disconnected from the duel!"
                     });
+                    saveParticipantResult("victory", myFinalScore || 0, myTotalCount || 0);
                 }
             })
             .subscribe(async (status) => {
@@ -671,7 +734,7 @@ function DuelArenaContent() {
     };
 
     const handleGiveUp = async () => {
-        if (!user || !opponent || !currentProblem) return;
+        if (!user || !opponent || !currentProblem || !sessionId) return;
 
         if (confirm("Are you sure you want to give up and forfeit this duel?")) {
             // Broadcast give up
@@ -698,12 +761,16 @@ function DuelArenaContent() {
                 opponentTotal: opponentProgress.totalCount
             });
 
+            // Save my forfeit defeat result to history
+            saveParticipantResult("defeat", 0, 0);
+
             // Insert into history
             if (user.id > opponent.id) {
                 try {
                     await supabase
                         .from("duel_sessions")
                         .insert([{
+                            id: sessionId, // Use the generated UUID!
                             problem_id: currentProblem.id,
                             creator_id: user.id,
                             opponent_id: opponent.id,
@@ -758,11 +825,15 @@ function DuelArenaContent() {
                 opponentTotal: oppTotal
             });
 
+            // Save my participant result row to history
+            saveParticipantResult(outcome, mine, myTotal);
+
             // Insert into history
             if (user.id > opponent.id) {
                 supabase
                     .from("duel_sessions")
                     .insert([{
+                        id: sessionId, // Use the generated UUID!
                         problem_id: currentProblem.id,
                         creator_id: user.id,
                         opponent_id: opponent.id,
@@ -774,7 +845,7 @@ function DuelArenaContent() {
                     });
             }
         }
-    }, [hasSubmitted, opponentSubmitted, myFinalScore, opponentFinalScore, myTotalCount, opponentTotalCount, user, currentProblem, opponent]);
+    }, [hasSubmitted, opponentSubmitted, myFinalScore, opponentFinalScore, myTotalCount, opponentTotalCount, user, currentProblem, opponent, sessionId]);
 
     const handleChallengePlayer = (targetPlayer: any) => {
         setChallengeTargetProfile(targetPlayer);
@@ -783,20 +854,26 @@ function DuelArenaContent() {
 
     // Load problem by ID and reset all battle states
     const loadAndSetProblem = async (problemId: string) => {
+        // Render from local cache immediately
+        const cachedProb = allProblems.find((p: any) => p.id === problemId);
+        if (cachedProb) {
+            setCurrentProblem(cachedProb);
+        }
+
+        setCode("# Enter your solution in Python here\n\n");
+        setTestResults([]);
+        setSubmitResult(null);
+        setHasSubmitted(false);
+        setMyFinalScore(null);
+        setMyTotalCount(null);
+        setOpponentSubmitted(false);
+        setOpponentFinalScore(null);
+        setOpponentTotalCount(null);
+
         try {
-            const problems = await getProblems();
-            const targetProb = (problems.problems || []).find((p: any) => p.id === problemId);
-            if (targetProb) {
-                setCurrentProblem(targetProb);
-                setCode("# Enter your solution in Python here\n\n");
-                setTestResults([]);
-                setSubmitResult(null);
-                setHasSubmitted(false);
-                setMyFinalScore(null);
-                setMyTotalCount(null);
-                setOpponentSubmitted(false);
-                setOpponentFinalScore(null);
-                setOpponentTotalCount(null);
+            const fullProb = await getProblemById(problemId);
+            if (fullProb) {
+                setCurrentProblem(fullProb);
             }
         } catch (e) {
             console.error("Failed to load requested problem change:", e);
@@ -810,6 +887,7 @@ function DuelArenaContent() {
             // Filter out current problem
             const filtered = (data.problems || []).filter((p: any) => p.id !== currentProblem?.id);
             setAllProblems(filtered);
+            setProblemSearchQuery("");
             setShowChangeModal(true);
         } catch (err) {
             console.error("Failed to load problems:", err);
@@ -910,7 +988,7 @@ function DuelArenaContent() {
     }
 
     return (
-        <div className={`h-[calc(100vh-80px)] flex flex-col min-h-0 relative overflow-hidden font-sans ${isDark ? "text-slate-100 bg-[#0B0C15]" : "text-slate-900 bg-slate-50"}`}>
+        <div className={`h-[calc(100vh-96px)] max-h-[calc(100vh-96px)] flex flex-col min-h-0 relative overflow-hidden font-sans ${isDark ? "text-slate-100 bg-[#0B0C15]" : "text-slate-900 bg-slate-50"}`}>
             {/* Visual Backdrops - Blue / Violet themed */}
             <div className={`pointer-events-none absolute inset-0 ${isDark
                 ? "bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.15),transparent_40%),linear-gradient(135deg,rgba(2,6,23,0.18),transparent_35%)]"
@@ -932,7 +1010,7 @@ function DuelArenaContent() {
                 ))}
             </div>
 
-            <main className="flex-1 flex flex-col min-h-0 relative z-10 p-4 md:p-6 lg:p-8">
+            <main className="flex-1 flex flex-col min-h-0 max-h-full relative z-10 p-4 overflow-hidden">
                 {/* 1. LOBBY STATE */}
                 {uiState === "lobby" && (
                     <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-auto w-full space-y-6">
@@ -1140,7 +1218,7 @@ function DuelArenaContent() {
                         )}
                         <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 w-full">
                             {/* LEFT PANEL: PROBLEM SPECS */}
-                        <div className={`w-full lg:w-1/3 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl p-6 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
+                        <div className={`w-full lg:w-1/3 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl p-6 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "arena" ? "flex" : "hidden lg:flex"}`}>
                             {currentProblem ? (
                                 <div className="flex-1 flex flex-col min-h-0">
                                     <div className="flex items-center justify-between gap-4 mb-4 shrink-0">
@@ -1200,6 +1278,22 @@ function DuelArenaContent() {
                                                 ))}
                                             </div>
                                         )}
+                                        {currentProblem.constraints && (
+                                            <div className="mt-4 space-y-2">
+                                                <p className="font-semibold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">Constraints</p>
+                                                <pre className="p-3 rounded-2xl border font-mono text-[10px] whitespace-pre-wrap bg-slate-950/40 border-slate-850/40 text-slate-300">
+                                                    <code>
+                                                        {typeof currentProblem.constraints === 'object' ? (
+                                                            Object.entries(currentProblem.constraints)
+                                                                .map(([key, value]) => `${key}: ${typeof value === 'object' ? JSON.stringify(value) : String(value)}`)
+                                                                .join('\n')
+                                                        ) : (
+                                                            String(currentProblem.constraints)
+                                                        )}
+                                                    </code>
+                                                </pre>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ) : (
@@ -1211,7 +1305,7 @@ function DuelArenaContent() {
                         </div>
 
                         {/* CENTER PANEL: MONACO EDITOR */}
-                        <div className={`w-full lg:w-5/12 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl overflow-hidden ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
+                        <div className={`w-full lg:w-5/12 flex flex-col min-h-0 rounded-4xl border backdrop-blur-2xl overflow-hidden ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"} ${activeMobileTab === "forge" ? "flex" : "hidden lg:flex"}`}>
                             {/* Editor Header */}
                             <div className={`px-5 py-3 border-b flex items-center justify-between ${isDark ? "border-slate-850 bg-slate-950/20" : "border-slate-200 bg-slate-50/70"}`}>
                                 <div className="flex items-center gap-2">
@@ -1262,17 +1356,29 @@ function DuelArenaContent() {
                                     isDark={isDark}
                                 />
                                 {hasSubmitted && (
-                                    <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xs flex flex-col items-center justify-center text-center p-4 z-20">
-                                        <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mb-2" />
-                                        <p className="text-xs font-black text-white tracking-widest uppercase">Code Submitted</p>
-                                        <p className="text-[10px] text-slate-400 mt-1 max-w-[200px]">Waiting for opponent to submit their solution...</p>
+                                    <div className="absolute inset-0 bg-[#07080E]/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20">
+                                        <div className="relative flex items-center justify-center h-20 w-20 mb-6">
+                                            {/* Glowing ripple effects */}
+                                            <div className="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping opacity-75" />
+                                            <div className="absolute inset-2 rounded-full border border-purple-500/20 animate-pulse" />
+                                            <div className="absolute inset-4 rounded-full bg-linear-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                                                <Swords className="w-8 h-8 animate-pulse text-white" />
+                                            </div>
+                                        </div>
+                                        <h3 className="text-sm font-black text-white tracking-widest uppercase flex items-center gap-1.5 justify-center">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                                            Solution Locked In
+                                        </h3>
+                                        <p className="text-[10px] text-slate-400 mt-2 max-w-[240px] leading-relaxed">
+                                            Your code has been compiled and saved. Waiting for your opponent to complete their submission...
+                                        </p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* RIGHT PANEL: DYNAMIC LIVE COMPETITIVE DASHBOARD */}
-                        <div className="w-full lg:w-1/4 flex flex-col gap-4 min-h-0">
+                        <div className={`w-full lg:w-1/4 flex flex-col gap-4 min-h-0 ${activeMobileTab === "insights" ? "flex" : "hidden lg:flex"}`}>
                             {/* Opponent Status panel */}
                             <div className={`p-5 rounded-4xl border backdrop-blur-2xl flex flex-col justify-between shrink-0 ${isDark ? "border-slate-800/30 bg-slate-900/60" : "border-slate-250/20 bg-white/30"}`}>
                                 <div className="flex items-center gap-2 mb-4">
@@ -1407,6 +1513,45 @@ function DuelArenaContent() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Mobile Bottom Tab Bar */}
+                    <div className="lg:hidden shrink-0 mt-3 p-2 rounded-2xl border flex justify-around items-center glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200/50 dark:border-slate-800/80">
+                        <button
+                            onClick={() => setActiveMobileTab("arena")}
+                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+                                activeMobileTab === "arena" 
+                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
+                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                            }`}
+                        >
+                            <BookOpen size={16} />
+                            <span className="text-[9px] uppercase tracking-wider font-black">Arena</span>
+                        </button>
+
+                        <button
+                            onClick={() => setActiveMobileTab("forge")}
+                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+                                activeMobileTab === "forge" 
+                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
+                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                            }`}
+                        >
+                            <Terminal size={16} />
+                            <span className="text-[9px] uppercase tracking-wider font-black">Forge</span>
+                        </button>
+
+                        <button
+                            onClick={() => setActiveMobileTab("insights")}
+                            className={`flex flex-col items-center gap-1 py-1 px-4 rounded-xl transition-all cursor-pointer ${
+                                activeMobileTab === "insights" 
+                                    ? "text-indigo-500 dark:text-indigo-400 font-black scale-105" 
+                                    : "text-slate-500 dark:text-slate-455 hover:text-slate-200"
+                            }`}
+                        >
+                            <Swords size={16} />
+                            <span className="text-[9px] uppercase tracking-wider font-black">Insights</span>
+                        </button>
+                    </div>
                 </div>
                 )}
 
@@ -1471,7 +1616,7 @@ function DuelArenaContent() {
                 )}
                 {/* 5. QUESTION SELECTION MODAL FOR QUESTION CHANGE APPEAL */}
                 {showChangeModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+                    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-[#07080E]/75 backdrop-blur-md h-screen w-screen left-0 top-0">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -1490,24 +1635,43 @@ function DuelArenaContent() {
                                 </button>
                             </div>
 
+                            {/* Search bar inside question selection modal */}
+                            <div className="pt-3 pb-1 shrink-0">
+                                <input
+                                    type="text"
+                                    placeholder="Search by problem name or difficulty..."
+                                    value={problemSearchQuery}
+                                    onChange={(e) => setProblemSearchQuery(e.target.value)}
+                                    className="w-full px-4 py-2.5 rounded-2xl border text-xs glass-morphism bg-slate-50 border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:bg-slate-900/40 dark:border-slate-800 dark:focus:ring-indigo-500/50 text-slate-800 dark:text-slate-200"
+                                />
+                            </div>
+
                             <div className="flex-1 overflow-y-auto py-4 pr-1 space-y-2.5 custom-scrollbar min-h-0">
-                                {allProblems.map((prob) => (
-                                    <div
-                                        key={prob.id}
-                                        onClick={() => handleInitiateQuestionChange(prob)}
-                                        className="p-3.5 rounded-2xl border flex items-center justify-between transition-all cursor-pointer bg-white/40 border-slate-200 hover:bg-indigo-500/5 hover:border-indigo-500/35 dark:bg-slate-950/20 dark:border-slate-800/60 dark:hover:bg-slate-900/35"
-                                    >
-                                        <div className="text-left min-w-0 pr-4">
-                                            <p className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{prob.title}</p>
-                                            <p className="text-[9px] text-slate-455 dark:text-slate-400 truncate mt-0.5">{prob.description?.substring(0, 100) || "No description available"}...</p>
+                                {allProblems
+                                    .filter((prob) => 
+                                        prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) || 
+                                        prob.difficulty?.toLowerCase().includes(problemSearchQuery.toLowerCase())
+                                    )
+                                    .map((prob) => (
+                                        <div
+                                            key={prob.id}
+                                            onClick={() => handleInitiateQuestionChange(prob)}
+                                            className="p-3.5 rounded-2xl border flex items-center justify-between transition-all cursor-pointer bg-white/40 border-slate-200 hover:bg-indigo-500/5 hover:border-indigo-500/35 dark:bg-slate-950/20 dark:border-slate-800/60 dark:hover:bg-slate-900/35"
+                                        >
+                                            <div className="text-left min-w-0 pr-4">
+                                                <p className="font-bold text-xs text-slate-800 dark:text-slate-200 truncate">{prob.title}</p>
+                                                <p className="text-[9px] text-slate-455 dark:text-slate-400 truncate mt-0.5">{prob.description?.substring(0, 100) || "No description available"}...</p>
+                                            </div>
+                                            <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0 select-none">
+                                                {prob.difficulty || "Medium"}
+                                            </span>
                                         </div>
-                                        <span className="text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0 select-none">
-                                            {prob.difficulty || "Medium"}
-                                        </span>
-                                    </div>
-                                ))}
-                                {allProblems.length === 0 && (
-                                    <div className="text-center py-10 text-xs font-semibold text-slate-455">No alternative questions available</div>
+                                    ))}
+                                {allProblems.filter((prob) => 
+                                    prob.title.toLowerCase().includes(problemSearchQuery.toLowerCase()) || 
+                                    prob.difficulty?.toLowerCase().includes(problemSearchQuery.toLowerCase())
+                                ).length === 0 && (
+                                    <div className="text-center py-10 text-xs font-semibold text-slate-455">No matching problems found</div>
                                 )}
                             </div>
 
