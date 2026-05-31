@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -31,6 +31,18 @@ import CodeEditor from "../../../components/Editor/CodeEditor";
 const DUEL_EMOTES = ["🔥", "😎", "😮", "🤔", "👑", "🎯", "💀", "👏"];
 
 export default function DuelPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex-1 flex items-center justify-center min-h-screen bg-[#0B0C15]">
+                <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            </div>
+        }>
+            <DuelArenaContent />
+        </Suspense>
+    );
+}
+
+function DuelArenaContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, isLoading: authLoading } = useAuth();
