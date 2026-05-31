@@ -1539,7 +1539,7 @@ function DuelArenaContent() {
                                         {/* Opponent Card */}
                                         <div className="flex items-center gap-3">
                                             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
-                                                {opponent?.username[0].toUpperCase()}
+                                                {opponent?.username?.[0]?.toUpperCase() || "?"}
                                             </div>
                                             <div className="truncate min-w-0">
                                                 <p className="font-bold text-xs truncate text-slate-800 dark:text-slate-200">{opponent?.full_name}</p>
