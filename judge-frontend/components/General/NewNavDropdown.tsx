@@ -29,7 +29,7 @@ export default function NavDropdown() {
         {
             name: "VLYXIR Arena",
             path: codeJudgePath,
-            icon: "⚔️",
+            icon: "🎯",
             subtext: "Select a problem and start solving!",
             aliases: [CODE_JUDGE_PATH, CODE_JUDGE_MDE_PATH]
         },
@@ -46,6 +46,12 @@ export default function NavDropdown() {
             icon: "📃",
             subtext: "Now look at what you did",
             aliases: [CODE_ANALYSIS_PATH, CODE_ANALYSIS_MDE_PATH]
+        },
+        {
+            name: "VLYXIR Duel",
+            path: "/duel",
+            icon: "⚔️",
+            subtext: "Challenge others"
         },
     ];
 

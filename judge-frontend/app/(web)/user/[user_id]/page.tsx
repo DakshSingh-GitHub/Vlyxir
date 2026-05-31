@@ -386,17 +386,25 @@ export default function UserPage({ params }: PageProps) {
                             <div className="flex flex-col md:flex-row md:items-center gap-4 justify-center md:justify-start">
                                 <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{profile.full_name}</h1>
                                 {user && user.id !== profile.id && (
-                                    <button
-                                        onClick={handleFollowToggle}
-                                        disabled={togglingFollow}
-                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                                            isFollowing
-                                                ? "bg-slate-200 text-slate-800 border border-slate-300 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
-                                                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
-                                        }`}
-                                    >
-                                        {isFollowing ? "Unfollow" : "Follow"}
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={handleFollowToggle}
+                                            disabled={togglingFollow}
+                                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                                                isFollowing
+                                                    ? "bg-slate-200 text-slate-800 border border-slate-300 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                                    : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                                            }`}
+                                        >
+                                            {isFollowing ? "Unfollow" : "Follow"}
+                                        </button>
+                                        <Link
+                                            href={`/duel?challenge=${profile.id}`}
+                                            className="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0 bg-linear-to-r from-red-650 via-orange-600 to-amber-500 text-white hover:brightness-110 shadow-xs"
+                                        >
+                                            Challenge ⚔️
+                                        </Link>
+                                    </div>
                                 )}
                             </div>
                             <p className="text-xl text-indigo-400 font-medium">@{profile.username}</p>

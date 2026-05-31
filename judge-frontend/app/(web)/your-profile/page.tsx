@@ -89,6 +89,7 @@ export default function YourProfilePage() {
     const [stats, setStats] = useState<SubmissionStats | null>(null);
     const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
     const [solvedProblems, setSolvedProblems] = useState<SolvedProblemItem[]>([]);
+    const [duelsHistory, setDuelsHistory] = useState<any[]>([]);
     const [totalProblemsInSystem, setTotalProblemsInSystem] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [rank, setRank] = useState<number | string>('N/A');
@@ -312,6 +313,79 @@ export default function YourProfilePage() {
                 } else {
                     setFollowingList([]);
                 }
+
+                // --- 7. Fetch completed coding duels and opponent profiles ---
+                const { data: duelResultsData, error: duelsError } = await supabase
+                    .from('duel_participant_results')
+                    .select(`
+                        id,
+                        code,
+                        passed,
+                        total,
+                        result,
+                        created_at,
+                        duel_sessions (
+                            id,
+                            problem_id,
+                            creator_id,
+                            opponent_id,
+                            winner_id,
+                            completed_at
+                        )
+                    `)
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (duelsError) throw duelsError;
+
+                const rawDuelResults = (duelResultsData || []) as any[];
+                const opponentIds = Array.from(new Set(rawDuelResults.map(res => {
+                    const session = Array.isArray(res.duel_sessions) ? res.duel_sessions[0] : res.duel_sessions;
+                    const creatorId = session?.creator_id;
+                    const opponentId = session?.opponent_id;
+                    return creatorId === currentUser.id ? opponentId : creatorId;
+                }).filter(Boolean)));
+
+                let opponentProfilesMap: Record<string, any> = {};
+                if (opponentIds.length > 0) {
+                    const { data: profilesData } = await supabase
+                        .from('profiles')
+                        .select('id, username, full_name, avatar_url')
+                        .in('id', opponentIds);
+                    
+                    (profilesData || []).forEach(p => {
+                        opponentProfilesMap[p.id] = p;
+                    });
+                }
+
+                const resolvedDuels = rawDuelResults.map(res => {
+                    const session = Array.isArray(res.duel_sessions) ? res.duel_sessions[0] : res.duel_sessions;
+                    const pId = session?.problem_id;
+                    const prob = problemsList.find((p: any) => p.id === pId);
+                    
+                    const creatorId = session?.creator_id;
+                    const opponentId = session?.opponent_id;
+                    const oppId = creatorId === currentUser.id ? opponentId : creatorId;
+                    const oppProfile = oppId ? opponentProfilesMap[oppId] : null;
+
+                    return {
+                        id: res.id,
+                        code: res.code,
+                        passed: res.passed,
+                        total: res.total,
+                        result: res.result, // 'victory' | 'defeat' | 'draw'
+                        solvedAt: new Date(res.created_at),
+                        problemTitle: prob?.title || "Python Arena Duel",
+                        problemDifficulty: prob?.difficulty || "Medium",
+                        opponent: oppProfile ? {
+                            username: oppProfile.username,
+                            fullName: oppProfile.full_name,
+                            avatarUrl: oppProfile.avatar_url
+                        } : { username: "arena_competitor", fullName: "Arena Competitor" }
+                    };
+                });
+
+                setDuelsHistory(resolvedDuels);
 
             } catch (err) {
                 console.error("Error loading profile metrics:", err);
@@ -1251,6 +1325,108 @@ export default function YourProfilePage() {
                         </div>
                     </motion.div>
                 </div>
+
+                {/* Arena Match History Panel */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.65 }}
+                    className="border rounded-3xl p-6 glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 shadow-sm"
+                >
+                    <div className="flex items-center gap-2 mb-6">
+                        <Trophy className="text-indigo-400" size={18} />
+                        <h2 className="text-lg font-black text-slate-900 dark:text-white">Arena Match History</h2>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[380px] overflow-y-auto pr-2 custom-scrollbar">
+                        {duelsHistory.length > 0 ? (
+                            duelsHistory.map((duel) => (
+                                <div
+                                    key={duel.id}
+                                    onClick={() => handleViewCode({
+                                        id: duel.id,
+                                        code: duel.code,
+                                        passed: duel.passed,
+                                        total: duel.total,
+                                        problems: { title: duel.problemTitle }
+                                    })}
+                                    className="p-4 rounded-2xl border flex flex-col justify-between transition-all cursor-pointer group bg-slate-50 border-slate-200 hover:bg-white hover:shadow-md dark:bg-slate-800/20 dark:border-slate-800/60 dark:hover:bg-slate-800/30"
+                                >
+                                    <div className="space-y-3 animate-fade-in">
+                                        {/* Header: Result badge & Date */}
+                                        <div className="flex items-center justify-between">
+                                            <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                                                duel.result === "victory"
+                                                    ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.1)]"
+                                                    : duel.result === "defeat"
+                                                    ? "bg-rose-500/10 text-rose-500 border border-rose-500/20"
+                                                    : "bg-slate-500/10 text-slate-500 border border-slate-500/20"
+                                            }`}>
+                                                {duel.result}
+                                            </span>
+                                            <span className="text-[9px] text-slate-400 font-semibold">
+                                                {format(duel.solvedAt, 'MMM d, yyyy • h:mm a')}
+                                            </span>
+                                        </div>
+
+                                        {/* Competitor / Opponent detail */}
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="h-7 w-7 rounded-lg bg-linear-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center text-[10px] font-black relative overflow-hidden shrink-0 shadow-2xs">
+                                                {duel.opponent.avatarUrl ? (
+                                                    <Image 
+                                                        src={duel.opponent.avatarUrl} 
+                                                        alt={duel.opponent.fullName || "Opponent"} 
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    (duel.opponent.fullName?.[0] || "?").toUpperCase()
+                                                )}
+                                            </div>
+                                            <div className="truncate min-w-0">
+                                                <p className="font-bold text-xs truncate leading-none text-slate-855 dark:text-slate-200">
+                                                    vs {duel.opponent.fullName || "Opponent"}
+                                                </p>
+                                                <p className="text-[9px] text-slate-455 dark:text-slate-400 mt-0.5 leading-none">
+                                                    @{duel.opponent.username}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Problem Details */}
+                                        <div>
+                                            <h4 className="font-black text-xs text-slate-900 dark:text-white truncate group-hover:text-indigo-400 transition-colors">
+                                                {duel.problemTitle}
+                                            </h4>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md ${getDifficultyColorTelemetry(duel.problemDifficulty)}`}>
+                                                    {duel.problemDifficulty}
+                                                </span>
+                                                <span className="text-[9px] text-slate-400 font-bold">
+                                                    Score: {duel.passed}/{duel.total}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Row */}
+                                    <div className="mt-4 pt-3 border-t border-slate-200/50 dark:border-slate-800/80 flex items-center justify-between text-[10px] font-bold text-slate-400">
+                                        <span className="flex items-center gap-1 text-[9px] font-black tracking-wider uppercase group-hover:text-indigo-400 transition-colors">
+                                            View Solution <ChevronRight size={10} />
+                                        </span>
+                                        <ExternalLink size={10} className="group-hover:text-indigo-400 transition-colors" />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-full text-center py-12 border border-dashed rounded-3xl border-slate-250 dark:border-slate-800 flex flex-col items-center justify-center p-6 bg-slate-50/50 dark:bg-slate-900/10">
+                                <HelpCircle size={32} className="text-slate-350 dark:text-slate-700 mb-2" />
+                                <p className="text-xs font-bold text-slate-400">No Arena Duels Completed Yet</p>
+                                <p className="text-[10px] text-slate-500 mt-1 max-w-[220px]">Compete with other developers in the Competitive 1v1 Arena to build your reputation!</p>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
 
                 {/* Social Network Management Panel */}
                 <motion.div
