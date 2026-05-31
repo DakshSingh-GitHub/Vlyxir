@@ -87,6 +87,12 @@ export default function UserPage({ params }: PageProps) {
     const [loading, setLoading] = useState(true);
     const [rank, setRank] = useState<number | string>('N/A');
 
+    // Follow states
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [togglingFollow, setTogglingFollow] = useState(false);
+
     // Modal states
     const [isAllSubmissionsOpen, setIsAllSubmissionsOpen] = useState(false);
     const [isCodeViewOpen, setIsCodeViewOpen] = useState(false);
@@ -235,6 +241,31 @@ export default function UserPage({ params }: PageProps) {
                 setRecentSubmissions(validSubmissions.slice(0, 2));
                 setAllSubmissions(validSubmissions);
 
+                // Fetch Followers
+                const { count: followers } = await supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('following_id', resolvedUserId);
+                setFollowerCount(followers || 0);
+
+                // Fetch Following
+                const { count: following } = await supabase
+                    .from('follows')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('follower_id', resolvedUserId);
+                setFollowingCount(following || 0);
+
+                // Check if current user is following
+                if (user && user.id !== resolvedUserId) {
+                    const { data: followRecord } = await supabase
+                        .from('follows')
+                        .select('*')
+                        .eq('follower_id', user.id)
+                        .eq('following_id', resolvedUserId)
+                        .maybeSingle();
+                    setIsFollowing(!!followRecord);
+                }
+
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -243,7 +274,7 @@ export default function UserPage({ params }: PageProps) {
         }
 
         fetchData();
-    }, [user_id, authLoading]);
+    }, [user_id, authLoading, user?.id]);
 
     if (authLoading || (loading && !profile)) {
         return <ProfileSkeleton />;
@@ -278,6 +309,38 @@ export default function UserPage({ params }: PageProps) {
     const handleViewCode = (submission: any) => {
         setSelectedSubmission(submission);
         setIsCodeViewOpen(true);
+    };
+
+    const handleFollowToggle = async () => {
+        if (!user || togglingFollow || !profile) return;
+        setTogglingFollow(true);
+        try {
+            if (isFollowing) {
+                // Unfollow
+                const { error } = await supabase
+                    .from('follows')
+                    .delete()
+                    .eq('follower_id', user.id)
+                    .eq('following_id', profile.id);
+                if (!error) {
+                    setIsFollowing(false);
+                    setFollowerCount(prev => Math.max(0, prev - 1));
+                }
+            } else {
+                // Follow
+                const { error } = await supabase
+                    .from('follows')
+                    .insert([{ follower_id: user.id, following_id: profile.id }]);
+                if (!error) {
+                    setIsFollowing(true);
+                    setFollowerCount(prev => prev + 1);
+                }
+            }
+        } catch (err) {
+            console.error('Error toggling follow:', err);
+        } finally {
+            setTogglingFollow(false);
+        }
     };
 
     return (
@@ -320,11 +383,35 @@ export default function UserPage({ params }: PageProps) {
                         </div>
 
                         <div className="flex-1 text-center md:text-left space-y-2">
-                            <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{profile.full_name}</h1>
+                            <div className="flex flex-col md:flex-row md:items-center gap-4 justify-center md:justify-start">
+                                <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{profile.full_name}</h1>
+                                {user && user.id !== profile.id && (
+                                    <button
+                                        onClick={handleFollowToggle}
+                                        disabled={togglingFollow}
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                                            isFollowing
+                                                ? "bg-slate-200 text-slate-800 border border-slate-300 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                                : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                                        }`}
+                                    >
+                                        {isFollowing ? "Unfollow" : "Follow"}
+                                    </button>
+                                )}
+                            </div>
                             <p className="text-xl text-indigo-400 font-medium">@{profile.username}</p>
                             <p className="text-slate-600 dark:text-slate-400 max-w-2xl">{profile.bio || "No bio available."}</p>
 
-                            <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-4">
+                            <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
+                                <div className="text-sm text-slate-600 dark:text-slate-400">
+                                    <span className="font-bold text-slate-900 dark:text-white mr-1">{followingCount}</span> Following
+                                </div>
+                                <div className="text-sm text-slate-600 dark:text-slate-400">
+                                    <span className="font-bold text-slate-900 dark:text-white mr-1">{followerCount}</span> Followers
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
                                 {profile.country && (
                                     <div className="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border bg-slate-100 border-slate-200 text-slate-700 dark:bg-slate-800/50 dark:border-slate-700 dark:text-slate-300">
                                         <Globe size={14} className="text-indigo-400" />

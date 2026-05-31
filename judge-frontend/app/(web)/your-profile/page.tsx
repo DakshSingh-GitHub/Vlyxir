@@ -105,6 +105,11 @@ export default function YourProfilePage() {
     // Dynamic Account Switcher state
     const [showAccountSwitcher, setShowAccountSwitcher] = useState(false);
 
+    // Social follow lists states
+    const [followersList, setFollowersList] = useState<any[]>([]);
+    const [followingList, setFollowingList] = useState<any[]>([]);
+    const [socialTab, setSocialTab] = useState<"following" | "followers">("following");
+
     useEffect(() => {
         if (authLoading) return;
         if (!user) {
@@ -273,6 +278,40 @@ export default function YourProfilePage() {
                 // Sort by solved date descending
                 solvedList.sort((a, b) => b.solvedAt.getTime() - a.solvedAt.getTime());
                 setSolvedProblems(solvedList);
+
+                // Fetch Followers
+                const { data: followersData } = await supabase
+                    .from('follows')
+                    .select('follower_id')
+                    .eq('following_id', currentUser.id);
+                
+                if (followersData && followersData.length > 0) {
+                    const followerIds = followersData.map((f: any) => f.follower_id);
+                    const { data: profiles } = await supabase
+                        .from('profiles')
+                        .select('id, username, full_name, avatar_url, bio')
+                        .in('id', followerIds);
+                    setFollowersList(profiles || []);
+                } else {
+                    setFollowersList([]);
+                }
+
+                // Fetch Following
+                const { data: followingData } = await supabase
+                    .from('follows')
+                    .select('following_id')
+                    .eq('follower_id', currentUser.id);
+                
+                if (followingData && followingData.length > 0) {
+                    const followingIds = followingData.map((f: any) => f.following_id);
+                    const { data: profiles } = await supabase
+                        .from('profiles')
+                        .select('id, username, full_name, avatar_url, bio')
+                        .in('id', followingIds);
+                    setFollowingList(profiles || []);
+                } else {
+                    setFollowingList([]);
+                }
 
             } catch (err) {
                 console.error("Error loading profile metrics:", err);
@@ -508,6 +547,38 @@ export default function YourProfilePage() {
     const mediumOffset = -easyLength;
     const hardOffset = -(easyLength + mediumLength);
 
+    const handleUnfollow = async (targetId: string) => {
+        if (!user) return;
+        try {
+            const { error } = await supabase
+                .from('follows')
+                .delete()
+                .eq('follower_id', user.id)
+                .eq('following_id', targetId);
+            if (!error) {
+                setFollowingList(prev => prev.filter(item => item.id !== targetId));
+            }
+        } catch (err) {
+            console.error("Error unfollowing user:", err);
+        }
+    };
+
+    const handleRemoveFollower = async (targetId: string) => {
+        if (!user) return;
+        try {
+            const { error } = await supabase
+                .from('follows')
+                .delete()
+                .eq('follower_id', targetId)
+                .eq('following_id', user.id);
+            if (!error) {
+                setFollowersList(prev => prev.filter(item => item.id !== targetId));
+            }
+        } catch (err) {
+            console.error("Error removing follower:", err);
+        }
+    };
+
     if (authLoading || (loading && !profile)) {
         return <ProfileSkeleton />;
     }
@@ -714,18 +785,26 @@ export default function YourProfilePage() {
                                     {profile.bio || "No profile biography written yet. Click account controls to add your bio and tech stack summary."}
                                 </p>
 
-                                <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
-                                    {profile.country && (
-                                        <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
-                                            <Globe size={12} className="text-indigo-400" />
-                                            <span>{profile.country}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
-                                        <Calendar size={12} className="text-indigo-400" />
-                                        <span>Member since {format(new Date(profile.created_at), 'MMMM yyyy')}</span>
-                                    </div>
-                                </div>
+                                 <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
+                                     {profile.country && (
+                                         <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
+                                             <Globe size={12} className="text-indigo-400" />
+                                             <span>{profile.country}</span>
+                                         </div>
+                                     )}
+                                     <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
+                                         <Calendar size={12} className="text-indigo-400" />
+                                         <span>Member since {format(new Date(profile.created_at), 'MMMM yyyy')}</span>
+                                     </div>
+                                     <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
+                                         <span className="font-bold text-slate-900 dark:text-white">{followingList.length}</span>
+                                         <span className="text-slate-500">Following</span>
+                                     </div>
+                                     <div className="flex items-center gap-2 text-xs px-3 py-1 rounded-full border bg-slate-100/50 border-slate-200 text-slate-600 dark:bg-slate-800/40 dark:border-slate-800 dark:text-slate-400">
+                                         <span className="font-bold text-slate-900 dark:text-white">{followersList.length}</span>
+                                         <span className="text-slate-500">Followers</span>
+                                     </div>
+                                 </div>
                             </div>
                         </div>
 
@@ -1172,6 +1251,125 @@ export default function YourProfilePage() {
                         </div>
                     </motion.div>
                 </div>
+
+                {/* Social Network Management Panel */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    className="border rounded-3xl p-6 glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 shadow-sm"
+                >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2">
+                            <Users className="text-indigo-400" size={18} />
+                            <h2 className="text-lg font-black text-slate-900 dark:text-white">Social Connections</h2>
+                        </div>
+                        <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/60 p-1 rounded-xl self-start sm:self-auto">
+                            <button
+                                onClick={() => setSocialTab("following")}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                    socialTab === "following"
+                                        ? "bg-white text-indigo-650 shadow-xs dark:bg-slate-900 dark:text-indigo-400"
+                                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                                }`}
+                            >
+                                Following ({followingList.length})
+                            </button>
+                            <button
+                                onClick={() => setSocialTab("followers")}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                    socialTab === "followers"
+                                        ? "bg-white text-indigo-650 shadow-xs dark:bg-slate-900 dark:text-indigo-400"
+                                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                                }`}
+                            >
+                                Followers ({followersList.length})
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                        {socialTab === "following" ? (
+                            followingList.length > 0 ? (
+                                followingList.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="p-4 rounded-2xl border flex items-center justify-between bg-slate-50 border-slate-200 dark:bg-slate-800/20 dark:border-slate-800/60 transition-all hover:bg-white dark:hover:bg-slate-800/30"
+                                    >
+                                        <Link href={`/user/${item.id}`} className="flex items-center gap-3 min-w-0">
+                                            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
+                                                {item.avatar_url ? (
+                                                    <Image 
+                                                        src={item.avatar_url} 
+                                                        alt={item.full_name} 
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    getInitials(item.full_name)
+                                                )}
+                                            </div>
+                                            <div className="truncate">
+                                                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{item.full_name}</p>
+                                                <p className="text-[10px] text-slate-400 truncate">@{item.username}</p>
+                                            </div>
+                                        </Link>
+                                        <button
+                                            onClick={() => handleUnfollow(item.id)}
+                                            className="px-3 py-1.5 rounded-xl text-[10px] font-bold border border-rose-500/20 bg-rose-500/5 text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer"
+                                        >
+                                            <UserMinus size={12} />
+                                            Unfollow
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-span-full text-center py-10 text-slate-400 text-xs">
+                                    You are not following anyone yet.
+                                </div>
+                            )
+                        ) : (
+                            followersList.length > 0 ? (
+                                followersList.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="p-4 rounded-2xl border flex items-center justify-between bg-slate-50 border-slate-200 dark:bg-slate-800/20 dark:border-slate-800/60 transition-all hover:bg-white dark:hover:bg-slate-800/30"
+                                    >
+                                        <Link href={`/user/${item.id}`} className="flex items-center gap-3 min-w-0">
+                                            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
+                                                {item.avatar_url ? (
+                                                    <Image 
+                                                        src={item.avatar_url} 
+                                                        alt={item.full_name} 
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                ) : (
+                                                    getInitials(item.full_name)
+                                                )}
+                                            </div>
+                                            <div className="truncate">
+                                                <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{item.full_name}</p>
+                                                <p className="text-[10px] text-slate-400 truncate">@{item.username}</p>
+                                            </div>
+                                        </Link>
+                                        <button
+                                            onClick={() => handleRemoveFollower(item.id)}
+                                            className="px-3 py-1.5 rounded-xl text-[10px] font-bold border border-rose-500/20 bg-rose-500/5 text-rose-500 hover:bg-rose-500/10 transition-colors shrink-0 flex items-center gap-1 active:scale-95 cursor-pointer"
+                                        >
+                                            <UserMinus size={12} />
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="col-span-full text-center py-10 text-slate-400 text-xs">
+                                    No one is following you yet.
+                                </div>
+                            )
+                        )}
+                    </div>
+                </motion.div>
             </div>
 
             {/* Submissions & Code View Modals */}
