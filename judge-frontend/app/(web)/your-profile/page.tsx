@@ -33,7 +33,8 @@ import {
     LogOut,
     HelpCircle,
     Zap,
-    Terminal
+    Terminal,
+    Swords
 } from 'lucide-react';
 import { supabase } from '../../lib/api/supabase/client';
 import { useAuth } from '../../lib/auth/auth-context';
@@ -396,6 +397,14 @@ export default function YourProfilePage() {
 
         fetchData();
     }, [user, authLoading]);
+
+    // --- Win/Lose Ratio Calculations ---
+    const wlStats = useMemo(() => {
+        const wins = duelsHistory.filter(d => d.result === 'victory').length;
+        const losses = duelsHistory.filter(d => d.result === 'defeat').length;
+        const ratio = losses === 0 ? (wins > 0 ? `${wins}.00` : '0.00') : (wins / losses).toFixed(2);
+        return { wins, losses, ratio };
+    }, [duelsHistory]);
 
     // --- Contribution Grid Calculations ---
     const submissionCountsByDate = useMemo(() => {
@@ -910,7 +919,7 @@ export default function YourProfilePage() {
                 </motion.div>
 
                 {/* Telemetry Dashboard Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                     <StatTelemetryCard
                         icon={<Target className="text-emerald-400" />}
                         label="Problems Solved"
@@ -938,6 +947,13 @@ export default function YourProfilePage() {
                         value={`${stats?.accuracy?.toFixed(1) || '0.0'}%`}
                         subLabel="Based on first attempts"
                         delay={0.4}
+                    />
+                    <StatTelemetryCard
+                        icon={<Swords className="text-rose-455 dark:text-rose-400" />}
+                        label="W/L Ratio"
+                        value={wlStats.ratio}
+                        subLabel={`${wlStats.wins}W - ${wlStats.losses}L Record`}
+                        delay={0.5}
                     />
                 </div>
 
@@ -1567,30 +1583,92 @@ export default function YourProfilePage() {
     );
 }
 
+function getTelemetryColorClasses(label: string) {
+    const l = label.toLowerCase();
+    if (l.includes('solved')) {
+        return {
+            text: 'text-emerald-555 dark:text-emerald-400',
+            bg: 'bg-emerald-500/10 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400',
+            border: 'bg-emerald-500 dark:bg-emerald-400',
+            glow: 'bg-emerald-500/10 dark:bg-emerald-500/5',
+            bgLarge: 'text-emerald-500/5 dark:text-emerald-500/10'
+        };
+    } else if (l.includes('prestige') || l.includes('score')) {
+        return {
+            text: 'text-amber-555 dark:text-amber-400',
+            bg: 'bg-amber-500/10 dark:bg-amber-500/10 text-amber-500 dark:text-amber-400',
+            border: 'bg-amber-500 dark:bg-amber-400',
+            glow: 'bg-amber-500/10 dark:bg-amber-500/5',
+            bgLarge: 'text-amber-500/5 dark:text-amber-500/10'
+        };
+    } else if (l.includes('ranking') || l.includes('global') || l.includes('rank')) {
+        return {
+            text: 'text-indigo-555 dark:text-indigo-400',
+            bg: 'bg-indigo-500/10 dark:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400',
+            border: 'bg-indigo-500 dark:bg-indigo-400',
+            glow: 'bg-indigo-500/10 dark:bg-indigo-500/5',
+            bgLarge: 'text-indigo-500/5 dark:text-indigo-500/10'
+        };
+    } else if (l.includes('accuracy') || l.includes('rate')) {
+        return {
+            text: 'text-orange-555 dark:text-orange-400',
+            bg: 'bg-orange-500/10 dark:bg-orange-500/10 text-orange-500 dark:text-orange-400',
+            border: 'bg-orange-500 dark:bg-orange-400',
+            glow: 'bg-orange-500/10 dark:bg-orange-500/5',
+            bgLarge: 'text-orange-500/5 dark:text-orange-500/10'
+        };
+    } else { // W/L Ratio / default
+        return {
+            text: 'text-rose-555 dark:text-rose-400',
+            bg: 'bg-rose-500/10 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400',
+            border: 'bg-rose-500 dark:bg-rose-400',
+            glow: 'bg-rose-500/10 dark:bg-rose-500/5',
+            bgLarge: 'text-rose-500/5 dark:text-rose-500/10'
+        };
+    }
+}
+
 /* Helper Telemetry Stat Card with entrance transition */
 function StatTelemetryCard({ icon, label, value, subLabel, delay }: any) {
+    const theme = getTelemetryColorClasses(label);
+    
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
-            whileHover={{ y: -4 }}
-            className="border p-5 rounded-3xl glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group"
+            className="border p-6 rounded-3xl glass-morphism bg-white/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/80 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[140px]"
         >
-            <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 rounded-xl transition-colors bg-slate-100 dark:bg-slate-800 group-hover:bg-indigo-500/10 group-hover:text-indigo-400 shrink-0">
-                    {icon}
+            {/* Absolute positioned large background icon for rich aesthetic */}
+            <div className={`absolute -right-4 -bottom-4 ${theme.bgLarge} w-24 h-24 opacity-[0.08] dark:opacity-[0.15] pointer-events-none flex items-center justify-center`}>
+                {React.cloneElement(icon, { size: 96, className: "stroke-[1]" })}
+            </div>
+
+            {/* Glowing top-right background accent */}
+            <div className={`absolute top-0 right-0 w-24 h-24 ${theme.glow} rounded-full blur-2xl pointer-events-none`} />
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-2xl ${theme.bg} shadow-2xs`}>
+                        {icon}
+                    </div>
+                    <span className="text-[10px] font-black tracking-wider uppercase text-slate-555 dark:text-slate-455">
+                        {label}
+                    </span>
                 </div>
-                <span className="text-[10px] font-black tracking-wider uppercase text-slate-500 group-hover:text-indigo-400 transition-colors">
-                    {label}
-                </span>
+
+                <div className="space-y-1">
+                    <div className="text-3.5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                        {value}
+                    </div>
+                    <p className="text-[10.5px] text-slate-455 dark:text-slate-450 font-bold">
+                        {subLabel}
+                    </p>
+                </div>
             </div>
-            <div className="text-3xl font-black tracking-tight text-slate-900 dark:text-white tabular-nums">
-                {value}
-            </div>
-            <p className="text-[10px] text-slate-400 mt-1 font-bold">
-                {subLabel}
-            </p>
+            
+            {/* Left Accent indicator line (always visible for beautiful static design) */}
+            <div className={`absolute left-0 top-1/4 bottom-1/4 w-1 rounded-r-full ${theme.border}`} />
         </motion.div>
     );
 }

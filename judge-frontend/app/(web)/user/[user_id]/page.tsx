@@ -15,7 +15,8 @@ import {
     ChevronRight,
     CheckCircle2,
     Clock,
-    ExternalLink
+    ExternalLink,
+    Swords
 } from 'lucide-react';
 import { supabase } from '../../../lib/api/supabase/client';
 import { useAuth } from '../../../lib/auth/auth-context';
@@ -86,6 +87,7 @@ export default function UserPage({ params }: PageProps) {
     const [allSubmissions, setAllSubmissions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [rank, setRank] = useState<number | string>('N/A');
+    const [wlStats, setWlStats] = useState({ wins: 0, losses: 0 });
 
     // Follow states
     const [followerCount, setFollowerCount] = useState(0);
@@ -266,6 +268,17 @@ export default function UserPage({ params }: PageProps) {
                     setIsFollowing(!!followRecord);
                 }
 
+                // Fetch completed coding duels to calculate W/L ratio
+                const { data: duelResultsData } = await supabase
+                    .from('duel_participant_results')
+                    .select('result')
+                    .eq('user_id', resolvedUserId);
+
+                const duels = duelResultsData || [];
+                const wins = duels.filter((d: any) => d.result === 'victory').length;
+                const losses = duels.filter((d: any) => d.result === 'defeat').length;
+                setWlStats({ wins, losses });
+
             } catch (error) {
                 console.error('Error fetching user data:', error);
             } finally {
@@ -433,10 +446,8 @@ export default function UserPage({ params }: PageProps) {
                             </div>
                         </div>
                     </div>
-                </motion.div>
-
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                </motion.div>                 {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     <StatCard
                         icon={<Target className="text-emerald-400" />}
                         label="Total Solved"
@@ -464,6 +475,13 @@ export default function UserPage({ params }: PageProps) {
                         value={rank}
                         color="indigo"
                         delay={0.4}
+                    />
+                    <StatCard
+                        icon={<Swords className="text-rose-455 dark:text-rose-400" />}
+                        label="W/L Ratio"
+                        value={wlStats.losses === 0 ? (wlStats.wins > 0 ? `${wlStats.wins}.00` : '0.00') : (wlStats.wins / wlStats.losses).toFixed(2)}
+                        color="red"
+                        delay={0.5}
                     />
                 </div>
 
@@ -560,24 +578,111 @@ export default function UserPage({ params }: PageProps) {
     );
 }
 
+function getColorClasses(color: string) {
+    switch (color?.toLowerCase()) {
+        case 'emerald':
+            return {
+                text: 'text-emerald-555 dark:text-emerald-400',
+                bg: 'bg-emerald-500/10 dark:bg-emerald-500/10 text-emerald-500 dark:text-emerald-400',
+                border: 'bg-emerald-500 dark:bg-emerald-400',
+                glow: 'bg-emerald-500/10 dark:bg-emerald-500/5',
+                bgLarge: 'text-emerald-500/5 dark:text-emerald-500/10'
+            };
+        case 'amber':
+            return {
+                text: 'text-amber-555 dark:text-amber-400',
+                bg: 'bg-amber-500/10 dark:bg-amber-500/10 text-amber-500 dark:text-amber-400',
+                border: 'bg-amber-500 dark:bg-amber-400',
+                glow: 'bg-amber-500/10 dark:bg-amber-500/5',
+                bgLarge: 'text-amber-500/5 dark:text-amber-500/10'
+            };
+        case 'orange':
+            return {
+                text: 'text-orange-555 dark:text-orange-400',
+                bg: 'bg-orange-500/10 dark:bg-orange-500/10 text-orange-500 dark:text-orange-400',
+                border: 'bg-orange-500 dark:bg-orange-400',
+                glow: 'bg-orange-500/10 dark:bg-orange-500/5',
+                bgLarge: 'text-orange-500/5 dark:text-orange-500/10'
+            };
+        case 'indigo':
+            return {
+                text: 'text-indigo-555 dark:text-indigo-400',
+                bg: 'bg-indigo-500/10 dark:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400',
+                border: 'bg-indigo-500 dark:bg-indigo-400',
+                glow: 'bg-indigo-500/10 dark:bg-indigo-500/5',
+                bgLarge: 'text-indigo-500/5 dark:text-indigo-500/10'
+            };
+        case 'red':
+        case 'rose':
+            return {
+                text: 'text-rose-555 dark:text-rose-400',
+                bg: 'bg-rose-500/10 dark:bg-rose-500/10 text-rose-500 dark:text-rose-400',
+                border: 'bg-rose-500 dark:bg-rose-400',
+                glow: 'bg-rose-500/10 dark:bg-rose-500/5',
+                bgLarge: 'text-rose-500/5 dark:text-rose-500/10'
+            };
+        default:
+            return {
+                text: 'text-slate-555 dark:text-slate-400',
+                bg: 'bg-slate-500/10 dark:bg-slate-500/10 text-slate-500 dark:text-slate-400',
+                border: 'bg-slate-500 dark:bg-slate-400',
+                glow: 'bg-slate-500/10 dark:bg-slate-500/5',
+                bgLarge: 'text-slate-500/5 dark:text-slate-500/10'
+            };
+    }
+}
+
 function StatCard({ icon, label, value, color, delay }: any) {
+    const theme = getColorClasses(color);
+    
+    // Custom sublabel helper to add depth to stats
+    const getSublabel = (lbl: string) => {
+        const lower = lbl.toLowerCase();
+        if (lower.includes('solved')) return 'Completed challenges';
+        if (lower.includes('accuracy')) return 'First attempt success';
+        if (lower.includes('submissions')) return 'Total code compiles';
+        if (lower.includes('rank')) return 'Global standing';
+        if (lower.includes('ratio')) return 'Arena duel standing';
+        return 'Vlyxir aggregate stat';
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay }}
-            whileHover={{ y: -5 }}
-            className="border p-6 rounded-3xl glass-morphism group bg-white/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none"
+            className="border p-6 rounded-3xl glass-morphism bg-white/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800/80 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[140px]"
         >
-            <div className="flex items-center gap-4 mb-2">
-                <div className="p-2 rounded-xl transition-colors bg-slate-100 dark:bg-slate-800 group-hover:bg-white dark:group-hover:bg-slate-700">
-                    {icon}
-                </div>
-                <span className="text-sm font-medium transition-colors uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300">
-                    {label}
-                </span>
+            {/* Absolute positioned large background icon for rich aesthetic */}
+            <div className={`absolute -right-4 -bottom-4 ${theme.bgLarge} w-24 h-24 opacity-[0.08] dark:opacity-[0.15] pointer-events-none flex items-center justify-center`}>
+                {React.cloneElement(icon, { size: 96, className: "stroke-[1]" })}
             </div>
-            <div className="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">{value}</div>
+
+            {/* Glowing top-right background accent */}
+            <div className={`absolute top-0 right-0 w-24 h-24 ${theme.glow} rounded-full blur-2xl pointer-events-none`} />
+
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className={`p-2.5 rounded-2xl ${theme.bg} shadow-2xs`}>
+                        {icon}
+                    </div>
+                    <span className="text-[10px] font-black tracking-wider uppercase text-slate-555 dark:text-slate-455">
+                        {label}
+                    </span>
+                </div>
+
+                <div className="space-y-1">
+                    <div className="text-3.5xl font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                        {value}
+                    </div>
+                    <p className="text-[10.5px] text-slate-455 dark:text-slate-450 font-bold">
+                        {getSublabel(label)}
+                    </p>
+                </div>
+            </div>
+            
+            {/* Left Accent indicator line (always visible for beautiful static design) */}
+            <div className={`absolute left-0 top-1/4 bottom-1/4 w-1 rounded-r-full ${theme.border}`} />
         </motion.div>
     );
 }
