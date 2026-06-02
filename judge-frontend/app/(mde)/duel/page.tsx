@@ -27,6 +27,7 @@ import { useAppContext } from "../../lib/auth/context";
 import { getProblems, getProblemById, submitCode } from "../../lib/api/api";
 import { Problem } from "../../lib/types/types";
 import CodeEditor from "../../../components/Editor/CodeEditor";
+import Image from "next/image";
 
 // Emote reactions that players can trigger during duels
 const DUEL_EMOTES = ["🔥", "😎", "😮", "🤔", "👑", "🎯", "💀", "👏"];
@@ -52,8 +53,13 @@ function DuelArenaContent() {
     // Challenge target from URL query (?challenge=userId)
     const challengeTargetId = searchParams.get("challenge");
 
-    // UI States: "lobby" | "searching" | "battle" | "results"
-    const [uiState, setUiState] = useState<"lobby" | "searching" | "battle" | "results">("lobby");
+    // UI States: "lobby" | "searching" | "versus" | "battle" | "results"
+    const [uiState, setUiState] = useState<"lobby" | "searching" | "versus" | "battle" | "results">("lobby");
+
+    // Player vs Player Showcase States
+    const [userVersusStats, setUserVersusStats] = useState<{ wins: number; losses: number; avatarUrl?: string; username: string; fullName: string } | null>(null);
+    const [opponentVersusStats, setOpponentVersusStats] = useState<{ wins: number; losses: number; avatarUrl?: string; username: string; fullName: string } | null>(null);
+    const [versusCountdown, setVersusCountdown] = useState<number>(5);
 
     // Matchmaking / Lobby states
     const [challengeTargetProfile, setChallengeTargetProfile] = useState<any | null>(null);
@@ -555,6 +561,26 @@ function DuelArenaContent() {
         };
     }, [uiState, challengeTargetId, user?.id, allProblems]);
 
+    // Countdown effect for the versus screen showcase
+    useEffect(() => {
+        if (uiState !== "versus") return;
+
+        setVersusCountdown(5);
+
+        const interval = setInterval(() => {
+            setVersusCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(interval);
+                    setUiState("battle");
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [uiState]);
+
     // Handle Direct Challenge action (Inviter side)
     const handleSendChallenge = async () => {
         if (!lobbyChannelRef.current || !user || !challengeTargetProfile) return;
@@ -649,11 +675,60 @@ function DuelArenaContent() {
         const isHost = user && user.id > opponentProfile.id;
         isHostRef.current = !!isHost;
         setOpponent(opponentProfile);
-        setUiState("battle");
+        setUiState("versus");
+        setVersusCountdown(5);
         setGameActive(true);
         setCode("# Enter your solution in Python here\n\n");
         setSubmitResult(null);
         setTestResults([]);
+
+        // Fetch profiles and stats for PVP showcase
+        if (user && opponentProfile.id) {
+            setUserVersusStats({
+                wins: 0,
+                losses: 0,
+                username: user.user_metadata?.username || user.email?.split("@")[0] || "You",
+                fullName: user.user_metadata?.full_name || "Guest Coder",
+                avatarUrl: user.user_metadata?.avatar_url
+            });
+            setOpponentVersusStats({
+                wins: 0,
+                losses: 0,
+                username: opponentProfile.username || "Opponent",
+                fullName: opponentProfile.full_name || "Opponent",
+                avatarUrl: opponentProfile.avatar_url
+            });
+
+            Promise.all([
+                supabase.from('profiles').select('avatar_url, username, full_name').eq('id', user.id).maybeSingle(),
+                supabase.from('profiles').select('avatar_url, username, full_name').eq('id', opponentProfile.id).maybeSingle(),
+                supabase.from('duel_participant_results').select('result').eq('user_id', user.id),
+                supabase.from('duel_participant_results').select('result').eq('user_id', opponentProfile.id)
+            ]).then(([userProf, oppProf, userDuels, oppDuels]) => {
+                const uWins = (userDuels.data || []).filter((d: any) => d.result === 'victory').length;
+                const uLosses = (userDuels.data || []).filter((d: any) => d.result === 'defeat').length;
+                const oWins = (oppDuels.data || []).filter((d: any) => d.result === 'victory').length;
+                const oLosses = (oppDuels.data || []).filter((d: any) => d.result === 'defeat').length;
+
+                setUserVersusStats({
+                    wins: uWins,
+                    losses: uLosses,
+                    username: userProf.data?.username || user.user_metadata?.username || user.email?.split("@")[0] || "You",
+                    fullName: userProf.data?.full_name || user.user_metadata?.full_name || "Guest Coder",
+                    avatarUrl: userProf.data?.avatar_url
+                });
+
+                setOpponentVersusStats({
+                    wins: oWins,
+                    losses: oLosses,
+                    username: oppProf.data?.username || opponentProfile.username || "Opponent",
+                    fullName: oppProf.data?.full_name || opponentProfile.full_name || "Opponent",
+                    avatarUrl: oppProf.data?.avatar_url
+                });
+            }).catch(err => {
+                console.error("Error fetching versus screen profiles/stats:", err);
+            });
+        }
 
         // Unsubscribe from previous session channel to prevent memory leaks and duplicate listeners
         if (sessionChannelRef.current) {
@@ -1384,6 +1459,159 @@ function DuelArenaContent() {
                     </div>
                 )}
 
+                {/* 2.5. PVP VERSUS SHOWCASE STATE */}
+                {uiState === "versus" && (
+                    <div className="flex-1 flex flex-col items-center justify-center relative w-full overflow-hidden min-h-0 py-8 px-4">
+                        {/* Glowing radial backdrop for high visual aesthetic */}
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15),transparent_60%)] pointer-events-none" />
+                        
+                        <div className="relative w-full max-w-4xl flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0 z-10">
+                            
+                            {/* Player 1 (You) */}
+                            <motion.div 
+                                initial={{ opacity: 0, x: -100 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                className={`w-full lg:w-[42%] p-8 rounded-4xl border backdrop-blur-2xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center ${
+                                    isDark ? "border-slate-800 bg-slate-900/60" : "border-slate-200 bg-white/60"
+                                }`}
+                            >
+                                <div className="absolute top-0 left-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+                                <div className="absolute left-0 top-1/4 bottom-1/4 w-1.5 rounded-r-full bg-indigo-500" />
+                                
+                                <div className="h-28 w-28 rounded-3xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-black text-white shadow-xl shadow-indigo-500/20 overflow-hidden relative mb-5">
+                                    {userVersusStats?.avatarUrl ? (
+                                        <Image 
+                                            src={userVersusStats.avatarUrl} 
+                                            alt={userVersusStats.fullName} 
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        (userVersusStats?.fullName?.[0] || "?").toUpperCase()
+                                    )}
+                                </div>
+                                <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                                    {userVersusStats?.fullName || "You"}
+                                </h3>
+                                <p className="text-sm text-indigo-400 font-bold mb-6">
+                                    @{userVersusStats?.username || "player"}
+                                </p>
+                                
+                                <div className="grid grid-cols-3 gap-3 w-full border-t border-slate-200/50 dark:border-slate-800 pt-6">
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">Wins</p>
+                                        <p className="text-xl font-black text-emerald-500 mt-1">{userVersusStats?.wins ?? 0}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">Losses</p>
+                                        <p className="text-xl font-black text-rose-500 mt-1">{userVersusStats?.losses ?? 0}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">W/L Ratio</p>
+                                        <p className="text-xl font-black text-indigo-400 mt-1">
+                                            {userVersusStats ? (userVersusStats.losses === 0 ? (userVersusStats.wins > 0 ? `${userVersusStats.wins}.00` : '0.00') : (userVersusStats.wins / userVersusStats.losses).toFixed(2)) : "0.00"}
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Versus Counter Node in Center */}
+                            <div className="relative flex flex-col items-center justify-center shrink-0 w-24 h-24 lg:w-32 lg:h-32">
+                                <motion.div 
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+                                    className="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-600 rounded-full blur-xl opacity-30 animate-pulse"
+                                />
+                                <motion.div
+                                    initial={{ rotate: -180, scale: 0 }}
+                                    animate={{ rotate: 0, scale: 1 }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                    className="relative w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-slate-900 border-2 border-indigo-500 flex flex-col items-center justify-center text-center shadow-2xl z-20"
+                                >
+                                    <div className="absolute inset-0 rounded-full border border-dashed border-indigo-500/40 animate-spin" style={{ animationDuration: '8s' }} />
+                                    <motion.div 
+                                        key={versusCountdown}
+                                        initial={{ scale: 1.5, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ duration: 0.4 }}
+                                        className="text-3xl lg:text-5xl font-black font-mono text-white leading-none"
+                                    >
+                                        {versusCountdown}
+                                    </motion.div>
+                                    <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-indigo-400 mt-1">VS</span>
+                                </motion.div>
+                            </div>
+
+                            {/* Player 2 (Opponent) */}
+                            <motion.div 
+                                initial={{ opacity: 0, x: 100 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                className={`w-full lg:w-[42%] p-8 rounded-4xl border backdrop-blur-2xl text-center shadow-2xl relative overflow-hidden flex flex-col items-center ${
+                                    isDark ? "border-slate-800 bg-slate-900/60" : "border-slate-200 bg-white/60"
+                                }`}
+                            >
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                                <div className="absolute right-0 top-1/4 bottom-1/4 w-1.5 rounded-l-full bg-purple-500" />
+                                
+                                <div className="h-28 w-28 rounded-3xl bg-linear-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-3xl font-black text-white shadow-xl shadow-purple-500/20 overflow-hidden relative mb-5">
+                                    {opponentVersusStats?.avatarUrl ? (
+                                        <Image 
+                                            src={opponentVersusStats.avatarUrl} 
+                                            alt={opponentVersusStats.fullName} 
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        (opponentVersusStats?.fullName?.[0] || "?").toUpperCase()
+                                    )}
+                                </div>
+                                <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                                    {opponentVersusStats?.fullName || "Opponent"}
+                                </h3>
+                                <p className="text-sm text-purple-400 font-bold mb-6">
+                                    @{opponentVersusStats?.username || "opponent"}
+                                </p>
+                                
+                                <div className="grid grid-cols-3 gap-3 w-full border-t border-slate-200/50 dark:border-slate-800 pt-6">
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">Wins</p>
+                                        <p className="text-xl font-black text-emerald-500 mt-1">{opponentVersusStats?.wins ?? 0}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">Losses</p>
+                                        <p className="text-xl font-black text-rose-500 mt-1">{opponentVersusStats?.losses ?? 0}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] uppercase font-black tracking-wider text-slate-455">W/L Ratio</p>
+                                        <p className="text-xl font-black text-purple-400 mt-1">
+                                            {opponentVersusStats ? (opponentVersusStats.losses === 0 ? (opponentVersusStats.wins > 0 ? `${opponentVersusStats.wins}.00` : '0.00') : (opponentVersusStats.wins / opponentVersusStats.losses).toFixed(2)) : "0.00"}
+                                        </p>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                        </div>
+
+                        {/* Title details at the bottom of versus screen */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="mt-12 text-center"
+                        >
+                            <h4 className="text-sm font-black uppercase tracking-widest text-indigo-400 flex items-center justify-center gap-2 mb-2">
+                                <Swords className="w-4 h-4 animate-bounce" /> 1v1 SPEED DUEL INITIATED <Swords className="w-4 h-4 animate-bounce" />
+                            </h4>
+                            <p className="text-xs text-slate-455 font-semibold">
+                                Prepare your index fingers. Solve the Python challenge fast to claim absolute victory!
+                            </p>
+                        </motion.div>
+                    </div>
+                )}
+
                 {/* 3. ACTIVE BATTLE STATE */}
                 {uiState === "battle" && (
                     <div className="flex-1 flex flex-col min-h-0 w-full">
@@ -1688,29 +1916,32 @@ function DuelArenaContent() {
                                     <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                                         {testResults.length > 0 ? (
                                             <div className="space-y-2">
-                                                {testResults.map((tc, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className={`p-3 rounded-2xl border text-[10px] font-mono flex items-center justify-between ${tc.status === "Success"
-                                                                ? isDark
-                                                                    ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400"
-                                                                    : "bg-emerald-50 border-emerald-100 text-emerald-600"
-                                                                : isDark
-                                                                    ? "bg-rose-500/5 border-rose-500/10 text-rose-400"
-                                                                    : "bg-rose-50 border-rose-100 text-rose-600"
-                                                            }`}
-                                                    >
-                                                        <div className="flex items-center gap-2">
-                                                            {tc.status === "Success" ? (
-                                                                <CheckCircle2 size={12} />
-                                                            ) : (
-                                                                <XCircle size={12} />
-                                                            )}
-                                                            <span>Case #{tc.test_case}</span>
+                                                {testResults.map((tc, idx) => {
+                                                    const isAccepted = tc.status === "Success" || tc.status === "Accepted";
+                                                    return (
+                                                        <div
+                                                            key={idx}
+                                                            className={`p-3 rounded-2xl border text-[10px] font-mono flex items-center justify-between ${isAccepted
+                                                                    ? isDark
+                                                                        ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-400"
+                                                                        : "bg-emerald-50 border-emerald-100 text-emerald-600"
+                                                                    : isDark
+                                                                        ? "bg-rose-500/5 border-rose-500/10 text-rose-400"
+                                                                        : "bg-rose-50 border-rose-100 text-rose-600"
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                {isAccepted ? (
+                                                                    <CheckCircle2 size={12} className="text-emerald-450 dark:text-emerald-400" />
+                                                                ) : (
+                                                                    <XCircle size={12} className="text-rose-450 dark:text-rose-400" />
+                                                                )}
+                                                                <span>Case #{tc.test_case}</span>
+                                                            </div>
+                                                            <span className="font-bold">{tc.status}</span>
                                                         </div>
-                                                        <span className="font-bold">{tc.status}</span>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         ) : (
                                             <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
@@ -1841,11 +2072,11 @@ function DuelArenaContent() {
                 )}
                 {/* 5. QUESTION SELECTION MODAL FOR QUESTION CHANGE APPEAL */}
                 {showChangeModal && (
-                    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-[#07080E]/75 backdrop-blur-md h-screen w-screen left-0 top-0">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#07080E]/75 backdrop-blur-md">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className={`w-full max-w-lg p-6 rounded-4xl border shadow-2xl flex flex-col max-h-[80vh] backdrop-blur-2xl ${isDark ? "border-slate-800 bg-[#0F101A]" : "border-slate-200 bg-white"}`}
+                            className={`w-full max-w-lg p-6 rounded-4xl border shadow-2xl flex flex-col max-h-[70vh] backdrop-blur-2xl ${isDark ? "border-slate-800 bg-[#0F101A]" : "border-slate-200 bg-white"}`}
                         >
                             <div className="flex justify-between items-center pb-4 border-b border-slate-200/50 dark:border-slate-800 shrink-0">
                                 <div>
@@ -1913,7 +2144,7 @@ function DuelArenaContent() {
                 )}
             {/* Custom Designed Alert / Notification Modal */}
             {customAlert && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs h-screen w-screen left-0 top-0">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
