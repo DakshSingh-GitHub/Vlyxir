@@ -35,7 +35,8 @@ const TIERS = [
             "Problems on Arena",
             "Public Forums Access",
             "Vlyxir Forge",
-            "Community Support"
+            "Community Support",
+            "1v1 Duel"
         ],
         icon: Terminal,
         color: "text-slate-400 dark:text-slate-350",
@@ -54,6 +55,7 @@ const TIERS = [
             "Private Leaderboard",
             "Early Access Features",
             "Early Access to new UIs",
+            "1v1 Duel"
         ],
         icon: Zap,
         color: "text-blue-500 dark:text-blue-400",
@@ -75,6 +77,8 @@ const TIERS = [
             "Code Complexity Analysis",
             "Early Access Features",
             "Early Access to new UIs",
+            "Multi-file access",
+            "1v1 Duel"
         ],
         icon: BrainCircuit,
         color: "text-indigo-500 dark:text-indigo-400",
@@ -99,7 +103,8 @@ const TIERS = [
             "Early Access Features",
             "Improvement Roadmap",
             "Recommended Reference Code",
-            "Priority Support"
+            "Priority Support",
+            "1v1 Duel"
         ],
         icon: Crown,
         color: "text-amber-500 dark:text-amber-400",
@@ -117,9 +122,11 @@ const COMPARISON_FEATURES = [
     { name: "Forge Submissions / day", free: "10", tier1: "25", tier2: "40", tier3: "100" },
     { name: "Public Forums Access", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Community Support", free: true, tier1: true, tier2: true, tier3: true },
+    { name: "1v1 Duel", free:true, tier1:true, tier2:true, tier3:true },
     { name: "Private Leaderboard", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access to new UIs", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access Features", free: false, tier1: true, tier2: true, tier3: true },
+    { name: "Multi-File Access", free:false, tier1:false, tier2:true, tier3:true },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },
     { name: "AI Insights / day", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
     { name: "Complexity Analysis", free: false, tier1: false, tier2: true, tier3: true },
