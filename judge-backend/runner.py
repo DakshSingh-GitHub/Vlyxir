@@ -181,6 +181,150 @@ builtins.input = custom_input
         if os.path.exists(filename):
             os.remove(filename)
 
+def run_code_multi(files: list, entrypoint: str, user_input: str, time_limit: int = TIME_LIMIT):
+    """Executes multi-file workspace code in isolation and returns stdout, stderr, status, and duration."""
+    import tempfile
+    
+    # Static analysis security checks on all files
+    for file_info in files:
+        path = file_info.get("path", "")
+        content = file_info.get("content", "")
+        if path.endswith(".py"):
+            is_valid, warning = validate_code(content)
+            if not is_valid:
+                return {
+                    "stdout": "",
+                    "stderr": f"Security Error in {path}: {warning}",
+                    "status": "Security Violation",
+                    "duration": 0
+                }
+
+    start_t = time.time()
+    try:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            real_temp_dir = os.path.realpath(temp_dir)
+            
+            # Write all files to temp directory safely
+            for file_info in files:
+                path = file_info.get("path", "")
+                content = file_info.get("content", "")
+                
+                # Prevent directory traversal
+                target_path = os.path.realpath(os.path.join(real_temp_dir, path))
+                if not target_path.startswith(real_temp_dir):
+                    return {
+                        "stdout": "",
+                        "stderr": "Security Error: Directory traversal detected.",
+                        "status": "Security Violation",
+                        "duration": 0
+                    }
+                
+                # Create parent directories if they don't exist
+                os.makedirs(os.path.dirname(target_path), exist_ok=True)
+                
+                # Write file content
+                with open(target_path, "w", encoding="utf-8") as f:
+                    f.write(content)
+            
+            # Validate entrypoint exists
+            target_entrypoint = os.path.realpath(os.path.join(real_temp_dir, entrypoint))
+            if not target_entrypoint.startswith(real_temp_dir) or not os.path.exists(target_entrypoint):
+                return {
+                    "stdout": "",
+                    "stderr": f"Runtime Error: Entrypoint file '{entrypoint}' not found.",
+                    "status": "Runtime Error",
+                    "duration": 0
+                }
+            
+            # Write harness to run the entrypoint and override input()
+            harness = f"""
+import sys
+import builtins
+import importlib.util
+import os
+
+def custom_input(prompt=""):
+    if prompt:
+        sys.stdout.write(str(prompt))
+        sys.stdout.flush()
+    
+    # Read from original stdin
+    input_line = sys.stdin.readline()
+    
+    # Echo back to stdout
+    if input_line:
+        sys.stdout.write(input_line)
+        if not input_line.endswith('\\n'):
+            sys.stdout.write('\\n')
+        sys.stdout.flush()
+    
+    return input_line.rstrip('\\n')
+
+# Override the built-in input
+builtins.input = custom_input
+
+# Add workspace directory to sys.path
+sys.path.insert(0, os.getcwd())
+
+# Run the entrypoint
+spec = importlib.util.spec_from_file_location("__main__", {repr(target_entrypoint)})
+module = importlib.util.module_from_spec(spec)
+sys.modules["__main__"] = module
+spec.loader.exec_module(module)
+"""
+            harness_path = os.path.join(real_temp_dir, "__harness__.py")
+            with open(harness_path, "w", encoding="utf-8") as f:
+                f.write(harness)
+
+            cmd = ["python", "__harness__.py"]
+            
+            result = subprocess.run(
+                cmd,
+                input=user_input,
+                capture_output=True,
+                text=True,
+                timeout=time_limit,
+                cwd=real_temp_dir
+            )
+            
+            duration = time.time() - start_t
+            
+            if result.returncode != 0:
+                sanitized_stderr = result.stderr
+                if result.stderr and "File \"" in result.stderr:
+                    lines = result.stderr.strip().splitlines()
+                    if lines:
+                        sanitized_stderr = lines[-1]
+                return {
+                    "stdout": result.stdout,
+                    "stderr": sanitized_stderr,
+                    "status": "Runtime Error",
+                    "duration": duration
+                }
+                
+            return {
+                "stdout": result.stdout,
+                "stderr": None,
+                "status": "Success",
+                "duration": duration
+            }
+            
+    except subprocess.TimeoutExpired:
+        return {
+            "stdout": "",
+            "stderr": "Time Limit Exceeded",
+            "status": "Time Limit Exceeded",
+            "duration": time.time() - start_t
+        }
+    except Exception as e:
+        return {
+            "stdout": "",
+            "stderr": str(e),
+            "status": "Internal Error",
+            "duration": time.time() - start_t
+        }
+
+
 def normalize_output(output: str) -> str:
     lines = output.strip().splitlines()
     normalized_lines = [" ".join(line.split()) for line in lines]

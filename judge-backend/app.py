@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import jwt
-from runner import run_code_multiple, run_code_once
+from runner import run_code_multiple, run_code_once, run_code_multi
 
 app = FastAPI(title="Judge Backend", description="FastAPI migration of the Code Judge backend")
 
@@ -90,9 +90,16 @@ class SubmitRequest(BaseModel):
     code: str
     test_only: Optional[bool] = False
 
+class FileInfo(BaseModel):
+    path: str
+    content: str
+
 class RunRequest(BaseModel):
-    code: str
+    code: Optional[str] = None
+    files: Optional[List[FileInfo]] = None
+    entrypoint: Optional[str] = None
     input: Optional[str] = ""
+
 
 class RunResponse(BaseModel):
     stdout: str
@@ -300,13 +307,22 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
 
 @app.post("/run", response_model=RunResponse)
 def run_code_endpoint(request_data: RunRequest, user: dict = Depends(get_current_user)):
-    code = request_data.code
     user_input = request_data.input
 
+    if request_data.files and request_data.entrypoint:
+        files_dict = [{"path": f.path, "content": f.content} for f in request_data.files]
+        result = run_code_multi(
+            files=files_dict,
+            entrypoint=request_data.entrypoint,
+            user_input=user_input
+        )
+        return result
+
+    # Use run_code_once for direct execution
+    code = request_data.code
     if not code:
         raise HTTPException(status_code=400, detail="No code provided")
 
-    # Use run_code_once for direct execution
     result = run_code_once(
         code=code,
         user_input=user_input

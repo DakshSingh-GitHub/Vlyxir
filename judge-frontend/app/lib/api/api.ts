@@ -119,7 +119,11 @@ export async function submitCode(problemId: string, code: string, testOnly: bool
 	return res.json();
 }
 
-export async function runCode(code: string, input: string = "") {
+export async function runCode(
+	codeOrFiles: string | Array<{ path: string; content: string }>,
+	input: string = "",
+	entrypoint?: string
+) {
 	const { getSystemConfig } = await import("../utils/storage");
 	if (getSystemConfig().maintenanceMode) {
 		throw new Error("⚠️ System Maintenance: Execution is currently paused.");
@@ -129,16 +133,22 @@ export async function runCode(code: string, input: string = "") {
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
+	const bodyPayload: any = { input };
+	if (typeof codeOrFiles === "string") {
+		bodyPayload.code = codeOrFiles;
+	} else {
+		bodyPayload.files = codeOrFiles;
+		bodyPayload.entrypoint = entrypoint || "main.py";
+		bodyPayload.code = codeOrFiles.find(f => f.path === (entrypoint || "main.py"))?.content || "";
+	}
+
 	const res = await fetch(`${baseUrl}/run`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 			...(token ? { "Authorization": `Bearer ${token}` } : {})
 		},
-		body: JSON.stringify({
-			code: code,
-			input: input,
-		})
+		body: JSON.stringify(bodyPayload)
 	});
 
 	if (!res.ok) {

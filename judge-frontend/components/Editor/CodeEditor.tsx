@@ -15,6 +15,7 @@ interface CodeEditorProps {
     isDark?: boolean;
     language?: string;
     setLanguage?: (lang: string) => void;
+    flat?: boolean;
 }
 
 const CodeEditor = memo(function CodeEditor({
@@ -24,6 +25,7 @@ const CodeEditor = memo(function CodeEditor({
     isDark = false,
     language = "python",
     setLanguage,
+    flat = false,
 }: CodeEditorProps) {
     const [showMinimap, setShowMinimap] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
@@ -113,7 +115,10 @@ const CodeEditor = memo(function CodeEditor({
     return (
         <div
             ref={rootRef}
-            className={`h-full w-full rounded-xl overflow-hidden relative flex flex-col bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50 shadow-inner ${isDisabled ? "opacity-60 grayscale" : ""}`}
+            className={flat 
+                ? `h-full w-full relative flex flex-col bg-white dark:bg-gray-900 ${isDisabled ? "opacity-60 grayscale" : ""}`
+                : `h-full w-full rounded-xl overflow-hidden relative flex flex-col bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50 shadow-inner ${isDisabled ? "opacity-60 grayscale" : ""}`
+            }
         >
             {isDisabled && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-900 bg-opacity-50 cursor-not-allowed">
