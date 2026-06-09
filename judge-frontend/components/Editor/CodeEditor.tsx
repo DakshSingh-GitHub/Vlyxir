@@ -168,7 +168,9 @@ const CodeEditor = memo(function CodeEditor({
                 />
             </div>
             {!isDisabled && (
-                <Toolbar code={code} fontSize={editorFontSize} setFontSize={setEditorFontSize} language={language} setLanguage={setLanguage} />
+                <div data-tour="editor-toolbar">
+                    <Toolbar code={code} fontSize={editorFontSize} setFontSize={setEditorFontSize} language={language} setLanguage={setLanguage} />
+                </div>
             )}
         </div>
     );

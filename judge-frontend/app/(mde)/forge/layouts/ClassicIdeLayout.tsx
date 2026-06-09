@@ -50,7 +50,7 @@ export default function ClassicIdeLayout({
                         : "grid-template-columns 300ms cubic-bezier(0.4,0,0.2,1)"
                 }}
             >
-                <div data-layout-panel style={{ gridArea: "editor" }} className="min-h-0 min-w-0">
+                <div data-layout-panel style={{ gridArea: "editor" }} className="min-h-0 min-w-0" data-tour="code-editor">
                     {editorPanel}
                 </div>
 
@@ -61,9 +61,9 @@ export default function ClassicIdeLayout({
                 />
 
                 <div data-layout-panel style={{ gridArea: "tools" }} className="min-h-0 min-w-0 flex flex-col gap-4">
-                    <div className="shrink-0">{titlePanel}</div>
-                    <div className="h-48 shrink-0">{inputPanel}</div>
-                    <div className="flex-1 min-h-0">{outputPanel}</div>
+                    <div className="shrink-0" data-tour="problem-panel">{titlePanel}</div>
+                    <div className="h-48 shrink-0" data-tour="testing-panel">{inputPanel}</div>
+                    <div className="flex-1 min-h-0" data-tour="output-panel">{outputPanel}</div>
                 </div>
             </div>
         </div>

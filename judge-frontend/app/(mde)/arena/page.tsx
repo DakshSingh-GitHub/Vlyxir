@@ -12,6 +12,7 @@ import { FileText, Code, History, Check, X, PanelTop, List } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion";
 import { layoutOptions, UiGridLayout } from "./layoutOptions";
 import LoadingOverlay from "../../../components/General/LoadingOverlay";
+import TourGuide from "../../../components/General/TourGuide";
 
 import ClassicLayout from "./layouts/ClassicLayout";
 import StackedLayout from "./layouts/StackedLayout";
@@ -738,6 +739,7 @@ export default function Home() {
                 <LoadingOverlay />
             ) : (
                 <>
+                    <TourGuide tourKey="arena-tour" />
                     {isMobile ? (
                         <div
                             ref={containerRef}

@@ -17,6 +17,7 @@ import LoginPrompt from "../../../components/Auth/LoginPrompt";
 import { checkForgeLimit, recordForgeRun } from "../../lib/api/forge-limits";
 import LimitFlash from "../../../components/General/LimitFlash";
 import LoadingOverlay from "../../../components/General/LoadingOverlay";
+import TourGuide from "../../../components/General/TourGuide";
 
 const IDE_LAYOUT_STORAGE_KEY = "codeide_ui_grid_layout";
 
@@ -899,6 +900,7 @@ export default function CodeTestPage() {
                 <LoadingOverlay />
             ) : (
                 <>
+                    <TourGuide tourKey="forge-tour" />
                     <div className={`relative z-10 flex-1 flex flex-col p-4 md:p-6 lg:p-8 xl:p-10 ${isMobile && mobileTab === "output" ? "pb-20" : "pb-20"} md:pb-20 lg:pb-8 xl:pb-10 w-full min-h-0 h-full overflow-hidden`}>
                         <div className="lg:hidden flex flex-col gap-1 px-2 mb-4 shrink-0">
                             <h1 className={`text-2xl font-black tracking-tighter leading-none ${isDark ? "text-white" : "text-slate-900"}`}>

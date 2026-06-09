@@ -127,6 +127,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         }
     }, [appFontScale, setAppFontScale]);
 
+    const handleStartTour = () => {
+        onClose();
+        setTimeout(() => {
+            window.dispatchEvent(new Event("trigger-forge-tour"));
+        }, 300);
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -181,7 +188,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     <section className="space-y-3.5">
                         <div className="flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
-                          <h4 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          <h4 className="text-xs font-black uppercase tracking-wider text-slate-550 dark:text-slate-400">
                             Visual Theme Allocation
                           </h4>
                         </div>
@@ -385,7 +392,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         <div className="flex items-center justify-between rounded-3xl border border-slate-200 dark:border-white/[0.05] p-4 transition-colors duration-300 hover:border-slate-300 dark:hover:border-white/[0.08] bg-slate-500/[0.01]">
                             <div className="space-y-1 pr-4">
                                 <p className="text-sm font-black text-slate-900 dark:text-white">Daily Challenge popups</p>
-                                <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                                <p className="text-xs font-bold text-slate-550 leading-relaxed">
                                   Features one recommended challenge every 24 hours with leaderboard bonus opportunities.
                                 </p>
                             </div>
@@ -416,13 +423,21 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       </span>
                     </div>
 
-                    <button
-                        onClick={resetUiSettings}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 bg-white dark:bg-white/[0.01] hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
-                    >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        <span>Reset Defaults</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleStartTour}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-500/20 dark:border-indigo-500/10 text-indigo-600 dark:text-indigo-400 bg-indigo-500/5 hover:bg-indigo-500/10 transition-colors cursor-pointer mr-1"
+                        >
+                            <span>Start Tour</span>
+                        </button>
+                        <button
+                            onClick={resetUiSettings}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 bg-white dark:bg-white/[0.01] hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+                        >
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            <span>Reset Defaults</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

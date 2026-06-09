@@ -57,6 +57,7 @@ export default function ClassicLayout({
                 <div
                     data-layout-panel
                     style={{ gridArea: "list" }}
+                    data-tour="arena-problem-list"
                     className={`min-h-0 min-w-0 overflow-hidden rounded-2xl border backdrop-blur-xl transition-all duration-300 ${isDark
                         ? "border-slate-700/70 bg-[linear-gradient(180deg,rgba(15,23,42,0.95),rgba(10,15,26,0.92))] shadow-[0_16px_36px_rgba(2,6,23,0.24)]"
                         : "border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.94))] shadow-[0_16px_36px_rgba(15,23,42,0.08)]"
@@ -71,7 +72,7 @@ export default function ClassicLayout({
                     className={`rounded-full bg-transparent cursor-col-resize transition-colors duration-200 ${isDark ? "hover:bg-slate-600/30" : "hover:bg-slate-300/70"}`}
                 />
 
-                <div data-layout-panel style={{ gridArea: "desc" }} className="min-h-0 min-w-0">
+                <div data-layout-panel style={{ gridArea: "desc" }} data-tour="arena-problem-description" className="min-h-0 min-w-0">
                     {problemDescription}
                 </div>
 
@@ -81,7 +82,7 @@ export default function ClassicLayout({
                     className={`rounded-full bg-transparent cursor-col-resize transition-colors duration-200 ${isDark ? "hover:bg-slate-600/30" : "hover:bg-slate-300/70"}`}
                 />
 
-                <div data-layout-panel style={{ gridArea: "editor" }} className="min-h-0 min-w-0">
+                <div data-layout-panel style={{ gridArea: "editor" }} data-tour="arena-code-editor" className="min-h-0 min-w-0">
                     {editorPanel}
                 </div>
             </div>
