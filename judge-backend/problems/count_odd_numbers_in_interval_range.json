@@ -661,5 +661,9 @@
             "input": "992 1696",
             "output": "352"
         }
+    ],
+    "tags": [
+        "Greedy",
+        "Math"
     ]
 }

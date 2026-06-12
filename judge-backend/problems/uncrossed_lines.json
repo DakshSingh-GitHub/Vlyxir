@@ -30,5 +30,10 @@
             "input": "1\n2",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math"
     ]
 }

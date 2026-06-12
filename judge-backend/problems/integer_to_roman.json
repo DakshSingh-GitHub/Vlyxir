@@ -665,5 +665,8 @@
             "input": "2873",
             "output": "MMDCCCLXXIII"
         }
+    ],
+    "tags": [
+        "Math"
     ]
 }

@@ -381,5 +381,9 @@
             "input": "9",
             "output": "352"
         }
+    ],
+    "tags": [
+        "Backtracking",
+        "Math"
     ]
 }

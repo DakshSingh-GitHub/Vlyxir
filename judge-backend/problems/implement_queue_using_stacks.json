@@ -417,5 +417,9 @@
             "input": "MyQueue\nempty\npush 50\npeek\npush 11\npeek\npeek\npush 95\npeek\npop\npop\npeek\npop\npush 45\npush 59\npush 34\npush 91\npush 67\npush 12\npush 20\npush 64\npush 30\npush 48",
             "output": "null\ntrue\nnull\n50\nnull\n50\n50\nnull\n50\n50\n11\n95\n95\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull"
         }
+    ],
+    "tags": [
+        "Queue",
+        "Stack"
     ]
 }

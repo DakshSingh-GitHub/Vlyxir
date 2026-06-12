@@ -662,5 +662,13 @@
             "output": "0"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Math",
+        "Matrix",
+        "Tree"
+    ]
 }

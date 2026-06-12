@@ -30,5 +30,10 @@
             "input": "1 2",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Bit Manipulation",
+        "Math"
     ]
 }

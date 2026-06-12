@@ -662,5 +662,11 @@
             "output": "51.00000"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Sorting",
+        "Two Pointers"
+    ]
 }

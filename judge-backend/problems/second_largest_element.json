@@ -661,5 +661,11 @@
             "output": "71"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Bit Manipulation",
+        "Hash Table",
+        "Math"
+    ]
 }

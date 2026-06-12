@@ -469,5 +469,9 @@
             "input": "PpjBavPUKSlXfemkcZYjgkobKVLPGJTHHVXMHkFGsdeoUVIOIusZB",
             "output": "PpjBuvPIKSlXfOmkcZYjgkIbKVLPGJTHHVXMHkFGsdUoeVoeUasZB"
         }
+    ],
+    "tags": [
+        "String",
+        "Two Pointers"
     ]
 }

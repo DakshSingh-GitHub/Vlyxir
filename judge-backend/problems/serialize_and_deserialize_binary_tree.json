@@ -437,5 +437,11 @@
             "input": "47 74 null 99 83 null null 69 null 3",
             "output": "47 74 null 99 83 null null 69 null 3"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Tree"
     ]
 }

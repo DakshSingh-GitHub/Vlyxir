@@ -57,5 +57,10 @@
             "input": "1 2 3 4 5 5 4",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Tree"
     ]
 }

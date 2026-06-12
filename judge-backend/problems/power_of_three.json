@@ -665,5 +665,8 @@
             "input": "2807",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Math"
     ]
 }

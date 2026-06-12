@@ -57,5 +57,12 @@
             "input": "10 5 15\n25",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Math",
+        "Tree"
     ]
 }

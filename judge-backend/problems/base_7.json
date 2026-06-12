@@ -661,5 +661,9 @@
             "input": "527",
             "output": "1352"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

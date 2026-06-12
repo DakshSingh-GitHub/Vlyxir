@@ -57,5 +57,12 @@
             "input": "1 2 1",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Hash Table",
+        "Sorting",
+        "Two Pointers"
     ]
 }

@@ -441,5 +441,15 @@
             "input": "17 11 70 86 65 19 12 2 16 56 25 66 87 84 64 19",
             "output": "17 11 70 86 65 19 12 2 16 56 25 84 19 64 66 87"
         }
+    ],
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Graph",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

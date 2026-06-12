@@ -57,5 +57,12 @@
             "input": "[\"Trie\",\"insert\",\"search\",\"startsWith\"]\n[[],[\"abc\"],[\"abcd\"],[\"abc\"]]",
             "output": "[null,null,false,true]"
         }
+    ],
+    "tags": [
+        "Binary Search",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "String",
+        "Tree"
     ]
 }

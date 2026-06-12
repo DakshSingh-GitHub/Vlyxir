@@ -57,5 +57,10 @@
             "input": "((()))",
             "output": "[\"((()))\"]"
         }
+    ],
+    "tags": [
+        "Backtracking",
+        "Stack",
+        "String"
     ]
 }

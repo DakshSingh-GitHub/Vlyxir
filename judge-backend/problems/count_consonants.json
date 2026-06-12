@@ -661,5 +661,9 @@
             "output": "7"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Math",
+        "String"
+    ]
 }

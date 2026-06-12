@@ -663,5 +663,10 @@
             "input": "69\n7",
             "output": "7"
         }
+    ],
+    "tags": [
+        "Array",
+        "Greedy",
+        "Math"
     ]
 }

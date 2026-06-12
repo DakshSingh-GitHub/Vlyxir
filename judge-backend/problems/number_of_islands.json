@@ -657,5 +657,13 @@
             "output": "2"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Hash Table",
+        "Math",
+        "Matrix",
+        "Two Pointers"
+    ]
 }

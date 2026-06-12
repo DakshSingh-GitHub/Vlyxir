@@ -57,5 +57,8 @@
             "input": "1 2 3 4 5\n5",
             "output": "5"
         }
+    ],
+    "tags": [
+        "Binary Search"
     ]
 }

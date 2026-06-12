@@ -30,5 +30,11 @@
             "input": "1 null 2 null 3",
             "output": "1 2 3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Linked List",
+        "Math",
+        "Two Pointers"
     ]
 }

@@ -661,5 +661,10 @@
             "output": "Yes"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Sorting",
+        "Two Pointers"
+    ]
 }

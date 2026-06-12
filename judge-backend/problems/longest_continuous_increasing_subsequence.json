@@ -421,5 +421,12 @@
             "input": "85 43 41 84 69 55 16 62 60 66 77 26 47 86 82 82 89 18 98 6 35 29",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

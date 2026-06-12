@@ -657,5 +657,8 @@
             "output": "0 15\n15 0\n20 12\n104 0"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Dynamic Programming"
+    ]
 }

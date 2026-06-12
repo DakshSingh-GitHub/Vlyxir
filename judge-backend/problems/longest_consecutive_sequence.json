@@ -662,5 +662,12 @@
             "output": "3"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Math",
+        "Sliding Window",
+        "Sorting",
+        "Two Pointers"
+    ]
 }

@@ -441,5 +441,12 @@
             "input": "5 13 10 9 8 5 2 4 3 7 16 6 10 8 11 9 2 1",
             "output": "2 5 8 9 10"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

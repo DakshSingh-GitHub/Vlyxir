@@ -10,6 +10,7 @@ export interface Problem {
     sample_test_cases_count?: number;
     hidden_test_cases_count?: number;
     constraints?: Record<string, unknown> | string;
+    tags?: string[];
 }
 
 export interface TestCaseResult {

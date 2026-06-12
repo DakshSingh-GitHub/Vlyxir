@@ -421,5 +421,11 @@
             "input": "93\n15 11\n35 17\n44 7\n49 11",
             "output": "6.23"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

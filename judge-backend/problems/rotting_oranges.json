@@ -36,5 +36,9 @@
             "input": "1 1\n2",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Math",
+        "Matrix"
     ]
 }

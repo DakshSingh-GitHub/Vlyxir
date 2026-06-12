@@ -27,5 +27,8 @@
             "input": "1\n1 2",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array"
     ]
 }

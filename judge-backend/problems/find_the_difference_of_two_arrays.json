@@ -657,5 +657,9 @@
             "output": "-10 3 7 8\n-9 -8 -4 -3 -1 9 10"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math"
+    ]
 }

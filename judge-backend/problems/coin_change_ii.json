@@ -663,5 +663,11 @@
             "output": "0"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Dynamic Programming",
+        "Math"
+    ]
 }

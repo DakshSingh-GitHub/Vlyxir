@@ -31,5 +31,9 @@
             "input": "1",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

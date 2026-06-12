@@ -24,5 +24,8 @@
             "input": "checkIn checkOut getAverageTime\n1 A 1,1 A 5,A A",
             "output": "null null 4.0"
         }
+    ],
+    "tags": [
+        "String"
     ]
 }

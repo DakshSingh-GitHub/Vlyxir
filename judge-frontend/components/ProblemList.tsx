@@ -24,10 +24,12 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
         difficulty: string[];
         status: "all" | "solved" | "unsolved";
         statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
+        tags: string[];
     }>({
         difficulty: [],
         status: "all",
-        statusSub: { correct: true, incorrect: true, hasOne: false }
+        statusSub: { correct: true, incorrect: true, hasOne: false },
+        tags: []
     });
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [solvedProblemIds, setSolvedProblemIds] = useState<Set<string>>(new Set());
@@ -179,7 +181,11 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
             }
         }
 
-        return matchesSearch && matchesDifficulty && matchesStatus;
+        // Tags Filter
+        const matchesTags = filters.tags.length === 0 ||
+            filters.tags.every(t => (problem.tags || []).includes(t));
+
+        return matchesSearch && matchesDifficulty && matchesStatus && matchesTags;
     });
 
     useEffect(() => {
@@ -286,13 +292,13 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                         </button>
                         <button
                             onClick={() => setIsFilterModalOpen(true)}
-                            className={`p-2 rounded-lg transition-all active:scale-95 ${filters.difficulty.length > 0 || filters.status !== "all"
+                            className={`p-2 rounded-lg transition-all active:scale-95 ${filters.difficulty.length > 0 || filters.status !== "all" || filters.tags.length > 0
                                 ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300 relative"
                                 : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
                                 }`}
                         >
                             <SlidersHorizontal className="w-4 h-4" />
-                            {(filters.difficulty.length > 0 || filters.status !== "all") && (
+                            {(filters.difficulty.length > 0 || filters.status !== "all" || filters.tags.length > 0) && (
                                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-indigo-500 rounded-full" />
                             )}
                         </button>

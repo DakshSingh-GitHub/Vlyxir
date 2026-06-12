@@ -489,5 +489,12 @@
             "input": "50 88 -71 15 16 42 47\n47",
             "output": "6"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

@@ -663,5 +663,12 @@
             "input": "ugdagykkkshohwxesoinnsuafl\nwwvuvsyigqouoxjlprzienvathrfzsozcmbtyslnfhbuzklbedimzwvaqvzjkikvpcvbbxbmwdnavbtfdpankj",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math",
+        "Sliding Window",
+        "String"
     ]
 }

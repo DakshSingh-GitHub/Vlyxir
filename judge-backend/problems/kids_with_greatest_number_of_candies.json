@@ -369,5 +369,9 @@
             "input": "8\n5 17",
             "output": "false true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

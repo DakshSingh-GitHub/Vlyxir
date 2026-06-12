@@ -661,5 +661,8 @@
             "input": "767",
             "output": "No"
         }
+    ],
+    "tags": [
+        "Math"
     ]
 }

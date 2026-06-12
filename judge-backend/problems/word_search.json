@@ -658,5 +658,12 @@
             "output": "Yes"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Binary Search",
+        "Depth-First Search (DFS)",
+        "Matrix",
+        "Sliding Window",
+        "String"
+    ]
 }

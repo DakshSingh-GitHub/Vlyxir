@@ -421,5 +421,11 @@
             "input": "69 83 77 71 47 47 17 18 2 0 16 26\n50",
             "output": "50 119 36 105 46 1 46 63 45 47 47 63 37"
         }
+    ],
+    "tags": [
+        "Array",
+        "Bit Manipulation",
+        "Dynamic Programming",
+        "Math"
     ]
 }

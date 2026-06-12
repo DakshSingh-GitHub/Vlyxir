@@ -449,5 +449,14 @@
             "input": "4\n3 0",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Graph",
+        "Linked List",
+        "Math",
+        "Tree"
     ]
 }

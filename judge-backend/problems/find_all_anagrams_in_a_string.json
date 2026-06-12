@@ -501,5 +501,10 @@
             "input": "mrnqcaepytbfwjixcgholcjooazpzik jco",
             "output": "21"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "String"
     ]
 }

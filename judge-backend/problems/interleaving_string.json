@@ -27,5 +27,11 @@
             "input": " \n \n ",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
     ]
 }

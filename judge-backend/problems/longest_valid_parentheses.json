@@ -465,5 +465,13 @@
             "input": ")(((()(()()((()",
             "output": "4"
         }
+    ],
+    "tags": [
+        "Backtracking",
+        "Math",
+        "Sliding Window",
+        "Stack",
+        "String",
+        "Tree"
     ]
 }

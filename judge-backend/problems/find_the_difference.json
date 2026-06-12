@@ -449,5 +449,9 @@
             "input": " d",
             "output": "d"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

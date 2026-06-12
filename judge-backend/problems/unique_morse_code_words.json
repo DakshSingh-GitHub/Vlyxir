@@ -663,5 +663,11 @@
             "input": "c ab acde",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math",
+        "String"
     ]
 }

@@ -501,5 +501,9 @@
             "input": "RRRRRRRRRRLLLLLLLLLLRRRRRRRLLLLLLLRRRRRRRRRRLLLLLLLLLLRRRRRLLLLLRRRRRRRRLLLLLLLLLLLLLRRRRR",
             "output": "6"
         }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
     ]
 }

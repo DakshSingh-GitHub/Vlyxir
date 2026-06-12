@@ -58,5 +58,10 @@
             "input": "100 200",
             "output": "200 100"
         }
+    ],
+    "tags": [
+        "Array",
+        "Linked List",
+        "Two Pointers"
     ]
 }

@@ -26,5 +26,12 @@
             "input": "abccba",
             "output": "9"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree",
+        "Two Pointers"
     ]
 }

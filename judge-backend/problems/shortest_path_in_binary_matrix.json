@@ -35,5 +35,12 @@
             "input": "3\n1 0 0\n1 1 0\n1 1 0",
             "output": "-1"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Math",
+        "Matrix"
     ]
 }

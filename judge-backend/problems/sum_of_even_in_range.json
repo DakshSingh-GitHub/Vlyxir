@@ -661,5 +661,8 @@
             "output": "546"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Math"
+    ]
 }

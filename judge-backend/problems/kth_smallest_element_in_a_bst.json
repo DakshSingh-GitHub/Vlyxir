@@ -501,5 +501,14 @@
             "input": "42 18 69 5 25 49 88 1 14 23 26 45 61 73 90 null null null 17 null null null 30 null null null null null null null 97\n14",
             "output": "69"
         }
+    ],
+    "tags": [
+        "Binary Search",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Linked List",
+        "Math",
+        "Sorting",
+        "Tree"
     ]
 }

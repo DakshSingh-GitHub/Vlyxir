@@ -441,5 +441,8 @@
             "input": "3\n2 1\n3 1",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Graph"
     ]
 }

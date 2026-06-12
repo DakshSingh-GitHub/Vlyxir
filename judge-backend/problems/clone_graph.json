@@ -57,5 +57,10 @@
             "input": "[[2,3,4,5],[1],[1],[1],[1]]",
             "output": "[[2,3,4,5],[1],[1],[1],[1]]"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Graph"
     ]
 }

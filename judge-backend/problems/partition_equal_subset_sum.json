@@ -649,5 +649,10 @@
             "input": "17 20 15 5 8 13",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Math"
     ]
 }

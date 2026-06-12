@@ -658,5 +658,11 @@
             "output": "28"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Math",
+        "Sorting",
+        "Two Pointers"
+    ]
 }

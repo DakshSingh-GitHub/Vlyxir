@@ -34,5 +34,9 @@
             "input": "30\n100",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sorting"
     ]
 }

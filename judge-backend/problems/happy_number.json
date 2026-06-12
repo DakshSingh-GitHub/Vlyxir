@@ -661,5 +661,9 @@
             "input": "133",
             "output": "Yes"
         }
+    ],
+    "tags": [
+        "Linked List",
+        "Math"
     ]
 }

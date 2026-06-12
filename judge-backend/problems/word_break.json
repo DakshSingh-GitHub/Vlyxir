@@ -668,5 +668,9 @@
             "output": "true"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Hash Table",
+        "String"
+    ]
 }

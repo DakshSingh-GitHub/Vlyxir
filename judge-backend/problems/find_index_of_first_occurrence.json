@@ -390,5 +390,9 @@
             "input": "def\nb",
             "output": "-1"
         }
+    ],
+    "tags": [
+        "Stack",
+        "String"
     ]
 }

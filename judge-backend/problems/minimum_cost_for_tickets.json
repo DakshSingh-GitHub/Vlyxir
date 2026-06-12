@@ -29,5 +29,12 @@
             "input": "1\n2 7 15",
             "output": "2"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math",
+        "Sliding Window",
+        "Two Pointers"
     ]
 }

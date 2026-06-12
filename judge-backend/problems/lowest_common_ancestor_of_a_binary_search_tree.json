@@ -57,5 +57,13 @@
             "input": "10 5 15 2 7 12 20\n2\n7",
             "output": "5"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Linked List",
+        "Tree"
     ]
 }

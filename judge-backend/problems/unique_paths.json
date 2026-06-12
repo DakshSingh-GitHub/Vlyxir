@@ -662,5 +662,11 @@
             "output": "4"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Math",
+        "Matrix"
+    ]
 }

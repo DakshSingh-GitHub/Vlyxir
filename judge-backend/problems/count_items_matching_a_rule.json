@@ -657,5 +657,10 @@
             "output": "0"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math",
+        "String"
+    ]
 }

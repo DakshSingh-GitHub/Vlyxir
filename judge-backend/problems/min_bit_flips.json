@@ -421,5 +421,9 @@
             "input": "738 50",
             "output": "4"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Math"
     ]
 }

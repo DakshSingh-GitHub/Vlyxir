@@ -57,5 +57,11 @@
             "input": "[[1,0,1],[0,1,0],[1,0,1]]",
             "output": "2"
         }
+    ],
+    "tags": [
+        "Depth-First Search (DFS)",
+        "Graph",
+        "Math",
+        "Matrix"
     ]
 }

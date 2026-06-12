@@ -23,98 +23,381 @@
         }
     ],
     "hidden_test_cases": [
-        { "input": "cb\n?a", "output": "false" },
-        { "input": "adceb\n*a*b", "output": "true" },
-        { "input": "acdcb\na*c?b", "output": "false" },
-        { "input": "\n*", "output": "true" },
-        { "input": "a\n", "output": "false" },
-        { "input": "\n", "output": "true" },
-        { "input": "abc\n???", "output": "true" },
-        { "input": "abc\n??", "output": "false" },
-        { "input": "abc\n????", "output": "false" },
-        { "input": "abc\n*abc", "output": "true" },
-        { "input": "abc\nabc*", "output": "true" },
-        { "input": "abc\n*abc*", "output": "true" },
-        { "input": "abc\n*a*b*c*", "output": "true" },
-        { "input": "abc\n*a*b*c*d*", "output": "false" },
-        { "input": "abefcdgiescdfimde\nab*cd?i*de", "output": "true" },
-        { "input": "mississippi\nm??*ss*?i*pi", "output": "false" },
-        { "input": "aab\nc*a*b", "output": "false" },
-        { "input": "a\na*", "output": "true" },
-        { "input": "a\n*a", "output": "true" },
-        { "input": "a\n*a*", "output": "true" },
-        { "input": "ab\n?*", "output": "true" },
-        { "input": "ab\n*?", "output": "true" },
-        { "input": "ab\n??", "output": "true" },
-        { "input": "ab\n?*?", "output": "true" },
-        { "input": "abcdefg\na*g", "output": "true" },
-        { "input": "abcdefg\na*f", "output": "false" },
-        { "input": "abcdefg\n*def*", "output": "true" },
-        { "input": "abcdefg\n*d*f*", "output": "true" },
-        { "input": "ho\nho**", "output": "true" },
-        { "input": "ho\n**ho", "output": "true" },
-        { "input": "ho\n**ho**", "output": "true" },
-        { "input": "aaaaa\n*a", "output": "true" },
-        { "input": "aaaaa\na*", "output": "true" },
-        { "input": "aaaaa\n*a*", "output": "true" },
-        { "input": "aaaaa\n*****", "output": "true" },
-        { "input": "ab\n*a", "output": "false" },
-        { "input": "ab\nb*", "output": "false" },
-        { "input": "a\n?*", "output": "true" },
-        { "input": "a\n*?", "output": "true" },
-        { "input": "a\n*?*", "output": "true" },
-        { "input": "abc\na?c", "output": "true" },
-        { "input": "abc\na*c", "output": "true" },
-        { "input": "abc\na*?c", "output": "false" },
-        { "input": "abc\na?*c", "output": "true" },
-        { "input": "a\na**", "output": "true" },
-        { "input": "a\n**a", "output": "true" },
-        { "input": "a\n**a**", "output": "true" },
-        { "input": "a\n***a", "output": "true" },
-        { "input": "a\na***", "output": "true" },
-        { "input": "a\n***a***", "output": "true" },
-        { "input": "b\n*?*?*", "output": "false" },
-        { "input": "hi\n*?", "output": "true" },
-        { "input": "hi\n?*", "output": "true" },
-        { "input": "hi\n*?*", "output": "true" },
-        { "input": "hi\n**?", "output": "true" },
-        { "input": "hi\n?**", "output": "true" },
-        { "input": "hi\n**?**", "output": "true" },
-        { "input": "abc\n*?", "output": "true" },
-        { "input": "abc\n?*", "output": "true" },
-        { "input": "abc\n*?*", "output": "true" },
-        { "input": "abc\n**?", "output": "true" },
-        { "input": "abc\n?**", "output": "true" },
-        { "input": "abc\n**?**", "output": "true" },
-        { "input": "abc\n???", "output": "true" },
-        { "input": "abc\n????", "output": "false" },
-        { "input": "abc\n??", "output": "false" },
-        { "input": "abc\n*", "output": "true" },
-        { "input": "abc\n**", "output": "true" },
-        { "input": "abc\n***", "output": "true" },
-        { "input": "abc\na*b*c", "output": "true" },
-        { "input": "abc\na**b**c", "output": "true" },
-        { "input": "abc\n*a*b*c*", "output": "true" },
-        { "input": "abc\n**a**b**c**", "output": "true" },
-        { "input": "abc\na*c", "output": "true" },
-        { "input": "abc\na**c", "output": "true" },
-        { "input": "abc\n*a*c*", "output": "true" },
-        { "input": "abc\n**a**c**", "output": "true" },
-        { "input": "abc\nab*", "output": "true" },
-        { "input": "abc\nab**", "output": "true" },
-        { "input": "abc\n*ab*", "output": "true" },
-        { "input": "abc\n**ab**", "output": "true" },
-        { "input": "abc\n*bc", "output": "true" },
-        { "input": "abc\n**bc", "output": "true" },
-        { "input": "abc\n*bc*", "output": "true" },
-        { "input": "abc\n**bc**", "output": "true" },
-        { "input": "aa\na", "output": "false" },
-        { "input": "aa\naa", "output": "true" },
-        { "input": "aaa\naa", "output": "false" },
-        { "input": "aa\n*", "output": "true" },
-        { "input": "aa\na*", "output": "true" },
-        { "input": "ab\n?*", "output": "true" },
-        { "input": "aab\nc*a*b", "output": "false" },
-        { "input": "acdcb\na*c?b", "output": "false" }
+        {
+            "input": "cb\n?a",
+            "output": "false"
+        },
+        {
+            "input": "adceb\n*a*b",
+            "output": "true"
+        },
+        {
+            "input": "acdcb\na*c?b",
+            "output": "false"
+        },
+        {
+            "input": "\n*",
+            "output": "true"
+        },
+        {
+            "input": "a\n",
+            "output": "false"
+        },
+        {
+            "input": "\n",
+            "output": "true"
+        },
+        {
+            "input": "abc\n???",
+            "output": "true"
+        },
+        {
+            "input": "abc\n??",
+            "output": "false"
+        },
+        {
+            "input": "abc\n????",
+            "output": "false"
+        },
+        {
+            "input": "abc\n*abc",
+            "output": "true"
+        },
+        {
+            "input": "abc\nabc*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*abc*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*a*b*c*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*a*b*c*d*",
+            "output": "false"
+        },
+        {
+            "input": "abefcdgiescdfimde\nab*cd?i*de",
+            "output": "true"
+        },
+        {
+            "input": "mississippi\nm??*ss*?i*pi",
+            "output": "false"
+        },
+        {
+            "input": "aab\nc*a*b",
+            "output": "false"
+        },
+        {
+            "input": "a\na*",
+            "output": "true"
+        },
+        {
+            "input": "a\n*a",
+            "output": "true"
+        },
+        {
+            "input": "a\n*a*",
+            "output": "true"
+        },
+        {
+            "input": "ab\n?*",
+            "output": "true"
+        },
+        {
+            "input": "ab\n*?",
+            "output": "true"
+        },
+        {
+            "input": "ab\n??",
+            "output": "true"
+        },
+        {
+            "input": "ab\n?*?",
+            "output": "true"
+        },
+        {
+            "input": "abcdefg\na*g",
+            "output": "true"
+        },
+        {
+            "input": "abcdefg\na*f",
+            "output": "false"
+        },
+        {
+            "input": "abcdefg\n*def*",
+            "output": "true"
+        },
+        {
+            "input": "abcdefg\n*d*f*",
+            "output": "true"
+        },
+        {
+            "input": "ho\nho**",
+            "output": "true"
+        },
+        {
+            "input": "ho\n**ho",
+            "output": "true"
+        },
+        {
+            "input": "ho\n**ho**",
+            "output": "true"
+        },
+        {
+            "input": "aaaaa\n*a",
+            "output": "true"
+        },
+        {
+            "input": "aaaaa\na*",
+            "output": "true"
+        },
+        {
+            "input": "aaaaa\n*a*",
+            "output": "true"
+        },
+        {
+            "input": "aaaaa\n*****",
+            "output": "true"
+        },
+        {
+            "input": "ab\n*a",
+            "output": "false"
+        },
+        {
+            "input": "ab\nb*",
+            "output": "false"
+        },
+        {
+            "input": "a\n?*",
+            "output": "true"
+        },
+        {
+            "input": "a\n*?",
+            "output": "true"
+        },
+        {
+            "input": "a\n*?*",
+            "output": "true"
+        },
+        {
+            "input": "abc\na?c",
+            "output": "true"
+        },
+        {
+            "input": "abc\na*c",
+            "output": "true"
+        },
+        {
+            "input": "abc\na*?c",
+            "output": "false"
+        },
+        {
+            "input": "abc\na?*c",
+            "output": "true"
+        },
+        {
+            "input": "a\na**",
+            "output": "true"
+        },
+        {
+            "input": "a\n**a",
+            "output": "true"
+        },
+        {
+            "input": "a\n**a**",
+            "output": "true"
+        },
+        {
+            "input": "a\n***a",
+            "output": "true"
+        },
+        {
+            "input": "a\na***",
+            "output": "true"
+        },
+        {
+            "input": "a\n***a***",
+            "output": "true"
+        },
+        {
+            "input": "b\n*?*?*",
+            "output": "false"
+        },
+        {
+            "input": "hi\n*?",
+            "output": "true"
+        },
+        {
+            "input": "hi\n?*",
+            "output": "true"
+        },
+        {
+            "input": "hi\n*?*",
+            "output": "true"
+        },
+        {
+            "input": "hi\n**?",
+            "output": "true"
+        },
+        {
+            "input": "hi\n?**",
+            "output": "true"
+        },
+        {
+            "input": "hi\n**?**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*?",
+            "output": "true"
+        },
+        {
+            "input": "abc\n?*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*?*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**?",
+            "output": "true"
+        },
+        {
+            "input": "abc\n?**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**?**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n???",
+            "output": "true"
+        },
+        {
+            "input": "abc\n????",
+            "output": "false"
+        },
+        {
+            "input": "abc\n??",
+            "output": "false"
+        },
+        {
+            "input": "abc\n*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n***",
+            "output": "true"
+        },
+        {
+            "input": "abc\na*b*c",
+            "output": "true"
+        },
+        {
+            "input": "abc\na**b**c",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*a*b*c*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**a**b**c**",
+            "output": "true"
+        },
+        {
+            "input": "abc\na*c",
+            "output": "true"
+        },
+        {
+            "input": "abc\na**c",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*a*c*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**a**c**",
+            "output": "true"
+        },
+        {
+            "input": "abc\nab*",
+            "output": "true"
+        },
+        {
+            "input": "abc\nab**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*ab*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**ab**",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*bc",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**bc",
+            "output": "true"
+        },
+        {
+            "input": "abc\n*bc*",
+            "output": "true"
+        },
+        {
+            "input": "abc\n**bc**",
+            "output": "true"
+        },
+        {
+            "input": "aa\na",
+            "output": "false"
+        },
+        {
+            "input": "aa\naa",
+            "output": "true"
+        },
+        {
+            "input": "aaa\naa",
+            "output": "false"
+        },
+        {
+            "input": "aa\n*",
+            "output": "true"
+        },
+        {
+            "input": "aa\na*",
+            "output": "true"
+        },
+        {
+            "input": "ab\n?*",
+            "output": "true"
+        },
+        {
+            "input": "aab\nc*a*b",
+            "output": "false"
+        },
+        {
+            "input": "acdcb\na*c?b",
+            "output": "false"
+        }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
     ]
 }

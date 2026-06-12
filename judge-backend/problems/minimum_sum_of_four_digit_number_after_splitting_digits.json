@@ -657,5 +657,8 @@
             "output": "102"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Math"
+    ]
 }

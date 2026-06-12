@@ -662,5 +662,9 @@
             "output": "-994"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math"
+    ]
 }

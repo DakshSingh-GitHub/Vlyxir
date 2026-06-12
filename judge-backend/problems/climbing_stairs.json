@@ -141,5 +141,9 @@
             "output": "1346269"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Dynamic Programming",
+        "Math"
+    ]
 }

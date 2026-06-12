@@ -57,5 +57,11 @@
             "input": "1 2 3\n2 3 1",
             "output": "1 2 null null 3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Tree"
     ]
 }

@@ -662,5 +662,11 @@
             "input": "5 3 3 4 4 5 5 2 1 4 5 5",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Greedy",
+        "Math",
+        "String"
     ]
 }

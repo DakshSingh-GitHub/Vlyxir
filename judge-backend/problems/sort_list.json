@@ -57,5 +57,10 @@
             "input": "100 -100 0",
             "output": "-100 0 100"
         }
+    ],
+    "tags": [
+        "Array",
+        "Linked List",
+        "Sorting"
     ]
 }

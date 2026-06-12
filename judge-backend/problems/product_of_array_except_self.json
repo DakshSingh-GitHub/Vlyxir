@@ -657,5 +657,9 @@
             "output": "216 144 216 144 144 432 108"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Math"
+    ]
 }

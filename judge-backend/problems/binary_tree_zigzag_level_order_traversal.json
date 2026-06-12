@@ -30,5 +30,11 @@
             "input": "1 2 3 4 5 6 7",
             "output": "1\n3 2\n4 5 6 7"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Linked List",
+        "Tree"
     ]
 }

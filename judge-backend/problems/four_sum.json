@@ -659,5 +659,15 @@
             "input": "-7 -3 3 5 9 10\n16",
             "output": ""
         }
+    ],
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Graph",
+        "Hash Table",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

@@ -657,5 +657,10 @@
             "output": "a This sentence is case test"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Sorting",
+        "String"
+    ]
 }

@@ -50,5 +50,10 @@
             "output": "Hello World"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math",
+        "String"
+    ]
 }

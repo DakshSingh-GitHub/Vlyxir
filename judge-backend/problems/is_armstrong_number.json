@@ -661,5 +661,8 @@
             "output": "No"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Math"
+    ]
 }

@@ -417,5 +417,11 @@
             "input": ".cccc+++@fdf..baffe.com bcad+fb@accbeee.com ++++f@afceb.com bdaa+a+d@f.fbffd.com bb++f@ffbcad.ec..com e++.d.be@.decbfbdbe.com dfedee++@fcffbea.com af+.a@aee.a.com ++adaeefac@efa.adb.b.com",
             "output": "9"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Sliding Window",
+        "String"
     ]
 }

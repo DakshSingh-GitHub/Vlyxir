@@ -445,5 +445,11 @@
             "input": "lOn9x8P1ldoty8FLcupLEfwgbAkM2Yq3phUdWAODNtntWPV9b5tO6QRQXGvqrXJ23LiJzj7DuumUHAMt",
             "output": "tMAHUmuuD7jzJiL32JXrqvGXQRQ6Ot5b9VPWtntNDOAWdUhp3qY2MkAbgwfELpucLF8ytodl1P8x9nOl"
         }
+    ],
+    "tags": [
+        "Array",
+        "Sliding Window",
+        "String",
+        "Two Pointers"
     ]
 }

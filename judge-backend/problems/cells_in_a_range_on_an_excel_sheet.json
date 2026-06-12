@@ -657,5 +657,10 @@
             "output": "E1 F1"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math",
+        "String"
+    ]
 }

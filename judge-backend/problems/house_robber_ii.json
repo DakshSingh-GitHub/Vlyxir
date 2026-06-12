@@ -657,5 +657,11 @@
             "output": "264"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Tree"
+    ]
 }

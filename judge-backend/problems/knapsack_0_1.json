@@ -662,5 +662,8 @@
             "output": "385"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Dynamic Programming"
+    ]
 }

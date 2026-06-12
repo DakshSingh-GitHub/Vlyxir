@@ -666,5 +666,10 @@
             "input": "10\n0 4 7 5 1 2 9 6 3 8",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math"
     ]
 }

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "tag": "node tag_problems.js"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.6",

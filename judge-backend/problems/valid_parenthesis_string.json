@@ -16,5 +16,10 @@
         }
     ],
     "hidden_test_cases": [],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Sliding Window",
+        "Stack",
+        "String"
+    ]
 }

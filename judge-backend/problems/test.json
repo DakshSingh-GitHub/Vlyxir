@@ -1,1 +1,7 @@
-{"id": "test", "title": "Test"}
+{
+    "id": "test",
+    "title": "Test",
+    "tags": [
+        "General"
+    ]
+}

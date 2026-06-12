@@ -661,5 +661,9 @@
             "input": "407",
             "output": "104"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Math"
     ]
 }

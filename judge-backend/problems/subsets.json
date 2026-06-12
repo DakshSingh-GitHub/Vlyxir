@@ -662,5 +662,13 @@
             "output": "\n6\n6 10\n10"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Graph",
+        "Hash Table",
+        "Math",
+        "Sorting"
+    ]
 }

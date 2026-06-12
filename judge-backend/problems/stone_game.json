@@ -28,5 +28,10 @@
             "input": "1 2",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "Math",
+        "Sliding Window"
     ]
 }

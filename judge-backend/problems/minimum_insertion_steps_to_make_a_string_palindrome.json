@@ -34,5 +34,11 @@
             "input": "no",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Two Pointers"
     ]
 }

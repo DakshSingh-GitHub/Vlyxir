@@ -662,5 +662,11 @@
             "input": "1\n10\n10\n6 2 3 1 9 6 9 1 4 4",
             "output": ""
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

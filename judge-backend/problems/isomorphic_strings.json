@@ -441,5 +441,10 @@
             "input": "erwjkyhehugxlufqhxqkvswhihbdvlieor sqnbvqzxorsvpuwcnokfqgggjicnoxariq",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "Sliding Window",
+        "String"
     ]
 }

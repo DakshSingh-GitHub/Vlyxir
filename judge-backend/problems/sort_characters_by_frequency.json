@@ -666,5 +666,13 @@
             "input": "bdecddcdcdbaeedbcc",
             "output": "ddddddcccccbbbeeea"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "Math",
+        "Sliding Window",
+        "Sorting",
+        "String",
+        "Two Pointers"
     ]
 }

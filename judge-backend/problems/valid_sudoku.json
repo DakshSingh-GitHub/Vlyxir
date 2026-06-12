@@ -658,5 +658,8 @@
             "output": "true"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Backtracking"
+    ]
 }

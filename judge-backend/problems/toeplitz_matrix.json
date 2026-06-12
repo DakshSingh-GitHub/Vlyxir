@@ -433,5 +433,8 @@
             "input": "5 1\n7\n8\n7\n9\n2",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Matrix"
     ]
 }

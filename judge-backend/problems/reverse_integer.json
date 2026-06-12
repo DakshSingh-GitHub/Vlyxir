@@ -665,5 +665,10 @@
             "input": "607",
             "output": "706"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Math",
+        "Two Pointers"
     ]
 }

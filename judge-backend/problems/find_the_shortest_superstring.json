@@ -28,5 +28,13 @@
             "input": "abcd efgh",
             "output": "abcdefgh"
         }
+    ],
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
     ]
 }

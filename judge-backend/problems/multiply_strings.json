@@ -657,5 +657,9 @@
             "output": "136220"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Math",
+        "String"
+    ]
 }

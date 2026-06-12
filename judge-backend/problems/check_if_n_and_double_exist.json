@@ -369,5 +369,9 @@
             "input": "-18 -8 -19 -17 15 17 -16 1",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

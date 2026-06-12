@@ -445,5 +445,10 @@
             "input": "catsdogapplepen\napple cats cat c pine applepen dog",
             "output": "cats dog applepen"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "Math",
+        "String"
     ]
 }

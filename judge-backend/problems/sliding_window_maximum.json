@@ -662,5 +662,11 @@
             "output": "46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46 46"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Array",
+        "Math",
+        "Queue",
+        "Sliding Window"
+    ]
 }

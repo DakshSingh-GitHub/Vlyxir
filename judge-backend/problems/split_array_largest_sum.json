@@ -35,5 +35,9 @@
             "input": "4 8 12 16\n1",
             "output": "40"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

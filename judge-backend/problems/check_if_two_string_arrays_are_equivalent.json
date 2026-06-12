@@ -473,5 +473,9 @@
             "input": "rjc jj dw r\nvnc qes xqsk t tpxch jir s jn",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Array",
+        "String"
     ]
 }

@@ -665,5 +665,9 @@
             "output": "Yes"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Sliding Window",
+        "String"
+    ]
 }

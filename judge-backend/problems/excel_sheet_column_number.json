@@ -425,5 +425,9 @@
             "input": "BLMC",
             "output": "43605"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

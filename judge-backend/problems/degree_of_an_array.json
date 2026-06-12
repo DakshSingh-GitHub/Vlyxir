@@ -421,5 +421,10 @@
             "input": "6 7",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math"
     ]
 }

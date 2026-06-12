@@ -85,5 +85,8 @@
             "output": "120"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Math"
+    ]
 }

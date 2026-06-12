@@ -481,5 +481,12 @@
             "input": "JGKXLJHNSZF\n11",
             "output": "11"
         }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
     ]
 }

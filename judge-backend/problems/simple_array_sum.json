@@ -662,5 +662,9 @@
             "output": "395"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math"
+    ]
 }

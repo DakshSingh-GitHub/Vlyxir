@@ -662,5 +662,10 @@
             "input": "33 83 84 2\n83 2 84 89 26 57 33 76",
             "output": "76 84 89 84"
         }
+    ],
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Math"
     ]
 }

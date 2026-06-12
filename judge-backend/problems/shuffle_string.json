@@ -658,5 +658,11 @@
             "output": "jlqmpur"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Math",
+        "Sliding Window",
+        "String"
+    ]
 }

@@ -662,5 +662,10 @@
             "output": "89"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math"
+    ]
 }

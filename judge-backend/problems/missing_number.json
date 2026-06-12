@@ -661,5 +661,10 @@
             "output": "11"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math"
+    ]
 }

@@ -34,5 +34,13 @@
             "input": "0",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Hash Table",
+        "Math",
+        "Sliding Window",
+        "String",
+        "Two Pointers"
     ]
 }

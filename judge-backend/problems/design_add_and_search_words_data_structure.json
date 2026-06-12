@@ -481,5 +481,10 @@
             "input": "WordDictionary\naddWord ant\nsearch d.g\nsearch apple\nsearch apple\naddWord cat",
             "output": "null\nnull\nfalse\nfalse\nfalse\nnull"
         }
+    ],
+    "tags": [
+        "Binary Search",
+        "Math",
+        "String"
     ]
 }

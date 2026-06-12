@@ -666,5 +666,10 @@
             "input": "3 -50",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Greedy",
+        "Math"
     ]
 }

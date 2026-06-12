@@ -465,5 +465,11 @@
             "input": "8s5rzhb4@i9j@wsb8dqz3qhtq@jh@2b9ykvndrbc3eupyhmagbvkcoeg2dlu6cl60uc@zmk",
             "output": "16"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
     ]
 }

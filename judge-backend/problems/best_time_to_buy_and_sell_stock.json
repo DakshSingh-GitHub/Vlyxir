@@ -662,5 +662,8 @@
             "output": "73"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array"
+    ]
 }

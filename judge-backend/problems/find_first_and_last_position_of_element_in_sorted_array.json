@@ -663,5 +663,12 @@
             "output": "7 10"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
+    ]
 }

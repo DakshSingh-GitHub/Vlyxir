@@ -666,5 +666,9 @@
             "input": "bfeddaaebcbf\nedbcdfbbfcdf",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
     ]
 }

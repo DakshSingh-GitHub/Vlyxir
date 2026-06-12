@@ -425,5 +425,10 @@
             "input": "bcbba###bbbac#\n#ccb",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Sliding Window",
+        "String"
     ]
 }

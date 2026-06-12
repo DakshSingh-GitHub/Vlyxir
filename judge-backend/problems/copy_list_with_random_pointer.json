@@ -57,5 +57,10 @@
             "input": "[[10,null],[20,0],[30,1]]",
             "output": "[[10,null],[20,0],[30,1]]"
         }
+    ],
+    "tags": [
+        "Array",
+        "Linked List",
+        "Two Pointers"
     ]
 }

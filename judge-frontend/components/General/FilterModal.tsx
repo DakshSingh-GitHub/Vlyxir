@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Check, Filter, Layers, BadgeCheck, RotateCcw } from "lucide-react";
+import { X, Check, Filter, Layers, BadgeCheck, RotateCcw, Tag } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { anime } from "../../app/lib/utils/anime";
@@ -14,19 +14,22 @@ interface FilterModalProps {
         difficulty: string[];
         status: "all" | "solved" | "unsolved";
         statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
+        tags: string[];
     };
     setFilters: (filters: {
         difficulty: string[];
         status: "all" | "solved" | "unsolved";
         statusSub: { correct: boolean; incorrect: boolean; hasOne: boolean };
+        tags: string[];
     }) => void;
 }
 
-type Category = "difficulty" | "status";
+type Category = "difficulty" | "status" | "tags";
 
 export default function FilterModal({ isOpen, onClose, filters, setFilters }: FilterModalProps) {
     const { isDark } = useAppContext();
     const [activeCategory, setActiveCategory] = useState<Category>("difficulty");
+    const [tagSearch, setTagSearch] = useState("");
     const [mounted, setMounted] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const backdropRef = useRef<HTMLDivElement>(null);
@@ -107,6 +110,13 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
             label: "Status", 
             icon: BadgeCheck, 
             color: "from-emerald-500 to-teal-600",
+            activeBg: isDark ? "bg-slate-800/80 border border-slate-700/60 shadow-lg" : "bg-white border border-slate-200 shadow-sm"
+        },
+        { 
+            id: "tags" as const, 
+            label: "Tags", 
+            icon: Tag, 
+            color: "from-violet-500 to-purple-600",
             activeBg: isDark ? "bg-slate-800/80 border border-slate-700/60 shadow-lg" : "bg-white border border-slate-200 shadow-sm"
         },
     ];
@@ -193,15 +203,32 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
         setFilters({ ...filters, difficulty: newDiffs });
     };
 
+    const toggleTag = (tag: string) => {
+        const newTags = filters.tags.includes(tag)
+            ? filters.tags.filter((t) => t !== tag)
+            : [...filters.tags, tag];
+        setFilters({ ...filters, tags: newTags });
+    };
+
     const resetFilters = () => {
         setFilters({
             difficulty: [],
             status: "all",
-            statusSub: { correct: true, incorrect: true, hasOne: false }
+            statusSub: { correct: true, incorrect: true, hasOne: false },
+            tags: []
         });
+        setTagSearch("");
     };
 
-    const activeFilterCount = filters.difficulty.length + (filters.status !== "all" ? 1 : 0);
+    const allTags = [
+        "Array", "String", "Hash Table", "Math", "Dynamic Programming", 
+        "Binary Search", "Sorting", "Greedy", "Depth-First Search (DFS)", 
+        "Breadth-First Search (BFS)", "Tree", "Linked List", "Two Pointers", 
+        "Sliding Window", "Graph", "Bit Manipulation", "Stack", "Queue", 
+        "Backtracking", "Matrix"
+    ];
+
+    const activeFilterCount = filters.difficulty.length + (filters.status !== "all" ? 1 : 0) + filters.tags.length;
 
     const modalShellClass = isDark
         ? "bg-[linear-gradient(180deg,rgba(15,23,42,0.94),rgba(8,12,22,0.96))] border-slate-800/80 shadow-[0_45px_90px_rgba(2,6,23,0.7)] text-slate-100"
@@ -308,7 +335,7 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                 Filtering By {activeCategory}
                             </h4>
                             <h2 className="text-xl md:text-2xl font-black">
-                                {activeCategory === "difficulty" ? "How tough?" : "Your progress"}
+                                {activeCategory === "difficulty" ? "How tough?" : activeCategory === "status" ? "Your progress" : "Filter by Topics"}
                             </h2>
                         </div>
                         <div className="flex items-center gap-2">
@@ -478,6 +505,46 @@ export default function FilterModal({ isOpen, onClose, filters, setFilters }: Fi
                                             </div>
                                         );
                                     })}
+                                </div>
+                            )}
+
+                            {activeCategory === "tags" && (
+                                <div className="space-y-6">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search tags..."
+                                            value={tagSearch}
+                                            onChange={(e) => setTagSearch(e.target.value)}
+                                            className={`w-full px-4 py-3.5 text-sm rounded-2xl border outline-none transition-all focus:ring-4 focus:ring-violet-500/10 ${isDark 
+                                                ? "bg-slate-900/40 border-slate-800 text-white focus:border-violet-500/50 placeholder:text-slate-500" 
+                                                : "bg-white border-slate-200 text-slate-900 focus:border-violet-500/50 placeholder:text-slate-400"}`}
+                                        />
+                                    </div>
+                                    <div className="flex flex-wrap gap-2.5 max-h-[25rem] overflow-y-auto pr-2 custom-scrollbar">
+                                        {allTags
+                                            .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
+                                            .map((tag) => {
+                                                const isSelected = filters.tags.includes(tag);
+                                                return (
+                                                    <button
+                                                        key={tag}
+                                                        onClick={() => toggleTag(tag)}
+                                                        className={`px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-2 ${isSelected
+                                                            ? (isDark
+                                                                ? "bg-violet-600 border-violet-500 text-white shadow-[0_8px_20px_rgba(124,58,237,0.3)]"
+                                                                : "bg-violet-600 border-violet-600 text-white shadow-[0_8px_20px_rgba(124,58,237,0.2)]")
+                                                            : (isDark
+                                                                ? "bg-slate-900/30 border-slate-800/60 text-slate-300 hover:border-slate-700/60 hover:bg-slate-800/20"
+                                                                : "bg-slate-50/10 border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50/50")
+                                                        }`}
+                                                    >
+                                                        {tag}
+                                                        {isSelected && <Check className="w-4 h-4 stroke-[3px]" />}
+                                                    </button>
+                                                );
+                                            })}
+                                    </div>
                                 </div>
                             )}
                         </div>

@@ -649,5 +649,10 @@
             "input": "7 4 11 14 12 2 12 13 10 1 5 9 6 8 3",
             "output": "12"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math"
     ]
 }

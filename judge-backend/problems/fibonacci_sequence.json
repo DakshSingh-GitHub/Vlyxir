@@ -145,5 +145,9 @@
             "output": "610"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Math",
+        "Sliding Window"
+    ]
 }

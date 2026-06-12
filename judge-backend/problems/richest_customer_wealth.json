@@ -369,5 +369,10 @@
             "input": "2 4\n17 7 6 1\n20 4 2 18",
             "output": "44"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Matrix"
     ]
 }

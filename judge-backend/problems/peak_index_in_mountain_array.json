@@ -666,5 +666,9 @@
             "input": "90 93 94 96 100 97 92 90 85 80 76 75 71",
             "output": "4"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search"
     ]
 }

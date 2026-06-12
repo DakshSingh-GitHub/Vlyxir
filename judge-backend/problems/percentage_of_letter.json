@@ -421,5 +421,9 @@
             "input": "cabcbcdbdabcd\na",
             "output": "15"
         }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
     ]
 }

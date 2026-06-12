@@ -28,5 +28,8 @@
             "input": "3 3\nX X X\nX O X\nX X X",
             "output": "X X X\nX X X\nX X X"
         }
+    ],
+    "tags": [
+        "Matrix"
     ]
 }

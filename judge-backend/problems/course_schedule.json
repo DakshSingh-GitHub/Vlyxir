@@ -473,5 +473,9 @@
             "input": "5",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Graph"
     ]
 }

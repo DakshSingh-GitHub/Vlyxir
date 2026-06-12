@@ -661,5 +661,11 @@
             "output": "Not a Palindrome"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Two Pointers"
+    ]
 }

@@ -661,5 +661,9 @@
             "output": "11 62 83 3 64"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Two Pointers"
+    ]
 }

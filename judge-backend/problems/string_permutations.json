@@ -661,5 +661,16 @@
             "output": "AABC\nAACB\nABAC\nABCA\nACAB\nACBA\nBAAC\nBACA\nBCAA\nCAAB\nCABA\nCBAA"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Graph",
+        "Sliding Window",
+        "Sorting",
+        "String",
+        "Two Pointers"
+    ]
 }

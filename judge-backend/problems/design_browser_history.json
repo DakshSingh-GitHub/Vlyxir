@@ -24,5 +24,9 @@
             "input": "BrowserHistory visit back forward back\nexample.com test.com 10 10 1",
             "output": "null null example.com test.com example.com"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

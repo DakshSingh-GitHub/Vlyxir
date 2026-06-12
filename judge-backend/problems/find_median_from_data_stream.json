@@ -477,5 +477,9 @@
             "input": "MedianFinder\naddNum 21\naddNum 60\naddNum 76\naddNum 85\naddNum 61\naddNum 83\naddNum 73\naddNum 21\naddNum 85\nfindMedian\nfindMedian\nfindMedian\naddNum 87\naddNum 59\nfindMedian\naddNum 99\naddNum 82\nfindMedian\naddNum 41\naddNum 12\naddNum 8\naddNum 67\naddNum 22\naddNum 64\naddNum 61\nfindMedian\naddNum 38\naddNum 90\naddNum 83\nfindMedian",
             "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n73.0\n73.0\n73.0\nnull\nnull\n73.0\nnull\nnull\n76.0\nnull\nnull\nnull\nnull\nnull\nnull\nnull\n62.5\nnull\nnull\nnull\n64.0"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

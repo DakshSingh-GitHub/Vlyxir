@@ -663,5 +663,9 @@
             "input": "2\n17 29\n33 45",
             "output": "2"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

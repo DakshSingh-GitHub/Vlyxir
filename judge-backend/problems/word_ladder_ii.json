@@ -57,5 +57,10 @@
             "input": "cat\nfin\ncab fin can fat fan",
             "output": "[[\"cat\",\"can\",\"fan\",\"fin\"],[\"cat\",\"fat\",\"fan\",\"fin\"]]"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Math",
+        "String"
     ]
 }

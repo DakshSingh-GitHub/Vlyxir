@@ -661,5 +661,9 @@
             "input": "123487635",
             "output": "15714"
         }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Math"
     ]
 }

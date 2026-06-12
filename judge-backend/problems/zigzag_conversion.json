@@ -666,5 +666,9 @@
             "input": "JUDWOOMPCBDCWHUKE\n6",
             "output": "JDUBCDCWWPHOMUEOK"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

@@ -421,5 +421,9 @@
             "input": "21000",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Math",
+        "String"
     ]
 }

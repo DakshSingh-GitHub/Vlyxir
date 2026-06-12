@@ -661,5 +661,10 @@
             "output": "1011111101100"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Bit Manipulation",
+        "Math",
+        "String"
+    ]
 }

@@ -665,5 +665,11 @@
             "input": "adcecdabdbbcdcd",
             "output": "5"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
     ]
 }

@@ -661,5 +661,9 @@
             "output": "4"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Bit Manipulation",
+        "Math"
+    ]
 }

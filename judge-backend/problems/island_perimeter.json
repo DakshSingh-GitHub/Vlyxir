@@ -87,5 +87,12 @@
             "input": "5 5\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 1 1 0\n0 0 1 0 0",
             "output": "8"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Hash Table",
+        "Matrix",
+        "Two Pointers"
     ]
 }

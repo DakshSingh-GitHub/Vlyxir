@@ -421,5 +421,8 @@
             "output": "205379"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "Math"
+    ]
 }

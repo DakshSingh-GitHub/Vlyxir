@@ -657,5 +657,14 @@
             "output": "cdbcb"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Math",
+        "Queue",
+        "Sliding Window",
+        "String",
+        "Tree"
+    ]
 }

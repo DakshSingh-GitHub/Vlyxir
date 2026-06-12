@@ -417,5 +417,8 @@
             "input": "MinStack\npush -100\npop\npush 59\npush 0\npush -44\npush -42\ngetMin\npop\npop\npop\npush -99\npop\npush 25\ngetMin\npop\ntop\npush 47",
             "output": "null\nnull\nnull\nnull\nnull\nnull\nnull\n-44\nnull\nnull\nnull\nnull\nnull\nnull\n25\nnull\n59\nnull"
         }
+    ],
+    "tags": [
+        "Stack"
     ]
 }

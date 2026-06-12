@@ -26,5 +26,11 @@
             "input": "aaaa\naa",
             "output": "6"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math",
+        "String"
     ]
 }

@@ -657,5 +657,10 @@
             "output": "11 1"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Math",
+        "String"
+    ]
 }

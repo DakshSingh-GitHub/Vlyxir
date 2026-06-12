@@ -457,5 +457,9 @@
             "input": "weiikaqaxnsfpggxwxtfeinfmimcwkuaucroqsklqvoeyvrwldpogmeantsuvukxejksdbwnwhyrhquoerzlcrgtxwe",
             "output": "65"
         }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
     ]
 }

@@ -369,5 +369,10 @@
             "input": "NS\nv",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "Sliding Window",
+        "String"
     ]
 }

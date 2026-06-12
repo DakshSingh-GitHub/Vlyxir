@@ -425,5 +425,10 @@
             "input": "xhawebvywhvkneurukadqrkjocknowylncdapxkpzuffyfpilkqhlsmpsjdyagfgybrqgaexpstfdgpdhwunm",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String",
+        "Two Pointers"
     ]
 }

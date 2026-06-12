@@ -57,5 +57,9 @@
             "input": "za zb ca cb",
             "output": "zacb"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "String"
     ]
 }

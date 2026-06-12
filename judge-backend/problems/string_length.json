@@ -661,5 +661,8 @@
             "output": "25"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "String"
+    ]
 }

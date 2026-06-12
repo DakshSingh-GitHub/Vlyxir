@@ -662,5 +662,9 @@
             "output": "3 30\n22 35\n31 14"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Math",
+        "Matrix"
+    ]
 }

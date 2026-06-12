@@ -661,5 +661,9 @@
             "input": "73 85",
             "output": "77"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math"
     ]
 }

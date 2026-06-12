@@ -28,5 +28,13 @@
             "input": "1\n0",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Graph",
+        "Math",
+        "Matrix",
+        "Tree",
+        "Two Pointers"
     ]
 }

@@ -33,5 +33,9 @@
             "input": "2147483646 2147483647",
             "output": "2147483646"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Math"
     ]
 }

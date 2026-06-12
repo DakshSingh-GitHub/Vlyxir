@@ -425,5 +425,11 @@
             "input": "cty kebecvaoi",
             "output": "cty kebecvaoi"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Graph",
+        "String"
     ]
 }

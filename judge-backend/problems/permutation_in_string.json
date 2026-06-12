@@ -449,5 +449,10 @@
             "input": "tqrxdzdvdq riyyiyxvdtqqrddzxznkkjuuqqivrrotewahcxbxsescaurrvvtllhqpiwyycuzbiffpijmdczxllqtwzkgllposoxbc",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Backtracking",
+        "String"
     ]
 }

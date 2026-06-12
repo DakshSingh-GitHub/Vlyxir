@@ -657,5 +657,8 @@
             "output": "Goalo"
         }
     ],
-    "difficulty": "easy"
+    "difficulty": "easy",
+    "tags": [
+        "String"
+    ]
 }

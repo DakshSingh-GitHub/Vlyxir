@@ -662,5 +662,11 @@
             "input": "3 4 3 1",
             "output": "3 2"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Hash Table",
+        "Math"
     ]
 }

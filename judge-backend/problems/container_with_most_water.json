@@ -449,5 +449,11 @@
             "input": "12 41 1 58 36 8 26 37 78 13 26 28 95 53 61 88 35 77",
             "output": "812"
         }
+    ],
+    "tags": [
+        "Array",
+        "Dynamic Programming",
+        "Math",
+        "Two Pointers"
     ]
 }

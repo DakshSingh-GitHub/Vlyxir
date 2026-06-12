@@ -58,5 +58,11 @@
             "input": "1\n0",
             "output": "1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Linked List",
+        "Math",
+        "Two Pointers"
     ]
 }

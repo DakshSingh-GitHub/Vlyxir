@@ -369,5 +369,12 @@
             "input": "61 67 39 46",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

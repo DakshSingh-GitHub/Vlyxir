@@ -662,5 +662,14 @@
             "output": "483"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Math",
+        "Tree",
+        "Two Pointers"
+    ]
 }

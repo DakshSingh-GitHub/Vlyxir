@@ -57,5 +57,9 @@
             "input": "1 5 10 15\n3\n15",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Array",
+        "Hash Table"
     ]
 }

@@ -661,5 +661,11 @@
             "output": "5"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Dynamic Programming",
+        "Math",
+        "Sliding Window",
+        "String"
+    ]
 }

@@ -662,5 +662,10 @@
             "input": "19 19 17 17 16 16 11 10 10 7 7 6 6 6 4 2",
             "output": "9"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math"
     ]
 }

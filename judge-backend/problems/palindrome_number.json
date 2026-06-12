@@ -665,5 +665,10 @@
             "input": "74325",
             "output": "No"
         }
+    ],
+    "tags": [
+        "Math",
+        "String",
+        "Two Pointers"
     ]
 }

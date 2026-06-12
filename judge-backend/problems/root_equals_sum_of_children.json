@@ -421,5 +421,12 @@
             "input": "93 80 13",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Linked List",
+        "Math",
+        "Tree"
     ]
 }

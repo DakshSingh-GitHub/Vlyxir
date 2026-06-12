@@ -425,5 +425,11 @@
             "input": "jwof\nscpz owwooo jojwfj qxkzs jdnrpyo mlontetbq zrbt rexxb wfofffofww jfj hecwixcukx ss",
             "output": "4"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Sliding Window",
+        "String"
     ]
 }

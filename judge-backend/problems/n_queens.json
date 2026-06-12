@@ -53,5 +53,9 @@
             "output": "0"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Backtracking",
+        "Math"
+    ]
 }

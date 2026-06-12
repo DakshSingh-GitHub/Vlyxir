@@ -26,5 +26,12 @@
             "input": "efe",
             "output": "e f e\nefe"
         }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree",
+        "Two Pointers"
     ]
 }

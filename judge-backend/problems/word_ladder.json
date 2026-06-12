@@ -658,5 +658,12 @@
             "output": "5"
         }
     ],
-    "difficulty": "hard"
+    "difficulty": "hard",
+    "tags": [
+        "Array",
+        "Breadth-First Search (BFS)",
+        "Hash Table",
+        "Math",
+        "String"
+    ]
 }

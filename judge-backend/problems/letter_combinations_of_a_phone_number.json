@@ -465,5 +465,10 @@
             "input": "76684",
             "output": "pmmtg pmmth pmmti pmmug pmmuh pmmui pmmvg pmmvh pmmvi pmntg pmnth pmnti pmnug pmnuh pmnui pmnvg pmnvh pmnvi pmotg pmoth pmoti pmoug pmouh pmoui pmovg pmovh pmovi pnmtg pnmth pnmti pnmug pnmuh pnmui pnmvg pnmvh pnmvi pnntg pnnth pnnti pnnug pnnuh pnnui pnnvg pnnvh pnnvi pnotg pnoth pnoti pnoug pnouh pnoui pnovg pnovh pnovi pomtg pomth pomti pomug pomuh pomui pomvg pomvh pomvi pontg ponth ponti ponug ponuh ponui ponvg ponvh ponvi pootg pooth pooti pooug poouh pooui poovg poovh poovi qmmtg qmmth qmmti qmmug qmmuh qmmui qmmvg qmmvh qmmvi qmntg qmnth qmnti qmnug qmnuh qmnui qmnvg qmnvh qmnvi qmotg qmoth qmoti qmoug qmouh qmoui qmovg qmovh qmovi qnmtg qnmth qnmti qnmug qnmuh qnmui qnmvg qnmvh qnmvi qnntg qnnth qnnti qnnug qnnuh qnnui qnnvg qnnvh qnnvi qnotg qnoth qnoti qnoug qnouh qnoui qnovg qnovh qnovi qomtg qomth qomti qomug qomuh qomui qomvg qomvh qomvi qontg qonth qonti qonug qonuh qonui qonvg qonvh qonvi qootg qooth qooti qooug qoouh qooui qoovg qoovh qoovi rmmtg rmmth rmmti rmmug rmmuh rmmui rmmvg rmmvh rmmvi rmntg rmnth rmnti rmnug rmnuh rmnui rmnvg rmnvh rmnvi rmotg rmoth rmoti rmoug rmouh rmoui rmovg rmovh rmovi rnmtg rnmth rnmti rnmug rnmuh rnmui rnmvg rnmvh rnmvi rnntg rnnth rnnti rnnug rnnuh rnnui rnnvg rnnvh rnnvi rnotg rnoth rnoti rnoug rnouh rnoui rnovg rnovh rnovi romtg romth romti romug romuh romui romvg romvh romvi rontg ronth ronti ronug ronuh ronui ronvg ronvh ronvi rootg rooth rooti rooug roouh rooui roovg roovh roovi smmtg smmth smmti smmug smmuh smmui smmvg smmvh smmvi smntg smnth smnti smnug smnuh smnui smnvg smnvh smnvi smotg smoth smoti smoug smouh smoui smovg smovh smovi snmtg snmth snmti snmug snmuh snmui snmvg snmvh snmvi snntg snnth snnti snnug snnuh snnui snnvg snnvh snnvi snotg snoth snoti snoug snouh snoui snovg snovh snovi somtg somth somti somug somuh somui somvg somvh somvi sontg sonth sonti sonug sonuh sonui sonvg sonvh sonvi sootg sooth sooti sooug soouh sooui soovg soovh soovi"
         }
+    ],
+    "tags": [
+        "Backtracking",
+        "Math",
+        "String"
     ]
 }

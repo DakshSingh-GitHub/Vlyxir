@@ -34,5 +34,8 @@
             "input": "5 5 5 5 5\n2",
             "output": "15"
         }
+    ],
+    "tags": [
+        "General"
     ]
 }

@@ -658,5 +658,9 @@
             "output": "30"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Math"
+    ]
 }

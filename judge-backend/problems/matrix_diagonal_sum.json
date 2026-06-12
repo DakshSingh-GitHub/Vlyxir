@@ -369,5 +369,9 @@
             "input": "1\n3",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Math",
+        "Matrix"
     ]
 }

@@ -421,5 +421,9 @@
             "input": "bbc abc cc ba aaac a cacb b ba\nbab",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Array",
+        "String"
     ]
 }

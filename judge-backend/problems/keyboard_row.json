@@ -667,5 +667,10 @@
             "input": "sfd Dad omk Peace Hello",
             "output": "sfd Dad"
         }
+    ],
+    "tags": [
+        "Array",
+        "Sliding Window",
+        "String"
     ]
 }

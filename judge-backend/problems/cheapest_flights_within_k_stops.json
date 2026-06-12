@@ -29,5 +29,10 @@
             "input": "3\n2\n0 1 100\n1 2 100\n0 2 1",
             "output": "200"
         }
+    ],
+    "tags": [
+        "Array",
+        "Math",
+        "Sorting"
     ]
 }

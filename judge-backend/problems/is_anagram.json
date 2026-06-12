@@ -477,5 +477,9 @@
             "input": "mwoihzfhnavyacyxqwycmbrynourjnbvdfbszuvvue wrmzvqhjuvybvaxbrsuhbfnoyyofyaeumczwnnvcdi",
             "output": "true"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "String"
     ]
 }

@@ -449,5 +449,12 @@
             "input": "8 39 57 63 68 93\n3",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

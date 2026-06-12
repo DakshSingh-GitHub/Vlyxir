@@ -658,5 +658,12 @@
             "output": "act cat\nart\nnat nat\nsilent"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Hash Table",
+        "Sorting",
+        "String",
+        "Two Pointers"
+    ]
 }

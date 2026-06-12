@@ -453,5 +453,11 @@
             "input": "2 6 15 14 4 5 17 9 1 11 10 12 7 18 13 3 16 8\n7\n10",
             "output": "2"
         }
+    ],
+    "tags": [
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Linked List",
+        "Tree"
     ]
 }

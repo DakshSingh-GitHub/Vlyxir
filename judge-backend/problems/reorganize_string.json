@@ -657,5 +657,9 @@
             "output": "acacabaca"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Sliding Window",
+        "String"
+    ]
 }

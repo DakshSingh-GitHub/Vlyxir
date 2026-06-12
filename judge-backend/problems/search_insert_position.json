@@ -667,5 +667,12 @@
             "input": "-82 -71 -54 -3 42\n-27",
             "output": "3"
         }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
     ]
 }

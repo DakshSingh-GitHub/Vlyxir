@@ -425,5 +425,9 @@
             "input": "fnvqyowtkbbrslo nkqsvomskrszbavjwsbdqplkesoqmpjz",
             "output": "false"
         }
+    ],
+    "tags": [
+        "Hash Table",
+        "String"
     ]
 }

@@ -29,5 +29,10 @@
             "input": "2 2\n1\n1 2 1",
             "output": "-1"
         }
+    ],
+    "tags": [
+        "Array",
+        "Graph",
+        "Linked List"
     ]
 }

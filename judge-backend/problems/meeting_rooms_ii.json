@@ -657,5 +657,10 @@
             "output": "4"
         }
     ],
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "tags": [
+        "Array",
+        "Greedy",
+        "Math"
+    ]
 }

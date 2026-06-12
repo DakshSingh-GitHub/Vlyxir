@@ -665,5 +665,10 @@
             "input": "88",
             "output": "2"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Dynamic Programming",
+        "Math"
     ]
 }

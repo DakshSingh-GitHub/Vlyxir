@@ -665,5 +665,11 @@
             "input": "words and 1671339704 with words",
             "output": "0"
         }
+    ],
+    "tags": [
+        "Bit Manipulation",
+        "Math",
+        "Sliding Window",
+        "String"
     ]
 }
