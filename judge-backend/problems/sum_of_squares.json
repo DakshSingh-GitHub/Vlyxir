@@ -1,0 +1,112 @@
+{
+    "id": "sum_of_squares",
+    "title": "Sum of Squares",
+    "description": "Given an integer n, calculate the sum of squares of the first n natural numbers.",
+    "input_format": "A single integer n.",
+    "output_format": "A single integer representing the sum of squares.",
+    "constraints": {
+        "n": "1 <= n <= 10^4"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "5525",
+            "output": "56233289775"
+        },
+        {
+            "input": "5337",
+            "output": "50686511925"
+        },
+        {
+            "input": "8510",
+            "output": "205467895135"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "9314",
+            "output": "269375060565"
+        },
+        {
+            "input": "1907",
+            "output": "2313515190"
+        },
+        {
+            "input": "6946",
+            "output": "111731817461"
+        },
+        {
+            "input": "4131",
+            "output": "23507259966"
+        },
+        {
+            "input": "5847",
+            "output": "66648354820"
+        },
+        {
+            "input": "6445",
+            "output": "89258293795"
+        },
+        {
+            "input": "2251",
+            "output": "3804473626"
+        },
+        {
+            "input": "9141",
+            "output": "254642643871"
+        },
+        {
+            "input": "7487",
+            "output": "139923045600"
+        },
+        {
+            "input": "388",
+            "output": "19545694"
+        },
+        {
+            "input": "9939",
+            "output": "327319861190"
+        },
+        {
+            "input": "963",
+            "output": "298149294"
+        },
+        {
+            "input": "318",
+            "output": "10769759"
+        },
+        {
+            "input": "8968",
+            "output": "240457419084"
+        },
+        {
+            "input": "9775",
+            "output": "311383563400"
+        },
+        {
+            "input": "2121",
+            "output": "3182788861"
+        },
+        {
+            "input": "8561",
+            "output": "209183934281"
+        },
+        {
+            "input": "4020",
+            "output": "21663016870"
+        },
+        {
+            "input": "5804",
+            "output": "65188830330"
+        },
+        {
+            "input": "9153",
+            "output": "255646765089"
+        }
+    ],
+    "tags": [
+        "Math"
+    ]
+}

@@ -1,0 +1,112 @@
+{
+    "id": "harshad_number_check",
+    "title": "Harshad Number Check",
+    "description": "An integer n is a Harshad number if it is divisible by the sum of its digits. Given n, check if it is a Harshad number.",
+    "input_format": "A single integer n.",
+    "output_format": "'true' or 'false'.",
+    "constraints": {
+        "n": "1 <= n <= 10^9"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "6036185",
+            "output": "false"
+        },
+        {
+            "input": "9016800",
+            "output": "true"
+        },
+        {
+            "input": "5967808",
+            "output": "false"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "4354281",
+            "output": "false"
+        },
+        {
+            "input": "5939954",
+            "output": "false"
+        },
+        {
+            "input": "4218779",
+            "output": "false"
+        },
+        {
+            "input": "9811179",
+            "output": "false"
+        },
+        {
+            "input": "7911207",
+            "output": "false"
+        },
+        {
+            "input": "8830183",
+            "output": "false"
+        },
+        {
+            "input": "9022101",
+            "output": "false"
+        },
+        {
+            "input": "5453954",
+            "output": "false"
+        },
+        {
+            "input": "2599542",
+            "output": "false"
+        },
+        {
+            "input": "710613",
+            "output": "false"
+        },
+        {
+            "input": "9633191",
+            "output": "false"
+        },
+        {
+            "input": "9496927",
+            "output": "false"
+        },
+        {
+            "input": "7706161",
+            "output": "false"
+        },
+        {
+            "input": "1908757",
+            "output": "false"
+        },
+        {
+            "input": "663541",
+            "output": "false"
+        },
+        {
+            "input": "1807207",
+            "output": "false"
+        },
+        {
+            "input": "7251487",
+            "output": "false"
+        },
+        {
+            "input": "4323981",
+            "output": "false"
+        },
+        {
+            "input": "8696930",
+            "output": "false"
+        },
+        {
+            "input": "7972354",
+            "output": "false"
+        }
+    ],
+    "tags": [
+        "Math"
+    ]
+}

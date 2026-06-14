@@ -1,0 +1,112 @@
+{
+    "id": "is_power_of_five",
+    "title": "Is Power of Five",
+    "description": "Given an integer n, return true if it is a power of five. Otherwise, return false.",
+    "input_format": "A single integer n.",
+    "output_format": "'true' or 'false'.",
+    "constraints": {
+        "n": "-2^31 <= n <= 2^31 - 1"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "2505",
+            "output": "false"
+        },
+        {
+            "input": "1220703125",
+            "output": "true"
+        },
+        {
+            "input": "244140625",
+            "output": "true"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2827",
+            "output": "false"
+        },
+        {
+            "input": "5462",
+            "output": "false"
+        },
+        {
+            "input": "2984",
+            "output": "false"
+        },
+        {
+            "input": "4785",
+            "output": "false"
+        },
+        {
+            "input": "6151",
+            "output": "false"
+        },
+        {
+            "input": "8661",
+            "output": "false"
+        },
+        {
+            "input": "762",
+            "output": "false"
+        },
+        {
+            "input": "3125",
+            "output": "true"
+        },
+        {
+            "input": "8617",
+            "output": "false"
+        },
+        {
+            "input": "125",
+            "output": "true"
+        },
+        {
+            "input": "6688",
+            "output": "false"
+        },
+        {
+            "input": "48828125",
+            "output": "true"
+        },
+        {
+            "input": "78125",
+            "output": "true"
+        },
+        {
+            "input": "1953125",
+            "output": "true"
+        },
+        {
+            "input": "5134",
+            "output": "false"
+        },
+        {
+            "input": "625",
+            "output": "true"
+        },
+        {
+            "input": "9765625",
+            "output": "true"
+        },
+        {
+            "input": "5981",
+            "output": "false"
+        },
+        {
+            "input": "1",
+            "output": "true"
+        },
+        {
+            "input": "-137",
+            "output": "false"
+        }
+    ],
+    "tags": [
+        "Math"
+    ]
+}

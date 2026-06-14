@@ -1,0 +1,113 @@
+{
+    "id": "compress_string",
+    "title": "Compress String",
+    "description": "Implement a method to perform basic string compression using the counts of repeated characters. For example, aabcccccaaa would become a2b1c5a3.",
+    "input_format": "A single string containing alphabetical characters.",
+    "output_format": "The compressed string.",
+    "constraints": {
+        "s.length": "1 <= length <= 1000"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "daaaaaeeeeeeeeegggeeeegg",
+            "output": "d1a5e9g3e4g2"
+        },
+        {
+            "input": "ccccccccbbffeeeeeeeeddddfffff",
+            "output": "c8b2f2e8d4f5"
+        },
+        {
+            "input": "aaaaafffffeaagcccc",
+            "output": "a5f5e1a2g1c4"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "ddddffffcccaaadddd",
+            "output": "d4f4c3a3d4"
+        },
+        {
+            "input": "eeeeeeeeeeeeedddddbbbcccccdgggcccccegggggcddgbbb",
+            "output": "e13d5b3c5d1g3c5e1g5c1d2g1b3"
+        },
+        {
+            "input": "ggffddddaaaadddddccc",
+            "output": "g2f2d4a4d5c3"
+        },
+        {
+            "input": "cffffgeefffddddddddddddcccc",
+            "output": "c1f4g1e2f3d12c4"
+        },
+        {
+            "input": "ddeeeeeeeedaaaabbbcccdddaabbbbbggggffff",
+            "output": "d2e8d1a4b3c3d3a2b5g4f4"
+        },
+        {
+            "input": "ggddeeeeecccce",
+            "output": "g2d2e5c4e1"
+        },
+        {
+            "input": "fbbbbbbbbggggaaa",
+            "output": "f1b8g4a3"
+        },
+        {
+            "input": "dfffffffeebbbbbffaaaaaggggddddaabbbbbffggggg",
+            "output": "d1f7e2b5f2a5g4d4a2b5f2g5"
+        },
+        {
+            "input": "bbbbffffgbeebbbbbbb",
+            "output": "b4f4g1b1e2b7"
+        },
+        {
+            "input": "fffffbbggffaaabggbbbbbbbbbbddd",
+            "output": "f5b2g2f2a3b1g2b10d3"
+        },
+        {
+            "input": "aaaaggggeeeffdddddeeeeebggggdddddcadddd",
+            "output": "a4g4e3f2d5e5b1g4d5c1a1d4"
+        },
+        {
+            "input": "eeeeeffffffffeeebaaaaaee",
+            "output": "e5f8e3b1a5e2"
+        },
+        {
+            "input": "ddddccbbbddddaaaadeeeeeddd",
+            "output": "d4c2b3d4a4d1e5d3"
+        },
+        {
+            "input": "ggffffddddbbbbbeeeeeeeebbbbbddffffgffffgggg",
+            "output": "g2f4d4b5e8b5d2f4g1f4g4"
+        },
+        {
+            "input": "aaeeeefeeeeeeeeeaaadddddaaaacaaaafffaaaabbbbbaa",
+            "output": "a2e4f1e9a3d5a4c1a4f3a4b5a2"
+        },
+        {
+            "input": "bafffffffffgggggaaaaeeea",
+            "output": "b1a1f9g5a4e3a1"
+        },
+        {
+            "input": "gbbbbddddaaaaaddgg",
+            "output": "g1b4d4a5d2g2"
+        },
+        {
+            "input": "bbbbaaaaaafffffccccc",
+            "output": "b4a6f5c5"
+        },
+        {
+            "input": "gggbbbbdddgggggddddfffffffff",
+            "output": "g3b4d3g5d4f9"
+        },
+        {
+            "input": "dfaafffffee",
+            "output": "d1f1a2f5e2"
+        }
+    ],
+    "tags": [
+        "Sliding Window",
+        "String"
+    ]
+}

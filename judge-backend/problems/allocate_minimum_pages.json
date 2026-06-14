@@ -1,0 +1,115 @@
+{
+    "id": "allocate_minimum_pages",
+    "title": "Allocate Minimum Pages",
+    "description": "Allocate books to m students such that the maximum number of pages allocated to a student is minimized. Return the minimized maximum pages. If allocation not possible, return -1.",
+    "input_format": "First line: space-separated integers representing pages of books. Second line: number of students m.",
+    "output_format": "Minimized max pages or -1.",
+    "constraints": {
+        "arr.length": "1 <= length <= 10^5",
+        "m": "1 <= m <= 10^5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "97 14 48 47 22 16 38 41 76 84\n3",
+            "output": "164"
+        },
+        {
+            "input": "70 60 26 94 51 59 56 67 48 88\n3",
+            "output": "250"
+        },
+        {
+            "input": "46 74 34 99 18 42 34 13 50 26\n5",
+            "output": "108"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "15 24 10 75 26 30 77 75 96 31\n4",
+            "output": "133"
+        },
+        {
+            "input": "53 36 100 30 24 81 49 67 20 63\n4",
+            "output": "154"
+        },
+        {
+            "input": "12 35 27 62 38 12 31 79 89 73\n5",
+            "output": "112"
+        },
+        {
+            "input": "89 34 48 48 69 84 36 12 85 93\n5",
+            "output": "153"
+        },
+        {
+            "input": "74 56 56 99 86 98 52 78 91 34\n3",
+            "output": "283"
+        },
+        {
+            "input": "82 45 30 52 10 45 51 65 91 98\n5",
+            "output": "137"
+        },
+        {
+            "input": "80 82 77 70 31 23 91 46 60 70\n5",
+            "output": "159"
+        },
+        {
+            "input": "12 26 14 21 54 17 94 61 76 72\n2",
+            "output": "238"
+        },
+        {
+            "input": "98 80 70 81 47 92 96 69 48 54\n5",
+            "output": "178"
+        },
+        {
+            "input": "91 33 28 89 22 98 16 81 45 75\n4",
+            "output": "195"
+        },
+        {
+            "input": "26 69 16 80 50 76 27 17 52 100\n3",
+            "output": "191"
+        },
+        {
+            "input": "79 68 56 22 96 96 63 32 30 58\n3",
+            "output": "214"
+        },
+        {
+            "input": "71 31 86 49 35 54 22 39 92 48\n5",
+            "output": "135"
+        },
+        {
+            "input": "18 35 52 85 100 71 89 92 56 97\n2",
+            "output": "361"
+        },
+        {
+            "input": "33 19 96 86 29 58 88 26 22 70\n4",
+            "output": "148"
+        },
+        {
+            "input": "24 28 16 91 54 27 43 26 28 48\n2",
+            "output": "213"
+        },
+        {
+            "input": "85 34 20 62 96 26 45 25 91 64\n3",
+            "output": "201"
+        },
+        {
+            "input": "80 65 71 78 87 81 34 44 15 86\n4",
+            "output": "179"
+        },
+        {
+            "input": "66 77 43 95 42 14 44 17 35 18\n2",
+            "output": "265"
+        },
+        {
+            "input": "79 47 19 14 61 58 72 48 37 27\n5",
+            "output": "119"
+        }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math"
+    ]
+}

@@ -1,0 +1,116 @@
+{
+    "id": "count_substrings_with_k_distinct",
+    "title": "Count Substrings with K Distinct Characters",
+    "description": "Given a string of lowercase alphabets, count the number of substrings containing exactly k distinct characters.",
+    "input_format": "First line: a string s. Second line: integer k.",
+    "output_format": "Number of substrings.",
+    "constraints": {
+        "s.length": "1 <= length <= 10^4",
+        "k": "1 <= k <= 26"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "gdfbefcececbgegebgeacgddfddbedagedcgbebebccacbgcabcfdgefacfa\n3",
+            "output": "97"
+        },
+        {
+            "input": "ccffbadeedfgefbbdgbadbacefgfeaffgeccdbgcaffabddcbgdecedgbfeb\n2",
+            "output": "71"
+        },
+        {
+            "input": "ffdfafccgcecacaebfdfgaacggffbcgcbbgaac\n2",
+            "output": "55"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "gbdgfdaccfdfeaeegeadgeebbgabfddbgcbefaceeffddefgcbagfadfbaggcegaagagbbbdefff\n4",
+            "output": "157"
+        },
+        {
+            "input": "bdcfbfedbcbdbcbedbfgdgebgdagagcdabdcfeeabeddagfaeedbcaggbaaggbfgcbffcagegeabac\n3",
+            "output": "129"
+        },
+        {
+            "input": "bafegabdafcbdbdadbacbddbcdgggfebeadaafb\n4",
+            "output": "110"
+        },
+        {
+            "input": "bfabbfbadfdfbgdedceggeffccfdafcbdbcecgfggbebbccfeebgeggfdcececefagedggdafa\n2",
+            "output": "114"
+        },
+        {
+            "input": "gffcfcdabfcffffdafcacbgcbaebdbaagfebgefggfe\n3",
+            "output": "69"
+        },
+        {
+            "input": "dgegefbgdecfaeafcbbgdcdbbgbggfcaecdaffbcc\n3",
+            "output": "53"
+        },
+        {
+            "input": "dfagebedgeaeaacfbgfbfedbedccgdgcabadfbbfbgadgegcfeadaabdaegfcfeffgffaceebegebc\n3",
+            "output": "129"
+        },
+        {
+            "input": "eagebebggbbfffceaceccgfddggfdebaeebgceeaebaaefbbbdgaaeedbbbacfaccdfbed\n2",
+            "output": "100"
+        },
+        {
+            "input": "ggaceadefdfbbgacgbggedgddggfgdfdfeedfgdaddeebdcggacfgeg\n2",
+            "output": "81"
+        },
+        {
+            "input": "egadcdaabeaabgbbedeccdggbebaadeecabacdgedcbbadgfcefeddfgfcdfcfbdedgefdef\n2",
+            "output": "90"
+        },
+        {
+            "input": "fgcabacecggdaabbcgbfdbecbdefcdbccfgcfcdeaaeaceeeccabbegecgccadfaddcceacbeecgcdcc\n4",
+            "output": "173"
+        },
+        {
+            "input": "ebcfafebabddagaegefadceaedfccceeffcbafdecdgafgcgfc\n2",
+            "output": "63"
+        },
+        {
+            "input": "addgbadccbefefbbcbfccfgdadcdgdgacebafebecgbfbdagedeebcdfaabafabeaebdbaffgdbd\n2",
+            "output": "103"
+        },
+        {
+            "input": "efbecgcgbbbafgfgbceaeabcgcacdfeacbbebebcgabgcbdbcdbdbbbaeecege\n2",
+            "output": "98"
+        },
+        {
+            "input": "fegbfegeegdebaedfeeccfcbcegdbadd\n4",
+            "output": "64"
+        },
+        {
+            "input": "aegcecbagfdgacbfdfdacgfbafbgaefgcbggfdgacgb\n2",
+            "output": "47"
+        },
+        {
+            "input": "begfbfgeefaagbdffccedbedfcfdcgdcdabgddgbecbefcbgbfcdgdfbeacbdcgcdagcb\n3",
+            "output": "100"
+        },
+        {
+            "input": "gbccfafaccbbgedcbadfagccbcgedgcefgbbdbefacdcbgdaabbfbdbdab\n2",
+            "output": "79"
+        },
+        {
+            "input": "eeecadbdegbfafbafbdegeafcbecafdcbdbgeefbfaffebfbfacgc\n3",
+            "output": "86"
+        },
+        {
+            "input": "abgebdgbgdebdbegbeadcecabaggfdbbaggcccgdcbbbefbb\n4",
+            "output": "151"
+        }
+    ],
+    "tags": [
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
+    ]
+}

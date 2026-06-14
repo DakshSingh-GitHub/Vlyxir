@@ -1,0 +1,112 @@
+{
+    "id": "armstrong_numbers_in_range",
+    "title": "Armstrong Numbers in Range",
+    "description": "Given a range [low, high], print all Armstrong numbers in this range (inclusive) separated by space. If there are none, return -1.",
+    "input_format": "Two space-separated integers low and high.",
+    "output_format": "Space-separated Armstrong numbers or -1.",
+    "constraints": {
+        "low, high": "1 <= low <= high <= 10^5"
+    },
+    "difficulty": "easy",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "38 8227",
+            "output": "153 370 371 407 1634 8208"
+        },
+        {
+            "input": "99 8210",
+            "output": "153 370 371 407 1634 8208"
+        },
+        {
+            "input": "76 2677",
+            "output": "153 370 371 407 1634"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "5 9932",
+            "output": "5 6 7 8 9 153 370 371 407 1634 8208 9474"
+        },
+        {
+            "input": "70 4354",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "34 3172",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "8 5419",
+            "output": "8 9 153 370 371 407 1634"
+        },
+        {
+            "input": "85 9275",
+            "output": "153 370 371 407 1634 8208"
+        },
+        {
+            "input": "90 4679",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "72 9438",
+            "output": "153 370 371 407 1634 8208"
+        },
+        {
+            "input": "5 4789",
+            "output": "5 6 7 8 9 153 370 371 407 1634"
+        },
+        {
+            "input": "22 5872",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "98 5173",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "100 5157",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "66 3370",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "20 5524",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "89 4568",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "89 6162",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "86 6161",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "14 2563",
+            "output": "153 370 371 407 1634"
+        },
+        {
+            "input": "8 4190",
+            "output": "8 9 153 370 371 407 1634"
+        },
+        {
+            "input": "95 9175",
+            "output": "153 370 371 407 1634 8208"
+        },
+        {
+            "input": "56 3412",
+            "output": "153 370 371 407 1634"
+        }
+    ],
+    "tags": [
+        "Math"
+    ]
+}

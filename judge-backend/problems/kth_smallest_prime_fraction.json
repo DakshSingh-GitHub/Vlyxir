@@ -1,0 +1,117 @@
+{
+    "id": "kth_smallest_prime_fraction",
+    "title": "Kth Smallest Prime Fraction",
+    "description": "You are given a sorted list of primes. For every pair of primes i and j, the fraction is prime[i]/prime[j]. Return the Kth smallest fraction in the format numerator/denominator.",
+    "input_format": "First line: space-separated primes. Second line: integer k.",
+    "output_format": "Fraction representation numerator/denominator.",
+    "constraints": {
+        "arr.length": "2 <= length <= 1000",
+        "k": "1 <= k <= length*(length-1)/2"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n26",
+            "output": "13/29"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n21",
+            "output": "11/29"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n10",
+            "output": "3/17"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n28",
+            "output": "11/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n16",
+            "output": "3/11"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n36",
+            "output": "19/29"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n2",
+            "output": "2/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n19",
+            "output": "7/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n7",
+            "output": "2/13"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n27",
+            "output": "5/11"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n9",
+            "output": "5/29"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n29",
+            "output": "7/13"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n35",
+            "output": "11/17"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n38",
+            "output": "13/19"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n12",
+            "output": "5/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n11",
+            "output": "2/11"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n30",
+            "output": "13/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n6",
+            "output": "3/23"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n25",
+            "output": "3/7"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n18",
+            "output": "5/17"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n22",
+            "output": "5/13"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n23",
+            "output": "2/5"
+        },
+        {
+            "input": "2 3 5 7 11 13 17 19 23 29\n20",
+            "output": "7/19"
+        }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math",
+        "Sorting",
+        "Two Pointers"
+    ]
+}

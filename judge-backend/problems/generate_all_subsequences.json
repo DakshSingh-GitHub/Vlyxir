@@ -1,0 +1,122 @@
+{
+    "id": "generate_all_subsequences",
+    "title": "Generate All Subsequences",
+    "description": "Given a string of unique characters, generate all non-empty subsequences and return them separated by space in lexicographically sorted order.",
+    "input_format": "A single string containing unique characters.",
+    "output_format": "Space-separated subsequences.",
+    "constraints": {
+        "s.length": "1 <= length <= 12"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "edfhgab",
+            "output": "a ab b d da dab db df dfa dfab dfb dfg dfga dfgab dfgb dfh dfha dfhab dfhb dfhg dfhga dfhgab dfhgb dg dga dgab dgb dh dha dhab dhb dhg dhga dhgab dhgb e ea eab eb ed eda edab edb edf edfa edfab edfb edfg edfga edfgab edfgb edfh edfha edfhab edfhb edfhg edfhga edfhgab edfhgb edg edga edgab edgb edh edha edhab edhb edhg edhga edhgab edhgb ef efa efab efb efg efga efgab efgb efh efha efhab efhb efhg efhga efhgab efhgb eg ega egab egb eh eha ehab ehb ehg ehga ehgab ehgb f fa fab fb fg fga fgab fgb fh fha fhab fhb fhg fhga fhgab fhgb g ga gab gb h ha hab hb hg hga hgab hgb"
+        },
+        {
+            "input": "aehgf",
+            "output": "a ae aef aeg aegf aeh aehf aehg aehgf af ag agf ah ahf ahg ahgf e ef eg egf eh ehf ehg ehgf f g gf h hf hg hgf"
+        },
+        {
+            "input": "bhaedf",
+            "output": "a ad adf ae aed aedf aef af b ba bad badf bae baed baedf baef baf bd bdf be bed bedf bef bf bh bha bhad bhadf bhae bhaed bhaedf bhaef bhaf bhd bhdf bhe bhed bhedf bhef bhf d df e ed edf ef f h ha had hadf hae haed haedf haef haf hd hdf he hed hedf hef hf"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "abeh",
+            "output": "a ab abe abeh abh ae aeh ah b be beh bh e eh h"
+        },
+        {
+            "input": "eacg",
+            "output": "a ac acg ag c cg e ea eac eacg eag ec ecg eg g"
+        },
+        {
+            "input": "efbhga",
+            "output": "a b ba bg bga bh bha bhg bhga e ea eb eba ebg ebga ebh ebha ebhg ebhga ef efa efb efba efbg efbga efbh efbha efbhg efbhga efg efga efh efha efhg efhga eg ega eh eha ehg ehga f fa fb fba fbg fbga fbh fbha fbhg fbhga fg fga fh fha fhg fhga g ga h ha hg hga"
+        },
+        {
+            "input": "fcegh",
+            "output": "c ce ceg cegh ceh cg cgh ch e eg egh eh f fc fce fceg fcegh fceh fcg fcgh fch fe feg fegh feh fg fgh fh g gh h"
+        },
+        {
+            "input": "gahc",
+            "output": "a ac ah ahc c g ga gac gah gahc gc gh ghc h hc"
+        },
+        {
+            "input": "fabgdc",
+            "output": "a ab abc abd abdc abg abgc abgd abgdc ac ad adc ag agc agd agdc b bc bd bdc bg bgc bgd bgdc c d dc f fa fab fabc fabd fabdc fabg fabgc fabgd fabgdc fac fad fadc fag fagc fagd fagdc fb fbc fbd fbdc fbg fbgc fbgd fbgdc fc fd fdc fg fgc fgd fgdc g gc gd gdc"
+        },
+        {
+            "input": "cbegdf",
+            "output": "b bd bdf be bed bedf bef beg begd begdf begf bf bg bgd bgdf bgf c cb cbd cbdf cbe cbed cbedf cbef cbeg cbegd cbegdf cbegf cbf cbg cbgd cbgdf cbgf cd cdf ce ced cedf cef ceg cegd cegdf cegf cf cg cgd cgdf cgf d df e ed edf ef eg egd egdf egf f g gd gdf gf"
+        },
+        {
+            "input": "gcfdb",
+            "output": "b c cb cd cdb cf cfb cfd cfdb d db f fb fd fdb g gb gc gcb gcd gcdb gcf gcfb gcfd gcfdb gd gdb gf gfb gfd gfdb"
+        },
+        {
+            "input": "fbegahd",
+            "output": "a ad ah ahd b ba bad bah bahd bd be bea bead beah beahd bed beg bega begad begah begahd begd begh beghd beh behd bg bga bgad bgah bgahd bgd bgh bghd bh bhd d e ea ead eah eahd ed eg ega egad egah egahd egd egh eghd eh ehd f fa fad fah fahd fb fba fbad fbah fbahd fbd fbe fbea fbead fbeah fbeahd fbed fbeg fbega fbegad fbegah fbegahd fbegd fbegh fbeghd fbeh fbehd fbg fbga fbgad fbgah fbgahd fbgd fbgh fbghd fbh fbhd fd fe fea fead feah feahd fed feg fega fegad fegah fegahd fegd fegh feghd feh fehd fg fga fgad fgah fgahd fgd fgh fghd fh fhd g ga gad gah gahd gd gh ghd h hd"
+        },
+        {
+            "input": "ecagb",
+            "output": "a ab ag agb b c ca cab cag cagb cb cg cgb e ea eab eag eagb eb ec eca ecab ecag ecagb ecb ecg ecgb eg egb g gb"
+        },
+        {
+            "input": "ghca",
+            "output": "a c ca g ga gc gca gh gha ghc ghca h ha hc hca"
+        },
+        {
+            "input": "ehfbag",
+            "output": "a ag b ba bag bg e ea eag eb eba ebag ebg ef efa efag efb efba efbag efbg efg eg eh eha ehag ehb ehba ehbag ehbg ehf ehfa ehfag ehfb ehfba ehfbag ehfbg ehfg ehg f fa fag fb fba fbag fbg fg g h ha hag hb hba hbag hbg hf hfa hfag hfb hfba hfbag hfbg hfg hg"
+        },
+        {
+            "input": "cfea",
+            "output": "a c ca ce cea cf cfa cfe cfea e ea f fa fe fea"
+        },
+        {
+            "input": "dahbeg",
+            "output": "a ab abe abeg abg ae aeg ag ah ahb ahbe ahbeg ahbg ahe aheg ahg b be beg bg d da dab dabe dabeg dabg dae daeg dag dah dahb dahbe dahbeg dahbg dahe daheg dahg db dbe dbeg dbg de deg dg dh dhb dhbe dhbeg dhbg dhe dheg dhg e eg g h hb hbe hbeg hbg he heg hg"
+        },
+        {
+            "input": "gabcfed",
+            "output": "a ab abc abcd abce abced abcf abcfd abcfe abcfed abd abe abed abf abfd abfe abfed ac acd ace aced acf acfd acfe acfed ad ae aed af afd afe afed b bc bcd bce bced bcf bcfd bcfe bcfed bd be bed bf bfd bfe bfed c cd ce ced cf cfd cfe cfed d e ed f fd fe fed g ga gab gabc gabcd gabce gabced gabcf gabcfd gabcfe gabcfed gabd gabe gabed gabf gabfd gabfe gabfed gac gacd gace gaced gacf gacfd gacfe gacfed gad gae gaed gaf gafd gafe gafed gb gbc gbcd gbce gbced gbcf gbcfd gbcfe gbcfed gbd gbe gbed gbf gbfd gbfe gbfed gc gcd gce gced gcf gcfd gcfe gcfed gd ge ged gf gfd gfe gfed"
+        },
+        {
+            "input": "bgfhcad",
+            "output": "a ad b ba bad bc bca bcad bcd bd bf bfa bfad bfc bfca bfcad bfcd bfd bfh bfha bfhad bfhc bfhca bfhcad bfhcd bfhd bg bga bgad bgc bgca bgcad bgcd bgd bgf bgfa bgfad bgfc bgfca bgfcad bgfcd bgfd bgfh bgfha bgfhad bgfhc bgfhca bgfhcad bgfhcd bgfhd bgh bgha bghad bghc bghca bghcad bghcd bghd bh bha bhad bhc bhca bhcad bhcd bhd c ca cad cd d f fa fad fc fca fcad fcd fd fh fha fhad fhc fhca fhcad fhcd fhd g ga gad gc gca gcad gcd gd gf gfa gfad gfc gfca gfcad gfcd gfd gfh gfha gfhad gfhc gfhca gfhcad gfhcd gfhd gh gha ghad ghc ghca ghcad ghcd ghd h ha had hc hca hcad hcd hd"
+        },
+        {
+            "input": "ebcd",
+            "output": "b bc bcd bd c cd d e eb ebc ebcd ebd ec ecd ed"
+        },
+        {
+            "input": "baegf",
+            "output": "a ae aef aeg aegf af ag agf b ba bae baef baeg baegf baf bag bagf be bef beg begf bf bg bgf e ef eg egf f g gf"
+        },
+        {
+            "input": "bfha",
+            "output": "a b ba bf bfa bfh bfha bh bha f fa fh fha h ha"
+        },
+        {
+            "input": "dgbac",
+            "output": "a ac b ba bac bc c d da dac db dba dbac dbc dc dg dga dgac dgb dgba dgbac dgbc dgc g ga gac gb gba gbac gbc gc"
+        }
+    ],
+    "tags": [
+        "Array",
+        "Backtracking",
+        "Breadth-First Search (BFS)",
+        "Depth-First Search (DFS)",
+        "Dynamic Programming",
+        "Graph",
+        "Math",
+        "Sliding Window",
+        "Sorting",
+        "String",
+        "Two Pointers"
+    ]
+}

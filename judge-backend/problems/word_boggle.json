@@ -1,0 +1,29 @@
+{
+    "id": "word_boggle",
+    "title": "Word Boggle",
+    "description": "Given a dictionary of unique words and an M x N board, find all words in the dictionary that can be formed by sequential adjacent characters on the board.",
+    "input_format": "First line: dictionary words separated by space. Second line: board dimensions r and c. Following r lines: space-separated board characters.",
+    "output_format": "Space-separated words found, sorted lexicographically, or -1.",
+    "constraints": {
+        "dictionary.length": "1 <= len <= 10",
+        "r, c": "1 <= r, c <= 5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "CAT DOG BIRD FISH\n3 3\nC A T\nD O G\nB I R",
+            "output": "CAT DOG"
+        }
+    ],
+    "hidden_test_cases": [],
+    "tags": [
+        "Backtracking",
+        "DFS",
+        "Hash Table",
+        "Matrix",
+        "Sliding Window",
+        "String"
+    ]
+}

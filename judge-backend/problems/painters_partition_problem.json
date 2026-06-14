@@ -1,0 +1,115 @@
+{
+    "id": "painters_partition_problem",
+    "title": "Painter's Partition Problem",
+    "description": "Dilpreet wants to paint his dog's home that has n boards. He wants to minimize the maximum time taken by a painter to paint all boards, given k painters are available. Assume 1 board takes 1 unit of time.",
+    "input_format": "First line: space-separated board lengths. Second line: number of painters k.",
+    "output_format": "Minimum time.",
+    "constraints": {
+        "boards.length": "1 <= length <= 10^5",
+        "k": "1 <= k <= 10^5"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "61 51 61 36 27 39 51 60 53 38\n4",
+            "output": "150"
+        },
+        {
+            "input": "44 48 22 59 43 67 78 28 74 44\n3",
+            "output": "188"
+        },
+        {
+            "input": "74 37 61 71 78 75 58 21 35 61\n3",
+            "output": "224"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "26 49 63 65 24 76 77 49 65 80\n3",
+            "output": "203"
+        },
+        {
+            "input": "61 57 42 74 17 23 60 70 34 73\n2",
+            "output": "260"
+        },
+        {
+            "input": "17 69 30 73 72 14 27 51 26 19\n2",
+            "output": "209"
+        },
+        {
+            "input": "47 20 63 11 55 50 66 30 17 53\n2",
+            "output": "216"
+        },
+        {
+            "input": "20 73 16 73 74 48 80 76 67 57\n4",
+            "output": "182"
+        },
+        {
+            "input": "22 38 54 27 50 67 77 19 23 35\n2",
+            "output": "221"
+        },
+        {
+            "input": "39 48 45 12 29 14 60 22 80 52\n2",
+            "output": "214"
+        },
+        {
+            "input": "37 51 45 33 69 45 78 62 58 64\n4",
+            "output": "147"
+        },
+        {
+            "input": "20 76 19 10 57 56 45 51 70 46\n3",
+            "output": "167"
+        },
+        {
+            "input": "29 11 46 51 41 77 29 19 30 42\n2",
+            "output": "197"
+        },
+        {
+            "input": "21 61 41 44 66 13 65 40 35 76\n2",
+            "output": "233"
+        },
+        {
+            "input": "13 11 48 37 47 34 59 34 22 76\n3",
+            "output": "140"
+        },
+        {
+            "input": "25 12 77 36 56 75 80 78 57 71\n2",
+            "output": "286"
+        },
+        {
+            "input": "34 36 11 30 47 15 52 32 57 17\n3",
+            "output": "114"
+        },
+        {
+            "input": "39 16 14 44 60 61 72 46 63 22\n3",
+            "output": "173"
+        },
+        {
+            "input": "17 50 73 34 19 80 31 21 30 61\n2",
+            "output": "223"
+        },
+        {
+            "input": "53 45 67 59 73 23 15 25 65 17\n4",
+            "output": "126"
+        },
+        {
+            "input": "62 70 64 47 34 55 52 14 63 18\n4",
+            "output": "141"
+        },
+        {
+            "input": "64 78 72 75 22 41 22 13 64 41\n2",
+            "output": "278"
+        },
+        {
+            "input": "10 22 73 52 66 39 79 31 48 57\n2",
+            "output": "254"
+        }
+    ],
+    "tags": [
+        "Array",
+        "Binary Search",
+        "Math"
+    ]
+}

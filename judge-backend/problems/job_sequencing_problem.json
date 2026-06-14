@@ -1,0 +1,114 @@
+{
+    "id": "job_sequencing_problem",
+    "title": "Job Sequencing Problem",
+    "description": "Given a set of jobs where each job has a deadline and profit, find the maximum profit that can be earned by scheduling jobs within deadlines. Each job takes 1 unit of time.",
+    "input_format": "First line: deadlines of jobs. Second line: profits of jobs.",
+    "output_format": "Space-separated count of jobs scheduled and maximum profit.",
+    "constraints": {
+        "N": "1 <= N <= 10^5",
+        "deadlines[i]": "1 <= val <= 100"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "7 5 3 3 7 1 2 3 2 3 4 6\n36 74 64 65 96 30 65 19 22 93 94 39",
+            "output": "7 526"
+        },
+        {
+            "input": "5 6 1 7 4 7 5 8 2 6 6 5\n11 64 47 45 69 99 85 64 39 49 90 46",
+            "output": "8 567"
+        },
+        {
+            "input": "2 2 2 3 7 1 1 3 1 7 1 3\n100 15 62 91 79 63 77 65 57 50 38 48",
+            "output": "5 397"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "6 4 1 8 1 4 2 5 1 2 2 6\n91 77 56 53 33 19 90 75 42 37 41 80",
+            "output": "7 522"
+        },
+        {
+            "input": "7 7 3 2 4 4 7 5 6 4 7 3\n75 98 32 60 90 46 95 20 16 71 22 84",
+            "output": "7 573"
+        },
+        {
+            "input": "1 5 6 3 2 3 6 3 3 6 1 8\n34 27 78 79 33 45 61 91 76 99 39 15",
+            "output": "7 499"
+        },
+        {
+            "input": "1 1 2 5 7 1 6 1 1 2 6 7\n21 49 62 100 61 67 19 41 73 86 68 50",
+            "output": "7 457"
+        },
+        {
+            "input": "5 7 5 3 8 3 3 8 8 5 3 2\n44 11 25 83 85 30 14 83 38 72 96 78",
+            "output": "8 579"
+        },
+        {
+            "input": "7 6 2 2 3 6 1 4 5 8 3 2\n84 13 46 35 75 85 60 82 15 87 65 48",
+            "output": "8 553"
+        },
+        {
+            "input": "3 3 6 8 1 1 8 2 3 5 2 5\n44 45 22 62 75 72 51 90 90 57 85 97",
+            "output": "8 554"
+        },
+        {
+            "input": "2 1 6 4 7 7 7 2 3 5 2 6\n49 76 44 26 53 52 51 73 82 53 82 23",
+            "output": "7 449"
+        },
+        {
+            "input": "1 3 3 1 1 3 3 5 4 7 6 2\n17 100 38 67 30 57 58 48 41 53 52 39",
+            "output": "7 419"
+        },
+        {
+            "input": "5 5 7 5 7 4 2 2 4 2 8 2\n14 49 52 21 26 55 95 95 10 15 62 99",
+            "output": "8 459"
+        },
+        {
+            "input": "4 6 3 7 4 7 4 1 6 3 8 6\n58 39 60 80 100 18 48 20 74 10 25 80",
+            "output": "8 525"
+        },
+        {
+            "input": "3 1 4 5 7 4 4 7 2 6 2 2\n70 83 53 97 99 73 28 69 21 26 81 24",
+            "output": "7 572"
+        },
+        {
+            "input": "4 3 6 6 6 6 3 2 7 4 1 3\n10 12 52 22 57 50 46 95 49 15 51 59",
+            "output": "7 413"
+        },
+        {
+            "input": "8 2 7 1 7 7 6 8 6 3 3 8\n42 15 100 21 15 55 74 95 86 40 71 96",
+            "output": "8 619"
+        },
+        {
+            "input": "1 8 3 5 2 7 8 3 4 5 8 4\n77 90 41 11 94 88 87 96 46 50 41 70",
+            "output": "8 652"
+        },
+        {
+            "input": "6 3 8 7 5 1 8 5 4 5 1 2\n82 54 41 65 25 66 59 86 25 73 49 75",
+            "output": "8 560"
+        },
+        {
+            "input": "1 6 6 6 1 6 6 5 3 5 3 4\n20 52 47 85 96 10 32 34 21 73 78 16",
+            "output": "6 431"
+        },
+        {
+            "input": "6 4 3 6 7 7 8 4 8 2 4 6\n15 54 56 99 22 19 46 36 99 63 61 86",
+            "output": "8 564"
+        },
+        {
+            "input": "4 1 8 4 1 5 4 4 1 3 1 3\n99 46 88 77 49 18 17 54 54 100 33 85",
+            "output": "6 467"
+        },
+        {
+            "input": "3 5 6 4 6 4 1 1 5 4 1 6\n79 94 21 29 51 48 33 34 100 43 12 72",
+            "output": "6 444"
+        }
+    ],
+    "tags": [
+        "Greedy",
+        "Sorting"
+    ]
+}

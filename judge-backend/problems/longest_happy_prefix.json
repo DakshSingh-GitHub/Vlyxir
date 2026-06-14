@@ -1,0 +1,40 @@
+{
+    "id": "longest_happy_prefix",
+    "title": "Longest Happy Prefix",
+    "description": "A string is called a happy prefix if is a non-empty prefix which is also a suffix (excluding itself). Find the longest happy prefix. If none exists, return -1.",
+    "input_format": "A single string s.",
+    "output_format": "The happy prefix string or -1.",
+    "constraints": {
+        "s.length": "1 <= length <= 10^5"
+    },
+    "difficulty": "hard",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "level",
+            "output": "l"
+        },
+        {
+            "input": "acbacacbac",
+            "output": "acbac"
+        },
+        {
+            "input": "aaaaa",
+            "output": "aaaa"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "abcde",
+            "output": "-1"
+        },
+        {
+            "input": "ababab",
+            "output": "abab"
+        }
+    ],
+    "tags": [
+        "String"
+    ]
+}

@@ -1,0 +1,116 @@
+{
+    "id": "longest_common_substring",
+    "title": "Longest Common Substring",
+    "description": "Given two strings s1 and s2, find the length of the longest common substring between them.",
+    "input_format": "First line: string s1. Second line: string s2.",
+    "output_format": "Length of longest common substring.",
+    "constraints": {
+        "s1.length, s2.length": "1 <= length <= 1000"
+    },
+    "difficulty": "medium",
+    "judge_mode": "str_compare_strip",
+    "time_limit": 1,
+    "sample_test_cases": [
+        {
+            "input": "bddeaeadcecbdddceccecbdeceecdcbdeacc\neaeedbbadcaaaeacbdabbabda",
+            "output": "3"
+        },
+        {
+            "input": "abaebeaeadcacdeeeecebbeecccadddcabeedeccacedbeb\ncedebadedcdbeabcdeedcbbcdddbeeebbdbcecbdddadddebe",
+            "output": "4"
+        },
+        {
+            "input": "badebdeeacddeeacbaebbbbddecbcbbacccedeaadab\ndacbdcaababcccbceabbababeeadcceda",
+            "output": "4"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "ccbbbbbaccadaeacaaadabdacbdacaaabbeaecce\ndcaeacdacacddedaebaeccbededaaaaaa",
+            "output": "4"
+        },
+        {
+            "input": "acdaebbbcbdaeeddcadcabbaaeddbebaddbcba\naceadecacaadeceacaaaadbdecdbc",
+            "output": "3"
+        },
+        {
+            "input": "caeaceebcabaeabcacaaddbdebaeceddccaccaebbaaed\ndbbcddeacaecdcaaabbddecdecbbbbbeddb",
+            "output": "3"
+        },
+        {
+            "input": "baeecddeaebaedeabcbaedaeeddcceacbaadcedcdece\neaddbdbdadbdaddddddcbabbbaebbdebbcaebbe",
+            "output": "3"
+        },
+        {
+            "input": "ebdccaacdeccaccebdcdedddecaecede\naeeccdaeccdaacbbdceeacbbeaceabdbc",
+            "output": "3"
+        },
+        {
+            "input": "aeececddaeedbadaaacbabcbdacbeeeeabb\nadedcaddeecdbabdebacbbebaedebeceadcaed",
+            "output": "3"
+        },
+        {
+            "input": "cbcabbeabecdddeecbbbcddaeaaccebdcdeac\ncbddbccededeacddabadcbaeecbceccdebcedcbadddaa",
+            "output": "4"
+        },
+        {
+            "input": "dadcdeddceccdcdaaeaecbaedcadabb\neaeebeecedddbbdaceddcb",
+            "output": "4"
+        },
+        {
+            "input": "aaceeabaccebabaccbdbd\nadeebdbbdbeeebdbbdcbcadecebddbdbbcbebd",
+            "output": "3"
+        },
+        {
+            "input": "caeaebebeadeceabbdbbeadbbdbaacadddecaeab\ncbaddaeaeaeabbaabbacadbade",
+            "output": "4"
+        },
+        {
+            "input": "eaabcabbeeddbebaecddedcdaaeeebacdaeecbceeda\naaaeecbbabdbcbdceaecde",
+            "output": "5"
+        },
+        {
+            "input": "eebedadedbeaaedeebadbbdbbdbdaedecaebddccadc\nedeecabbbbcbaeceebedeaaccdceccabbebcceaea",
+            "output": "5"
+        },
+        {
+            "input": "abacbadeacbddeeedebeecceebaaeaaaadaaeecc\ndecceaedcbeeecdeabddbcaebabecceeeeedcdeedebece",
+            "output": "6"
+        },
+        {
+            "input": "caeaecbcdbcdeaeedaccacbed\ndedcbbcaccddcdccaccbabcbbabaaddee",
+            "output": "4"
+        },
+        {
+            "input": "eaacbcaacddaeaceddcbbbcacadeadbddaeb\nbcbddabaebbdcabacabecdeaabcbbdcedbbbdecbaaeaade",
+            "output": "4"
+        },
+        {
+            "input": "eadeebbdaaaacedeeacdeecbcbccedeb\neacdcceeaaeeaceadaecececebaadaecacedbcccbbcba",
+            "output": "4"
+        },
+        {
+            "input": "ddecbaceeeecdacbeebbdceddbddaadaedeeccda\ncebdbeeddddbeeacbdcacdbabddec",
+            "output": "4"
+        },
+        {
+            "input": "baeaeacdeacaaedcadbcbcaeaddedcbdccaecadeceadacb\naeabaeddecaeacecdedccedddcededcbccbcbc",
+            "output": "5"
+        },
+        {
+            "input": "cabecebabbcabebceecdbcdcbeaabbea\nbeeceacaaecdbdecbcadbbdddbeeadbcdccad",
+            "output": "5"
+        },
+        {
+            "input": "baeedddbebeeacbdcdeadeeecdcdeadbadebbdea\ncbdeebecbeaeeedcbcecaddebcd",
+            "output": "3"
+        }
+    ],
+    "tags": [
+        "Dynamic Programming",
+        "Math",
+        "Sliding Window",
+        "String",
+        "Tree"
+    ]
+}

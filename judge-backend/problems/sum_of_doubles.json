@@ -5,7 +5,7 @@
     "input_format": "A single integer N",
     "output_format": "Output a single integer which is the result of `2 * N`.",
     "constraints": {
-        "N": "1 \u2264 N \u2264 10\u2079"
+        "N": "1 ≤ N ≤ 10⁹"
     },
     "judge_mode": "FIRST_FAIL",
     "time_limit": 2,
