@@ -79,23 +79,80 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                 const problems = apiData?.problems || apiData || [];
                 if (!problems || !Array.isArray(problems) || problems.length === 0) return;
 
-                // 2. Select problem deterministically
+                // 2. Determine today's date string
                 const today = new Date();
                 const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                 
-                let hash = 0;
-                for (let i = 0; i < todayString.length; i++) {
-                    hash = todayString.charCodeAt(i) + ((hash << 5) - hash);
+                // 3. Query if today's daily question is already selected
+                const { data: todayDaily } = await supabase
+                    .from("daily_questions")
+                    .select("problem_id")
+                    .eq("date", todayString)
+                    .maybeSingle();
+
+                let selectedProblem = null;
+
+                if (todayDaily) {
+                    selectedProblem = problems.find((p: any) => p.id === todayDaily.problem_id);
                 }
-                const index = Math.abs(hash) % problems.length;
-                const selectedProblem = problems[index];
+
+                // 4. If not selected, dynamically pick an unused problem and insert it
+                if (!selectedProblem) {
+                    const { data: allUsedDailies } = await supabase
+                        .from("daily_questions")
+                        .select("problem_id");
+
+                    const usedIds = new Set((allUsedDailies || []).map((d: any) => d.problem_id));
+                    let unusedProblems = problems.filter((p: any) => !usedIds.has(p.id));
+
+                    if (unusedProblems.length === 0) {
+                        unusedProblems = problems; // Pool reset if all are used
+                    }
+
+                    // Deterministic selection from unused pool to avoid conflicts between concurrent hits
+                    let hash = 0;
+                    for (let i = 0; i < todayString.length; i++) {
+                        hash = todayString.charCodeAt(i) + ((hash << 5) - hash);
+                    }
+                    const index = Math.abs(hash) % unusedProblems.length;
+                    const candidateProblem = unusedProblems[index];
+
+                    // Insert candidate daily question
+                    const { data: inserted, error: insertError } = await supabase
+                        .from("daily_questions")
+                        .insert({ problem_id: candidateProblem.id, date: todayString })
+                        .select()
+                        .maybeSingle();
+
+                    if (!insertError && inserted) {
+                        selectedProblem = candidateProblem;
+                    } else {
+                        // Conflict / other client won the race, refetch the selected one
+                        const { data: refetched } = await supabase
+                            .from("daily_questions")
+                            .select("problem_id")
+                            .eq("date", todayString)
+                            .maybeSingle();
+                        
+                        if (refetched) {
+                            selectedProblem = problems.find((p: any) => p.id === refetched.problem_id);
+                        }
+                        
+                        // Last resort fallback
+                        if (!selectedProblem) {
+                            selectedProblem = candidateProblem;
+                        }
+                    }
+                }
                 
                 setDailyProblem(selectedProblem);
 
-                // 3. Check if solved by current authenticated user
-                await checkDailySolvedStatus(selectedProblem.id);
+                // 5. Check if solved by current authenticated user
+                if (selectedProblem) {
+                    await checkDailySolvedStatus(selectedProblem.id);
+                }
 
-                // 4. Auto pop-up daily modal on landing page ONLY if not shown today
+                // 6. Auto pop-up daily modal on landing page ONLY if not shown today
                 const isLandingPage = window.location.pathname === '/';
                 if (isLandingPage) {
                     const lastShown = localStorage.getItem("vlyxir_last_daily_modal_shown");

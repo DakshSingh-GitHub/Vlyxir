@@ -169,75 +169,70 @@ export async function saveSubmission(submission: {
     // Run after successful insert so database triggers have finished executing
     if (submission.final_status === "Accepted") {
         try {
-            const { getProblems } = await import("../api/api");
-            const apiData = await getProblems();
-            const problems = apiData?.problems || apiData || [];
+            const today = new Date();
+            const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-            if (problems && Array.isArray(problems) && problems.length > 0) {
-                const today = new Date();
-                const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const { data: dailyData } = await supabase
+                .from("daily_questions")
+                .select("problem_id")
+                .eq("date", todayString)
+                .maybeSingle();
 
-                let hash = 0;
-                for (let i = 0; i < todayString.length; i++) {
-                    hash = todayString.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                const index = Math.abs(hash) % problems.length;
-                const dailyProblem = problems[index];
+            const dailyProblemId = dailyData?.problem_id;
 
-                if (dailyProblem && dailyProblem.id === submission.problemId) {
-                    const { data: userSubs, error: subsError } = await supabase
-                        .from("submissions")
-                        .select("created_at")
-                        .eq("user_id", userId)
-                        .eq("problem_id", submission.problemId)
-                        .eq("final_status", "Accepted");
+            if (dailyProblemId && dailyProblemId === submission.problemId) {
+                const { data: userSubs, error: subsError } = await supabase
+                    .from("submissions")
+                    .select("created_at")
+                    .eq("user_id", userId)
+                    .eq("problem_id", submission.problemId)
+                    .eq("final_status", "Accepted");
 
-                    if (!subsError && userSubs) {
-                        const startOfToday = new Date();
-                        startOfToday.setHours(0, 0, 0, 0);
+                if (!subsError && userSubs) {
+                    const startOfToday = new Date();
+                    startOfToday.setHours(0, 0, 0, 0);
 
-                        // Count how many accepted submissions we have since midnight today
-                        const subsToday = userSubs.filter((sub: any) => {
+                    // Count how many accepted submissions we have since midnight today
+                    const subsToday = userSubs.filter((sub: any) => {
+                        const subDate = new Date(sub.created_at);
+                        return subDate >= startOfToday;
+                    });
+
+                    // If the count today is exactly 1, this is our first successful solve today!
+                    if (subsToday.length === 1) {
+                        // Check if they have solved this in the past (before today)
+                        const solvedInPast = userSubs.some((sub: any) => {
                             const subDate = new Date(sub.created_at);
-                            return subDate >= startOfToday;
+                            return subDate < startOfToday;
                         });
 
-                        // If the count today is exactly 1, this is our first successful solve today!
-                        if (subsToday.length === 1) {
-                            // Check if they have solved this in the past (before today)
-                            const solvedInPast = userSubs.some((sub: any) => {
-                                const subDate = new Date(sub.created_at);
-                                return subDate < startOfToday;
-                            });
+                        const { data: profile, error: profileErr } = await supabase
+                            .from("profiles")
+                            .select("total_score")
+                            .eq("id", userId)
+                            .single();
 
-                            const { data: profile, error: profileErr } = await supabase
+                        if (profile && !profileErr) {
+                            // If solved in past, the auto trigger won't run, so we add full +20.
+                            // If never solved before, auto trigger will add +10, so we add extra +10.
+                            const bonus = solvedInPast ? 20 : 10;
+                            const currentScore = profile.total_score || 0;
+                            const newScore = currentScore + bonus;
+
+                            const { error: updateErr } = await supabase
                                 .from("profiles")
-                                .select("total_score")
-                                .eq("id", userId)
-                                .single();
+                                .update({ total_score: newScore })
+                                .eq("id", userId);
 
-                            if (profile && !profileErr) {
-                                // If solved in past, the auto trigger won't run, so we add full +20.
-                                // If never solved before, auto trigger will add +10, so we add extra +10.
-                                const bonus = solvedInPast ? 20 : 10;
-                                const currentScore = profile.total_score || 0;
-                                const newScore = currentScore + bonus;
-
-                                const { error: updateErr } = await supabase
-                                    .from("profiles")
-                                    .update({ total_score: newScore })
-                                    .eq("id", userId);
-
-                                if (!updateErr) {
-                                    console.log(`[Daily Challenge] Successfully awarded +${bonus} XP! New score: ${newScore}`);
-                                    
-                                    // Custom event to notify components to refresh the score
-                                    if (typeof window !== "undefined") {
-                                        window.dispatchEvent(new CustomEvent("daily-score-updated"));
-                                    }
-                                } else {
-                                    console.error("[Daily Challenge] Failed to sync user score:", updateErr);
+                            if (!updateErr) {
+                                console.log(`[Daily Challenge] Successfully awarded +${bonus} XP! New score: ${newScore}`);
+                                
+                                // Custom event to notify components to refresh the score
+                                if (typeof window !== "undefined") {
+                                    window.dispatchEvent(new CustomEvent("daily-score-updated"));
                                 }
+                            } else {
+                                console.error("[Daily Challenge] Failed to sync user score:", updateErr);
                             }
                         }
                     }
