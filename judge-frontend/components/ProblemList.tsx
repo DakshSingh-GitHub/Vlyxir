@@ -3,10 +3,11 @@
 import { useEffect, useState, useRef, memo, useCallback } from "react";
 import { anime, stagger } from "../app/lib/utils/anime";
 import { getProblems } from "../app/lib/api/api";
-import { Filter, Check, Sparkles, SlidersHorizontal, X, Star } from "lucide-react";
+import { Filter, Check, Sparkles, SlidersHorizontal, X, Star, Calendar } from "lucide-react";
 import { getSubmissions } from "../app/lib/utils/storage";
 import FilterModal from "./General/FilterModal";
 import { useAppContext } from "../app/lib/auth/context";
+import { supabase } from "../app/lib/api/supabase/client";
 
 import { Problem } from "../app/lib/types/types";
 
@@ -21,6 +22,8 @@ interface ProblemListProps {
 const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSidebarOpen, searchQuery, setSearchQuery }: ProblemListProps) {
     const { dailyProblem } = useAppContext();
     const [problems, setProblems] = useState<Problem[]>([]);
+    const [dailyProblemIdsPool, setDailyProblemIdsPool] = useState<Set<string>>(new Set());
+    const [showOnlyDailyPool, setShowOnlyDailyPool] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState<{
         difficulty: string[];
@@ -122,7 +125,21 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
             processProblems(data);
         };
 
+        const fetchDailyQuestionsPool = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from("daily_questions")
+                    .select("problem_id");
+                if (!error && data) {
+                    setDailyProblemIdsPool(new Set(data.map(item => item.problem_id)));
+                }
+            } catch (err) {
+                console.error("Failed to fetch daily questions pool:", err);
+            }
+        };
+
         fetchProblemsData();
+        fetchDailyQuestionsPool();
 
         // Listen for new submissions
         const handleSubmissionUpdate = () => {
@@ -151,6 +168,10 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
     }, [processProblems]);
 
     const filteredProblems = problems.filter((problem) => {
+        if (showOnlyDailyPool && !dailyProblemIdsPool.has(problem.id)) {
+            return false;
+        }
+
         const matchesSearch = problem.title.toLowerCase().includes(searchQuery.toLowerCase());
 
         // Difficulty Filter
@@ -291,6 +312,17 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                             aria-label="Pick a random problem"
                         >
                             <Sparkles className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setShowOnlyDailyPool(prev => !prev)}
+                            className={`p-2 rounded-lg transition-all active:scale-95 ${showOnlyDailyPool
+                                ? "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-300 relative border border-amber-500/30"
+                                : "text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                }`}
+                            title={showOnlyDailyPool ? "Show all problems" : "Show only Daily Challenges pool"}
+                            aria-label="Filter by daily challenges pool"
+                        >
+                            <Calendar className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => setIsFilterModalOpen(true)}
