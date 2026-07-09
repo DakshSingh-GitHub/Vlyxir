@@ -14,9 +14,11 @@ interface ToolbarProps {
     setFontSize: (size: number) => void;
     language?: string;
     setLanguage?: (lang: string) => void;
+    intelStatus?: "loading" | "ready" | "error" | "idle";
+    intelMessage?: string;
 }
 
-const Toolbar = memo(({ code, fontSize, setFontSize, language, setLanguage }: ToolbarProps) => {
+const Toolbar = memo(({ code, fontSize, setFontSize, language, setLanguage, intelStatus = "idle", intelMessage }: ToolbarProps) => {
     const router = useRouter();
     const { codeIdePath, codeAnalysisPath } = useAppContext();
 
@@ -56,6 +58,28 @@ const Toolbar = memo(({ code, fontSize, setFontSize, language, setLanguage }: To
             </div>
 
             <div className="flex items-center gap-3 md:gap-5 ml-auto">
+                {language === "python" && intelStatus !== "idle" && (
+                    <div className="flex items-center gap-1.5 text-[10px] md:text-xs">
+                        {intelStatus === "loading" && (
+                            <>
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                <span className="text-gray-400 font-medium truncate max-w-[150px]">{intelMessage || "Loading IntelliSense..."}</span>
+                            </>
+                        )}
+                        {intelStatus === "ready" && (
+                            <>
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                <span className="text-gray-400 font-bold">Python IntelliSense Ready</span>
+                            </>
+                        )}
+                        {intelStatus === "error" && (
+                            <>
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                <span className="text-rose-400 font-medium">IntelliSense Error</span>
+                            </>
+                        )}
+                    </div>
+                )}
                 <Settings fontSize={fontSize} setFontSize={setFontSize} language={language} setLanguage={setLanguage} />
             </div>
         </div>
