@@ -2,7 +2,7 @@
 
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { anime } from '../../app/lib/utils/anime';
-import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Trophy, BarChart2, Users, Plus, X, Mail, Crown, Flame, Check } from 'lucide-react';
+import { History, LayoutGrid, User, Settings, LogOut, Shield, ChevronDown, Trophy, BarChart2, Users, Plus, X, Mail, Crown, Flame, Check, LayoutTemplate, FolderOpen, Info } from 'lucide-react';
 import NewNavDropdown from './NewNavDropdown';
 import { usePathname, useRouter } from 'next/navigation';
 import { isCodeJudgePath, isCodeIdePath, isCodeAnalysisPath } from '../../app/lib/utils/paths';
@@ -23,6 +23,32 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     const { user, isLoading, signOut, savedAccounts, switchAccount, removeAccount, dbProfile } = useAuth();
     const { isDark, isDailyModalOpen, setIsDailyModalOpen, dailyProblemEnabled, dailyProblemSolved } = useAppContext();
     const [imageError, setImageError] = useState(false);
+
+    const [interviewState, setInterviewState] = useState({
+        isHost: false,
+        isExecutionLocked: false,
+        leftSidebarOpen: true,
+        rightSidebarOpen: true
+    });
+
+    const isInterviewRoom = pathname.startsWith('/interview/') && pathname.split('/').length > 2 && pathname.split('/')[2] !== 'page';
+    const sessionId = isInterviewRoom ? pathname.split('/')[2] : '';
+
+    useEffect(() => {
+        if (!isInterviewRoom) return;
+
+        const handleUpdate = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail) {
+                setInterviewState(prev => ({ ...prev, ...customEvent.detail }));
+            }
+        };
+
+        window.addEventListener('vlyxir-interview-state-update', handleUpdate);
+        window.dispatchEvent(new CustomEvent('vlyxir-interview-request-state'));
+
+        return () => window.removeEventListener('vlyxir-interview-state-update', handleUpdate);
+    }, [isInterviewRoom, pathname]);
 
     const displayName =
         dbProfile?.full_name ||
@@ -101,6 +127,31 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             className="flex items-center gap-4 opacity-0"
                         >
                             <NewNavDropdown />
+                            {isInterviewRoom && (
+                                <>
+                                    <div className={`h-6 w-px ${isDark ? "bg-white/10" : "bg-slate-900/10"}`} />
+                                    {interviewState.isHost ? (
+                                        <button
+                                            onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'toggle-lock' } }))}
+                                            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                                                interviewState.isExecutionLocked
+                                                    ? "bg-rose-500/20 text-rose-450 border border-rose-500/30"
+                                                    : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                            }`}
+                                        >
+                                            {interviewState.isExecutionLocked ? "🔒 Execution Locked" : "🔓 Execution Allowed"}
+                                        </button>
+                                    ) : (
+                                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                            interviewState.isExecutionLocked
+                                                ? "bg-rose-500/10 text-rose-455 border border-rose-500/20"
+                                                : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                        }`}>
+                                            {interviewState.isExecutionLocked ? "🔒 Exec Locked" : "🔓 Exec Allowed"}
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                         <div className="flex items-center gap-2 md:gap-4">
                             {isCodeAnalysis && (
@@ -117,7 +168,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                            {user && !isHomeRoute && !isCodeIDE && !isCodeAnalysis && !isInterviewRoom && (
                                 <button
                                     onClick={() => setIsSubmissionsModalOpen(true)}
                                     className={`group flex items-center justify-center rounded-full border p-2.5 transition-all duration-300 hover:scale-110 active:scale-90 ${isDark
@@ -130,7 +181,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {(isCodeJudge || isCodeIDE) && (
+                            {(isCodeJudge || isCodeIDE) && !isInterviewRoom && (
                                 <button
                                     onClick={() => {
                                         const eventName = isCodeJudge
@@ -149,7 +200,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && !isInterviewRoom && (
                                 <button
                                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                                     className={`${isCodeJudge ? "hidden lg:flex" : "flex"} items-center justify-center rounded-full border p-2.5 transition-all duration-300 hover:scale-110 active:scale-90 ${isDark
@@ -170,7 +221,63 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                                 </button>
                             )}
 
-                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && (
+                            {isInterviewRoom && (
+                                <>
+                                    {interviewState.isHost ? (
+                                        <button
+                                            onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'end' } }))}
+                                            className="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-600 hover:bg-rose-700 text-white transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap"
+                                        >
+                                            End Session
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'leave' } }))}
+                                            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 cursor-pointer whitespace-nowrap ${
+                                                isDark ? "bg-slate-900 border border-slate-800 text-slate-355 hover:bg-slate-850" : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                                            }`}
+                                        >
+                                            Leave
+                                        </button>
+                                    )}
+
+                                    <button
+                                        onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'info' } }))}
+                                        className={`p-2 rounded-full border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+                                            isDark ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/30" : "border-slate-900/10 bg-slate-900/5 text-slate-500 hover:border-slate-900/20"
+                                        }`}
+                                        title="Meeting Details"
+                                    >
+                                        <Info className="h-5 w-5" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'toggle-left-sidebar' } }))}
+                                        className={`p-2 rounded-full border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+                                            interviewState.leftSidebarOpen
+                                                ? isDark ? "bg-indigo-500/25 border-indigo-500/40 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                                                : isDark ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/30" : "border-slate-900/10 bg-slate-900/5 text-slate-500 hover:border-slate-900/20"
+                                        }`}
+                                        title="Toggle Left Toolpane"
+                                    >
+                                        <FolderOpen className="h-5 w-5" />
+                                    </button>
+
+                                    <button
+                                        onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'toggle-sidebar' } }))}
+                                        className={`p-2 rounded-full border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer ${
+                                            interviewState.rightSidebarOpen
+                                                ? isDark ? "bg-indigo-500/25 border-indigo-500/40 text-indigo-400" : "bg-indigo-50 border-indigo-200 text-indigo-650"
+                                                : isDark ? "border-white/10 bg-white/5 text-slate-300 hover:border-white/30" : "border-slate-900/10 bg-slate-900/5 text-slate-500 hover:border-slate-900/20"
+                                        }`}
+                                        title="Toggle Communications"
+                                    >
+                                        <LayoutTemplate className="h-5 w-5" />
+                                    </button>
+                                </>
+                            )}
+
+                            {!isHomeRoute && !isCodeIDE && !isCodeAnalysis && !isInterviewRoom && (
                                 <div className={`hidden h-8 w-px md:block ${isDark ? "bg-white/10" : "bg-slate-900/10"}`} />
                             )}
 
