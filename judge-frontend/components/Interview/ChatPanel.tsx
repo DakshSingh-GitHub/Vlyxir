@@ -105,6 +105,9 @@ export default function ChatPanel({
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+          <div className={`text-center text-[10px] font-medium py-2 rounded-xl mb-4 ${isDark ? "text-slate-500 bg-slate-900/40" : "text-slate-400 bg-slate-50"}`}>
+            Messages before joining are not shown
+          </div>
           {messages.map((msg) => {
             const isMe = msg.sender_uuid === userId;
             return (

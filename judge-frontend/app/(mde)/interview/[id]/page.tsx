@@ -32,10 +32,29 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
   const [isHost, setIsHost] = useState(false);
   const [accessState, setAccessState] = useState<'Checking' | 'Admitted' | 'Ended'>('Checking');
   
-  const [code, setCode] = useState("# Write your code here");
-  const [files, setFiles] = useState<Record<string, any>>({
-    "main.py": { name: "main.py", path: "main.py", content: "# Write your code here", isFolder: false }
+  const [code, setCode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(`vlyxir_interview_code_${sessionId}`) || "# Write your code here";
+    }
+    return "# Write your code here";
   });
+  
+  const [files, setFiles] = useState<Record<string, any>>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem(`vlyxir_interview_files_${sessionId}`);
+      if (saved) return JSON.parse(saved);
+    }
+    return {
+      "main.py": { name: "main.py", path: "main.py", content: "# Write your code here", isFolder: false }
+    };
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(`vlyxir_interview_code_${sessionId}`, code);
+      sessionStorage.setItem(`vlyxir_interview_files_${sessionId}`, JSON.stringify(files));
+    }
+  }, [code, files, sessionId]);
   const [activeFilePath, setActiveFilePath] = useState("main.py");
 
   const [input, setInput] = useState("");
@@ -43,7 +62,19 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
   const [isLoadingRun, setIsLoadingRun] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(`vlyxir_interview_notes_${sessionId}`) || "";
+    }
+    return "";
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(`vlyxir_interview_notes_${sessionId}`, notes);
+    }
+  }, [notes, sessionId]);
+
   const [verdict, setVerdict] = useState<InterviewVerdict>('Pending');
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -98,7 +129,8 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
     sendChatMessage,
     toggleExecutionLock,
     notifySessionEnd,
-    appendLog
+    appendLog,
+    syncOutput
   } = useInterviewRealtime({
     sessionId,
     userId: user?.id || "",
@@ -118,6 +150,7 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
         };
       });
     },
+    onOutputChange: (newOutput) => setOutput(newOutput),
     onSessionEnded: () => setAccessState('Ended')
   });
 
@@ -241,8 +274,11 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
     try {
         const res = await runCode(code, input);
         setOutput(res);
+        syncOutput(res);
     } catch (err: any) {
-        setOutput({ status: "Error", stderr: err.message });
+        const errObj = { status: "Error", stderr: err.message };
+        setOutput(errObj);
+        syncOutput(errObj);
     } finally {
         setIsLoadingRun(false);
     }
@@ -251,8 +287,14 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
   const handleEndSession = async () => {
     if (!isHost || !session) return;
     try {
+        const currentSession = await getSessionDetails(sessionId);
         await endSession(sessionId, verdict, notes, candidateLogs);
         notifySessionEnd();
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem(`vlyxir_interview_notes_${sessionId}`);
+            sessionStorage.removeItem(`vlyxir_interview_code_${sessionId}`);
+            sessionStorage.removeItem(`vlyxir_interview_files_${sessionId}`);
+        }
         router.push('/interview');
     } catch (err) {
         console.error("Failed to end session", err);
@@ -279,9 +321,9 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
       return (
           <div className={`min-h-screen flex items-center justify-center ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
              <div className="text-center">
-                 <h2 className="text-xl font-bold mb-2">Interview Unavailable</h2>
-                 <p className="text-sm text-slate-500 mb-4">You cannot access this session.</p>
-                 <button onClick={handleLeaveSession} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Return Home</button>
+                 <h2 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Interview Ended</h2>
+                 <p className="text-sm text-slate-500 mb-4 max-w-sm mx-auto">Interview has been ended by the host, kindly wait for the results.</p>
+                 <button onClick={handleLeaveSession} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl transition-colors shadow-md">Return Home</button>
              </div>
           </div>
       );

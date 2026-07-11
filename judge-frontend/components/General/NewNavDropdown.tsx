@@ -53,9 +53,19 @@ export default function NavDropdown() {
             icon: "⚔️",
             subtext: "Challenge others"
         },
+        {
+            name: "VLYXIR Interview",
+            path: "/interview",
+            icon: "👥",
+            subtext: "Interviewing others"
+        },
     ];
 
-    const currentRoute = routes.find((route) => route.path === pathname || (route.aliases?.includes(pathname) ?? false)) || routes[0];
+    const currentRoute = routes.find((route) => 
+        route.path === pathname || 
+        (route.aliases?.includes(pathname) ?? false) ||
+        (route.path !== '/' && pathname.startsWith(route.path + '/'))
+    ) || routes[0];
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

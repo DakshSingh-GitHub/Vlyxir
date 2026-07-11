@@ -13,6 +13,7 @@ interface UseInterviewRealtimeProps {
   onCodeChange?: (code: string) => void;
   onExecutionLockToggle?: (isLocked: boolean) => void;
   onSessionEnded?: () => void;
+  onOutputChange?: (output: any) => void;
 }
 
 export function useInterviewRealtime({
@@ -24,7 +25,8 @@ export function useInterviewRealtime({
   isSessionActive,
   onCodeChange,
   onExecutionLockToggle,
-  onSessionEnded
+  onSessionEnded,
+  onOutputChange
 }: UseInterviewRealtimeProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -43,11 +45,13 @@ export function useInterviewRealtime({
   const onCodeChangeRef = useRef(onCodeChange);
   const onExecutionLockToggleRef = useRef(onExecutionLockToggle);
   const onSessionEndedRef = useRef(onSessionEnded);
+  const onOutputChangeRef = useRef(onOutputChange);
 
   useEffect(() => {
     onCodeChangeRef.current = onCodeChange;
     onExecutionLockToggleRef.current = onExecutionLockToggle;
     onSessionEndedRef.current = onSessionEnded;
+    onOutputChangeRef.current = onOutputChange;
   });
 
   const appendLog = useCallback((action: string) => {
@@ -117,6 +121,9 @@ export function useInterviewRealtime({
             break;
           case 'end_session':
             if (!isHost && onSessionEndedRef.current) onSessionEndedRef.current();
+            break;
+          case 'output_sync':
+            if (onOutputChangeRef.current) onOutputChangeRef.current(message.payload.output);
             break;
           default:
             console.warn("Unknown message type received", message);
@@ -212,6 +219,10 @@ export function useInterviewRealtime({
     appendLog('Host ended session');
   }, [sendBroadcast, isHost, appendLog]);
 
+  const syncOutput = useCallback((output: any) => {
+    sendBroadcast('output_sync', { output });
+  }, [sendBroadcast]);
+
   return {
     isConnected,
     participants,
@@ -223,5 +234,6 @@ export function useInterviewRealtime({
     sendChatMessage,
     toggleExecutionLock,
     notifySessionEnd,
+    syncOutput,
   };
 }

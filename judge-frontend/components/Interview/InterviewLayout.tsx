@@ -175,12 +175,12 @@ export default function InterviewLayout({
           !isResizing ? "transition-all duration-300" : "transition-none"
         } ${
           leftSidebarOpen 
-            ? "border-slate-800 bg-[#0A0F1A]/50 backdrop-blur-md" 
+            ? "border-slate-800/80 bg-slate-950/50 backdrop-blur-md p-1 shadow-lg" 
             : "border-transparent overflow-hidden"
         }`}>
           
           {leftSidebarOpen && (
-            <div className="flex-1 flex flex-col h-full min-w-0">
+            <div className={`flex-1 flex flex-col h-full min-w-0 rounded-[1.25rem] border overflow-hidden ${isDark ? "border-slate-800/40 bg-[#0A0F1A]" : "border-slate-200 bg-white"}`}>
               {/* Tab Selector */}
               <div className={`flex border-b shrink-0 ${isDark ? "border-slate-900 bg-slate-950/20" : "border-slate-200 bg-slate-50"}`}>
                 <button
@@ -267,10 +267,11 @@ export default function InterviewLayout({
         <div className="flex-1 h-full min-w-0 flex flex-col relative">
           
           {/* CODE EDITOR CANVAS */}
-          <div className={`flex-1 min-h-0 relative flex flex-col rounded-3xl border overflow-hidden ${
-            isDark ? "bg-[#0A0F1A]/50 border-slate-800 backdrop-blur-md" : "bg-white border-slate-250"
+          <div className={`flex-1 min-h-0 relative flex flex-col rounded-3xl border overflow-hidden p-1 shadow-lg ${
+            isDark ? "bg-slate-950/50 border-slate-800/80 backdrop-blur-md" : "bg-slate-100 border-slate-250"
           }`}>
-            <div className={`px-4 py-2 border-b flex items-center justify-between shrink-0 ${
+            <div className={`flex-1 min-h-0 relative flex flex-col rounded-[1.25rem] border overflow-hidden ${isDark ? "border-slate-800/40 bg-[#0A0F1A]" : "border-slate-200 bg-white"}`}>
+              <div className={`px-4 py-2 border-b flex items-center justify-between shrink-0 ${
               isDark ? "border-slate-800/60 bg-slate-950/20" : "border-slate-250 bg-slate-50"
             }`}>
               <div className="flex items-center gap-2">
@@ -295,6 +296,7 @@ export default function InterviewLayout({
             <div className="flex-1 min-h-0 relative">
               <CodeEditor code={code} setCode={setCode} isDark={isDark} flat={true} isDisabled={false} />
             </div>
+            </div>
           </div>
 
           {/* Bottom Divider */}
@@ -306,11 +308,12 @@ export default function InterviewLayout({
           )}
 
           {/* BOTTOM DRAWER (Input / Output Drawer) */}
-          <div style={{ height: `${finalBottomHeight}px` }} className={`shrink-0 border flex flex-col rounded-3xl overflow-hidden ${
+          <div style={{ height: `${finalBottomHeight}px` }} className={`shrink-0 border flex flex-col rounded-3xl overflow-hidden p-1 shadow-lg ${
             !isResizing ? "transition-all duration-300" : "transition-none"
           } ${
-            isDark ? "border-slate-800 bg-[#0A0F1A]/50 backdrop-blur-md" : "border-slate-200 bg-white"
+            isDark ? "border-slate-800/80 bg-slate-950/50 backdrop-blur-md" : "border-slate-200 bg-slate-100"
           } ${!consoleOpen ? "mt-4" : ""}`}>
+            <div className={`flex-1 min-h-0 relative flex flex-col rounded-[1.25rem] border overflow-hidden ${isDark ? "border-slate-800/40 bg-[#0A0F1A]" : "border-slate-200 bg-white"}`}>
             
             {/* Header bar */}
             <div className={`px-4 py-2 flex items-center justify-between border-b shrink-0 ${
@@ -370,6 +373,7 @@ export default function InterviewLayout({
                 )}
               </div>
             )}
+            </div>
           </div>
         </div>
 
@@ -385,11 +389,11 @@ export default function InterviewLayout({
           !isResizing ? "transition-all duration-300" : "transition-none"
         } ${
           rightSidebarOpen 
-            ? "border-slate-800 bg-[#0A0F1A]/50 backdrop-blur-md" 
+            ? "border-slate-800/80 bg-slate-950/50 backdrop-blur-md p-1 shadow-lg" 
             : "border-transparent overflow-hidden"
         }`}>
           {rightSidebarOpen && (
-            <div className="flex-1 flex flex-col h-full min-w-0">
+            <div className={`flex-1 flex flex-col h-full min-w-0 rounded-[1.25rem] border overflow-hidden ${isDark ? "border-slate-800/40 bg-[#0A0F1A]" : "border-slate-200 bg-white"}`}>
               {/* Chat Panel & Participants */}
               <div className="flex-1 min-h-0">
                 <ChatPanel

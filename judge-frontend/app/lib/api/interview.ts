@@ -27,6 +27,20 @@ export async function getSessionDetails(sessionId: string): Promise<InterviewSes
   return data as InterviewSession | null;
 }
 
+export async function getHostProfile(userId: string): Promise<{ full_name: string; avatar_url: string; username: string } | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('full_name, avatar_url, username')
+    .eq('id', userId)
+    .maybeSingle();
+    
+  if (error) {
+    console.error("Failed to fetch host profile", error);
+    return null;
+  }
+  return data;
+}
+
 export async function joinSessionAsParticipant(sessionId: string, participantUuid: string): Promise<boolean> {
   const { data, error } = await supabase
     .from('interview_sessions')
@@ -104,3 +118,90 @@ export async function getPastSessionsForHost(hostUuid: string): Promise<Intervie
     }
     return data as InterviewSession[];
 }
+
+export interface InterviewRecord extends InterviewSession {
+  participantProfile?: { full_name: string; username: string; avatar_url: string };
+  hostProfile?: { full_name: string; username: string; avatar_url: string };
+}
+
+export async function getInterviewsTaken(hostUuid: string): Promise<InterviewRecord[]> {
+  const { data: sessions, error } = await supabase
+    .from('interview_sessions')
+    .select('*')
+    .eq('host_uuid', hostUuid)
+    .order('created_at', { ascending: false });
+
+  if (error || !sessions) {
+    console.error("Failed to get interviews taken", error);
+    return [];
+  }
+
+  // Fetch participant profiles
+  const participantIds = Array.from(new Set(sessions.map(s => s.participant_uuid).filter(Boolean))) as string[];
+  let profilesMap: Record<string, any> = {};
+  
+  if (participantIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url')
+      .in('id', participantIds);
+      
+    if (profiles) {
+      profiles.forEach(p => {
+        profilesMap[p.id] = p;
+      });
+    }
+  }
+
+  return sessions.map(session => ({
+    ...session,
+    participantProfile: session.participant_uuid ? profilesMap[session.participant_uuid] : null
+  }));
+}
+
+export async function getInterviewsAttended(participantUuid: string): Promise<InterviewRecord[]> {
+  const { data: sessions, error } = await supabase
+    .from('interview_sessions')
+    .select('*')
+    .eq('participant_uuid', participantUuid)
+    .order('created_at', { ascending: false });
+
+  if (error || !sessions) {
+    console.error("Failed to get interviews attended", error);
+    return [];
+  }
+
+  // Fetch host profiles
+  const hostIds = Array.from(new Set(sessions.map(s => s.host_uuid).filter(Boolean))) as string[];
+  let profilesMap: Record<string, any> = {};
+  
+  if (hostIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, username, avatar_url')
+      .in('id', hostIds);
+      
+    if (profiles) {
+      profiles.forEach(p => {
+        profilesMap[p.id] = p;
+      });
+    }
+  }
+
+  return sessions.map(session => ({
+    ...session,
+    hostProfile: profilesMap[session.host_uuid]
+  }));
+}
+
+export async function updateInterviewVerdict(sessionId: string, verdict: InterviewVerdict): Promise<void> {
+  const { error } = await supabase
+    .from('interview_sessions')
+    .update({ verdict })
+    .eq('id', sessionId);
+
+  if (error) {
+    throw new Error(`Failed to update interview verdict: ${error.message}`);
+  }
+}
+

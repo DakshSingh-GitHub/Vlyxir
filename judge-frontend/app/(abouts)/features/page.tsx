@@ -16,7 +16,9 @@ import {
     MessageSquare, 
     Smartphone, 
     Layers,
-    Sparkles
+    Sparkles,
+    Swords,
+    Briefcase
 } from 'lucide-react';
 
 const container: Variants = {
@@ -98,6 +100,20 @@ export default function FeaturesPage() {
             icon: <Layers className="text-cyan-400" />,
             size: "medium",
             color: "from-cyan-500/20 to-blue-500/20"
+        },
+        {
+            title: "1v1 Real-Time Code Duels",
+            desc: "Challenge your peers or match against random opponents in high-stakes, real-time algorithmic battles. Put your coding speed and logic to the test in a synchronized competitive environment. Track your competitive Elo rating, climb the duelist ranks, and prove your engineering dominance under pressure.",
+            icon: <Swords className="text-rose-400" />,
+            size: "medium",
+            color: "from-rose-500/20 to-red-500/20"
+        },
+        {
+            title: "VLYXIR Technical Interviews",
+            desc: "Conduct or attend seamless, professional-grade technical interviews. Our dedicated interview rooms feature real-time collaborative coding, synchronized execution outputs, host access controls, and integrated chat. Hosts can evaluate candidates, maintain private notes, and seamlessly record final verdicts to their dashboard.",
+            icon: <Briefcase className="text-indigo-400" />,
+            size: "large",
+            color: "from-indigo-500/20 to-blue-600/20"
         }
     ];
 

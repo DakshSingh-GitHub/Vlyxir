@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Video, PlayCircle, History, Clock } from "lucide-react";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
-import { createInterviewSession, getActiveSessionsForHost, getPastSessionsForHost } from "../../lib/api/interview";
+import { createInterviewSession, getActiveSessionsForHost, getPastSessionsForHost, getSessionDetails, getHostProfile } from "../../lib/api/interview";
 import { InterviewSession } from "../../lib/types/interview";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
 
@@ -19,6 +19,12 @@ export default function InterviewDashboard() {
   const [isCreating, setIsCreating] = useState(false);
   const [roomCode, setRoomCode] = useState("");
   const [roomError, setRoomError] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState<{
+    sessionId: string;
+    hostName: string;
+    hostAvatar: string;
+  } | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -39,13 +45,14 @@ export default function InterviewDashboard() {
     }
   };
 
-  const handleJoinSession = (e: React.FormEvent) => {
+  const handleJoinSession = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomCode.trim()) {
       setRoomError("Please enter a room code or link");
       return;
     }
     setRoomError("");
+    setIsJoining(true);
     
     // Extract UUID from link if pasted
     let cleanedId = roomCode.trim();
@@ -58,7 +65,26 @@ export default function InterviewDashboard() {
       // Fallback to raw text
     }
 
-    router.push(`/interview/${cleanedId}`);
+    try {
+      const session = await getSessionDetails(cleanedId);
+      if (!session) {
+        setRoomError("Session not found or invalid.");
+        setIsJoining(false);
+        return;
+      }
+      
+      const hostProfile = await getHostProfile(session.host_uuid);
+      
+      setConfirmModalData({
+        sessionId: cleanedId,
+        hostName: hostProfile?.full_name || hostProfile?.username || "Unknown Host",
+        hostAvatar: hostProfile?.avatar_url || ""
+      });
+    } catch (err) {
+      console.error(err);
+      setRoomError("Failed to fetch session details.");
+    }
+    setIsJoining(false);
   };
 
   if (isAuthLoading) return null;
@@ -148,9 +174,12 @@ export default function InterviewDashboard() {
                         />
                         <button
                             type="submit"
-                            className="absolute right-2 px-4 py-2.5 rounded-lg text-xs font-black text-white bg-indigo-600 hover:bg-indigo-750 transition-colors"
+                            disabled={isJoining}
+                            className={`absolute right-2 px-4 py-2.5 rounded-lg text-xs font-black text-white transition-colors ${
+                                isJoining ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-750"
+                            }`}
                         >
-                            Join
+                            {isJoining ? "..." : "Join"}
                         </button>
                     </div>
                     {roomError && <p className="text-[10px] text-rose-500 font-bold ml-1">{roomError}</p>}
@@ -224,6 +253,47 @@ export default function InterviewDashboard() {
         </div>
 
       </div>
+      
+      {/* Confirm Join Modal */}
+      {confirmModalData && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[2000] flex items-center justify-center p-4">
+          <div className={`w-full max-w-sm border rounded-3xl p-6 shadow-2xl flex flex-col items-center text-center gap-4 animate-in fade-in zoom-in-95 duration-200 ${
+            isDark ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-slate-200 text-slate-900"
+          }`}>
+            <h3 className="text-xl font-bold tracking-tight">Join Session</h3>
+            <div className="flex flex-col items-center gap-2 my-2">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-indigo-500/20 border-2 border-indigo-500/50 flex items-center justify-center text-indigo-400 font-bold text-xl">
+                {confirmModalData.hostAvatar ? (
+                  <img src={confirmModalData.hostAvatar} alt="Host Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  confirmModalData.hostName.charAt(0).toUpperCase()
+                )}
+              </div>
+              <p className={`text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                Hosted by <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{confirmModalData.hostName}</span>
+              </p>
+            </div>
+            <div className="flex w-full gap-3 mt-2">
+                <button
+                onClick={() => setConfirmModalData(null)}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                    isDark 
+                        ? "bg-slate-800 hover:bg-slate-700 text-slate-300" 
+                        : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+                }`}
+                >
+                Cancel
+                </button>
+                <button
+                onClick={() => router.push(`/interview/${confirmModalData.sessionId}`)}
+                className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-md"
+                >
+                Confirm Join
+                </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

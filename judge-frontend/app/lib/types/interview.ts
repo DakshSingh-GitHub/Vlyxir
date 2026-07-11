@@ -19,7 +19,7 @@ export interface InterviewSession {
 }
 
 export interface RealtimeMessage {
-  type: 'code_sync' | 'execution_lock' | 'chat_message' | 'participant_joined' | 'admit_candidate' | 'deny_candidate' | 'end_session';
+  type: 'code_sync' | 'execution_lock' | 'chat_message' | 'participant_joined' | 'admit_candidate' | 'deny_candidate' | 'end_session' | 'output_sync';
   payload: any;
   sender_uuid: string;
 }

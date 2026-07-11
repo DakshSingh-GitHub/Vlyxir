@@ -34,7 +34,13 @@ import {
     HelpCircle,
     Zap,
     Terminal,
-    Swords
+    Swords,
+    Briefcase,
+    Video,
+    XCircle,
+    ChevronDown,
+    ChevronUp,
+    CheckCircle
 } from 'lucide-react';
 import { supabase } from '../../lib/api/supabase/client';
 import { useAuth } from '../../lib/auth/auth-context';
@@ -48,6 +54,7 @@ import { getProblems } from '../../lib/api/api';
 import AllSubmissionsModal from '../user/[user_id]/AllSubmissionsModal';
 import CodeViewModal from '../user/[user_id]/CodeViewModal';
 import Image from 'next/image';
+import { getInterviewsTaken, getInterviewsAttended, updateInterviewVerdict, InterviewRecord } from '../../lib/api/interview';
 
 interface UserProfile {
     id: string;
@@ -111,6 +118,12 @@ export default function YourProfilePage() {
     const [followersList, setFollowersList] = useState<any[]>([]);
     const [followingList, setFollowingList] = useState<any[]>([]);
     const [socialTab, setSocialTab] = useState<"following" | "followers">("following");
+
+    // Interview Records states
+    const [interviewTab, setInterviewTab] = useState<"taken" | "attended">("taken");
+    const [interviewsTaken, setInterviewsTaken] = useState<InterviewRecord[]>([]);
+    const [interviewsAttended, setInterviewsAttended] = useState<InterviewRecord[]>([]);
+    const [expandedLogs, setExpandedLogs] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         if (authLoading) return;
@@ -388,6 +401,13 @@ export default function YourProfilePage() {
 
                 setDuelsHistory(resolvedDuels);
 
+                // --- 8. Fetch Interview Records ---
+                const taken = await getInterviewsTaken(currentUser.id);
+                setInterviewsTaken(taken);
+
+                const attended = await getInterviewsAttended(currentUser.id);
+                setInterviewsAttended(attended);
+
             } catch (err) {
                 console.error("Error loading profile metrics:", err);
             } finally {
@@ -660,6 +680,26 @@ export default function YourProfilePage() {
         } catch (err) {
             console.error("Error removing follower:", err);
         }
+    };
+
+    const handleUpdateVerdict = async (sessionId: string, verdict: 'Accepted' | 'Rejected') => {
+        try {
+            await updateInterviewVerdict(sessionId, verdict);
+            setInterviewsTaken(prev => 
+                prev.map(interview => 
+                    interview.id === sessionId ? { ...interview, verdict } : interview
+                )
+            );
+        } catch (err) {
+            console.error("Failed to update verdict", err);
+        }
+    };
+
+    const toggleLog = (sessionId: string) => {
+        setExpandedLogs(prev => ({
+            ...prev,
+            [sessionId]: !prev[sessionId]
+        }));
     };
 
     if (authLoading || (loading && !profile)) {
@@ -1557,6 +1597,176 @@ export default function YourProfilePage() {
                             ) : (
                                 <div className="col-span-full text-center py-10 text-slate-400 text-xs">
                                     No one is following you yet.
+                                </div>
+                            )
+                        )}
+                    </div>
+                </motion.div>
+
+                {/* Interview Records Panel */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    className="border rounded-3xl p-6 glass-morphism bg-white/70 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 shadow-sm"
+                >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div className="flex items-center gap-2">
+                            <Briefcase className="text-indigo-400" size={18} />
+                            <h2 className="text-lg font-black text-slate-900 dark:text-white">Interview Records</h2>
+                        </div>
+                        <div className="flex gap-2 bg-slate-200/50 dark:bg-slate-800/60 p-1 rounded-xl self-start sm:self-auto">
+                            <button
+                                onClick={() => setInterviewTab("taken")}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                    interviewTab === "taken"
+                                        ? "bg-white text-indigo-650 shadow-xs dark:bg-slate-900 dark:text-indigo-400"
+                                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                                }`}
+                            >
+                                Interviews Taken ({interviewsTaken.length})
+                            </button>
+                            <button
+                                onClick={() => setInterviewTab("attended")}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                                    interviewTab === "attended"
+                                        ? "bg-white text-indigo-650 shadow-xs dark:bg-slate-900 dark:text-indigo-400"
+                                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                                }`}
+                            >
+                                Interviews Attended ({interviewsAttended.length})
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                        {interviewTab === "taken" ? (
+                            interviewsTaken.length > 0 ? (
+                                interviewsTaken.map((item) => (
+                                    <div key={item.id} className="p-4 rounded-2xl border flex flex-col gap-3 bg-slate-50 border-slate-200 dark:bg-slate-800/20 dark:border-slate-800/60 transition-all">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
+                                                    {!item.participant_uuid ? (
+                                                        <span className="text-[10px]">N/A</span>
+                                                    ) : item.participantProfile?.avatar_url ? (
+                                                        <Image src={item.participantProfile.avatar_url} alt={item.participantProfile.full_name || "Applicant"} fill className="object-cover" />
+                                                    ) : (
+                                                        getInitials(item.participantProfile?.full_name || "A")
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-sm text-slate-900 dark:text-white">
+                                                        {!item.participant_uuid ? "No Applicant" : (item.participantProfile?.full_name || "Applicant")}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-400">
+                                                        {format(new Date(item.created_at), 'MMM d, yyyy • h:mm a')}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {!item.participant_uuid ? (
+                                                    <span className="px-3 py-1 rounded-lg text-xs font-bold bg-slate-500/10 text-slate-500">
+                                                        No applicant joined
+                                                    </span>
+                                                ) : item.verdict === 'Pending' ? (
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleUpdateVerdict(item.id, 'Accepted')}
+                                                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400 transition-colors"
+                                                        >
+                                                            <CheckCircle size={14} /> Accept
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleUpdateVerdict(item.id, 'Rejected')}
+                                                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:text-rose-400 transition-colors"
+                                                        >
+                                                            <XCircle size={14} /> Reject
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <span className={`px-3 py-1 rounded-lg text-xs font-bold ${
+                                                        item.verdict === 'Accepted' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+                                                    }`}>
+                                                        {item.verdict}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Notes Section */}
+                                        {item.interviewer_notes && (
+                                            <div className="bg-white dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-2">
+                                                <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">Interviewer Notes</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-pre-wrap">{item.interviewer_notes}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Logs Section */}
+                                        {item.candidate_logs && item.candidate_logs.length > 0 && (
+                                            <div className="mt-2">
+                                                <button
+                                                    onClick={() => toggleLog(item.id)}
+                                                    className="flex items-center gap-2 text-xs font-bold text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"
+                                                >
+                                                    {expandedLogs[item.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                                    {expandedLogs[item.id] ? "Hide Logs" : "Show Candidate Logs"}
+                                                </button>
+                                                
+                                                {expandedLogs[item.id] && (
+                                                    <div className="mt-2 p-3 bg-slate-900 rounded-xl text-xs font-mono text-emerald-400/80 max-h-40 overflow-y-auto">
+                                                        {item.candidate_logs.map((log, i) => (
+                                                            <div key={i} className="mb-1">
+                                                                <span className="text-slate-500 mr-2">[{log.timestamp}]</span>
+                                                                {log.action}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-10 text-slate-400 text-xs">
+                                    You have not hosted any interviews yet.
+                                </div>
+                            )
+                        ) : (
+                            interviewsAttended.length > 0 ? (
+                                interviewsAttended.map((item) => (
+                                    <div key={item.id} className="p-4 rounded-2xl border flex items-center justify-between bg-slate-50 border-slate-200 dark:bg-slate-800/20 dark:border-slate-800/60 transition-all">
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-xs font-black relative overflow-hidden shrink-0 shadow-xs">
+                                                {item.hostProfile?.avatar_url ? (
+                                                    <Image src={item.hostProfile.avatar_url} alt={item.hostProfile.full_name || "Host"} fill className="object-cover" />
+                                                ) : (
+                                                    getInitials(item.hostProfile?.full_name || "H")
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm text-slate-900 dark:text-white">
+                                                    Hosted by {item.hostProfile?.full_name || "Interviewer"}
+                                                </p>
+                                                <p className="text-[10px] text-slate-400">
+                                                    {format(new Date(item.created_at), 'MMM d, yyyy')}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+                                                item.verdict === 'Accepted' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 
+                                                item.verdict === 'Rejected' ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 
+                                                'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                            }`}>
+                                                {item.verdict || 'Pending'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-10 text-slate-400 text-xs">
+                                    You have not attended any interviews yet.
                                 </div>
                             )
                         )}
