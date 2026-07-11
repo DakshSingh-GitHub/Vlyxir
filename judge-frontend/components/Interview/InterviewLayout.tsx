@@ -35,8 +35,6 @@ interface InterviewLayoutProps {
   participants: { uuid: string; status: 'online' | 'offline'; isAdmitted?: boolean; name?: string; avatarUrl?: string; }[];
   chatMessages: ChatMessage[];
   onSendChatMessage: (text: string) => void;
-  onAdmitCandidate?: () => void;
-  onDenyCandidate?: () => void;
   
   // Host controls
   notes: string;
@@ -71,8 +69,6 @@ export default function InterviewLayout({
   participants,
   chatMessages,
   onSendChatMessage,
-  onAdmitCandidate,
-  onDenyCandidate,
   notes,
   setNotes,
   onEndSession,
@@ -90,11 +86,19 @@ export default function InterviewLayout({
   const [consoleOpen, setConsoleOpen] = useState(true);
   const [consoleTab, setConsoleTab] = useState<'input' | 'output'>('input');
 
-  // Resize states
   const [leftWidth, setLeftWidth] = useState(256); // default 256px
   const [rightWidth, setRightWidth] = useState(320); // default 320px
   const [bottomHeight, setBottomHeight] = useState(240); // default 240px
   const [isResizing, setIsResizing] = useState(false);
+  const [isExecutionBlockedModalOpen, setIsExecutionBlockedModalOpen] = useState(false);
+
+  const handleRunCodeClick = () => {
+    if (!isHost && isExecutionLocked) {
+      setIsExecutionBlockedModalOpen(true);
+      return;
+    }
+    onRunCode();
+  };
 
   const finalLeftWidth = leftSidebarOpen ? leftWidth : 0;
   const finalRightWidth = rightSidebarOpen ? rightWidth : 0;
@@ -275,10 +279,10 @@ export default function InterviewLayout({
                 </span>
               </div>
               <button
-                onClick={onRunCode}
-                disabled={isLoadingRun || (!isHost && isExecutionLocked)}
+                onClick={handleRunCodeClick}
+                disabled={isLoadingRun}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                  isLoadingRun || (!isHost && isExecutionLocked)
+                  isLoadingRun
                     ? isDark ? "bg-slate-900/60 text-slate-500 cursor-not-allowed" : "bg-slate-100 text-slate-400 cursor-not-allowed"
                     : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20 active:scale-95"
                 }`}
@@ -289,7 +293,7 @@ export default function InterviewLayout({
             </div>
             
             <div className="flex-1 min-h-0 relative">
-              <CodeEditor code={code} setCode={setCode} isDark={isDark} flat={true} isDisabled={!isHost && isExecutionLocked} />
+              <CodeEditor code={code} setCode={setCode} isDark={isDark} flat={true} isDisabled={false} />
             </div>
           </div>
 
@@ -395,13 +399,35 @@ export default function InterviewLayout({
                   userId={userId}
                   hostUuid={hostUuid}
                   isHost={isHost}
-                  onAdmitCandidate={onAdmitCandidate}
-                  onDenyCandidate={onDenyCandidate}
                 />
               </div>
             </div>
           )}
         </div>
+
+      {isExecutionBlockedModalOpen && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[2000] flex items-center justify-center p-4">
+          <div className={`w-full max-w-sm border rounded-3xl p-6 shadow-2xl flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200 ${
+            isDark ? "bg-slate-900 border-slate-800 text-white" : "bg-white border-slate-200 text-slate-900"
+          }`}>
+            <div>
+              <h3 className="text-base font-black uppercase tracking-wider text-rose-400 flex items-center gap-2">
+                <LockKeyhole className="w-5 h-5" />
+                Execution Locked
+              </h3>
+              <p className={`text-sm mt-2 leading-relaxed ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+                The host has temporarily disabled code execution. You can continue to write code, but running it is currently restricted.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsExecutionBlockedModalOpen(false)}
+              className="mt-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest shadow-md transition-colors cursor-pointer w-full"
+            >
+              Okay, understood
+            </button>
+          </div>
+        </div>
+      )}
 
       </div>
   );

@@ -11,7 +11,6 @@ import {
 } from "../../../lib/api/interview";
 import { useInterviewRealtime } from "../../../lib/hooks/useInterviewRealtime";
 import InterviewLayout from "../../../../components/Interview/InterviewLayout";
-import WaitingRoom from "../../../../components/Interview/WaitingRoom";
 import LoginPrompt from "../../../../components/Auth/LoginPrompt";
 import { InterviewSession, InterviewVerdict } from "../../../lib/types/interview";
 import { runCode } from "../../../lib/api/api";
@@ -31,7 +30,7 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
 
   const [session, setSession] = useState<InterviewSession | null>(null);
   const [isHost, setIsHost] = useState(false);
-  const [accessState, setAccessState] = useState<'Checking' | 'Waiting' | 'Admitted' | 'Denied' | 'Ended'>('Checking');
+  const [accessState, setAccessState] = useState<'Checking' | 'Admitted' | 'Ended'>('Checking');
   
   const [code, setCode] = useState("# Write your code here");
   const [files, setFiles] = useState<Record<string, any>>({
@@ -71,18 +70,19 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
       if (data.host_uuid === user.id) {
           setIsHost(true);
           setAccessState('Admitted'); // Host goes straight in
-          // Set to active if it was waiting
-          if (data.status === 'Waiting') {
-              updateSessionStatus(sessionId, 'Active');
-          }
       } else {
           // It's a candidate
           setIsHost(false);
           const success = await joinSessionAsParticipant(sessionId, user.id);
           if (success || data.participant_uuid === user.id) {
-              setAccessState('Waiting');
+              setAccessState('Admitted');
+              // Automatically set session to Active if candidate joins successfully
+              if (data.status === 'Waiting') {
+                  updateSessionStatus(sessionId, 'Active');
+              }
           } else {
-              setAccessState('Denied'); // Someone else took the slot
+              // Failed to join or someone else took the slot
+              setAccessState('Ended');
           }
       }
     });
@@ -97,8 +97,6 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
     syncCode,
     sendChatMessage,
     toggleExecutionLock,
-    admitCandidate,
-    denyCandidate,
     notifySessionEnd,
     appendLog
   } = useInterviewRealtime({
@@ -120,8 +118,6 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
         };
       });
     },
-    onCandidateAdmitted: () => setAccessState('Admitted'),
-    onCandidateDenied: () => setAccessState('Denied'),
     onSessionEnded: () => setAccessState('Ended')
   });
 
@@ -279,12 +275,15 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
     );
   }
 
-  // Candidate waiting room gates
   if (!isHost && accessState !== 'Admitted') {
       return (
-          <>
-            <WaitingRoom status={accessState as any} onLeave={handleLeaveSession} />
-          </>
+          <div className={`min-h-screen flex items-center justify-center ${isDark ? "bg-slate-950" : "bg-slate-50"}`}>
+             <div className="text-center">
+                 <h2 className="text-xl font-bold mb-2">Interview Unavailable</h2>
+                 <p className="text-sm text-slate-500 mb-4">You cannot access this session.</p>
+                 <button onClick={handleLeaveSession} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">Return Home</button>
+             </div>
+          </div>
       );
   }
 
@@ -310,8 +309,6 @@ export default function InterviewRoom({ params }: { params: Promise<{ id: string
         participants={participants}
         chatMessages={chatMessages}
         onSendChatMessage={sendChatMessage}
-        onAdmitCandidate={admitCandidate}
-        onDenyCandidate={denyCandidate}
         notes={notes}
         setNotes={setNotes}
         onEndSession={() => setIsEndModalOpen(true)}

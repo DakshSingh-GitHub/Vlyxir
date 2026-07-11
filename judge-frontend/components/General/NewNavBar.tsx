@@ -127,29 +127,19 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
                             className="flex items-center gap-4 opacity-0"
                         >
                             <NewNavDropdown />
-                            {isInterviewRoom && (
+                            {isInterviewRoom && interviewState.isHost && (
                                 <>
                                     <div className={`h-6 w-px ${isDark ? "bg-white/10" : "bg-slate-900/10"}`} />
-                                    {interviewState.isHost ? (
-                                        <button
-                                            onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'toggle-lock' } }))}
-                                            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-                                                interviewState.isExecutionLocked
-                                                    ? "bg-rose-500/20 text-rose-450 border border-rose-500/30"
-                                                    : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                                            }`}
-                                        >
-                                            {interviewState.isExecutionLocked ? "🔒 Execution Locked" : "🔓 Execution Allowed"}
-                                        </button>
-                                    ) : (
-                                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                    <button
+                                        onClick={() => window.dispatchEvent(new CustomEvent('vlyxir-interview-action', { detail: { action: 'toggle-lock' } }))}
+                                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                                             interviewState.isExecutionLocked
-                                                ? "bg-rose-500/10 text-rose-455 border border-rose-500/20"
-                                                : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                        }`}>
-                                            {interviewState.isExecutionLocked ? "🔒 Exec Locked" : "🔓 Exec Allowed"}
-                                        </div>
-                                    )}
+                                                ? "bg-rose-500/20 text-rose-450 border border-rose-500/30"
+                                                : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                        }`}
+                                    >
+                                        {interviewState.isExecutionLocked ? "🔒 Execution Locked" : "🔓 Execution Allowed"}
+                                    </button>
                                 </>
                             )}
                         </div>

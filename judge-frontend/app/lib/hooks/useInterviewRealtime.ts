@@ -12,8 +12,6 @@ interface UseInterviewRealtimeProps {
   isSessionActive?: boolean;
   onCodeChange?: (code: string) => void;
   onExecutionLockToggle?: (isLocked: boolean) => void;
-  onCandidateAdmitted?: () => void;
-  onCandidateDenied?: () => void;
   onSessionEnded?: () => void;
 }
 
@@ -26,8 +24,6 @@ export function useInterviewRealtime({
   isSessionActive,
   onCodeChange,
   onExecutionLockToggle,
-  onCandidateAdmitted,
-  onCandidateDenied,
   onSessionEnded
 }: UseInterviewRealtimeProps) {
   const [isConnected, setIsConnected] = useState(false);
@@ -39,24 +35,18 @@ export function useInterviewRealtime({
   const [participants, setParticipants] = useState<{
     uuid: string;
     status: 'online' | 'offline';
-    isAdmitted?: boolean;
     name?: string;
     avatarUrl?: string;
   }[]>([]);
-  const [candidateAdmitted, setCandidateAdmitted] = useState(false);
 
   // Capture latest callbacks in refs to prevent render loops
   const onCodeChangeRef = useRef(onCodeChange);
   const onExecutionLockToggleRef = useRef(onExecutionLockToggle);
-  const onCandidateAdmittedRef = useRef(onCandidateAdmitted);
-  const onCandidateDeniedRef = useRef(onCandidateDenied);
   const onSessionEndedRef = useRef(onSessionEnded);
 
   useEffect(() => {
     onCodeChangeRef.current = onCodeChange;
     onExecutionLockToggleRef.current = onExecutionLockToggle;
-    onCandidateAdmittedRef.current = onCandidateAdmitted;
-    onCandidateDeniedRef.current = onCandidateDenied;
     onSessionEndedRef.current = onSessionEnded;
   });
 
@@ -92,7 +82,6 @@ export function useInterviewRealtime({
           return {
             uuid,
             status: 'online' as const,
-            isAdmitted: metadata.isAdmitted ?? false,
             name: metadata.userName || '',
             avatarUrl: metadata.userAvatar || ''
           };
@@ -126,13 +115,6 @@ export function useInterviewRealtime({
           case 'chat_message':
             setChatMessages(prev => [...prev, message.payload.chatMessage]);
             break;
-          case 'admit_candidate':
-            setCandidateAdmitted(true);
-            if (!isHost && onCandidateAdmittedRef.current) onCandidateAdmittedRef.current();
-            break;
-          case 'deny_candidate':
-            if (!isHost && onCandidateDeniedRef.current) onCandidateDeniedRef.current();
-            break;
           case 'end_session':
             if (!isHost && onSessionEndedRef.current) onSessionEndedRef.current();
             break;
@@ -149,14 +131,12 @@ export function useInterviewRealtime({
             userId,
             userName: userName || '',
             userAvatar: userAvatar || '',
-            isAdmitted: isHost || false,
             onlineAt: new Date().toISOString()
           });
         }
       });
 
-    // Candidate-side DB polling: Subscribe to session status changes so
-    // admission works even if the broadcast is missed (race condition fallback)
+    // Candidate-side DB polling for end session
     let dbChannel: RealtimeChannel | null = null;
     if (!isHost) {
       dbChannel = supabase
@@ -171,10 +151,7 @@ export function useInterviewRealtime({
           },
           (payload: any) => {
             const updated = payload.new;
-            if (updated?.status === 'Active' && onCandidateAdmittedRef.current) {
-              setCandidateAdmitted(true);
-              onCandidateAdmittedRef.current();
-            } else if (updated?.status === 'Completed' && onSessionEndedRef.current) {
+            if (updated?.status === 'Completed' && onSessionEndedRef.current) {
               onSessionEndedRef.current();
             }
           }
@@ -189,18 +166,7 @@ export function useInterviewRealtime({
     };
   }, [sessionId, userId, isHost, appendLog, userName, userAvatar]);
 
-  // Keep presence metadata in sync when admission state changes
-  useEffect(() => {
-    if (channelRef.current && candidateAdmitted) {
-      channelRef.current.track({
-        userId,
-        userName: userName || '',
-        userAvatar: userAvatar || '',
-        isAdmitted: true,
-        onlineAt: new Date().toISOString()
-      });
-    }
-  }, [candidateAdmitted, userId, userName, userAvatar]);
+
 
   const sendBroadcast = useCallback((type: RealtimeMessage['type'], payload: any) => {
     // Use channelRef to avoid stale closure issues
@@ -240,29 +206,6 @@ export function useInterviewRealtime({
     appendLog(isLocked ? 'Host locked execution' : 'Host unlocked execution');
   }, [sendBroadcast, isHost, appendLog]);
 
-  const admitCandidate = useCallback(async () => {
-    if (!isHost) return;
-    // 1. Send broadcast immediately for fast path
-    sendBroadcast('admit_candidate', {});
-    appendLog('Candidate admitted to workspace');
-    // 2. Also update DB status to 'Active' so the candidate's postgres_changes
-    //    subscription catches it even if they missed the broadcast
-    try {
-      await supabase
-        .from('interview_sessions')
-        .update({ status: 'Active' })
-        .eq('id', sessionId);
-    } catch (err) {
-      console.error('Failed to update session status on admit:', err);
-    }
-  }, [sendBroadcast, isHost, appendLog, sessionId]);
-  
-  const denyCandidate = useCallback(() => {
-      if (!isHost) return;
-      sendBroadcast('deny_candidate', {});
-      appendLog('Candidate denied access');
-  }, [sendBroadcast, isHost, appendLog]);
-
   const notifySessionEnd = useCallback(() => {
     if (!isHost) return;
     sendBroadcast('end_session', {});
@@ -279,8 +222,6 @@ export function useInterviewRealtime({
     syncCode,
     sendChatMessage,
     toggleExecutionLock,
-    admitCandidate,
-    denyCandidate,
     notifySessionEnd,
   };
 }

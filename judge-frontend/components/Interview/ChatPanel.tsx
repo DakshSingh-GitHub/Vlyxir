@@ -10,8 +10,6 @@ interface ChatPanelProps {
   userId: string;
   hostUuid: string;
   isHost: boolean;
-  onAdmitCandidate?: () => void;
-  onDenyCandidate?: () => void;
 }
 
 export default function ChatPanel({
@@ -20,9 +18,7 @@ export default function ChatPanel({
   onSendMessage,
   userId,
   hostUuid,
-  isHost,
-  onAdmitCandidate,
-  onDenyCandidate
+  isHost
 }: ChatPanelProps) {
   const { isDark } = useAppContext();
   const [inputText, setInputText] = useState('');
@@ -61,7 +57,6 @@ export default function ChatPanel({
           {participants.map((p) => {
             const isHostParticipant = p.uuid === hostUuid;
             const isMe = p.uuid === userId;
-            const isAdmitted = p.isAdmitted ?? false;
             
             const resolvedName = p.name || (isHostParticipant ? 'Host' : 'Candidate');
             const label = isHostParticipant ? 'Host' : 'Applicant';
@@ -89,42 +84,11 @@ export default function ChatPanel({
                     <p className={`text-sm font-semibold truncate ${isDark ? "text-slate-200" : "text-slate-800"}`} title={displayNameToShow}>
                       {displayNameToShow}
                     </p>
-                    {!isHostParticipant && (
-                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md shrink-0 ${
-                        isAdmitted
-                          ? "bg-emerald-500/10 text-emerald-400"
-                          : "bg-amber-500/10 text-amber-400 animate-pulse"
-                      }`}>
-                        {isAdmitted ? "Admitted" : "In Lobby"}
-                      </span>
-                    )}
                   </div>
                   <p className={`text-[10px] uppercase tracking-wider ${isDark ? "text-slate-500" : "text-slate-400"}`}>
                     {p.status}
                   </p>
                 </div>
-                
-                {/* Admit/Deny actions for Host if candidate is not yet admitted */}
-                {isHost && !isHostParticipant && !isAdmitted && (
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      onClick={onAdmitCandidate}
-                      className="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-black uppercase tracking-wider transition-colors cursor-pointer"
-                    >
-                      Admit
-                    </button>
-                    {onDenyCandidate && (
-                      <button
-                        onClick={onDenyCandidate}
-                        className={`px-2 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-wider transition-colors cursor-pointer ${
-                          isDark ? "border-slate-800 hover:bg-slate-800 text-slate-400" : "border-slate-200 hover:bg-slate-100 text-slate-500"
-                        }`}
-                      >
-                        Deny
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}
