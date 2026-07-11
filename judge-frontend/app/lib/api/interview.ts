@@ -205,3 +205,27 @@ export async function updateInterviewVerdict(sessionId: string, verdict: Intervi
   }
 }
 
+export async function checkCanHostInterview(userId: string): Promise<boolean> {
+    try {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role, plan')
+            .eq('id', userId)
+            .single();
+
+        if (profile?.role === 'super') return true;
+        if (profile?.plan !== 'pro') return false;
+
+        const { data: tierData } = await supabase
+            .from('user_tiers')
+            .select('tier')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        const tier = tierData?.tier || 1;
+        return tier >= 2;
+    } catch (err) {
+        console.error("Error checking host permission", err);
+        return false;
+    }
+}

@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { Plus, Video, PlayCircle, History, Clock } from "lucide-react";
 import { useAppContext } from "../../lib/auth/context";
 import { useAuth } from "../../lib/auth/auth-context";
-import { createInterviewSession, getActiveSessionsForHost, getPastSessionsForHost, getSessionDetails, getHostProfile } from "../../lib/api/interview";
+import { createInterviewSession, getActiveSessionsForHost, getPastSessionsForHost, getSessionDetails, getHostProfile, checkCanHostInterview } from "../../lib/api/interview";
 import { InterviewSession } from "../../lib/types/interview";
 import LoginPrompt from "../../../components/Auth/LoginPrompt";
+import LimitFlash from "../../../components/General/LimitFlash";
 
 export default function InterviewDashboard() {
   const { isDark } = useAppContext();
@@ -20,6 +21,8 @@ export default function InterviewDashboard() {
   const [roomCode, setRoomCode] = useState("");
   const [roomError, setRoomError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
+  const [showLimitFlash, setShowLimitFlash] = useState(false);
+  const [canHost, setCanHost] = useState<boolean | null>(null);
   const [confirmModalData, setConfirmModalData] = useState<{
     sessionId: string;
     hostName: string;
@@ -30,11 +33,18 @@ export default function InterviewDashboard() {
     if (user?.id) {
       getActiveSessionsForHost(user.id).then(setActiveSessions);
       getPastSessionsForHost(user.id).then(setPastSessions);
+      checkCanHostInterview(user.id).then(setCanHost);
     }
   }, [user]);
 
   const handleCreateSession = async () => {
     if (!user) return;
+    
+    if (canHost === false) {
+      router.push('/upgrade-tiers');
+      return;
+    }
+
     setIsCreating(true);
     try {
       const session = await createInterviewSession(user.id);
@@ -99,6 +109,11 @@ export default function InterviewDashboard() {
 
   return (
     <div className={`min-h-[calc(100vh-4rem)] pb-12 ${isDark ? "text-white" : "text-slate-900"}`}>
+      <LimitFlash 
+        isVisible={showLimitFlash} 
+        onClose={() => setShowLimitFlash(false)} 
+        message="Hosting an interview requires Pro Tier 2 or Tier 3. Please upgrade your plan to access this feature."
+      />
       <div className="w-[92vw] max-w-[92vw] mx-auto px-4 md:px-0 space-y-10 mt-8">
         
         {/* Header */}
@@ -132,15 +147,25 @@ export default function InterviewDashboard() {
                     </div>
                     <button
                         onClick={handleCreateSession}
-                        disabled={isCreating}
+                        disabled={isCreating || canHost === null}
                         className={`w-full py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md ${
-                            isCreating 
+                            (isCreating || canHost === null) 
                                 ? isDark ? "bg-slate-800 text-slate-500" : "bg-slate-200 text-slate-400"
-                                : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/25"
+                                : canHost === false
+                                    ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/25"
+                                    : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-500/25"
                         }`}
                     >
-                        {isCreating ? <Clock className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                        Create Workspace
+                        {isCreating || canHost === null ? (
+                             <Clock className="w-4 h-4 animate-spin" />
+                        ) : canHost === false ? (
+                             "Upgrade to host meeting"
+                        ) : (
+                             <>
+                               <Plus className="w-4 h-4" />
+                               Create Workspace
+                             </>
+                        )}
                     </button>
                 </div>
             </div>

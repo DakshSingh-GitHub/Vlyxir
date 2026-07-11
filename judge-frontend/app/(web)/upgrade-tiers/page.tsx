@@ -36,7 +36,8 @@ const TIERS = [
             "Public Forums Access",
             "Vlyxir Forge",
             "Community Support",
-            "1v1 Duel"
+            "1v1 Duel",
+            "Join Interviews"
         ],
         icon: Terminal,
         color: "text-slate-400 dark:text-slate-350",
@@ -55,7 +56,8 @@ const TIERS = [
             "Private Leaderboard",
             "Early Access Features",
             "Early Access to new UIs",
-            "1v1 Duel"
+            "1v1 Duel",
+            "Join Interviews"
         ],
         icon: Zap,
         color: "text-blue-500 dark:text-blue-400",
@@ -78,7 +80,9 @@ const TIERS = [
             "Early Access Features",
             "Early Access to new UIs",
             "Multi-file access",
-            "1v1 Duel"
+            "1v1 Duel",
+            "Join Interviews",
+            "Host Interview"
         ],
         icon: BrainCircuit,
         color: "text-indigo-500 dark:text-indigo-400",
@@ -104,7 +108,9 @@ const TIERS = [
             "Improvement Roadmap",
             "Recommended Reference Code",
             "Priority Support",
-            "1v1 Duel"
+            "1v1 Duel",
+            "Join Interviews",
+            "Host Interview"
         ],
         icon: Crown,
         color: "text-amber-500 dark:text-amber-400",
@@ -123,9 +129,11 @@ const COMPARISON_FEATURES = [
     { name: "Public Forums Access", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Community Support", free: true, tier1: true, tier2: true, tier3: true },
     { name: "1v1 Duel", free:true, tier1:true, tier2:true, tier3:true },
+    { name: "Join Interviews", free:true, tier1:true, tier2:true, tier3:true },
     { name: "Private Leaderboard", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access to new UIs", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access Features", free: false, tier1: true, tier2: true, tier3: true },
+    { name: "Host Interview", free:false, tier1:false, tier2:true, tier3:true },
     { name: "Multi-File Access", free:false, tier1:false, tier2:true, tier3:true },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },
     { name: "AI Insights / day", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
