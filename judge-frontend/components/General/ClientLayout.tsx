@@ -8,7 +8,7 @@ import NavBar from './NavBar';
 import NewNavBar from './NewNavBar';
 import SubmissionsModal from './SubmissionsModal';
 import SettingsModal from './SettingsModal';
-import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath } from '@/app/lib/utils/paths';
+import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath, isLearnPath } from '@/app/lib/utils/paths';
 import { getProblems } from '../../app/lib/api/api';
 import { supabase } from '../../app/lib/api/supabase/client';
 import DailyProblemModal from './DailyProblemModal';
@@ -46,7 +46,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const isHomePage = pathname === '/';
     const isAccountPage = pathname.startsWith('/account');
     const isInterviewRoom = pathname.startsWith('/interview/') && pathname.split('/').length > 2 && pathname.split('/')[2] !== 'page';
-    const isSingleScreenPage = isCodeJudgePath(pathname) || isCodeIdePath(pathname) || isCodeAnalysisPath(pathname) || isForumPath(pathname) || isInterviewRoom;
+    const isSingleScreenPage = isCodeJudgePath(pathname) || isCodeIdePath(pathname) || isCodeAnalysisPath(pathname) || isForumPath(pathname) || isLearnPath(pathname) || isInterviewRoom;
     const isGradientPage = isHomePage || isSingleScreenPage || isAccountPage || pathname.startsWith('/interview');
 
     const checkDailySolvedStatus = React.useCallback(async (problemId: string) => {

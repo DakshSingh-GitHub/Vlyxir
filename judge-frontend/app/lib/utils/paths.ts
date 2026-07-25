@@ -32,3 +32,8 @@ export function isCodeAnalysisPath(pathname: string | null | undefined) {
 export function isForumPath(pathname: string | null | undefined) {
   return pathname?.startsWith("/forum");
 }
+
+export function isLearnPath(pathname: string | null | undefined) {
+  return pathname?.startsWith("/learn");
+}
+

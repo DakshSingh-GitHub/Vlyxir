@@ -59,6 +59,12 @@ export default function NavDropdown() {
             icon: "👥",
             subtext: "Interviewing others"
         },
+        {
+            name: "Learner's Area",
+            path: "/learn",
+            icon: "📓",
+            subtext: "Learn how to code!"
+        },
     ];
 
     const currentRoute = routes.find((route) => 

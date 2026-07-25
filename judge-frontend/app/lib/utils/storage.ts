@@ -368,3 +368,82 @@ export function getSystemLogs(): SystemLog[] {
     const logs = localStorage.getItem('code_judge_system_logs');
     return logs ? JSON.parse(logs) : [];
 }
+
+// ----------------------------------------------------------------------------
+// Learner Arena Progress (Supabase)
+// ----------------------------------------------------------------------------
+
+export interface LearningProgress {
+    topic_id: string;
+    is_completed: boolean;
+    is_bookmarked: boolean;
+}
+
+/**
+ * Fetches the user's saved learning progress from Supabase.
+ * Returns null if the user is not authenticated.
+ */
+export async function getLearningProgress(): Promise<LearningProgress[] | null> {
+    if (typeof window === 'undefined') return null;
+
+    const userId = await getCurrentUserId();
+    if (!userId) return null;
+
+    const { data, error } = await supabase
+        .from('user_learning_progress')
+        .select('topic_id, is_completed, is_bookmarked')
+        .eq('user_id', userId);
+
+    if (error) {
+        console.error("Failed to load learning progress from Supabase", error);
+        return null;
+    }
+
+    return data as LearningProgress[];
+}
+
+/**
+ * Upserts a topic's completion or bookmarked status in Supabase.
+ */
+export async function toggleTopicStatus(
+    topicId: string,
+    field: 'is_completed' | 'is_bookmarked',
+    value: boolean
+): Promise<void> {
+    if (typeof window === 'undefined') return;
+
+    const userId = await getCurrentUserId();
+    if (!userId) return;
+
+    // Supabase Upsert logic:
+    // First we must attempt an update or fetch the existing row to see if we need to insert or update,
+    // OR we can rely on a pure UPSERT if we know all values.
+    // However, if we only know one field (e.g. `is_completed`), upserting might overwrite the other field to default.
+    // Best approach: Fetch existing first, then Upsert.
+    
+    const { data: existing } = await supabase
+        .from('user_learning_progress')
+        .select('is_completed, is_bookmarked')
+        .eq('user_id', userId)
+        .eq('topic_id', topicId)
+        .maybeSingle();
+
+    const isCompleted = field === 'is_completed' ? value : (existing?.is_completed ?? false);
+    const isBookmarked = field === 'is_bookmarked' ? value : (existing?.is_bookmarked ?? false);
+
+    const { error } = await supabase
+        .from('user_learning_progress')
+        .upsert({
+            user_id: userId,
+            topic_id: topicId,
+            is_completed: isCompleted,
+            is_bookmarked: isBookmarked,
+            updated_at: new Date().toISOString(),
+        }, {
+            onConflict: 'user_id,topic_id'
+        });
+
+    if (error) {
+        console.error(`Failed to update ${field} for topic ${topicId}`, error);
+    }
+}
