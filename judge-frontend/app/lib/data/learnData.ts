@@ -1234,27 +1234,273 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "binary-search",
                 categorySlug: "algorithms",
                 title: "Binary Search",
-                subtitle: "Logarithmic O(log n) divide and conquer searching on sorted search spaces",
+                subtitle: "Logarithmic O(log N) divide-and-conquer search, boundary invariants, lower/upper bounds, and monotonic predicate functions",
                 difficulty: "Beginner",
-                readTime: "9 min read",
-                summary: "Master binary search bounds, discrete predicate functions, and middle calculations.",
-                overview: "Binary Search halves remaining candidates at every step by checking the middle element against target condition.",
-                keyConcepts: ["Logarithmic reduction O(log n)", "Preventing Overflow: mid = low + (high - low) / 2", "Lower and Upper Bound variations"],
+                readTime: "35 min read",
+                summary: "A textbook-grade deep dive into logarithmic search space reduction, loop invariants, integer overflow prevention, lower/upper bound mechanics, binary search on answer spaces, and hardware CPU branch prediction.",
+                overview: "Binary Search is the fundamental logarithmic search paradigm in computer science. Operating on a sorted or monotonic domain, Binary Search halves the active search window at every step by evaluating a midpoint condition. While conceptually simple, implementing bug-free binary search requires a precise understanding of search space boundaries, loop invariants, integer overflow physics, lower/upper bound definitions, and abstract predicate function mappings.",
+                keyConcepts: [
+                    "Logarithmic Search Space Halving: O(log N) Time Complexity",
+                    "Loop Invariants & Boundary Offsets ([low, high] vs [low, high))",
+                    "Integer Overflow Prevention: mid = low + (high - low) / 2",
+                    "Lower Bound (std::lower_bound) & Upper Bound (std::upper_bound)",
+                    "Binary Search on Answer Spaces (Monotonic Predicate Functions)",
+                    "Hardware Considerations: CPU Branch Misprediction & Cache Effects"
+                ],
                 timeComplexity: { best: "O(1)", average: "O(log n)", worst: "O(log n)" },
-                spaceComplexity: "O(1)",
+                spaceComplexity: "O(1) iterative / O(log n) recursive call stack",
                 sections: [
                     {
-                        heading: "1. Iterative Binary Search",
-                        content: "Adjusts low and high pointers based on value comparison until target is found or pointers cross.",
+                        heading: "1. Introduction to Binary Search",
+                        content: "Suppose you are searching for a friend's phone number in a physical telephone directory containing 1,000,000 names sorted alphabetically. If you flip through the directory page by page from the beginning (Linear Search), you might have to inspect up to 1,000,000 pages in the worst case. \n\nInstead, you instinctively open the directory to the exact middle. You check the names on that page. If your friend's last name starts with 'M', and the middle page displays 'M', you have found the page. If the page displays 'P', you know with mathematical certainty that 'M' cannot exist in the right half of the directory. You discard the entire right half of 500,000 pages without looking at a single one. By repeating this process on the remaining left half, you find any name out of 1,000,000 in at most 20 page flips (`log2(1,000,000) ≈ 19.93`). This is the power of Binary Search."
+                    },
+                    {
+                        heading: "2. Core Concept & Intuition",
+                        content: "Binary Search relies on a fundamental mathematical property: **Monotonicity** (a sorted sequence that strictly increases or decreases, or a predicate function that yields `[False, False, ..., True, True]`). \n\nWe maintain two pointers defining the search range: `low` (the inclusive starting index) and `high` (the inclusive ending index). In each iteration, we compute the midpoint index `mid`. \n\n1. If `arr[mid] == target`, search terminates successfully in O(1) time.\n2. If `arr[mid] < target`, the target must reside in the right partition. We update `low = mid + 1` to eliminate the left partition including `mid`.\n3. If `arr[mid] > target`, the target must reside in the left partition. We update `high = mid - 1` to eliminate the right partition including `mid`.\n\nWe repeat this loop until `low > high`, at which point we know the target does not exist in the collection."
+                    },
+                    {
+                        heading: "3. Internal Working & Loop Invariants",
+                        content: "To guarantee bug-free implementations, we must define the **Loop Invariant**. A loop invariant is a logical statement that remains true before and after every iteration of the loop. \n\nFor a closed interval `[low, high]`:\n- **Invariant:** If the `target` exists in `arr`, it is strictly contained within `arr[low...high]`.\n- **Initialization:** Initially, `low = 0` and `high = N - 1`, covering the entire array.\n- **Maintenance:** When `arr[mid] < target`, since the array is sorted, every element from `arr[low]` to `arr[mid]` is strictly smaller than `target`. Thus, setting `low = mid + 1` preserves the invariant.\n- **Termination:** The loop terminates when `low > high` (search space becomes empty). If `target` was in the array, the invariant proves it would have been found. Therefore, returning `-1` is mathematically proven correct."
+                    },
+                    {
+                        heading: "4. Step-by-Step Walkthrough: Finding a Target",
+                        content: "Let us trace Binary Search for `target = 23` in a sorted array `arr = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]` of size N = 10.\n\n**Iteration 1:**\n- `low = 0`, `high = 9`\n- `mid = 0 + (9 - 0) // 2 = 4` -> `arr[4] = 16`\n- Is `16 == 23`? No. Is `16 < 23`? Yes! Set `low = mid + 1 = 5`.\n- Remaining search space: indices `[5..9]` -> values `[23, 38, 56, 72, 91]`.\n\n**Iteration 2:**\n- `low = 5`, `high = 9`\n- `mid = 5 + (9 - 5) // 2 = 7` -> `arr[7] = 56`\n- Is `56 == 23`? No. Is `56 < 23`? No, `56 > 23`. Set `high = mid - 1 = 6`.\n- Remaining search space: indices `[5..6]` -> values `[23, 38]`.\n\n**Iteration 3:**\n- `low = 5`, `high = 6`\n- `mid = 5 + (6 - 5) // 2 = 5` -> `arr[5] = 23`\n- Is `23 == 23`? MATCH FOUND! Return index `5`.\n\nNotice that out of 10 elements, we found the target in exactly 3 comparison steps."
+                    },
+                    {
+                        heading: "5. Search Space Halving Visualization",
+                        content: "Visualizing pointer movement and search space halving over iterations for target = 23:",
+                        diagram: `INITIAL ARRAY: N = 10, Target = 23
+Index:    0    1    2    3    4    5    6    7    8    9
+Value:  [ 2 |  5 |  8 | 12 | 16 | 23 | 38 | 56 | 72 | 91 ]
+         ^                   ^                        ^
+        low                 mid                      high
+        (0)                 (4)                      (9)
+        arr[4] = 16 < 23 ==> Eliminate left half [0..4]
+
+ITERATION 2:
+Index:    0    1    2    3    4    5    6    7    8    9
+Value:    -    -    -    -    - [ 23 | 38 | 56 | 72 | 91 ]
+                                  ^         ^         ^
+                                 low       mid       high
+                                 (5)       (7)       (9)
+        arr[7] = 56 > 23 ==> Eliminate right half [7..9]
+
+ITERATION 3:
+Index:    0    1    2    3    4    5    6    7    8    9
+Value:    -    -    -    -    - [ 23 | 38 ] -    -    -
+                                  ^
+                               low/mid high
+                                (5)    (6)
+        arr[5] = 23 == 23 ==> TARGET FOUND AT INDEX 5!`
+                    },
+                    {
+                        heading: "6. Hardware Perspective: Branch Prediction & Cache Lines",
+                        content: "Modern CPUs execute code using instruction pipelining and Branch Predictors. In a `while (low <= high)` loop with an `if (arr[mid] < target)` conditional branch, the CPU tries to guess which direction the code will branch before the memory read completes. \n\nIn Binary Search, because the target could randomly be in either half, the branch outcome is virtually 50/50. This leads to frequent **Branch Mispredictions**. When a misprediction occurs, the CPU must flush its execution pipeline, incurring a penalty of 15–20 clock cycles. \n\nFurthermore, for small array sizes (N < 64 elements), Linear Search can actually run faster than Binary Search on modern hardware! Why? Because Linear Search accesses memory sequentially, triggering CPU L1 Hardware Prefetchers to pull contiguous Cache Lines (64 bytes). Binary Search jumps across memory boundaries, causing cache line misses until the search space shrinks within a single cache line."
+                    },
+                    {
+                        heading: "7. Complexity Analysis & Mathematical Proof",
+                        content: "Let us analyze the time and space complexity of Binary Search:\n\n- **Best-Case Time Complexity: O(1).** Occurs when `arr[mid]` is the target on the very first comparison.\n- **Worst-Case Time Complexity: O(log2 N).** \n  *Proof:* Initially, search space size is N. After 1 iteration, size is N/2. After k iterations, size is N / 2^k. Search terminates when the search space reduces to size 1: \n  `N / 2^k = 1  ==>  N = 2^k  ==>  k = log2(N)`.\n- **Average-Case Time Complexity: O(log2 N).** The depth of a complete binary search tree of N nodes is `ceil(log2(N + 1))`.\n- **Space Complexity:** \n  - **Iterative Implementation: O(1) Auxiliary Space.** Uses only low, high, and mid variables.\n  - **Recursive Implementation: O(log N) Call Stack Space.** Each recursive call consumes a stack frame."
+                    },
+                    {
+                        heading: "8. Language-Specific Notes",
+                        content: "How different programming languages implement binary search and its stdlib utilities:\n\n- **Python:** Python provides the `bisect` module. `bisect.bisect_left(a, x)` finds the first position to insert `x` to maintain sorted order (Lower Bound). `bisect.bisect_right(a, x)` finds the last position (Upper Bound). Note that integer division in Python `(low + high) // 2` handles arbitrarily large integers without 32-bit overflow.\n- **Java:** `java.util.Arrays.binarySearch(arr, key)` returns index if found. If key is NOT found, it returns `-(insertion point) - 1`. This negative encoding allows checking existence while simultaneously providing insertion position.\n- **C++:** Standard Template Library (STL) provides `std::binary_search` (returns bool), `std::lower_bound` (returns iterator to first element `>= key`), and `std::upper_bound` (returns iterator to first element `> key`).\n- **JavaScript:** JS has no standard library `Math.binarySearch()`. `Array.prototype.indexOf()` performs O(N) linear search! Developers must write custom binary search routines or use third-party libraries."
+                    },
+                    {
+                        heading: "9. Code Example: Production Binary Search & Bounds",
+                        content: "Below is a production-grade implementation of Classic Binary Search, Lower Bound (`std::lower_bound`), and Upper Bound (`std::upper_bound`) across 4 languages.",
                         codeSnippet: {
-                            title: "Iterative Binary Search",
+                            title: "Binary Search, Lower Bound, and Upper Bound",
                             code: {
-                                python: `def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = low + (high - low) // 2\n        if arr[mid] == target: return mid\n        elif arr[mid] < target: low = mid + 1\n        else: high = mid - 1\n    return -1`,
-                                java: `int binarySearch(int[] arr, int target) {\n    int low = 0, high = arr.length - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] == target) return mid;\n        else if (arr[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}`,
-                                cpp: `int binarySearch(const std::vector<int>& arr, int target) {\n    int low = 0, high = arr.size() - 1;\n    while (low <= high) {\n        int mid = low + (high - low) / 2;\n        if (arr[mid] == target) return mid;\n        else if (arr[mid] < target) low = mid + 1;\n        else high = mid - 1;\n    }\n    return -1;\n}`,
-                                javascript: `function binarySearch(arr, target) {\n  let low = 0, high = arr.length - 1;\n  while (low <= high) {\n    const mid = Math.floor(low + (high - low) / 2);\n    if (arr[mid] === target) return mid;\n    else if (arr[mid] < target) low = mid + 1;\n    else high = mid - 1;\n  }\n  return -1;\n}`
+                                python: `def binary_search(arr: list[int], target: int) -> int:
+    """Exact target binary search. Returns index or -1."""
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        # Prevent potential integer overflow
+        mid = low + (high - low) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+
+def lower_bound(arr: list[int], target: int) -> int:
+    """Returns first index where arr[index] >= target."""
+    low, high = 0, len(arr)
+    while low < high:
+        mid = low + (high - low) // 2
+        if arr[mid] >= target:
+            high = mid
+        else:
+            low = mid + 1
+    return low
+
+def upper_bound(arr: list[int], target: int) -> int:
+    """Returns first index where arr[index] > target."""
+    low, high = 0, len(arr)
+    while low < high:
+        mid = low + (high - low) // 2
+        if arr[mid] > target:
+            high = mid
+        else:
+            low = mid + 1
+    return low`,
+                                java: `public class BinarySearchSuite {
+    public static int binarySearch(int[] arr, int target) {
+        int low = 0, high = arr.length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2; // Prevents overflow
+            if (arr[mid] == target) return mid;
+            else if (arr[mid] < target) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
+    public static int lowerBound(int[] arr, int target) {
+        int low = 0, high = arr.length;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] >= target) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+
+    public static int upperBound(int[] arr, int target) {
+        int low = 0, high = arr.length;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] > target) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+}`,
+                                cpp: `#include <vector>
+
+class BinarySearchSuite {
+public:
+    static int binarySearch(const std::vector<int>& arr, int target) {
+        int low = 0, high = static_cast<int>(arr.size()) - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] == target) return mid;
+            else if (arr[mid] < target) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
+    static int lowerBound(const std::vector<int>& arr, int target) {
+        int low = 0, high = static_cast<int>(arr.size());
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] >= target) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+
+    static int upperBound(const std::vector<int>& arr, int target) {
+        int low = 0, high = static_cast<int>(arr.size());
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] > target) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }
+};`,
+                                javascript: `class BinarySearchSuite {
+  static binarySearch(arr, target) {
+    let low = 0, high = arr.length - 1;
+    while (low <= high) {
+      const mid = low + Math.floor((high - low) / 2);
+      if (arr[mid] === target) return mid;
+      else if (arr[mid] < target) low = mid + 1;
+      else high = mid - 1;
+    }
+    return -1;
+  }
+
+  static lowerBound(arr, target) {
+    let low = 0, high = arr.length;
+    while (low < high) {
+      const mid = low + Math.floor((high - low) / 2);
+      if (arr[mid] >= target) high = mid;
+      else low = mid + 1;
+    }
+    return low;
+  }
+
+  static upperBound(arr, target) {
+    let low = 0, high = arr.length;
+    while (low < high) {
+      const mid = low + Math.floor((high - low) / 2);
+      if (arr[mid] > target) high = mid;
+      else low = mid + 1;
+    }
+    return low;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Key engineering aspects of the code above:\n\n- **Integer Overflow Prevention (`low + (high - low) / 2`):** Naively writing `(low + high) / 2` is a famous bug. In languages with fixed-width 32-bit signed integers (like C, C++, Java), if `low + high` exceeds `2,147,483,647` (`2^31 - 1`), the sum overflows into a negative number, producing a negative `mid` index and throwing an OutOfBounds exception or Segfault.\n- **Half-Open Intervals for Lower/Upper Bounds (`[low, high)`):** Notice that `lowerBound` and `upperBound` initialize `high = arr.length` (not `len - 1`). The loop condition is `while (low < high)` and updates `high = mid`. This half-open boundary design guarantees that if the target is larger than all elements in the array, the function correctly returns `arr.length` as the insertion index."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common bugs developers encounter when implementing Binary Search:\n\n- **The Integer Overflow Bug:** Writing `mid = (low + high) / 2`. In 2006, Google engineer Joshua Bloch revealed that this bug was present in the Java Standard Library (`java.util.Arrays`) for over 9 years!\n- **Infinite Loops via Incorrect Pointer Updates:** Writing `low = mid` instead of `low = mid + 1` in a `while (low <= high)` loop. When `high - low == 1`, `mid` evaluates to `low`. If the condition sets `low = mid`, `low` never changes, causing an infinite loop.\n- **Calling Binary Search on Unsorted Data:** Binary Search requires monotonicity. If the array is unsorted, Binary Search will silently produce incorrect answers without throwing an error."
+                    },
+                    {
+                        heading: "12. Edge Cases & Variants",
+                        content: "Special cases to handle when designing binary search algorithms:\n\n- **Search in Rotated Sorted Array (e.g., `[4, 5, 6, 7, 0, 1, 2]`):** The array is divided into two sorted halves. At least one half (`[low..mid]` or `[mid..high]`) is always strictly sorted. We check which half is sorted, and test if `target` falls within that sorted half.\n- **Continuous Binary Search (Floating Point Search):** When finding a square root or solving `f(x) = 0` over real numbers, we do not use integers. The loop condition changes to `while (high - low > 1e-9)` or runs for a fixed number of iterations (e.g., 100 iterations, which shrinks the search space by `2^100 ≈ 10^30`)."
+                    },
+                    {
+                        heading: "13. Binary Search on Answer Spaces",
+                        content: "The most powerful application of Binary Search in advanced problem solving is **Binary Search on Answer Spaces**.\n\nInstead of searching over an array of numbers, we binary search over the domain of possible answers `[min_answer, max_answer]`. \n\nWe define a **Monotonic Predicate Function** `isPossible(x)` that returns `True` or `False`. \nIf `isPossible(x)` is monotonic (e.g., `[False, False, False, True, True, True]`), we can use Binary Search to find the exact minimum `x` that satisfies `isPossible(x) == True` in `O(log(max_answer) * Cost(isPossible))` time.\n\n*Classic Problem:* 'Capacity To Ship Packages Within D Days'. The minimum capacity is `max(weights)`, the maximum is `sum(weights)`. `isPossible(capacity)` tests whether packages can be shipped in D days using a simple linear greedy pass."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Binary Search is embedded in critical infrastructure software:\n\n- **Database B-Tree Indexes:** Database engines (PostgreSQL, MySQL InnoDB) store table indexes as B+ Trees. Searching for a record inside a B-Tree page (which holds 512 keys in contiguous RAM) executes via Binary Search.\n- **Git Bisect:** `git bisect` uses binary search on your git commit history to pinpoint the exact commit that introduced a bug. In a repository with 50,000 commits, `git bisect` locates the bad commit in ~16 build tests.\n- **Operating System Memory Routers:** Linux Kernel memory managers use binary search trees (Red-Black Trees / Virtual Memory Areas) to map virtual memory pages to physical addresses."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Binary Search is one of the top 5 most tested topics in technical interviews at Meta, Google, and Amazon.\n\n- **Top Patterns:**\n  1. Search in Rotated Sorted Array\n  2. Find Peak Element (Local Monotonicity)\n  3. Find First and Last Position of Element in Sorted Array (Lower + Upper Bound)\n  4. Koko Eating Bananas / Capacity To Ship Packages (Binary Search on Answer)\n- **Key Interview Strategy:** When given a problem with runtime target **O(log N)** or an implicit monotonic search space, immediately recognize Binary Search. State your search range `[low, high]` and your predicate function clearly to the interviewer."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Binary Search is the ultimate divide-and-conquer paradigm for monotonic domains. By repeatedly halving the candidate space, it reduces logarithmic search time to fractions of a microsecond even for billion-element datasets. Mastering loop invariants, integer overflow safety (`low + (high - low) / 2`), boundary conditions (`lower_bound` vs `upper_bound`), and abstract predicate mapping unlocks solutions to complex optimization problems across software engineering."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why is mid calculated as `low + (high - low) / 2` instead of `(low + high) / 2` in low-level programming languages?",
+                        options: [
+                            "Because `low + (high - low) / 2` runs 2x faster on CPU hardware.",
+                            "To prevent 32-bit signed integer overflow when `low + high` exceeds `2^31 - 1`.",
+                            "Because `(low + high) / 2` does not work for odd-length arrays.",
+                            "To allow binary search to work on unsorted arrays."
+                        ],
+                        correctIndex: 1,
+                        explanation: "When low and high are large integers near the 32-bit signed integer maximum limit, adding them together causes integer overflow resulting in a negative number and OutOfBounds error. `low + (high - low) / 2` avoids large additions."
+                    },
+                    {
+                        id: "q2",
+                        question: "What is the theoretical prerequisite for applying Binary Search to a dataset or problem space?",
+                        options: [
+                            "The dataset must fit completely in the CPU L1 cache.",
+                            "The dataset must be stored as a Doubly Linked List.",
+                            "The dataset or predicate function evaluated over the domain must exhibit Monotonicity.",
+                            "The total number of elements N must be a power of 2."
+                        ],
+                        correctIndex: 2,
+                        explanation: "Binary Search relies on monotonicity (e.g. sorted order or a boolean function transitioning from False to True) so that evaluating the midpoint deterministically eliminates one entire half of the search space."
                     }
                 ]
             },
@@ -1263,27 +1509,394 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "sorting-algorithms",
                 categorySlug: "algorithms",
                 title: "Sorting Algorithms",
-                subtitle: "Comparison-based paradigms: Merge Sort, Quick Sort, and Heap Sort",
+                subtitle: "Comparison-based sorting (Merge, Quick, Heap) and non-comparison bounds (Counting, Radix) from theoretical proof to production systems",
                 difficulty: "Intermediate",
-                readTime: "15 min read",
-                summary: "Explore Merge Sort, Quick Sort, and lower bound Ω(n log n) comparison proofs.",
-                overview: "Sorting arranges elements in ascending/descending order. Comparison-based techniques hit a theoretical minimum bound of O(n log n).",
-                keyConcepts: ["Divide & Conquer", "Stability in sorting", "In-place vs Out-of-place memory footprint"],
+                readTime: "45 min read",
+                summary: "A textbook-grade deep dive into sorting paradigms, Ω(N log N) comparison lower bound proofs, QuickSort partitioning, MergeSort divide-and-conquer, HeapSort in-place priority trees, adaptive sorting (Timsort), stability, and CPU cache performance.",
+                overview: "Sorting is the central algorithmic operation of computer science. Reordering an unsorted sequence into a well-defined total order unlocks fast searching, database indexing, and efficient set operations. Sorting algorithms span multiple algorithmic paradigms—Divide and Conquer, Greedy Max-Heap structures, Partitioning, and Non-Comparison Bucket Distributions. Understanding the subtle trade-offs between time bounds, space overhead, stability, adaptive behavior, and CPU cache performance is essential for system architects and software engineers.",
+                keyConcepts: [
+                    "Comparison-Based Lower Bound Proof: Ω(N log N) Decision Trees",
+                    "Divide & Conquer: MergeSort O(N log N) guarantees and extra space",
+                    "Hoare vs Lomuto Partitioning in QuickSort & Pivot Selection Strategies",
+                    "In-Place O(1) Aux Space Sorting via HeapSort (Max-Heap Sift-Down)",
+                    "Sorting Stability: Preserving relative order of equal keys",
+                    "Hybrid & Adaptive Production Sorts: Timsort (Python/Java) & Introsort (C++ std::sort)",
+                    "Non-Comparison Linear Sorting: Counting Sort & Radix Sort in O(N + K) time"
+                ],
                 timeComplexity: { best: "O(n log n)", average: "O(n log n)", worst: "O(n^2) QuickSort / O(n log n) MergeSort" },
-                spaceComplexity: "O(n) MergeSort / O(1) HeapSort",
+                spaceComplexity: "O(1) HeapSort/QuickSort(stack) to O(n) MergeSort",
                 sections: [
                     {
-                        heading: "1. Quick Sort Partitioning",
-                        content: "Picks a pivot and moves elements smaller than pivot to left, and larger elements to right.",
+                        heading: "1. Introduction to Sorting Algorithms",
+                        content: "Sorting rearranges a collection of elements into a specified order (numerical, lexicographical, or custom comparator). \n\nBefore digital computers existed, mechanical punch-card sorters were built to organize census data. Today, sorting is the prerequisite step for thousands of system-level tasks: generating database indexes, executing SQL `ORDER BY` queries, running binary search, computing convex hulls in computational geometry, and eliminating duplicate records in distributed log streams. \n\nBecause sorting consumes a massive fraction of global datacenter compute cycles, computer scientists have spent decades optimizing sorting algorithms down to individual silicon instruction cycles."
+                    },
+                    {
+                        heading: "2. Core Concept & Classifications",
+                        content: "Sorting algorithms are categorized along four primary axes:\n\n1. **Comparison vs Non-Comparison:** Comparison-based algorithms rely solely on a pairwise predicate `A <= B`. Non-comparison algorithms (Counting/Radix Sort) use internal key bit values or integer arithmetic.\n2. **Stability:** A sort is **Stable** if elements with equal keys preserve their original relative order after sorting. (Crucial when sorting multi-column spreadsheets by Last Name, then by First Name).\n3. **In-Place vs Extra Space:** An **In-Place** algorithm requires `O(1)` or `O(log N)` auxiliary RAM space beyond the input array. Out-of-place algorithms require `O(N)` secondary memory buffers.\n4. **Adaptivity:** An **Adaptive** algorithm runs faster (e.g., `O(N)`) when the input array is already partially or fully sorted."
+                    },
+                    {
+                        heading: "3. The Ω(N log N) Comparison Lower Bound Proof",
+                        content: "Can we design a comparison-based sorting algorithm that runs in `O(N)` time? **No.** It is mathematically impossible. \n\n**Mathematical Proof via Decision Trees:**\nConsider an unsorted array of N distinct elements. There are `N!` possible permutations. \nAny comparison-based algorithm can be represented as a Decision Tree where each internal node represents a pairwise comparison `arr[i] <= arr[j]`, and each leaf node represents one specific permutation of the sorted array. \n\nTo correctly sort all inputs, the Decision Tree must have at least `N!` leaves. \nA binary tree of height `h` has at most `2^h` leaves. Therefore:\n`2^h >= N!  ==>  h >= log2(N!)`\n\nUsing Stirling's Approximation for factorials (`ln(N!) ≈ N ln N - N`):\n`h >= log2(N!) = Ω(N log2 N)`\n\nThus, **every comparison-based sorting algorithm requires at least Ω(N log N) comparisons in the worst case.**"
+                    },
+                    {
+                        heading: "4. QuickSort: Partitioning & Pivot Selection",
+                        content: "QuickSort (invented by Tony Hoare in 1959) is a Divide-and-Conquer algorithm based on **Partitioning**.\n\n1. Select an element as the **Pivot**.\n2. Partition the array so all elements `< Pivot` move to the left, and all elements `> Pivot` move to the right.\n3. Recursively apply QuickSort to the left and right partitions.\n\n**Partition Schemes:**\n- **Lomuto Partitioning:** Uses two pointers (`i`, `j`) scanning left to right. Simple to implement, but does more swaps.\n- **Hoare Partitioning:** Uses two pointers starting at opposite ends moving towards each other. Does 3x fewer swaps than Lomuto on average.\n\n**Pivot Selection & O(N^2) Degeneracy:** If the pivot is always chosen as the first or last element, and the array is already sorted, QuickSort creates highly unbalanced partitions of size `0` and `N-1`. The recursion depth becomes `N`, yielding `O(N^2)` worst-case time. To prevent this, production implementations use **Randomized Pivots** or **Median-of-Three** (`median(first, middle, last)`)."
+                    },
+                    {
+                        heading: "5. MergeSort: Divide and Conquer",
+                        content: "MergeSort (invented by John von Neumann in 1945) guarantees strict `O(N log N)` time in ALL cases (best, average, worst).\n\n1. **Divide:** Split the unsorted array into two equal halves `[low..mid]` and `[mid+1..high]`.\n2. **Conquer:** Recursively sort both halves.\n3. **Combine:** Merge the two sorted halves into a single sorted array using a two-pointer pass in `O(N)` time.\n\n**Trade-off:** Standard MergeSort requires an auxiliary array of size `O(N)` to execute the merge step. Additionally, MergeSort is **Stable**, making it the algorithm of choice for sorting linked lists and language standard libraries where stability is required (Java Objects, Python Timsort)."
+                    },
+                    {
+                        heading: "6. HeapSort: Priority Queue In-Place Sorting",
+                        content: "HeapSort combines the strict `O(N log N)` time guarantee of MergeSort with the `O(1)` auxiliary space advantage of in-place algorithms.\n\n1. **Build Max-Heap:** Transform the raw input array into a Max-Heap in `O(N)` time using Bottom-Up Heapification (calling `siftDown` from index `N/2 - 1` down to `0`).\n2. **Extract Elements:** The largest element is now at the root `arr[0]`. Swap `arr[0]` with the last element `arr[end]`. Reduce the effective heap size by 1, and call `siftDown(0)` to restore the Max-Heap property in `O(log N)` time.\n3. Repeat step 2 until the entire array is sorted.\n\n**Drawback:** HeapSort is **Unstable** and exhibits poor CPU cache performance because children of index `i` reside at `2i + 1` and `2i + 2`, causing random cache line misses across memory."
+                    },
+                    {
+                        heading: "7. Visualizing Sorting Mechanics",
+                        content: "Visualizing QuickSort Lomuto Partition step and MergeSort divide/merge tree:",
+                        diagram: `QUICKSORT LOMUTO PARTITION (Pivot = 5):
+Array:   [ 7 | 2 | 1 | 6 | 8 | 5 ]  (Pivot = 5)
+Pointer:   i   j
+
+Step 1: j=0 (7 > 5) -> No swap.
+Step 2: j=1 (2 <= 5) -> i++ (0), Swap arr[0] and arr[1] -> [ 2 | 7 | 1 | 6 | 8 | 5 ]
+Step 3: j=2 (1 <= 5) -> i++ (1), Swap arr[1] and arr[2] -> [ 2 | 1 | 7 | 6 | 8 | 5 ]
+Step 4: j=3,4 (6,8 > 5) -> No swap.
+Final:  Swap arr[i+1] (7) with Pivot (5) -> [ 2 | 1 | 5 | 6 | 8 | 7 ]
+Result: Partitioned around Pivot 5! Left < 5, Right > 5.
+
+MERGESORT DIVIDE & CONQUER TREE:
+              [ 38 | 27 | 43 | 3 ]
+             /                    \\
+      [ 38 | 27 ]              [ 43 | 3 ]
+      /         \\              /        \\
+    [38]       [27]          [43]       [3]   (Base case)
+      \\         /              \\        /
+      [ 27 | 38 ]              [ 3 | 43 ]     (Merge)
+             \\                    /
+              [ 3 | 27 | 38 | 43 ]            (Final Sorted Array)`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: CPU Cache Locality & Branch Mispredictions",
+                        content: "Why is QuickSort empirically 2x to 3x faster than HeapSort and MergeSort on physical hardware, despite sharing `O(N log N)` average complexity?\n\n- **Spatial Locality:** QuickSort's inner partition loop accesses array elements sequentially (`arr[j]`). This triggers the CPU's L1 cache hardware prefetcher, yielding a near-100% L1 cache hit rate. HeapSort jumps between parent `i` and children `2i + 1` across memory blocks, resulting in constant L1/L2 cache misses.\n- **Cache Allocation:** MergeSort continuously allocates and reads from auxiliary memory buffers, creating memory bandwidth overhead. QuickSort operates entirely in-place inside the primary cache line."
+                    },
+                    {
+                        heading: "9. Code Example: Production Sorting Implementations",
+                        content: "Below is a complete suite of QuickSort (Lomuto & Median-of-Three), MergeSort, and HeapSort implemented in 4 languages.",
                         codeSnippet: {
-                            title: "Quick Sort Implementation",
+                            title: "QuickSort, MergeSort, and HeapSort Suite",
                             code: {
-                                python: `def quick_sort(arr):\n    if len(arr) <= 1: return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)`,
-                                java: `void quickSort(int[] arr, int low, int high) {\n    if (low < high) {\n        int pIdx = partition(arr, low, high);\n        quickSort(arr, low, pIdx - 1);\n        quickSort(arr, pIdx + 1, high);\n    }\n}`,
-                                cpp: `void quickSort(std::vector<int>& arr, int low, int high) {\n    if (low < high) {\n        int pIdx = partition(arr, low, high);\n        quickSort(arr, low, pIdx - 1);\n        quickSort(arr, pIdx + 1, high);\n    }\n}`,
-                                javascript: `function quickSort(arr) {\n  if (arr.length <= 1) return arr;\n  const pivot = arr[Math.floor(arr.length / 2)];\n  const left = arr.filter(x => x < pivot);\n  const middle = arr.filter(x => x === pivot);\n  const right = arr.filter(x => x > pivot);\n  return [...quickSort(left), ...middle, ...quickSort(right)];\n}`
+                                python: `class SortingSuite:
+    @staticmethod
+    def quick_sort(arr: list[int]) -> None:
+        """In-place QuickSort using Lomuto partition."""
+        def _quick_sort(low: int, high: int):
+            if low < high:
+                p = _partition(low, high)
+                _quick_sort(low, p - 1)
+                _quick_sort(p + 1, high)
+
+        def _partition(low: int, high: int) -> int:
+            pivot = arr[high]
+            i = low - 1
+            for j in range(low, high):
+                if arr[j] <= pivot:
+                    i += 1
+                    arr[i], arr[j] = arr[j], arr[i]
+            arr[i + 1], arr[high] = arr[high], arr[i + 1]
+            return i + 1
+
+        _quick_sort(0, len(arr) - 1)
+
+    @staticmethod
+    def merge_sort(arr: list[int]) -> list[int]:
+        """Stable MergeSort returning sorted list."""
+        if len(arr) <= 1:
+            return arr
+        mid = len(arr) // 2
+        left = SortingSuite.merge_sort(arr[:mid])
+        right = SortingSuite.merge_sort(arr[mid:])
+        
+        # Merge step
+        result = []
+        i = j = 0
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                result.append(left[i]); i += 1
+            else:
+                result.append(right[j]); j += 1
+        result.extend(left[i:])
+        result.extend(right[j:])
+        return result
+
+    @staticmethod
+    def heap_sort(arr: list[int]) -> None:
+        """In-place HeapSort O(N log N) time, O(1) space."""
+        n = len(arr)
+        def _sift_down(curr: int, size: int):
+            largest = curr
+            left, right = 2 * curr + 1, 2 * curr + 2
+            if left < size and arr[left] > arr[largest]: largest = left
+            if right < size and arr[right] > arr[largest]: largest = right
+            if largest != curr:
+                arr[curr], arr[largest] = arr[largest], arr[curr]
+                _sift_down(largest, size)
+
+        # Build Max-Heap O(N)
+        for i in range(n // 2 - 1, -1, -1):
+            _sift_down(i, n)
+        # Extract max O(N log N)
+        for i in range(n - 1, 0, -1):
+            arr[0], arr[i] = arr[i], arr[0]
+            _sift_down(0, i)`,
+                                java: `public class SortingSuite {
+    // QuickSort
+    public static void quickSort(int[] arr) {
+        quickSort(arr, 0, arr.length - 1);
+    }
+    private static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int p = partition(arr, low, high);
+            quickSort(arr, low, p - 1);
+            quickSort(arr, p + 1, high);
+        }
+    }
+    private static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high], i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = temp;
+        return i + 1;
+    }
+
+    // MergeSort
+    public static void mergeSort(int[] arr) {
+        if (arr.length < 2) return;
+        int mid = arr.length / 2;
+        int[] left = java.util.Arrays.copyOfRange(arr, 0, mid);
+        int[] right = java.util.Arrays.copyOfRange(arr, mid, arr.length);
+        mergeSort(left);
+        mergeSort(right);
+        merge(arr, left, right);
+    }
+    private static void merge(int[] arr, int[] left, int[] right) {
+        int i = 0, j = 0, k = 0;
+        while (i < left.length && j < right.length) {
+            if (left[i] <= right[j]) arr[k++] = left[i++];
+            else arr[k++] = right[j++];
+        }
+        while (i < left.length) arr[k++] = left[i++];
+        while (j < right.length) arr[k++] = right[j++];
+    }
+
+    // HeapSort
+    public static void heapSort(int[] arr) {
+        int n = arr.length;
+        for (int i = n / 2 - 1; i >= 0; i--) siftDown(arr, i, n);
+        for (int i = n - 1; i > 0; i--) {
+            int temp = arr[0]; arr[0] = arr[i]; arr[i] = temp;
+            siftDown(arr, 0, i);
+        }
+    }
+    private static void siftDown(int[] arr, int curr, int size) {
+        int largest = curr, left = 2 * curr + 1, right = 2 * curr + 2;
+        if (left < size && arr[left] > arr[largest]) largest = left;
+        if right < size && arr[right] > arr[largest] largest = right;
+        if (largest != curr) {
+            int swap = arr[curr]; arr[curr] = arr[largest]; arr[largest] = swap;
+            siftDown(arr, largest, size);
+        }
+    }
+}`,
+                                cpp: `#include <vector>
+#include <algorithm>
+
+class SortingSuite {
+public:
+    // QuickSort
+    static void quickSort(std::vector<int>& arr) {
+        if (!arr.empty()) _quickSort(arr, 0, static_cast<int>(arr.size()) - 1);
+    }
+
+    // MergeSort
+    static void mergeSort(std::vector<int>& arr) {
+        if (arr.size() <= 1) return;
+        int mid = static_cast<int>(arr.size()) / 2;
+        std::vector<int> left(arr.begin(), arr.begin() + mid);
+        std::vector<int> right(arr.begin() + mid, arr.end());
+        mergeSort(left); mergeSort(right);
+        int i = 0, j = 0, k = 0;
+        while (i < left.size() && j < right.size()) {
+            if (left[i] <= right[j]) arr[k++] = left[i++];
+            else arr[k++] = right[j++];
+        }
+        while (i < left.size()) arr[k++] = left[i++];
+        while (j < right.size()) arr[k++] = right[j++];
+    }
+
+    // HeapSort
+    static void heapSort(std::vector<int>& arr) {
+        int n = static_cast<int>(arr.size());
+        for (int i = n / 2 - 1; i >= 0; i--) _siftDown(arr, i, n);
+        for (int i = n - 1; i > 0; i--) {
+            std::swap(arr[0], arr[i]);
+            _siftDown(arr, 0, i);
+        }
+    }
+
+private:
+    static void _quickSort(std::vector<int>& arr, int low, int high) {
+        if (low < high) {
+            int p = _partition(arr, low, high);
+            _quickSort(arr, low, p - 1);
+            _quickSort(arr, p + 1, high);
+        }
+    }
+    static int _partition(std::vector<int>& arr, int low, int high) {
+        int pivot = arr[high], i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                std::swap(arr[i], arr[j]);
+            }
+        }
+        std::swap(arr[i + 1], arr[high]);
+        return i + 1;
+    }
+    static void _siftDown(std::vector<int>& arr, int curr, int size) {
+        int largest = curr, left = 2 * curr + 1, right = 2 * curr + 2;
+        if (left < size && arr[left] > arr[largest]) largest = left;
+        if (right < size && arr[right] > arr[largest]) largest = right;
+        if (largest != curr) {
+            std::swap(arr[curr], arr[largest]);
+            _siftDown(largest, size);
+        }
+    }
+};`,
+                                javascript: `class SortingSuite {
+  static quickSort(arr, low = 0, high = arr.length - 1) {
+    if (low < high) {
+      const p = this._partition(arr, low, high);
+      this.quickSort(arr, low, p - 1);
+      this.quickSort(arr, p + 1, high);
+    }
+  }
+  static _partition(arr, low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+    for (let j = low; j < high; j++) {
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
+  }
+
+  static mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    const mid = Math.floor(arr.length / 2);
+    const left = this.mergeSort(arr.slice(0, mid));
+    const right = this.mergeSort(arr.slice(mid));
+    const result = [];
+    let i = 0, j = 0;
+    while (i < left.length && j < right.length) {
+      if (left[i] <= right[j]) result.push(left[i++]);
+      else result.push(right[j++]);
+    }
+    return result.concat(left.slice(i)).concat(right.slice(j));
+  }
+
+  static heapSort(arr) {
+    const n = arr.length;
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) this._siftDown(arr, i, n);
+    for (let i = n - 1; i > 0; i--) {
+      [arr[0], arr[i]] = [arr[i], arr[0]];
+      this._siftDown(arr, 0, i);
+    }
+  }
+  static _siftDown(arr, curr, size) {
+    let largest = curr, left = 2 * curr + 1, right = 2 * curr + 2;
+    if (left < size && arr[left] > arr[largest]) largest = left;
+    if (right < size && arr[right] > arr[largest]) largest = right;
+    if (largest !== curr) {
+      [arr[curr], arr[largest]] = [arr[largest], arr[curr]];
+      this._siftDown(largest, size);
+    }
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Breaking down the sorting implementations:\n\n- **QuickSort Partitioning:** Lomuto partition maintains index `i` marking the boundary of elements `<= pivot`. As index `j` scans the array, any element `<= pivot` triggers `i++` and swaps `arr[i]` with `arr[j]`. Finally, the pivot `arr[high]` is swapped into `i + 1`.\n- **HeapSort Sift-Down:** To convert an array into a Max-Heap in `O(N)` time, we iterate backwards from `N/2 - 1` (the last non-leaf node) down to `0`, calling `_siftDown`. Each `_siftDown` compares node `curr` with left child `2i + 1` and right child `2i + 2`, swapping downward until heap property holds."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Dangerous sorting bugs and performance traps:\n\n- **Unbounded QuickSort Stack Recursion:** Naive QuickSort recurses on both partitions. In the worst case (`O(N)` depth), this causes a Stack Overflow. Fix: Always recurse on the *smaller* partition first and use tail-call optimization on the larger partition to bound stack depth to `O(log N)`.\n- **Allocating Arrays Inside MergeSort Loops:** Creating `new Array` inside every recursive step creates heavy garbage collection pressure. Fix: Allocate a single secondary workspace buffer of size `N` once, and pass pointers `low`, `mid`, `high`."
+                    },
+                    {
+                        heading: "12. Non-Comparison Sorting: Counting Sort & Radix Sort",
+                        content: "Can we bypass the Ω(N log N) comparison lower bound? **Yes, if keys are integers bounded within a small range.**\n\n- **Counting Sort:** Given N integers in range `[0..K]`, create a frequency array `count` of size `K + 1`. Count occurrences of each number, compute prefix sums to determine output positions, and populate the result array. Time Complexity: **O(N + K)**. Space Complexity: **O(N + K)**.\n- **Radix Sort:** Sorts integers digit by digit starting from Least Significant Digit (LSD) up to Most Significant Digit (MSD) using Counting Sort as a stable sub-pass. Time Complexity: **O(d * (N + K))**, where `d` is the maximum number of digits."
+                    },
+                    {
+                        heading: "13. Production Hybrid Sorts: Timsort & Introsort",
+                        content: "Real-world language standard libraries do not use pure QuickSort or pure MergeSort. They use **Hybrid Sorting Algorithms**:\n\n- **Timsort (Python `list.sort()`, Java `Arrays.sort()` for Objects):** Created by Tim Peters in 2002. Timsort scans the array for natural 'runs' (already sorted non-decreasing subsequences). It extends short runs using Insertion Sort up to a `minrun` length (32 or 64), and merges runs using a sophisticated MergeSort with 'Galloping Mode'. Runs in **O(N)** best-case on partially sorted data!\n- **Introsort (C++ `std::sort`):** Created by David Musser in 1997. Introsort begins with QuickSort. If recursion depth exceeds `2 * log2(N)` (detecting that QuickSort is degrading towards `O(N^2)`), it automatically switches to **HeapSort**, guaranteeing `O(N log N)` worst-case. For small sub-arrays (`N < 16`), it switches to **Insertion Sort**."
+                    },
+                    {
+                        heading: "14. Algorithm Comparison Matrix",
+                        content: "Comparison of major sorting algorithms across all performance metrics:",
+                        diagram: `Algorithm       | Best Time  | Avg Time   | Worst Time | Space    | Stable | Paradigm
+----------------+------------+------------+------------+----------+--------+------------------
+Bubble Sort     | O(N)       | O(N^2)     | O(N^2)     | O(1)     | Yes    | Exchange
+Insertion Sort  | O(N)       | O(N^2)     | O(N^2)     | O(1)     | Yes    | Insertion
+Selection Sort  | O(N^2)     | O(N^2)     | O(N^2)     | O(1)     | No     | Selection
+QuickSort       | O(N log N) | O(N log N) | O(N^2)     | O(log N) | No     | Partitioning
+MergeSort       | O(N log N) | O(N log N) | O(N log N) | O(N)     | Yes    | Divide & Conquer
+HeapSort        | O(N log N) | O(N log N) | O(N log N) | O(1)     | No     | Selection / Heap
+Counting Sort   | O(N + K)   | O(N + K)   | O(N + K)   | O(N + K) | Yes    | Non-Comparison
+Radix Sort      | O(d*(N+K)) | O(d*(N+K)) | O(d*(N+K)) | O(N + K) | Yes    | Non-Comparison
+Timsort (Prod)  | O(N)       | O(N log N) | O(N log N) | O(N)     | Yes    | Hybrid Merge/Insert
+Introsort(Prod) | O(N log N) | O(N log N) | O(N log N) | O(log N) | No     | Hybrid Quick/Heap`
+                    },
+                    {
+                        heading: "15. Real-World Applications",
+                        content: "Where sorting algorithms power enterprise infrastructure:\n\n- **Database Query Execution (Sort-Merge Joins):** Relational databases (PostgreSQL, Oracle) sort tables on join keys before performing linear O(N + M) Sort-Merge Joins.\n- **Search Engines (Inverted Index Ranking):** Google ranks search results by sorting Document ID scores using distributed MapReduce Radix/Merge Sorts.\n- **Graphics & Game Engines (Depth Buffer Sorting):** Renderers sort 3D polygons by distance from camera (Painter's Algorithm) to execute front-to-back translucent mesh pass."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Sorting is the cornerstone of computer science data manipulation. While the Ω(N log N) decision tree bound caps comparison-based sorts, engineering real-world sorting relies on hybrid strategies. Introsort safeguards C++ `std::sort` against O(N^2) QuickSort worst cases using HeapSort fallbacks, while Timsort leverages natural array runs for Python and Java. Selecting the right sorting strategy requires balancing stability, memory footprints, and hardware CPU cache prefetching."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why does the comparison-based sorting lower bound proof dictate a minimum time complexity of Ω(N log N)?",
+                        options: [
+                            "Because arrays require linear space allocations during sorting.",
+                            "Because a binary decision tree sorting N elements has N! leaves, requiring a minimum tree height of log2(N!) = Ω(N log N).",
+                            "Because CPU cache misses enforce a logarithmic delay penalty.",
+                            "Because recursion stacks cannot exceed log2(N) depth."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Any comparison sort acts as a binary decision tree. Distinguishing between all N! possible permutations of an N-element array requires at least N! leaf nodes. A binary tree with N! leaves has a minimum height of log2(N!) = Ω(N log N)."
+                    },
+                    {
+                        id: "q2",
+                        question: "What makes Introsort (used in C++ std::sort) superior to pure QuickSort?",
+                        options: [
+                            "It uses Counting Sort for integer data.",
+                            "It runs in strictly O(N) time for all arrays.",
+                            "It starts with QuickSort, but monitors recursion depth and switches to HeapSort if depth exceeds 2*log2(N), eliminating QuickSort's O(N^2) worst-case.",
+                            "It makes QuickSort stable by using extra O(N) memory."
+                        ],
+                        correctIndex: 2,
+                        explanation: "Pure QuickSort can degrade to O(N^2) time on adversarial inputs. Introsort prevents this by tracking stack depth; if recursion exceeds 2*log2(N), it automatically switches to HeapSort, guaranteeing O(N log N) worst-case time."
                     }
                 ]
             },
@@ -1292,27 +1905,353 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "two-pointers-sliding-window",
                 categorySlug: "algorithms",
                 title: "Two Pointers & Sliding Window",
-                subtitle: "Linear optimization strategies over sequential data arrays",
+                subtitle: "Converging pointers, fast/slow runner bounds, fixed & variable sliding windows, and monotonic deque window optimization",
                 difficulty: "Intermediate",
-                readTime: "11 min read",
-                summary: "Master dynamic window resizing and converging array pointers.",
-                overview: "Sliding Window and Two Pointer techniques convert naive O(n^2) nested array iterations into linear O(n) passes.",
-                keyConcepts: ["Converging Pointers (left & right)", "Fixed vs Variable Sliding Window", "Monotonic Deque Window Tracking"],
+                readTime: "40 min read",
+                summary: "A textbook-grade deep dive into linear array optimization techniques. Master opposite-direction pointers, fast/slow runners, fixed-length sliding windows, variable-length condition windows, auxiliary hash frequency maps, and monotonic deque O(1) sliding window max/min tracking.",
+                overview: "Two Pointers and Sliding Window are fundamental algorithmic paradigms designed to optimize nested-loop O(N^2) brute-force array iterations into optimal O(N) linear-time passes. By maintaining explicit positional relationships—either opposite pointers converging towards the center, fast/slow pointers navigating sequences, or dynamic boundaries framing a continuous contiguous subarray—these techniques exploit structural properties of arrays, strings, and sorted lists to eliminate redundant calculations.",
+                keyConcepts: [
+                    "Opposite-Direction Converging Pointers (left & right on sorted domains)",
+                    "Fast & Slow Pointer Mechanics (Floyd's Cycle Detection & Array Mutations)",
+                    "Fixed-Size Sliding Window (Constant-size contiguous subarray state)",
+                    "Variable-Size Sliding Window (Expanding right boundary, contracting left boundary)",
+                    "Auxiliary Frequency Hash Maps & Substring Constraint Tracking",
+                    "Monotonic Queue/Deque Optimization for O(1) Window Max/Min Queries"
+                ],
                 timeComplexity: { best: "O(n)", average: "O(n)", worst: "O(n)" },
-                spaceComplexity: "O(1)",
+                spaceComplexity: "O(1) aux space / O(k) for sliding window hash frequency tracking",
                 sections: [
                     {
-                        heading: "1. Variable Length Sliding Window",
-                        content: "Expands right window boundary until constraint breaks, then shrinks left boundary.",
+                        heading: "1. Introduction to Two Pointers & Sliding Window",
+                        content: "Consider the classic problem: 'Find two numbers in a sorted array that sum to a Target value'. \n\nIf you inspect every possible pair using nested loops (Brute Force), the CPU executes `N * (N - 1) / 2` comparisons, yielding an expensive **O(N^2)** runtime. \n\nHowever, because the array is sorted, we can place one pointer at the start (`left = 0`) and one pointer at the end (`right = N - 1`). If `arr[left] + arr[right] > Target`, the sum is too large. Decrementing `right` reduces the sum. If the sum is too small, incrementing `left` increases the sum. At each step, we eliminate an entire row or column of candidate pairs without checking them. The search finishes in a single linear pass of **O(N)** operations."
+                    },
+                    {
+                        heading: "2. Paradigm 1: Opposite-Direction Converging Pointers",
+                        content: "Opposite-direction two pointers operate on sorted sequences or symmetric structures (e.g., palindrome validation, Two Sum in sorted arrays, Container With Most Water).\n\n1. Initialize `left = 0` and `right = N - 1`.\n2. In each iteration, evaluate the property at `arr[left]` and `arr[right]`.\n3. Decide which pointer to advance: `left++` moves rightwards to increase values; `right--` moves leftwards to decrease values.\n4. Terminate when `left >= right`.\n\nBecause both pointers move towards each other without reversing direction, the total number of pointer steps is bounded by `N`."
+                    },
+                    {
+                        heading: "3. Paradigm 2: Fast & Slow Pointers (The Runner Technique)",
+                        content: "Fast and Slow pointers (also known as the Hare and Tortoise algorithm) move in the *same direction* at different speeds.\n\n- **In-Place Array Mutation:** `slow` tracks the boundary of valid output data, while `fast` scans ahead through raw data. (e.g., Removing duplicates from a sorted array: when `arr[fast] != arr[slow]`, increment `slow` and set `arr[slow] = arr[fast]`).\n- **Cycle Detection (Floyd's Algorithm):** `slow` advances 1 step at a time while `fast` advances 2 steps. If a cycle exists in a Linked List or finite functional sequence, `fast` will eventually lap and equal `slow`."
+                    },
+                    {
+                        heading: "4. Paradigm 3: Fixed-Length Sliding Window",
+                        content: "When a problem requests an optimal metric (Max Sum, Average, Min Flips) over a contiguous subarray of **fixed size K**:\n\n1. Calculate the initial sum/state of the first window `[0..K-1]` in `O(K)` time.\n2. Slide the window rightward one element at a time from `i = K` to `N - 1`.\n3. Update window state in **O(1)** time: `new_state = old_state + arr[i] - arr[i - K]`.\n\nInstead of recalculating the sum of K elements from scratch at every index (which takes `O(N * K)` time), the sliding window computes the transition in `O(1)` time, achieving overall **O(N)** runtime."
+                    },
+                    {
+                        heading: "5. Paradigm 4: Variable-Length Sliding Window",
+                        content: "When a problem requests the Longest or Shortest contiguous subarray satisfying a dynamic constraint (e.g., 'Smallest Subarray with Sum >= S', 'Longest Substring Without Repeating Characters'):\n\n1. Maintain two pointers `left = 0` and `right = 0` defining the active window `[left..right]`.\n2. **Expand Window:** Increment `right` and incorporate `arr[right]` into window state.\n3. **Contract Window:** While the window constraint is violated (or when shrinking to find minimum length), increment `left` and remove `arr[left]` from window state.\n4. Update global answer (max or min window length) at each valid step."
+                    },
+                    {
+                        heading: "6. Visualizing Sliding Window & Two Pointers",
+                        content: "Visualizing Opposite Two Pointers and Variable Sliding Window expansion:",
+                        diagram: `OPPOSITE TWO POINTERS (Two Sum Sorted, Target = 18):
+Array:   [ 2 | 4 | 7 | 11 | 15 | 20 ]
+Pointers:  ^                  ^
+          left               right
+          Sum = 2 + 20 = 22 > 18 ==> right--
+
+Array:   [ 2 | 4 | 7 | 11 | 15 | 20 ]
+Pointers:  ^             ^
+          left          right
+          Sum = 2 + 15 = 17 < 18 ==> left++
+
+Array:   [ 2 | 4 | 7 | 11 | 15 | 20 ]
+Pointers:      ^         ^
+              left      right
+              Sum = 4 + 15 = 19 > 18 ==> right--
+
+Array:   [ 2 | 4 | 7 | 11 | 15 | 20 ]
+Pointers:      ^    ^
+              left right
+              Sum = 4 + 11 = 15 < 18 ==> left++
+
+Array:   [ 2 | 4 | 7 | 11 | 15 | 20 ]
+Pointers:          ^ ^
+              left/right (Target 7 + 11 = 18 MATCH FOUND!)
+
+VARIABLE SLIDING WINDOW (Max Substring Without Repeats: 'eceba'):
+Step 1: right=0 ('e') -> Window ['e'], Valid (Len 1)
+Step 2: right=1 ('c') -> Window ['e','c'], Valid (Len 2)
+Step 3: right=2 ('e') -> Window ['e','c','e'], Duplicate 'e'!
+        Contract left: left++ -> Window ['c','e'], Valid again!
+Step 4: right=3 ('b') -> Window ['c','e','b'], Valid (Len 3)`
+                    },
+                    {
+                        heading: "7. Hardware Perspective: Sequential Cache Locality",
+                        content: "Two Pointers and Sliding Window algorithms exhibit exceptional hardware performance on modern CPUs. \n\nBecause `left` and `right` scan sequentially through contiguous memory blocks, hardware memory controllers pull data directly into L1 CPU caches via spatial prefetching. There are zero dynamic heap memory allocations, zero pointer chasing delays, and zero recursive call stack overheads."
+                    },
+                    {
+                        heading: "8. Complexity Analysis",
+                        content: "Why is a nested loop in Variable Sliding Window strictly **O(N)** time complexity?\n\n```python\nleft = 0\nfor right in range(N):\n    add(arr[right])\n    while invalid():\n        remove(arr[left])\n        left += 1\n```\nAt first glance, a `while` loop inside a `for` loop looks like $O(N^2)$. However, analyze the total operations across the entire execution:\n- `right` is incremented exactly $N$ times (0 to $N-1$).\n- `left` is incremented at most $N$ times (it only moves forward, never backward).\n\nTotal pointer steps across the ENTIRE algorithm = $N + N = 2N$. \nSince $2N = O(N)$, the amortized time complexity is strictly **O(N) linear time**."
+                    },
+                    {
+                        heading: "9. Code Example: Comprehensive Suite",
+                        content: "Below is a suite of Converging Two Pointers, Fast/Slow Runner, Fixed Window, and Variable Window across 4 languages.",
                         codeSnippet: {
-                            title: "Sliding Window (Max Sum Subarray)",
+                            title: "Two Pointers and Sliding Window Suite",
                             code: {
-                                python: `def max_subarray_sum(arr, k):\n    curr_sum = sum(arr[:k])\n    max_sum = curr_sum\n    for i in range(k, len(arr)):\n        curr_sum += arr[i] - arr[i - k]\n        max_sum = max(max_sum, curr_sum)\n    return max_sum`,
-                                java: `int maxSubarraySum(int[] arr, int k) {\n    int currSum = 0;\n    for (int i = 0; i < k; i++) currSum += arr[i];\n    int maxSum = currSum;\n    for (int i = k; i < arr.length; i++) {\n        currSum += arr[i] - arr[i - k];\n        maxSum = Math.max(maxSum, currSum);\n    }\n    return maxSum;\n}`,
-                                cpp: `int maxSubarraySum(const std::vector<int>& arr, int k) {\n    int currSum = 0;\n    for (int i = 0; i < k; i++) currSum += arr[i];\n    int maxSum = currSum;\n    for (int i = k; i < arr.size(); i++) {\n        currSum += arr[i] - arr[i - k];\n        maxSum = std::max(maxSum, currSum);\n    }\n    return maxSum;\n}`,
-                                javascript: `function maxSubarraySum(arr, k) {\n  let currSum = arr.slice(0, k).reduce((a, b) => a + b, 0);\n  let maxSum = currSum;\n  for (let i = k; i < arr.length; i++) {\n    currSum += arr[i] - arr[i - k];\n    maxSum = Math.max(maxSum, currSum);\n  }\n  return maxSum;\n}`
+                                python: `class WindowSuite:
+    @staticmethod
+    def two_sum_sorted(arr: list[int], target: int) -> list[int]:
+        """Opposite Two Pointers on sorted array."""
+        left, right = 0, len(arr) - 1
+        while left < right:
+            s = arr[left] + arr[right]
+            if s == target:
+                return [left, right]
+            elif s < target:
+                left += 1
+            else:
+                right -= 1
+        return []
+
+    @staticmethod
+    def remove_duplicates(arr: list[int]) -> int:
+        """Fast & Slow Runner in-place mutation."""
+        if not arr: return 0
+        slow = 0
+        for fast in range(1, len(arr)):
+            if arr[fast] != arr[slow]:
+                slow += 1
+                arr[slow] = arr[fast]
+        return slow + 1
+
+    @staticmethod
+    def max_sub_array_of_size_k(arr: list[int], k: int) -> int:
+        """Fixed Sliding Window."""
+        if len(arr) < k: return 0
+        curr_sum = sum(arr[:k])
+        max_sum = curr_sum
+        for i in range(k, len(arr)):
+            curr_sum += arr[i] - arr[i - k]
+            max_sum = max(max_sum, curr_sum)
+        return max_sum
+
+    @staticmethod
+    def length_of_longest_substring(s: str) -> int:
+        """Variable Sliding Window using frequency map."""
+        char_map = {}
+        left = max_len = 0
+        for right, char in enumerate(s):
+            if char in char_map and char_map[char] >= left:
+                left = char_map[char] + 1
+            char_map[char] = right
+            max_len = max(max_len, right - left + 1)
+        return max_len`,
+                                java: `import java.util.*;
+
+public class WindowSuite {
+    public static int[] twoSumSorted(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int sum = arr[left] + arr[right];
+            if (sum == target) return new int[]{left, right};
+            else if (sum < target) left++;
+            else right--;
+        }
+        return new int[]{};
+    }
+
+    public static int removeDuplicates(int[] arr) {
+        if (arr.length == 0) return 0;
+        int slow = 0;
+        for (int fast = 1; fast < arr.length; fast++) {
+            if (arr[fast] != arr[slow]) {
+                slow++;
+                arr[slow] = arr[fast];
+            }
+        }
+        return slow + 1;
+    }
+
+    public static int maxSubArrayOfSizeK(int[] arr, int k) {
+        if (arr.length < k) return 0;
+        int currSum = 0;
+        for (int i = 0; i < k; i++) currSum += arr[i];
+        int maxSum = currSum;
+        for (int i = k; i < arr.length; i++) {
+            currSum += arr[i] - arr[i - k];
+            maxSum = Math.max(maxSum, currSum);
+        }
+        return maxSum;
+    }
+
+    public static int lengthOfLongestSubstring(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        int left = 0, maxLen = 0;
+        for (int right = 0; right < s.length(); right++) {
+            char c = s.charAt(right);
+            if (map.containsKey(c) && map.get(c) >= left) {
+                left = map.get(c) + 1;
+            }
+            map.put(c, right);
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+}`,
+                                cpp: `#include <vector>
+#include <string>
+#include <unordered_map>
+#include <algorithm>
+
+class WindowSuite {
+public:
+    static std::vector<int> twoSumSorted(const std::vector<int>& arr, int target) {
+        int left = 0, right = static_cast<int>(arr.size()) - 1;
+        while (left < right) {
+            int sum = arr[left] + arr[right];
+            if (sum == target) return {left, right};
+            else if (sum < target) left++;
+            else right--;
+        }
+        return {};
+    }
+
+    static int removeDuplicates(std::vector<int>& arr) {
+        if (arr.empty()) return 0;
+        int slow = 0;
+        for (size_t fast = 1; fast < arr.size(); fast++) {
+            if (arr[fast] != arr[slow]) {
+                slow++;
+                arr[slow] = arr[fast];
+            }
+        }
+        return slow + 1;
+    }
+
+    static int maxSubArrayOfSizeK(const std::vector<int>& arr, int k) {
+        if (static_cast<int>(arr.size()) < k) return 0;
+        int currSum = 0;
+        for (int i = 0; i < k; i++) currSum += arr[i];
+        int maxSum = currSum;
+        for (size_t i = k; i < arr.size(); i++) {
+            currSum += arr[i] - arr[i - k];
+            maxSum = std::max(maxSum, currSum);
+        }
+        return maxSum;
+    }
+
+    static int lengthOfLongestSubstring(const std::string& s) {
+        std::unordered_map<char, int> map;
+        int left = 0, maxLen = 0;
+        for (int right = 0; right < static_cast<int>(s.length()); right++) {
+            char c = s[right];
+            if (map.find(c) != map.end() && map[c] >= left) {
+                left = map[c] + 1;
+            }
+            map[c] = right;
+            maxLen = std::max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+};`,
+                                javascript: `class WindowSuite {
+  static twoSumSorted(arr, target) {
+    let left = 0, right = arr.length - 1;
+    while (left < right) {
+      const sum = arr[left] + arr[right];
+      if (sum === target) return [left, right];
+      else if (sum < target) left++;
+      else right--;
+    }
+    return [];
+  }
+
+  static removeDuplicates(arr) {
+    if (arr.length === 0) return 0;
+    let slow = 0;
+    for (let fast = 1; fast < arr.length; fast++) {
+      if (arr[fast] !== arr[slow]) {
+        slow++;
+        arr[slow] = arr[fast];
+      }
+    }
+    return slow + 1;
+  }
+
+  static maxSubArrayOfSizeK(arr, k) {
+    if (arr.length < k) return 0;
+    let currSum = 0;
+    for (let i = 0; i < k; i++) currSum += arr[i];
+    let maxSum = currSum;
+    for (let i = k; i < arr.length; i++) {
+      currSum += arr[i] - arr[i - k];
+      maxSum = Math.max(maxSum, currSum);
+    }
+    return maxSum;
+  }
+
+  static lengthOfLongestSubstring(s) {
+    const map = new Map();
+    let left = 0, maxLen = 0;
+    for (let right = 0; right < s.length; right++) {
+      const c = s[right];
+      if (map.has(c) && map.get(c) >= left) {
+        left = map.get(c) + 1;
+      }
+      map.set(c, right);
+      maxLen = Math.max(maxLen, right - left + 1);
+    }
+    return maxLen;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Reviewing code specifics:\n\n- **`lengthOfLongestSubstring` Optimization:** Instead of shrinking `left` one step at a time in a `while` loop, we maintain a Hash Map mapping `character -> last_seen_index`. When a duplicate character is encountered at index `right`, we instantly jump `left = map.get(c) + 1`, skipping redundant intermediate comparisons.\n- **Off-by-One Length Calculation:** The number of elements in a closed range `[left..right]` is `right - left + 1` (e.g., range `[2..4]` contains indices 2, 3, 4 -> `4 - 2 + 1 = 3` elements)."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common bugs when implementing window algorithms:\n\n- **Applying Two Pointers to Unsorted Data:** Using opposite pointers (`left++`, `right--`) on an unsorted array produces wrong results because incrementing `left` does not guarantee increasing the sum.\n- **Stale Map Entries:** When jumping `left` forward using a Hash Map, you must check `if (map[c] >= left)`. If a duplicate character's last seen index is smaller than `left`, it resides outside the active window and must be ignored."
+                    },
+                    {
+                        heading: "12. Monotonic Deque Optimization (Sliding Window Maximum)",
+                        content: "What if you need to find the Maximum element in a sliding window of size K as it moves across an array of size N?\n\n- Naive approach: Find max in window -> `O(K)` per window, total `O(N * K)`.\n- Priority Queue approach: Maintain Max-Heap -> `O(N log K)`.\n- **Monotonic Deque Approach: O(N) linear time.** \n\nWe maintain a Double-Ended Queue (Deque) storing array *indices*. The deque is kept strictly **Monotonic Decreasing** (values corresponding to indices in deque decrease from front to back). \n1. Before pushing index `i`, pop all indices from the back whose values are `<= arr[i]` (they will never be the maximum again).\n2. Push `i` to the back.\n3. Pop from the front if front index `< i - K + 1` (out of window).\n4. The max element of the current window is always at `deque.front()` in **O(1)** time!"
+                    },
+                    {
+                        heading: "13. Subarray vs Subsequence vs Subset",
+                        content: "Clarifying string/array terminology:\n\n- **Subarray / Substring:** Contiguous elements in original order. (`[2,3]` is a subarray of `[1,2,3,4]`). *Two Pointers & Sliding Window strictly apply to Subarrays/Substrings.*\n- **Subsequence:** Elements in original order, but not necessarily contiguous. (`[1,3]` is a subsequence of `[1,2,3,4]`). *Requires Dynamic Programming or Backtracking.*\n- **Subset:** Any combination of elements in any order. *Requires Bitmasking or Backtracking.*"
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where sliding windows power real systems:\n\n- **TCP Sliding Window Protocol:** Network transport layers use sliding windows for flow control, adjusting the sender's window size based on receiver ACK packet acknowledgments.\n- **Moving Average Filters in Signal Processing:** Financial trading software and IoT sensor monitors compute rolling 50-day moving averages using fixed sliding windows.\n- **Database Streaming Aggregations:** Stream processors (Apache Flink, Kafka Streams) calculate tumbling and sliding window metrics over real-time event queues."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Two Pointers and Sliding Window appear in over 25% of coding interview questions.\n\n- **Top Patterns:**\n  1. 3Sum / 4Sum (Sort + Converging Two Pointers)\n  2. Container With Most Water (Greedy Converging Pointers)\n  3. Minimum Window Substring (Variable Sliding Window + Map)\n  4. Sliding Window Maximum (Monotonic Deque)\n- **Key Interview Signal:** When asked to find an optimal contiguous subarray or pair in $O(N)$ time, immediately propose Two Pointers / Sliding Window."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Two Pointers and Sliding Window transform $O(N^2)$ brute-force iterations into optimal $O(N)$ linear passes. By maintaining explicit positional boundaries—converging pointers on sorted arrays, fast/slow runners for mutations, or dynamic sliding windows for contiguous subarrays—we achieve optimal memory prefetching and linear scalability across array and string processing."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why is a Variable-Length Sliding Window with a nested while-loop considered O(N) time complexity instead of O(N^2)?",
+                        options: [
+                            "Because the compiler unrolls the inner while loop.",
+                            "Because both the right pointer and left pointer move strictly forward, meaning each element is processed at most twice across the entire algorithm.",
+                            "Because sliding windows only operate on sorted arrays.",
+                            "Because memory allocations are cached in L1 SRAM."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Across the entire execution, the right pointer advances N times and the left pointer advances at most N times. Total pointer operations equal 2N, proving an amortized O(N) linear time complexity."
+                    },
+                    {
+                        id: "q2",
+                        question: "Which data structure enables finding the Maximum element of a Sliding Window of size K in O(1) time per step?",
+                        options: [
+                            "Min-Heap Priority Queue",
+                            "Binary Search Tree",
+                            "Monotonic Decreasing Deque (Double-Ended Queue)",
+                            "Circular Array Buffer"
+                        ],
+                        correctIndex: 2,
+                        explanation: "A Monotonic Decreasing Deque keeps elements in descending value order. Pushing new elements pops smaller back elements, and the window maximum is always retrieved from the front in O(1) time."
                     }
                 ]
             },
@@ -1321,27 +2260,285 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "dynamic-programming",
                 categorySlug: "algorithms",
                 title: "Dynamic Programming",
-                subtitle: "Memoization (Top-Down) and Tabulation (Bottom-Up) paradigms",
+                subtitle: "Overlapping subproblems, optimal substructure, top-down memoization, bottom-up tabulation, state reduction, and bitmask DP",
                 difficulty: "Advanced",
-                readTime: "16 min read",
-                summary: "Solve subproblem optimization tasks by caching overlapping solution states.",
-                overview: "DP breaks optimization problems into subproblems, storing computed subproblem states to avoid redundant recalculation.",
-                keyConcepts: ["Overlapping Subproblems", "Optimal Substructure", "State Transition Formulation"],
-                timeComplexity: { average: "O(States * Transitions)" },
-                spaceComplexity: "O(Number of States)",
+                readTime: "50 min read",
+                summary: "A textbook-grade deep dive into Dynamic Programming. Master the 5-step DP framework, Overlapping Subproblems, Optimal Substructure proofs, Top-Down Memoization vs Bottom-Up Tabulation, Space Complexity State Compression, 1D/2D/3D DP topologies, Knapsack variations, Longest Common Subsequence, Matrix Chain Multiplication, and Bitmask DP.",
+                overview: "Dynamic Programming (DP) is a powerful algorithmic paradigm invented by Richard Bellman in the 1950s for solving complex optimization and counting problems. DP operates by breaking a problem into simpler subproblems, solving each subproblem exactly once, and storing their solutions in a memory structure (a memo table or array). When the same subproblem arises again, DP retrieves the cached answer in O(1) time, transforming exponential O(2^N) brute-force recursion into polynomial O(N) or O(N^2) execution.",
+                keyConcepts: [
+                    "Overlapping Subproblems (Repeated calculation of identical recursive sub-states)",
+                    "Optimal Substructure (Global optimal solution constructed from optimal subproblem solutions)",
+                    "Top-Down DP with Memoization (Recursion + Cache)",
+                    "Bottom-Up DP with Tabulation (Iterative Table Building)",
+                    "Space Complexity State Compression (e.g. 2D DP array compressed to 1D)",
+                    "Classic DP Topologies: 0/1 Knapsack, Unbounded Knapsack, LCS, LIS, Interval DP, Bitmask DP"
+                ],
+                timeComplexity: { best: "O(n)", average: "O(States * Transitions)", worst: "O(States * Transitions)" },
+                spaceComplexity: "O(States) table / compressed to O(1) or O(W) memory",
                 sections: [
                     {
-                        heading: "1. 0/1 Knapsack Tabulation",
-                        content: "Builds a 2D DP table where dp[i][w] represents maximum value obtainable with i items under weight limit w.",
+                        heading: "1. Introduction to Dynamic Programming",
+                        content: "The term 'Dynamic Programming' was coined by mathematician Richard Bellman in 1953 while working at the RAND Corporation. In this context, 'Programming' does not mean writing software code; it refers to 'Mathematical Optimization and Decision Scheduling'. \n\nConsider calculating the 50th Fibonacci number recursively: `Fib(n) = Fib(n-1) + Fib(n-2)`. \nA naive recursive function creates a binary call tree of depth 50. To calculate `Fib(50)`, it calls `Fib(48)` twice, `Fib(47)` three times, `Fib(46)` five times... executing `2^50 ≈ 1.12 * 10^15` function calls! On a modern multi-GHz CPU, this takes over 13 days to compute. \n\nBy adding a simple array to store (memoize) the answer to `Fib(k)` the first time it is computed, subsequent calls return in **O(1)** time. Total execution drops from 13 days to **50 microsecond operations** (`O(N)` time). This is the essence of Dynamic Programming."
+                    },
+                    {
+                        heading: "2. The Two Core Properties of DP",
+                        content: "A problem can ONLY be solved using Dynamic Programming if it satisfies two mathematical properties:\n\n1. **Overlapping Subproblems:** The recursive solution repeatedly evaluates the *exact same subproblems* with identical parameters. (Divide and Conquer, like MergeSort, breaks problems into *disjoint* non-overlapping subproblems, whereas DP addresses *overlapping* subproblems).\n2. **Optimal Substructure:** The optimal solution to a problem of size `N` can be constructed from the optimal solutions to its subproblems of size `< N`.\n   *Proof by Contradiction:* Suppose the shortest path from A to C passes through B. If a shorter path existed from A to B, we could substitute it into our route from A to C to obtain a shorter total path, contradicting the assumption that our original route was optimal."
+                    },
+                    {
+                        heading: "3. The 5-Step DP Problem-Solving Framework",
+                        content: "Every DP problem can be solved systematically by following these 5 steps:\n\n1. **State Representation:** Define the DP variable mathematically. What does `dp[i][j]` represent? (e.g. `dp[i][w]` = max value considering first `i` items under weight `w`).\n2. **State Transition Equation (Recurrence Relation):** Express `dp[i][j]` in terms of smaller sub-states (e.g. `dp[i][w] = max(dp[i-1][w], val[i] + dp[i-1][w - wt[i]])`).\n3. **Base Cases:** Identify the smallest trivial subproblems (e.g. `dp[0][w] = 0`, `dp[i][0] = 0`).\n4. **Order of Computation:** Determine the evaluation direction so that dependent states are computed *before* they are referenced (Topological Order).\n5. **Space Optimization & Answer Location:** Identify where the final answer lives (e.g., `dp[N][W]`) and compress dimensions if possible."
+                    },
+                    {
+                        heading: "4. Top-Down Memoization vs Bottom-Up Tabulation",
+                        content: "DP algorithms are implemented using two distinct approaches:\n\n- **Top-Down (Memoization):** Start at the target problem `N` and recurse down to base cases, storing results in a Memo Table (Hash Map or Array). \n  *Pros:* Natural to write from recursive formulations; only computes states that are actually reached.\n  *Cons:* Recursion call-stack overhead; risk of Stack Overflow if `N > 10,000`.\n- **Bottom-Up (Tabulation):** Start at base cases (`dp[0]`) and iterate through nested loops to compute larger states up to `dp[N]`.\n  *Pros:* Fast iterative loops, zero call-stack overhead, CPU cache friendly, enables **Space Compression**.\n  *Cons:* Must compute all table entries even if some sub-states are unreachable."
+                    },
+                    {
+                        heading: "5. 0/1 Knapsack Problem Architecture",
+                        content: "The **0/1 Knapsack Problem** is the archetype for constraint optimization DP.\n\nGiven `N` items (each with weight `wt[i]` and value `val[i]`) and a knapsack capacity `W`. You cannot break items (either take 0% or 100% of an item).\n\n- **State:** `dp[i][w]` = Max value using a subset of first `i` items with total weight `<= w`.\n- **Transition:** For item `i`:\n  - Option 1 (Exclude item `i`): `dp[i-1][w]`\n  - Option 2 (Include item `i`, if `wt[i-1] <= w`): `val[i-1] + dp[i-1][w - wt[i-1]]`\n  - Equation: `dp[i][w] = max(Option 1, Option 2)`\n- Time Complexity: **O(N * W)** (Pseudo-polynomial time). Space Complexity: **O(N * W)**."
+                    },
+                    {
+                        heading: "6. Unbounded Knapsack & Coin Change",
+                        content: "What if you can select an item **an unlimited number of times** (Unbounded Knapsack / Coin Change)?\n\nIn 0/1 Knapsack, Option 2 references `dp[i-1][w - wt[i-1]]` (the previous row, meaning item `i` cannot be reused).\nIn Unbounded Knapsack, Option 2 references `dp[i][w - wt[i-1]]` (the current row, allowing item `i` to be selected again!).\n\nWhen compressing space to a 1D array `dp[w]`:\n- **0/1 Knapsack:** Iterate weight `w` **backwards** from `W` down to `wt[i]` (prevents re-using the same item in the same pass).\n- **Unbounded Knapsack:** Iterate weight `w` **forwards** from `wt[i]` up to `W` (deliberately allows reusing item multiple times)."
+                    },
+                    {
+                        heading: "7. Visualizing DP State Tables",
+                        content: "Visualizing 0/1 Knapsack 2D DP Table fill order and 1D Space Compression transition:",
+                        diagram: `0/1 KNAPSACK 2D TABLE (Weights: [1, 3, 4], Values: [15, 20, 30], Capacity W = 4):
+Items \\ W   0    1    2    3    4
+Item 0 (0)  [0]  [0]  [0]  [0]  [0]
+Item 1 (w1) [0] [15] [15] [15] [15]
+Item 2 (w3) [0] [15] [15] [20] [35]   (35 = max(15, val2 + dp[1][4-3]))
+Item 3 (w4) [0] [15] [15] [20] [35]
+Final Answer at dp[3][4] = 35!
+
+1D SPACE COMPRESSION (Iterating w backwards from W down to wt[i]):
+Pass Item 1 (w=1, v=15): dp = [0, 15, 15, 15, 15]
+Pass Item 2 (w=3, v=20): 
+  w=4: dp[4] = max(dp[4], 20 + dp[4-3=1]) = max(15, 20+15) = 35
+  w=3: dp[3] = max(dp[3], 20 + dp[3-3=0]) = max(15, 20+0) = 20
+Result 1D Array: [0, 15, 15, 20, 35] -> Uses 1D RAM instead of 2D grid!`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: Cache Locality & Stack Overflow",
+                        content: "From a hardware performance perspective:\n\n- **Bottom-Up Tabulation** iterates linearly through sequential arrays (`dp[i][j]`). CPU hardware L1 prefetchers load contiguous row bytes into cache lines, achieving high performance.\n- **Top-Down Memoization** using Hash Maps incurs constant hash computation and memory pointer dereferencing penalties, triggering L1/L2 cache misses.\n- Deep Top-Down recursion (`N > 10,000`) risks exceeding OS stack segment limits, causing `java.lang.StackOverflowError` or `Segmentation Fault`."
+                    },
+                    {
+                        heading: "9. Code Example: Production DP Suite",
+                        content: "Below is a complete implementation of 0/1 Knapsack (2D & 1D compressed), Longest Common Subsequence (LCS), and Coin Change (Unbounded DP) across 4 languages.",
                         codeSnippet: {
-                            title: "0/1 Knapsack Bottom-Up DP",
+                            title: "Dynamic Programming Suite",
                             code: {
-                                python: `def knapsack(weights, values, capacity):\n    n = len(weights)\n    dp = [[0] * (capacity + 1) for _ in range(n + 1)]\n    for i in range(1, n + 1):\n        for w in range(1, capacity + 1):\n            if weights[i-1] <= w:\n                dp[i][w] = max(values[i-1] + dp[i-1][w-weights[i-1]], dp[i-1][w])\n            else: dp[i][w] = dp[i-1][w]\n    return dp[n][capacity]`,
-                                java: `int knapsack(int[] weights, int[] values, int capacity) {\n    int n = weights.length;\n    int[][] dp = new int[n + 1][capacity + 1];\n    for (int i = 1; i <= n; i++) {\n        for (int w = 1; w <= capacity; w++) {\n            if (weights[i - 1] <= w)\n                dp[i][w] = Math.max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);\n            else dp[i][w] = dp[i - 1][w];\n        }\n    }\n    return dp[n][capacity];\n}`,
-                                cpp: `int knapsack(const std::vector<int>& weights, const std::vector<int>& values, int capacity) {\n    int n = weights.size();\n    std::vector<std::vector<int>> dp(n + 1, std::vector<int>(capacity + 1, 0));\n    for (int i = 1; i <= n; i++) {\n        for (int w = 1; w <= capacity; w++) {\n            if (weights[i - 1] <= w)\n                dp[i][w] = std::max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);\n            else dp[i][w] = dp[i - 1][w];\n        }\n    }\n    return dp[n][capacity];\n}`,
-                                javascript: `function knapsack(weights, values, capacity) {\n  const n = weights.length;\n  const dp = Array.from({ length: n + 1 }, () => new Array(capacity + 1).fill(0));\n  for (let i = 1; i <= n; i++) {\n    for (let w = 1; w <= capacity; w++) {\n      if (weights[i - 1] <= w)\n        dp[i][w] = Math.max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);\n      else dp[i][w] = dp[i - 1][w];\n    }\n  }\n  return dp[n][capacity];\n}`
+                                python: `class DPSuite:
+    @staticmethod
+    def knapsack_01_compressed(weights: list[int], values: list[int], capacity: int) -> int:
+        """0/1 Knapsack with 1D Space Compression (O(W) Space)."""
+        dp = [0] * (capacity + 1)
+        for wt, val in zip(weights, values):
+            # Iterate backwards to prevent re-using item
+            for w in range(capacity, wt - 1, -1):
+                dp[w] = max(dp[w], val + dp[w - wt])
+        return dp[capacity]
+
+    @staticmethod
+    def longest_common_subsequence(text1: str, text2: str) -> int:
+        """Longest Common Subsequence (LCS) 2D DP."""
+        m, n = len(text1), len(text2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if text1[i - 1] == text2[j - 1]:
+                    dp[i][j] = 1 + dp[i - 1][j - 1]
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+        return dp[m][n]
+
+    @staticmethod
+    def coin_change(coins: list[int], amount: int) -> int:
+        """Unbounded Knapsack: Min coins for amount (Forward iteration)."""
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0
+        for coin in coins:
+            for w in range(coin, amount + 1):
+                dp[w] = min(dp[w], 1 + dp[w - coin])
+        return dp[amount] if dp[amount] != float('inf') else -1`,
+                                java: `import java.util.Arrays;
+
+public class DPSuite {
+    public static int knapsack01Compressed(int[] weights, int[] values, int capacity) {
+        int[] dp = new int[capacity + 1];
+        for (int i = 0; i < weights.length; i++) {
+            int wt = weights[i], val = values[i];
+            for (int w = capacity; w >= wt; w--) {
+                dp[w] = Math.max(dp[w], val + dp[w - wt]);
+            }
+        }
+        return dp[capacity];
+    }
+
+    public static int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length();
+        int[][] dp = new int[m + 1][n + 1];
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    public static int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, amount + 1);
+        dp[0] = 0;
+        for (int coin : coins) {
+            for (int w = coin; w <= amount; w++) {
+                dp[w] = Math.min(dp[w], 1 + dp[w - coin]);
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+}`,
+                                cpp: `#include <vector>
+#include <string>
+#include <algorithm>
+
+class DPSuite {
+public:
+    static int knapsack01Compressed(const std::vector<int>& weights, const std::vector<int>& values, int capacity) {
+        std::vector<int> dp(capacity + 1, 0);
+        for (size_t i = 0; i < weights.size(); i++) {
+            int wt = weights[i], val = values[i];
+            for (int w = capacity; w >= wt; w--) {
+                dp[w] = std::max(dp[w], val + dp[w - wt]);
+            }
+        }
+        return dp[capacity];
+    }
+
+    static int longestCommonSubsequence(const std::string& text1, const std::string& text2) {
+        int m = static_cast<int>(text1.length()), n = static_cast<int>(text2.length());
+        std::vector<std::vector<int>> dp(m + 1, std::vector<int>(n + 1, 0));
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (text1[i - 1] == text2[j - 1]) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = std::max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    static int coinChange(const std::vector<int>& coins, int amount) {
+        std::vector<int> dp(amount + 1, amount + 1);
+        dp[0] = 0;
+        for (int coin : coins) {
+            for (int w = coin; w <= amount; w++) {
+                dp[w] = std::min(dp[w], 1 + dp[w - coin]);
+            }
+        }
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+};`,
+                                javascript: `class DPSuite {
+  static knapsack01Compressed(weights, values, capacity) {
+    const dp = new Array(capacity + 1).fill(0);
+    for (let i = 0; i < weights.length; i++) {
+      const wt = weights[i], val = values[i];
+      for (let w = capacity; w >= wt; w--) {
+        dp[w] = Math.max(dp[w], val + dp[w - wt]);
+      }
+    }
+    return dp[capacity];
+  }
+
+  static longestCommonSubsequence(text1, text2) {
+    const m = text1.length, n = text2.length;
+    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (text1[i - 1] === text2[j - 1]) {
+          dp[i][j] = 1 + dp[i - 1][j - 1];
+        } else {
+          dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+    }
+    return dp[m][n];
+  }
+
+  static coinChange(coins, amount) {
+    const dp = new Array(amount + 1).fill(amount + 1);
+    dp[0] = 0;
+    for (const coin of coins) {
+      for (let w = coin; w <= amount; w++) {
+        dp[w] = Math.min(dp[w], 1 + dp[w - coin]);
+      }
+    }
+    return dp[amount] > amount ? -1 : dp[amount];
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Key engineering concepts in the code above:\n\n- **1D 0/1 Knapsack Loop Order (`for w in range(capacity, wt - 1, -1)`):** We iterate backwards from `capacity` down to `wt`. Why? Because `dp[w - wt]` must represent the value from the *previous* item iteration. If we iterated forwards, `dp[w - wt]` would have already been updated by the *current* item, accidentally converting 0/1 Knapsack into Unbounded Knapsack!\n- **LCS Match Transition (`text1[i-1] == text2[j-1]`):** If characters match, the longest common subsequence extends the sub-answer from `dp[i-1][j-1]` by `+1`. If they don't match, we take `max(dp[i-1][j], dp[i][j-1])`."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common DP implementation mistakes:\n\n- **Uninitialized Memo Tables:** Initializing a memo table with `0` when `0` is a valid result. The code assumes `0` means 'unvisited', causing it to re-execute recursive calls endlessly. Fix: Initialize memo tables with `-1` or `null`.\n- **Incorrect Base Case Offsets:** Indexing string length `N` into `dp[N]` without allocating `N + 1` size array, causing `IndexOutOfBoundsException`."
+                    },
+                    {
+                        heading: "12. Advanced DP Topologies",
+                        content: "Specialized Dynamic Programming paradigms:\n\n- **Longest Increasing Subsequence (LIS):** Standard 1D DP runs in `O(N^2)`. Optimized LIS uses **Patience Sorting + Binary Search** (`std::lower_bound`) to run in **O(N log N)** time.\n- **Interval DP (e.g., Matrix Chain Multiplication, Burst Balloons):** State `dp[i][j]` represents an optimal answer over sub-interval `[i..j]`. Loops evaluate interval lengths `len` from 1 to `N`.\n- **Bitmask DP (e.g., Traveling Salesperson Problem TSP):** Represents set states as binary bitmasks (e.g., integer `13` = binary `1101_2` = set containing items `{0, 2, 3}`). Reduces TSP runtime from `O(N!)` to `O(2^N * N^2)`."
+                    },
+                    {
+                        heading: "13. Space Complexity State Compression",
+                        content: "How do we reduce space complexity from $O(N \cdot W)$ down to $O(W)$?\n\nNotice that in 0/1 Knapsack, `dp[i][w]` only ever references values from row `i-1`. It never looks at row `i-2` or earlier. \nTherefore, we do not need to preserve all $N$ rows in memory simultaneously! We only need two rows: `prev_row` and `curr_row` ($O(W)$ space). By iterating the weight array backwards, we compress it further into a single $O(W)$ 1D array."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Dynamic Programming in industry software:\n\n- **Bioinformatics (Genomic Alignment):** Needleman-Wunsch and Smith-Waterman algorithms use 2D DP (LCS variant) to align DNA and RNA protein sequences.\n- **Text Diff Tools (`git diff`):** `git diff` uses the Myers Diff Algorithm (based on LCS DP) to generate minimum line insertions and deletions between file commits.\n- **Natural Language Processing & Speech:** The Viterbi Algorithm uses DP over Hidden Markov Models to estimate the most likely sequence of spoken words from audio signals."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "DP is considered the ultimate test of algorithmic proficiency at Google, Meta, and Netflix.\n\n- **How to Identify DP:** Look for keywords: 'Maximum profit', 'Minimum steps', 'Total number of ways', 'Is it possible to reach...'.\n- **Recommended Strategy in Interviews:**\n  1. State the brute-force recursive decision tree and explain why it is $O(2^N)$.\n  2. Define your State Representation `dp[i][j]` clearly to the interviewer.\n  3. Write Top-Down Memoization first to prove correctness.\n  4. Convert to Bottom-Up Tabulation and mention Space Compression to score maximum points."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Dynamic Programming eliminates redundant exponential recursive computation by memoizing subproblem answers. By defining rigorous State Representations, formulating Recurrence Relations, and leveraging 1D/2D Tabulation with Space Compression, DP reduces complex NP-hard approximations down to polynomial execution."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "What are the two mandatory mathematical properties a problem must possess to be solvable via Dynamic Programming?",
+                        options: [
+                            "Monotonicity and Greedy Choice Property",
+                            "Overlapping Subproblems and Optimal Substructure",
+                            "Divide-and-Conquer and Hash Collisions",
+                            "Balanced Binary Trees and L1 Cache Locality"
+                        ],
+                        correctIndex: 1,
+                        explanation: "Dynamic Programming requires Overlapping Subproblems (so that sub-answers can be memoized to prevent re-computation) and Optimal Substructure (so that optimal global solutions can be built from optimal sub-solutions)."
+                    },
+                    {
+                        id: "q2",
+                        question: "Why must the inner weight loop iterate BACKWARDS from capacity down to item weight in 1D Space-Compressed 0/1 Knapsack?",
+                        options: [
+                            "To make the loop run faster on CPU instruction pipelines.",
+                            "To prevent an item from being used multiple times in the same iteration pass.",
+                            "To allow negative weight items to be processed.",
+                            "To sort the weights in ascending numerical order."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Iterating backwards guarantees that `dp[w - wt]` evaluates to the value calculated in the PREVIOUS item pass. Iterating forwards would overwrite `dp[w - wt]` with the CURRENT item, accidentally turning 0/1 Knapsack into Unbounded Knapsack."
                     }
                 ]
             },
@@ -1350,27 +2547,316 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "greedy-algorithms",
                 categorySlug: "algorithms",
                 title: "Greedy Algorithms",
-                subtitle: "Locally optimal choices leading to globally optimal solutions",
+                subtitle: "Local optimal choice heuristics, greedy choice property, optimal substructure proofs, priority queue greedy execution, and Huffman coding",
                 difficulty: "Intermediate",
-                readTime: "10 min read",
-                summary: "Learn greedy choice properties, activity selection, and Huffman coding.",
-                overview: "Greedy algorithms make the locally best choice at each step without backtracking.",
-                keyConcepts: ["Greedy Choice Property", "Optimal Substructure Proofs"],
-                timeComplexity: { average: "O(n log n) sorting phase" },
-                spaceComplexity: "O(1)",
+                readTime: "35 min read",
+                summary: "A textbook-grade deep dive into Greedy Algorithms. Understand the Greedy Choice Property, Optimal Substructure, Exchange Arguments, Activity Selection, Fractional Knapsack, Huffman Coding Compression, Minimum Spanning Trees (Kruskal & Prim), and when Greedy fails where Dynamic Programming succeeds.",
+                overview: "A Greedy Algorithm solves an optimization problem by making the locally optimal choice at each decision point, hoping that these local choices lead to a globally optimal solution. Unlike Dynamic Programming or Backtracking, a Greedy algorithm never reconsiders or backtracks on past decisions. While greedy algorithms are fast, elegant, and computationally lightweight, proving their correctness requires rigorous mathematical proofs such as the Greedy Choice Property and Exchange Arguments.",
+                keyConcepts: [
+                    "Greedy Choice Property (Local optimal choice leads to global optimum)",
+                    "Optimal Substructure (Subproblems of optimal solution are also optimal)",
+                    "Exchange Arguments (Mathematical proof of correctness)",
+                    "Interval Scheduling / Activity Selection Problem",
+                    "Fractional Knapsack vs 0/1 Knapsack (Greedy vs DP trade-offs)",
+                    "Huffman Coding Compression Trees & Lossless Data Compression"
+                ],
+                timeComplexity: { best: "O(n log n)", average: "O(n log n)", worst: "O(n log n)" },
+                spaceComplexity: "O(1) aux space / O(n) for priority queues & trees",
                 sections: [
                     {
-                        heading: "1. Interval Activity Selection",
-                        content: "Sorts intervals by end time and greedily selects non-overlapping activities.",
+                        heading: "1. Introduction to Greedy Algorithms",
+                        content: "Imagine you are a cashier making change for 63 cents using standard US coins (25¢ quarter, 10¢ dime, 5¢ nickel, 1¢ penny). You instinctively pick the largest coin that does not exceed 63¢ (a 25¢ quarter, leaving 38¢). You pick another quarter (leaves 13¢), then a 10¢ dime (leaves 3¢), and three 1¢ pennies. You used 6 coins total. \n\nThis decision process—always picking the best choice available *right now* without worrying about future consequences—is a **Greedy Algorithm**. For standard US coins, this greedy heuristic is mathematically guaranteed to use the minimum number of coins. However, if currency denominations were 1¢, 3¢, and 4¢, making change for 6¢ greedily selects `4 + 1 + 1` (3 coins), whereas the true optimal answer is `3 + 3` (2 coins). Greedy fails!"
+                    },
+                    {
+                        heading: "2. The Two Prerequisites for Greedy Correctness",
+                        content: "A Greedy algorithm produces a globally optimal solution ONLY if the problem satisfies two properties:\n\n1. **Greedy Choice Property:** A globally optimal solution can be reached by making locally optimal (greedy) choices at each step without looking back or considering subproblem combinations.\n2. **Optimal Substructure:** An optimal solution to the problem contains within it optimal solutions to its subproblems."
+                    },
+                    {
+                        heading: "3. Proof Techniques: The Exchange Argument",
+                        content: "How do computer scientists prove that a Greedy choice is globally optimal?\n\nThe standard proof technique is the **Exchange Argument**:\n1. Let `G` be the solution produced by the Greedy algorithm.\n2. Let `O` be an arbitrary hypothetical Optimal solution.\n3. If `G == O`, Greedy is optimal.\n4. If `G != O`, locate the first decision point where `G` and `O` differ.\n5. Modify `O` by 'exchanging' its choice with Greedy's choice, creating a new solution `O'`.\n6. Prove mathematically that `O'` is at least as good as `O` (i.e. `Cost(O') <= Cost(O)`).\n7. By induction, repeat this exchange until `O` is transformed into `G` without degrading quality, proving `G` is optimal."
+                    },
+                    {
+                        heading: "4. Classic Problem 1: Activity Selection / Interval Scheduling",
+                        content: "Suppose you have `N` activities, each with a start time `S[i]` and finish time `F[i]`. You can only perform one activity at a time. What is the maximum number of non-overlapping activities you can attend?\n\n- **Greedy Strategy:** Sort all activities by their **Finish Time (`F[i]`)** in ascending order. Always select the next activity that finishes earliest and does not conflict with the previously selected activity.\n- *Why Finish Time works:* Finishing an activity as early as possible leaves the maximum possible remaining time available for future activities.\n- *Why Start Time or Duration fails:* An activity that starts at 1:00 AM and runs for 23 hours blocks the entire day! Sorting by shortest duration can pick a middle activity that conflicts with two surrounding activities."
+                    },
+                    {
+                        heading: "5. Classic Problem 2: Fractional Knapsack",
+                        content: "Given `N` items with weights `W[i]` and values `V[i]`, and a knapsack of capacity `C`. You can break items into fractions (e.g. take 50% of an item).\n\n- **Greedy Strategy:** Compute the **Value Density** (Value per Weight Ratio: `R[i] = V[i] / W[i]`) for each item. Sort items in descending order of ratio `R[i]`. Greedily take as much of the highest ratio item as fits into the remaining capacity. Repeat for the next highest ratio item.\n- Time Complexity: **O(N log N)** (dominated by the initial sorting phase)."
+                    },
+                    {
+                        heading: "6. Why Greedy Fails on 0/1 Knapsack",
+                        content: "Why does Greedy work for Fractional Knapsack, but completely **FAIL** for 0/1 Knapsack (where items cannot be split)?\n\nConsider capacity `W = 50`. \n- Item A: Weight 10, Value 60 (Ratio = 6)\n- Item B: Weight 20, Value 100 (Ratio = 5)\n- Item C: Weight 30, Value 120 (Ratio = 4)\n\nGreedy selects Item A (Ratio 6, Wt 10, Val 60). Remaining capacity = 40. \nGreedy then selects Item B (Ratio 5, Wt 20, Val 100). Remaining capacity = 20. \nItem C (Wt 30) cannot fit! Total Greedy Value = 60 + 100 = **160**.\n\nHowever, if we took Item B + Item C (Weight 20 + 30 = 50), total value = 100 + 120 = **220**! \nTaking the highest density item (Item A) wasted 20 units of capacity. Because items cannot be split, 0/1 Knapsack requires **Dynamic Programming**."
+                    },
+                    {
+                        heading: "7. Visualizing Greedy Selection & Huffman Trees",
+                        content: "Visualizing Activity Selection timeline and Huffman Data Compression Tree:",
+                        diagram: `ACTIVITY SELECTION TIMELINE (Sorted by Finish Time):
+Act 1: [ 1 ----- 4 ]            <- SELECTED (Finishes earliest at 4)
+Act 2:   [ 3 ------- 5 ]        <- Conflicting! (Starts at 3 < 4)
+Act 3:     [ 0 ------------- 6 ]<- Conflicting! (Starts at 0 < 4)
+Act 4:             [ 5 - 7 ]    <- SELECTED (Starts at 5 >= 4, Finishes at 7)
+Act 5:                 [ 8-9 ]  <- SELECTED (Starts at 8 >= 7, Finishes at 9)
+Total Selected: 3 Activities (Act 1, Act 4, Act 5).
+
+HUFFMAN CODING COMPRESSION TREE (Frequencies: A:45, B:13, C:12, D:16, E:9, F:5):
+                    [100]
+                   /     \\
+                 0/       \\1
+              'A'(45)    [55]
+                        /    \\
+                      0/      \\1
+                    [25]      [30]
+                   /   \\      /   \\
+                 'C'(12)'B'(13)'D'(16)[14]
+                                      /  \\
+                                    'F'(5)'E'(9)
+Code for 'A' = "0" (1 bit instead of 8 bits!). Lossless Compression!`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: Low Complexity & Memory Efficiency",
+                        content: "Greedy algorithms are highly prized in embedded systems, OS kernels, and network routers because of their low computational overhead.\n\nUnlike Dynamic Programming (which allocates large $O(N \cdot W)$ memory tables), Greedy algorithms run in $O(1)$ auxiliary memory after an initial $O(N \log N)$ sort. They generate zero garbage collection pressure and execute with linear instruction flow."
+                    },
+                    {
+                        heading: "9. Code Example: Production Greedy Suite",
+                        content: "Below is a complete suite of Activity Selection, Fractional Knapsack, and Huffman Coding Tree Generation implemented across 4 languages.",
                         codeSnippet: {
-                            title: "Activity Selection Algorithm",
+                            title: "Greedy Algorithms Suite",
                             code: {
-                                python: `def max_activities(intervals):\n    intervals.sort(key=lambda x: x[1])\n    count, last_end = 0, -1\n    for start, end in intervals:\n        if start >= last_end:\n            count += 1; last_end = end\n    return count`,
-                                java: `import java.util.*;\nint maxActivities(int[][] intervals) {\n    Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));\n    int count = 0, lastEnd = -1;\n    for (int[] interval : intervals) {\n        if (interval[0] >= lastEnd) { count++; lastEnd = interval[1]; }\n    }\n    return count;\n}`,
-                                cpp: `#include <vector>\n#include <algorithm>\nint maxActivities(std::vector<std::pair<int, int>>& intervals) {\n    std::sort(intervals.begin(), intervals.end(), [](auto& a, auto& b){ return a.second < b.second; });\n    int count = 0, lastEnd = -1;\n    for (auto& [start, end] : intervals) {\n        if (start >= lastEnd) { count++; lastEnd = end; }\n    }\n    return count;\n}`,
-                                javascript: `function maxActivities(intervals) {\n  intervals.sort((a, b) => a[1] - b[1]);\n  let count = 0, lastEnd = -1;\n  for (const [start, end] of intervals) {\n    if (start >= lastEnd) { count++; lastEnd = end; }\n  }\n  return count;\n}`
+                                python: `import heapq
+from typing import List, Tuple
+
+class GreedySuite:
+    @staticmethod
+    def activity_selection(intervals: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+        """Selects max non-overlapping activities (Intervals: (start, finish))."""
+        # Sort by finish time (x[1])
+        intervals.sort(key=lambda x: x[1])
+        selected = []
+        last_finish = -1
+        for start, finish in intervals:
+            if start >= last_finish:
+                selected.append((start, finish))
+                last_finish = finish
+        return selected
+
+    @staticmethod
+    def fractional_knapsack(weights: List[int], values: List[int], capacity: int) -> float:
+        """Fractional Knapsack using Value-Density Ratio."""
+        items = [(v / w, w, v) for w, v in zip(weights, values)]
+        items.sort(key=lambda x: x[0], reverse=True) # Descending ratio
+        total_value = 0.0
+        for ratio, w, v in items:
+            if capacity >= w:
+                capacity -= w
+                total_value += v
+            else:
+                total_value += ratio * capacity
+                break
+        return total_value
+
+    @staticmethod
+    def huffman_codes(frequencies: dict) -> dict:
+        """Generates Huffman Prefix-Free Binary Codes."""
+        heap = [[weight, [char, ""]] for char, weight in frequencies.items()]
+        heapq.heapify(heap)
+        while len(heap) > 1:
+            lo = heapq.heappop(heap)
+            hi = heapq.heappop(heap)
+            for pair in lo[1:]: pair[1] = '0' + pair[1]
+            for pair in hi[1:]: pair[1] = '1' + pair[1]
+            heapq.heappush(heap, [lo[0] + hi[0]] + lo[1:] + hi[1:])
+        return {pair[0]: pair[1] for pair in heap[0][1:]}`,
+                                java: `import java.util.*;
+
+public class GreedySuite {
+    public static class Activity {
+        int start, finish;
+        public Activity(int s, int f) { start = s; finish = f; }
+    }
+
+    public static List<Activity> activitySelection(List<Activity> list) {
+        list.sort(Comparator.comparingInt(a -> a.finish));
+        List<Activity> selected = new ArrayList<>();
+        int lastFinish = -1;
+        for (Activity a : list) {
+            if (a.start >= lastFinish) {
+                selected.add(a);
+                lastFinish = a.finish;
+            }
+        }
+        return selected;
+    }
+
+    public static double fractionalKnapsack(int[] weights, int[] values, int capacity) {
+        int n = weights.length;
+        Double[][] items = new Double[n][3]; // ratio, weight, value
+        for (int i = 0; i < n; i++) {
+            items[i][0] = (double) values[i] / weights[i];
+            items[i][1] = (double) weights[i];
+            items[i][2] = (double) values[i];
+        }
+        Arrays.sort(items, (a, b) -> Double.compare(b[0], a[0])); // Descending
+        double totalVal = 0.0;
+        int rem = capacity;
+        for (int i = 0; i < n; i++) {
+            int w = items[i][1].intValue();
+            double v = items[i][2];
+            if (rem >= w) {
+                rem -= w;
+                totalVal += v;
+            } else {
+                totalVal += items[i][0] * rem;
+                break;
+            }
+        }
+        return totalVal;
+    }
+}`,
+                                cpp: `#include <vector>
+#include <algorithm>
+#include <iostream>
+
+struct Activity {
+    int start, finish;
+};
+
+class GreedySuite {
+public:
+    static std::vector<Activity> activitySelection(std::vector<Activity>& list) {
+        std::sort(list.begin(), list.end(), [](const Activity& a, const Activity& b) {
+            return a.finish < b.finish;
+        });
+        std::vector<Activity> selected;
+        int lastFinish = -1;
+        for (const auto& act : list) {
+            if (act.start >= lastFinish) {
+                selected.push_back(act);
+                lastFinish = act.finish;
+            }
+        }
+        return selected;
+    }
+
+    static double fractionalKnapsack(const std::vector<int>& weights, const std::vector<int>& values, int capacity) {
+        struct Item { double ratio; int weight; int value; };
+        std::vector<Item> items;
+        for (size_t i = 0; i < weights.size(); i++) {
+            items.push_back({ static_cast<double>(values[i]) / weights[i], weights[i], values[i] });
+        }
+        std::sort(items.begin(), items.end(), [](const Item& a, const Item& b) {
+            return a.ratio > b.ratio;
+        });
+        double totalVal = 0.0;
+        int rem = capacity;
+        for (const auto& item : items) {
+            if (rem >= item.weight) {
+                rem -= item.weight;
+                totalVal += item.value;
+            } else {
+                totalVal += item.ratio * rem;
+                break;
+            }
+        }
+        return totalVal;
+    }
+};`,
+                                javascript: `class GreedySuite {
+  static activitySelection(intervals) {
+    // intervals: [{start, finish}]
+    intervals.sort((a, b) => a.finish - b.finish);
+    const selected = [];
+    let lastFinish = -1;
+    for (const act of intervals) {
+      if (act.start >= lastFinish) {
+        selected.push(act);
+        lastFinish = act.finish;
+      }
+    }
+    return selected;
+  }
+
+  static fractionalKnapsack(weights, values, capacity) {
+    const items = weights.map((w, i) => ({
+      ratio: values[i] / w,
+      weight: w,
+      value: values[i]
+    }));
+    items.sort((a, b) => b.ratio - a.ratio);
+    let totalValue = 0.0;
+    let rem = capacity;
+    for (const item of items) {
+      if (rem >= item.weight) {
+        rem -= item.weight;
+        totalValue += item.value;
+      } else {
+        totalValue += item.ratio * rem;
+        break;
+      }
+    }
+    return totalValue;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Analyzing greedy mechanics:\n\n- **Sorting by Finish Time:** In `activitySelection`, `intervals.sort(key=lambda x: x[1])` orders activities by finish time. The single loop then checks `if start >= last_finish`, greedily building the max subset in $O(N \log N)$ total time.\n- **Density Sorting:** In `fractionalKnapsack`, sorting items by `value / weight` ratio allows consuming fractional items at full value density before switching to lower density items."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common traps in Greedy algorithm design:\n\n- **The Greedy Trap (Assuming Optimality without Proof):** Writing a greedy strategy because it 'feels right' without performing an Exchange Argument proof. (e.g. using Greedy for Coin Change with non-standard coin denominations).\n- **Sorting by the Wrong Attribute:** In Activity Selection, sorting by Start Time or Activity Duration produces incorrect suboptimal answers."
+                    },
+                    {
+                        heading: "12. Huffman Coding & Data Compression",
+                        content: "Huffman Coding (invented by David Huffman in 1952) is a greedy algorithm for **Lossless Data Compression**.\n\nIn standard ASCII, every character uses 8 bits. If a document contains 90% 'e's and 1% 'z's, using 8 bits for 'e' is wasteful. \n\n**Greedy Huffman Algorithm:**\n1. Count character frequencies in the text.\n2. Create a Leaf Node for each character and insert into a **Min-Heap Priority Queue**.\n3. While priority queue size > 1:\n   - Pop the two nodes with smallest frequencies $f_1$ and $f_2$.\n   - Create a new Internal Node with frequency $f_1 + f_2$, attaching the two nodes as left and right children.\n   - Push the new node back into the priority queue.\n4. Traversal from root yields **Prefix-Free Codes** (frequent characters get short 1-2 bit codes; rare characters get longer codes)."
+                    },
+                    {
+                        heading: "13. Minimum Spanning Trees (Kruskal's & Prim's)",
+                        content: "Greedy algorithms power Minimum Spanning Tree (MST) algorithms:\n\n- **Kruskal's Algorithm:** Sort all edges in ascending order of weight. Greedily pick the cheapest edge that does not form a cycle (checked via Disjoint Set Union DSU). Time Complexity: **O(E log E)**.\n- **Prim's Algorithm:** Start at an arbitrary vertex. Maintain a Min-Heap of outgoing edges from visited vertices. Greedily pick the cheapest edge leading to an unvisited vertex. Time Complexity: **O(E log V)**."
+                    },
+                    {
+                        heading: "14. Algorithm Strategy Comparison Matrix",
+                        content: "Comparing Greedy, Dynamic Programming, and Backtracking:",
+                        diagram: `Strategy    | Local Choice | Backtracking | Choice Guarantee | Time Complexity  | Primary Use Cases
+------------+--------------+--------------+------------------+------------------+------------------------------
+Greedy      | Local Best   | Never        | Proven Optimal   | O(N log N)       | Activity Selection, MST, Huffman
+Dynamic Prog| Evaluates All| Never        | Globally Optimal | O(States * Trans)| 0/1 Knapsack, LCS, Shortest Path
+Backtracking| Explores All | Always       | Exhaustive       | O(Branch^Depth)  | N-Queens, Sudoku, Subsets`
+                    },
+                    {
+                        heading: "15. Real-World Applications",
+                        content: "Where Greedy algorithms power modern systems:\n\n- **Network Routing (Dijkstra's Shortest Path):** Routers execute Dijkstra's algorithm (a greedy min-heap search) to calculate minimum latency packet paths across the internet.\n- **File Compression (ZIP, GZIP, PNG, MP3):** All standard compression formats use Huffman Coding (greedy trees) as their final entropy encoding pass.\n- **CPU Scheduling (Shortest Job First SJF):** Operating System schedulers use greedy priority selection to minimize average process waiting time."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Greedy algorithms make locally optimal decisions to achieve global optimality without backtracking. When verified via Exchange Argument proofs, Greedy heuristics deliver blazingly fast $O(N \log N)$ execution with minimal memory footprint across interval scheduling, data compression, and graph spanning trees."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why does the Greedy algorithm work for Fractional Knapsack but FAIL for 0/1 Knapsack?",
+                        options: [
+                            "Fractional Knapsack allows breaking items into continuous density fractions, whereas 0/1 Knapsack can leave empty capacity gaps that ruin density sorting.",
+                            "0/1 Knapsack requires $O(N \log N)$ sorting while Fractional Knapsack is $O(N)$.",
+                            "Greedy algorithms cannot handle integer values.",
+                            "Fractional Knapsack requires a Min-Heap priority queue."
+                        ],
+                        correctIndex: 0,
+                        explanation: "In Fractional Knapsack, capacity is never wasted because you can take fractions of the highest ratio item. In 0/1 Knapsack, taking a high-ratio item might leave unused capacity space that could have been filled by two lower-ratio items yielding a higher combined value."
+                    },
+                    {
+                        id: "q2",
+                        question: "What ordering criteria MUST be used when sorting intervals to solve the Activity Selection Problem greedily?",
+                        options: [
+                            "Sort intervals by Start Time ascending",
+                            "Sort intervals by Interval Duration ascending",
+                            "Sort intervals by Finish Time ascending",
+                            "Sort intervals by Start Time descending"
+                        ],
+                        correctIndex: 2,
+                        explanation: "Sorting by Finish Time in ascending order guarantees that selecting the activity that finishes earliest leaves the maximum remaining time window for future activities."
                     }
                 ]
             },
@@ -1379,27 +2865,251 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "backtracking-algorithms",
                 categorySlug: "algorithms",
                 title: "Backtracking Algorithms",
-                subtitle: "Systematic search space exploration with state pruning",
+                subtitle: "Depth-first state-space tree traversal, implicit choices, state reversal, and constraint pruning heuristics",
                 difficulty: "Advanced",
-                readTime: "14 min read",
-                summary: "Master N-Queens, Sudoku solving, and state-space pruning.",
-                overview: "Backtracking builds solution candidates incrementally, abandoning ('pruning') paths as soon as validity constraints fail.",
-                keyConcepts: ["State Space Tree", "Constraint Pruning", "Recursive Choice & Reversal"],
-                timeComplexity: { worst: "O(BranchingFactor^Depth)" },
-                spaceComplexity: "O(Recursion Depth)",
+                readTime: "45 min read",
+                summary: "A textbook-grade deep dive into Backtracking. Master the universal 3-part Backtracking template (Choose, Explore, Unchoose), State Space Trees, Constraint Pruning, N-Queens, Sudoku Solving, Subsets/Permutations generation, and Hamiltonian Paths.",
+                overview: "Backtracking is a systematic algorithmic paradigm for searching all (or some) solutions to computational problems by incrementally building candidates. If a candidate path fails to satisfy validity constraints at any intermediate step, Backtracking instantly abandons ('prunes') the entire subtree and steps backward ('backtracks') to try alternative choices. By pruning invalid branches early, Backtracking reduces brute-force O(N!) or O(B^D) search spaces down to tractable execution times.",
+                keyConcepts: [
+                    "State Space Tree (Implicit tree of partial solution choices)",
+                    "The Universal 3-Step Backtracking Template (Choose, Explore, Unchoose)",
+                    "Bounding Functions & Constraint Pruning (Cutting invalid subtrees early)",
+                    "Permutations vs Combinations vs Subsets Choice Mechanics",
+                    "N-Queens Diagonal Attack Bitmasks (O(1) attack checking)",
+                    "Sudoku Solver & Constraint Satisfaction Problems (CSP)"
+                ],
+                timeComplexity: { best: "O(Solution Count)", average: "O(BranchingFactor^Depth)", worst: "O(N!)" },
+                spaceComplexity: "O(Recursion Depth) stack space",
                 sections: [
                     {
-                        heading: "1. N-Queens Solver Concept",
-                        content: "Places queens row by row, pruning invalid column/diagonal attacks.",
+                        heading: "1. Introduction to Backtracking",
+                        content: "Imagine navigating a complex maze. When you reach a fork in the path, you choose a direction and walk down it. If you hit a dead end, you do not panic or give up; you physically walk back to the last fork and try a different path. \n\nIn computer science, this controlled trial-and-error search is called **Backtracking**. Unlike pure Brute-Force Search (which generates all theoretical combinations before testing validity), Backtracking builds solutions incrementally. The moment a partial solution violates a problem constraint, the algorithm instantly discards all future decisions originating from that branch, saving millions of wasted function calls."
+                    },
+                    {
+                        heading: "2. The State Space Tree",
+                        content: "Every backtracking problem can be visualized as traversing an implicit **State Space Tree**.\n\n- **Root Node:** The initial empty state before making any choices (e.g. empty chessboard, empty subset).\n- **Edges:** The set of valid choices available at the current decision level.\n- **Internal Nodes:** Partial candidate solutions.\n- **Leaf Nodes:** Complete candidate solutions (which are either valid solutions or invalid pruned leaves).\n\nThe depth of the tree represents the decision level `D`, and the width represents the branching factor `B`."
+                    },
+                    {
+                        heading: "3. The Universal 3-Step Backtracking Template",
+                        content: "Every production backtracking algorithm adheres strictly to the **Choose-Explore-Unchoose** template:\n\n```python\ndef backtrack(state, choice_list):\n    if is_solution(state):\n        process_solution(state)\n        return\n    \n    for choice in choice_list:\n        if is_valid(choice, state):\n            # 1. CHOOSE: Apply decision & update mutable state\n            make_choice(choice, state)\n            \n            # 2. EXPLORE: Recurse into next decision level\n            backtrack(state, get_next_choices())\n            \n            # 3. UNCHOOSE: Revert decision to restore caller state!\n            undo_choice(choice, state)\n```"
+                    },
+                    {
+                        heading: "4. Constraint Pruning & Bounding Functions",
+                        content: "The efficiency of Backtracking depends entirely on its **Bounding Functions** (Pruning Logic).\n\nIf you are solving N-Queens on an 8x8 board, a naive brute force generator places 8 queens in $64^8 \\approx 2.8 \\times 10^{14}$ arrangements. \nBy applying a simple bounding check `is_valid(row, col)` *before* making the recursive call, Backtracking prunes invalid columns and diagonals instantly, reducing the total search space to only 15,720 evaluated states!"
+                    },
+                    {
+                        heading: "5. Classic Problem 1: N-Queens Solver",
+                        content: "Place N non-attacking queens on an $N \\times N$ chessboard.\n\n- **State:** Place queens row by row (`row = 0` to `N - 1`).\n- **Constraint Checking:** Queen at `(row, col)` attacks column `col`, main diagonal `row - col`, and anti-diagonal `row + col`.\n- We maintain three Hash Sets (or Bitmasks) `cols`, `diag1`, `diag2`. When placing a queen at `(r, c)`, we check if `c in cols` or `(r - c) in diag1` or `(r + c) in diag2`. If valid, we add them to the sets, recurse `row + 1`, and remove them during the **Unchoose** step."
+                    },
+                    {
+                        heading: "6. Classic Problem 2: Sudoku Solver",
+                        content: "Fill a 9x9 grid so that every row, column, and 3x3 sub-box contains digits 1-9.\n\n- **State:** Find the next empty cell `(r, c)`.\n- **Choices:** Try digits `'1'` through `'9'`.\n- **Pruning:** If digit `d` already exists in row `r`, column `c`, or 3x3 box `(r/3)*3 + c/3`, skip it.\n- If a valid digit leads to a dead end down the line, the function returns `False`, causing the outer caller to reset cell `grid[r][c] = '.'` and try the next digit."
+                    },
+                    {
+                        heading: "7. Visualizing Backtracking & Pruning",
+                        content: "Visualizing N-Queens (4x4 board) State Space Tree with pruned branches:",
+                        diagram: `N-QUEENS (4x4 Board) STATE SPACE TREE:
+                         Root (Row 0)
+          /           |           |           \\
+      Q at (0,0)   Q at (0,1)  Q at (0,2)   Q at (0,3)
+        /     \\        |
+   Row 1:     Row 1:   Row 1:
+   (1,2)      (1,3)    (1,0)
+    /           |        |
+ Row 2:      Row 2:   Row 2:
+ (2,1) X     (2,0)    (2,3)
+[Pruned!]     |        |
+            Row 3:   Row 3:
+            [PRUNED] (3,1) ==> SOLUTION FOUND! [1, 3, 0, 2]`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: Call Stack Depth & Memory Footprint",
+                        content: "From a systems hardware perspective:\n\n- **In-Place State Mutation vs Object Copying:** Passing a new list `path + [choice]` to recursive calls allocates new heap memory at every node, creating $O(B^D \\cdot D)$ memory consumption and triggering severe Garbage Collection stalls. Reusing a single global `path` array with `path.append()` and `path.pop()` reduces auxiliary space to strictly **O(D)** inside primary L1 CPU cache."
+                    },
+                    {
+                        heading: "9. Code Example: Production Backtracking Suite",
+                        content: "Below is a complete suite of N-Queens, Sudoku Solver, and Permutations with duplicates handled in 4 languages.",
                         codeSnippet: {
-                            title: "Backtracking Choice Template",
+                            title: "Backtracking Suite (N-Queens, Sudoku, Permutations)",
                             code: {
-                                python: `def backtrack(path, choices):\n    if is_solution(path): process_solution(path); return\n    for choice in choices:\n        if is_valid(choice):\n            path.append(choice) # Make choice\n            backtrack(path, get_next_choices(choice))\n            path.pop() # Backtrack choice`,
-                                java: `void backtrack(List<Integer> path) {\n    if (isSolution(path)) { process(path); return; }\n    for (int choice : getChoices()) {\n        if (isValid(choice)) {\n            path.add(choice);\n            backtrack(path);\n            path.remove(path.size() - 1);\n        }\n    }\n}`,
-                                cpp: `void backtrack(std::vector<int>& path) {\n    if (isSolution(path)) { process(path); return; }\n    for (int choice : getChoices()) {\n        if (isValid(choice)) {\n            path.push_back(choice);\n            backtrack(path);\n            path.pop_back();\n        }\n    }\n}`,
-                                javascript: `function backtrack(path) {\n  if (isSolution(path)) { process(path); return; }\n  for (const choice of getChoices()) {\n    if (isValid(choice)) {\n      path.push(choice);\n      backtrack(path);\n      path.pop();\n    }\n  }\n}`
+                                python: `class BacktrackingSuite:
+    @staticmethod
+    def solve_n_queens(n: int) -> list[list[str]]:
+        """N-Queens Solver returning all distinct board layouts."""
+        result = []
+        cols, diag1, diag2 = set(), set(), set()
+        board = [["."] * n for _ in range(n)]
+
+        def _backtrack(r: int):
+            if r == n:
+                result.append(["".join(row) for row in board])
+                return
+            for c in range(n):
+                if c in cols or (r - c) in diag1 or (r + c) in diag2:
+                    continue
+                # CHOOSE
+                cols.add(c); diag1.add(r - c); diag2.add(r + c)
+                board[r][c] = "Q"
+                # EXPLORE
+                _backtrack(r + 1)
+                # UNCHOOSE
+                cols.remove(c); diag1.remove(r - c); diag2.remove(r + c)
+                board[r][c] = "."
+
+        _backtrack(0)
+        return result
+
+    @staticmethod
+    def permute_unique(nums: list[int]) -> list[list[int]]:
+        """Generates all unique permutations of list with duplicates."""
+        nums.sort()
+        result = []
+        used = [False] * len(nums)
+
+        def _backtrack(path: list[int]):
+            if len(path) == len(nums):
+                result.append(list(path))
+                return
+            for i in range(len(nums)):
+                if used[i]: continue
+                # Skip duplicate choices at same depth
+                if i > 0 and nums[i] == nums[i - 1] and not used[i - 1]: continue
+                used[i] = True
+                path.append(nums[i])
+                _backtrack(path)
+                path.pop()
+                used[i] = False
+
+        _backtrack([])
+        return result`,
+                                java: `import java.util.*;
+
+public class BacktrackingSuite {
+    public static List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<>();
+        char[][] board = new char[n][n];
+        for (char[] row : board) Arrays.fill(row, '.');
+        Set<Integer> cols = new HashSet<>(), diag1 = new HashSet<>(), diag2 = new HashSet<>();
+        backtrackNQueens(0, n, board, result, cols, diag1, diag2);
+        return result;
+    }
+    private static void backtrackNQueens(int r, int n, char[][] board, List<List<String>> res, Set<Integer> cols, Set<Integer> d1, Set<Integer> d2) {
+        if (r == n) {
+            List<String> layout = new ArrayList<>();
+            for (char[] row : board) layout.add(new String(row));
+            res.add(layout); return;
+        }
+        for (int c = 0; c < n; c++) {
+            if (cols.contains(c) || d1.contains(r - c) || d2.contains(r + c)) continue;
+            cols.add(c); d1.add(r - c); d2.add(r + c); board[r][c] = 'Q';
+            backtrackNQueens(r + 1, n, board, res, cols, d1, d2);
+            cols.remove(c); d1.remove(r - c); d2.remove(r + c); board[r][c] = '.';
+        }
+    }
+}`,
+                                cpp: `#include <vector>
+#include <string>
+#include <unordered_set>
+#include <algorithm>
+
+class BacktrackingSuite {
+public:
+    static std::vector<std::vector<std::string>> solveNQueens(int n) {
+        std::vector<std::vector<std::string>> result;
+        std::vector<std::string> board(n, std::string(n, '.'));
+        std::unordered_set<int> cols, diag1, diag2;
+        _backtrack(0, n, board, result, cols, diag1, diag2);
+        return result;
+    }
+private:
+    static void _backtrack(int r, int n, std::vector<std::string>& board, std::vector<std::vector<std::string>>& res,
+                           std::unordered_set<int>& cols, std::unordered_set<int>& d1, std::unordered_set<int>& d2) {
+        if (r == n) { res.push_back(board); return; }
+        for (int c = 0; c < n; c++) {
+            if (cols.count(c) || d1.count(r - c) || d2.count(r + c)) continue;
+            cols.insert(c); d1.insert(r - c); d2.insert(r + c); board[r][c] = 'Q';
+            _backtrack(r + 1, n, board, res, cols, d1, d2);
+            cols.erase(c); d1.erase(r - c); d2.erase(r + c); board[r][c] = '.';
+        }
+    }
+};`,
+                                javascript: `class BacktrackingSuite {
+  static solveNQueens(n) {
+    const result = [];
+    const board = Array.from({ length: n }, () => new Array(n).fill('.'));
+    const cols = new Set(), diag1 = new Set(), diag2 = new Set();
+    function _backtrack(r) {
+      if (r === n) {
+        result.push(board.map(row => row.join('')));
+        return;
+      }
+      for (let c = 0; c < n; c++) {
+        if (cols.has(c) || diag1.has(r - c) || diag2.has(r + c)) continue;
+        cols.add(c); diag1.add(r - c); diag2.add(r + c); board[r][c] = 'Q';
+        _backtrack(r + 1);
+        cols.delete(c); diag1.delete(r - c); diag2.delete(r + c); board[r][c] = '.';
+      }
+    }
+    _backtrack(0);
+    return result;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Reviewing execution specifics:\n\n- **Diagonal Index Math:** Main diagonals share the value `r - c` (slope = 1). Anti-diagonals share the value `r + c` (slope = -1). Storing these integer differences in a Hash Set achieves **O(1)** attack checking.\n- **Handling Duplicates in Permutations (`permute_unique`):** Array sorting + `if (i > 0 && nums[i] == nums[i-1] && !used[i-1]) continue` prevents exploring identical duplicate sub-branches."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common backtracking bugs:\n\n- **Omitting the Unchoose Step:** Forgetting to remove element from `path` or reset boolean arrays before exiting loop iteration. This corrupts caller state across sister branches.\n- **Passing References without Copying:** In Python/JS, appending `result.append(path)` stores a reference to the mutable path array. When backtracking mutates `path`, all saved answers become empty! Fix: `result.append(list(path))` or `result.push([...path])`."
+                    },
+                    {
+                        heading: "12. Advanced Variants: Permutations vs Subsets vs Combinations",
+                        content: "Standard decision templates:\n\n- **Subsets:** Decision at level `i` is binary: Include `arr[i]` or Exclude `arr[i]`. Recursion advances index `i + 1`.\n- **Combinations of Size K:** Recurse with start index parameter `start`. Loop from `i = start` to `N - 1`.\n- **Permutations:** Order matters. Loop from `i = 0` to `N - 1` with a `used[i]` boolean array tracking visited indices."
+                    },
+                    {
+                        heading: "13. Optimization via Bitmasks",
+                        content: "Instead of Hash Sets for `cols`, `diag1`, `diag2`, we can use 32-bit integers as bitmasks!\n\n- Check if column `c` is attacked: `(cols & (1 << c)) != 0`\n- Set column `c`: `cols |= (1 << c)`\n- Clear column `c`: `cols &= ~(1 << c)`\n\nBitmasking executes attack validation in **1 CPU clock cycle** with zero heap allocations!"
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where Backtracking powers production tools:\n\n- **Automated Puzzle Generators & Solvers:** Sudoku, Crosswords, Word Search generators.\n- **Regex Pattern Matching Engines:** Backtracking NFA engines (like PCRE) evaluate complex regular expression matches.\n- **Silicon Chip VLSI Layout:** Electronic Design Automation (EDA) tools route copper traces on circuit boards using backtracking constraint solvers."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Top interview patterns at Google, Amazon, Meta:\n\n- **Key Interview Questions:** N-Queens, Sudoku Solver, Combination Sum, Word Search in Grid, Subsets II, Palindrome Partitioning.\n- **Pro-Tip:** Always explain the 3-step Choose-Explore-Unchoose template to your interviewer before coding!"
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Backtracking systematically explores implicit decision trees by choosing candidates, exploring deeper levels, and unchoosing to backtrack when constraints fail. Coupled with early constraint pruning and memory-efficient in-place mutations, Backtracking solves NP-hard combinatorial optimization tasks."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why is it mandatory to append a COPY of the path array (e.g. res.append(list(path))) when storing a valid solution in Python/JS?",
+                        options: [
+                            "Because the path array is read-only.",
+                            "Because path is passed by reference; failing to copy stores references to a single array that will be mutated back to empty during backtracking.",
+                            "To convert integers into string representations.",
+                            "To sort the elements in ascending order."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Arrays are mutable objects passed by reference. If you append the original `path` reference to your results, subsequent `path.pop()` unchoose steps will mutate the array inside your result list, eventually leaving all saved solutions empty."
+                    },
+                    {
+                        id: "q2",
+                        question: "What mathematical property characterizes the main diagonals of a 2D matrix (used for N-Queens attack checks)?",
+                        options: [
+                            "Every cell on a main diagonal shares the exact same value of (row - col).",
+                            "Every cell on a main diagonal shares the exact same value of (row * col).",
+                            "Every cell on a main diagonal has an even sum.",
+                            "Every cell on a main diagonal is a prime number."
+                        ],
+                        correctIndex: 0,
+                        explanation: "Cells along any top-left to bottom-right main diagonal have a constant difference (row - col). Anti-diagonals (top-right to bottom-left) have a constant sum (row + col)."
                     }
                 ]
             },
@@ -1408,27 +3118,249 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "bfs-and-dfs",
                 categorySlug: "algorithms",
                 title: "Graph BFS & DFS",
-                subtitle: "Breadth-First Search (Level-Order) vs Depth-First Search (Backtracking)",
+                subtitle: "Queue-based level-order traversal, stack-based depth exploration, unweighted shortest paths, connected components, and cycle detection",
                 difficulty: "Intermediate",
-                readTime: "12 min read",
-                summary: "Understand queue-based BFS shortest paths and stack/recursive DFS traversals.",
-                overview: "BFS explores graph nodes in expanding concentric rings (ideal for unweighted shortest paths). DFS explores paths deeply before backtracking.",
-                keyConcepts: ["BFS Queue vs DFS Stack/Recursion", "Visited Set to prevent infinite loops", "Shortest Path property in unweighted graphs"],
+                readTime: "45 min read",
+                summary: "A textbook-grade deep dive into Graph Traversal. Master Breadth-First Search (BFS) FIFO queues, Depth-First Search (DFS) call stacks, visited sets, unweighted shortest path guarantees, connected components, cycle detection, bipartite testing, and grid matrix traversals.",
+                overview: "Graph Traversal is the fundamental process of visiting every vertex in a graph. The two primary strategies—Breadth-First Search (BFS) and Depth-First Search (DFS)—explore graph nodes in radically different topological orders. BFS explores vertices in expanding concentric waves (level by level), making it the gold standard for finding unweighted shortest paths. DFS explores each branch as deeply as possible before backtracking, making it ideal for topological ordering, maze routing, cycle detection, and strongly connected components.",
+                keyConcepts: [
+                    "Breadth-First Search (BFS): FIFO Queue, Level-Order Expansion, Unweighted Shortest Path",
+                    "Depth-First Search (DFS): LIFO Stack / Recursion, Deep Path Exploration, Backtracking",
+                    "Visited Set Protection (Preventing infinite loops in cyclic graphs)",
+                    "Connected Components & Island Counting in Grid Matrices",
+                    "Cycle Detection in Undirected & Directed Graphs (White-Gray-Black coloring)",
+                    "Bipartite Graph Testing (Two-Coloring algorithm)"
+                ],
                 timeComplexity: { best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)" },
                 spaceComplexity: "O(V)",
                 sections: [
                     {
-                        heading: "1. Breadth-First Search Traversal",
-                        content: "Processes vertices level by level using a FIFO queue.",
+                        heading: "1. Introduction to Graph Traversals",
+                        content: "Trees are simple hierarchy graphs with a single root and no cycles. Traversing a tree is straightforward because you never visit the same node twice. \n\nGraphs, however, can contain arbitrary connections and cycles ($A \\to B \\to C \\to A$). If you traverse a graph without tracking where you have already been, your code will loop infinitely until the server crashes. Graph traversals address this by pairing structural exploration with a **Visited Set** to guarantee that every vertex and edge is processed exactly once in **O(V + E)** time."
+                    },
+                    {
+                        heading: "2. Breadth-First Search (BFS) Mechanics",
+                        content: "Breadth-First Search (BFS) processes vertices level by level using a **FIFO (First-In, First-Out) Queue**.\n\n1. Initialize `queue = [start_node]` and `visited = {start_node}`.\n2. While queue is not empty, dequeue node `u`.\n3. Iterate through all unvisited neighbors `v` of `u`.\n4. Mark `v` as visited and enqueue `v`.\n\nBFS explores vertices in concentric waves of increasing distance: distance 0 (start), distance 1 (direct neighbors), distance 2 (neighbors of neighbors)..."
+                    },
+                    {
+                        heading: "3. Shortest Path Guarantee of BFS",
+                        content: "In an unweighted graph (or a graph where all edges have equal weight = 1), **BFS is mathematically guaranteed to find the Shortest Path from source to target.**\n\n*Proof:* Because BFS processes nodes in non-decreasing order of distance from source ($d = 0, 1, 2, \\dots$), the first time the target node is popped from the queue, it MUST be reached via the minimum number of edge steps. No shorter path can exist."
+                    },
+                    {
+                        heading: "4. Depth-First Search (DFS) Mechanics",
+                        content: "Depth-First Search (DFS) explores as deeply as possible along each branch before backtracking using a **LIFO (Last-In, First-Out) Stack** or **Recursion Call Stack**.\n\n1. Mark current node `u` as visited.\n2. For each unvisited neighbor `v` of `u`, recursively call `DFS(v)`.\n3. When all neighbors of `u` are visited, return (backtrack) to caller.\n\nDFS consumes less memory than BFS on deep, low-branching graphs and is the foundation for cycle detection and topological sorting."
+                    },
+                    {
+                        heading: "5. Visited Tracking & Memory Layout",
+                        content: "To prevent infinite loops in graphs with cycles:\n\n- **Vertex ID Array:** If vertices are integers `0..V-1`, use a fast boolean array `visited = [False] * V`.\n- **String/UUID Hash Set:** If vertices are strings (e.g. `'JFK'`), use a `Set<String>`.\n- **Crucial Rule for BFS:** ALWAYS add neighbor `v` to `visited` **immediately upon enqueuing** `v` (not when dequeuing `v`). Enqueuing without marking visited causes duplicate entries of the same node in the queue, degrading space complexity to $O(E)$."
+                    },
+                    {
+                        heading: "6. Cycle Detection Algorithms",
+                        content: "Detecting cycles requires different strategies based on edge direction:\n\n- **Undirected Graphs:** Pass a `parent` pointer during DFS. If neighbor `v` is visited AND `v != parent`, a cycle exists!\n- **Directed Graphs (3-Coloring DFS):** Track vertex states using 3 colors:\n  - *White (0):* Unvisited.\n  - *Gray (1):* Currently visiting (on current recursion stack).\n  - *Black (2):* Fully processed.\n  If DFS visits a neighbor that is **Gray**, you have encountered a Back-Edge, proving a Directed Cycle exists!"
+                    },
+                    {
+                        heading: "7. Visualizing BFS Rings & DFS Tree Traversal",
+                        content: "Visualizing BFS Concentric Rings vs DFS Deep Branch Exploration:",
+                        diagram: `GRAPH TOPOLOGY:
+    (0) --- (1) --- (3)
+     |       |
+    (2) --- (4)
+
+BFS CONCENTRIC EXPANSION FROM (0):
+Level 0: [0]
+Level 1: [1, 2]
+Level 2: [3, 4]
+Order: 0 -> 1 -> 2 -> 3 -> 4  (Shortest path to 4 is 0->2->4 or 0->1->4, dist=2)
+
+DFS DEEP PATH EXPLORATION FROM (0):
+Path: 0 -> 1 -> 3 (Dead end, backtrack to 1) -> 4 -> 2 (Dead end)
+Order: 0 -> 1 -> 3 -> 4 -> 2`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: Queue Allocations vs Call Stack Limits",
+                        content: "Comparing hardware overheads:\n\n- **BFS Memory Spike:** On dense graphs or high-degree tree topologies (e.g. star graphs), the queue size can expand to $O(V)$ nodes residing simultaneously in heap memory.\n- **DFS Stack Overflow:** Deep graphs (e.g. long linear chain of 50,000 nodes) will overflow default OS thread stack limits during recursive DFS. In production systems, iterative DFS using an explicit heap-allocated stack `std::vector` or `deque` avoids stack overflow."
+                    },
+                    {
+                        heading: "9. Code Example: Production BFS & DFS Suite",
+                        content: "Below is a complete suite of BFS Shortest Path, DFS Connected Components, and 2D Grid Matrix Island Counter across 4 languages.",
                         codeSnippet: {
-                            title: "BFS Graph Traversal",
+                            title: "BFS & DFS Suite",
                             code: {
-                                python: `from collections import deque\ndef bfs(graph, start):\n    visited = {start}\n    queue = deque([start])\n    while queue:\n        node = queue.popleft()\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)`,
-                                java: `import java.util.*;\nvoid bfs(Map<Integer, List<Integer>> graph, int start) {\n    Set<Integer> visited = new HashSet<>();\n    Queue<Integer> q = new LinkedList<>();\n    visited.add(start); q.add(start);\n    while (!q.isEmpty()) {\n        int node = q.poll();\n        for (int neighbor : graph.getOrDefault(node, Collections.emptyList())) {\n            if (!visited.contains(neighbor)) {\n                visited.add(neighbor); q.add(neighbor);\n            }\n        }\n    }\n}`,
-                                cpp: `#include <queue>\n#include <unordered_set>\nvoid bfs(std::unordered_map<int, std::vector<int>>& graph, int start) {\n    std::unordered_set<int> visited{start};\n    std::queue<int> q; q.push(start);\n    while(!q.empty()) {\n        int node = q.front(); q.pop();\n        for(int neighbor : graph[node]) {\n            if(visited.find(neighbor) == visited.end()) {\n                visited.insert(neighbor); q.push(neighbor);\n            }\n        }\n    }\n}`,
-                                javascript: `function bfs(graph, start) {\n  const visited = new Set([start]);\n  const queue = [start];\n  while (queue.length > 0) {\n    const node = queue.shift();\n    for (const neighbor of (graph.get(node) || [])) {\n      if (!visited.has(neighbor)) {\n        visited.add(neighbor);\n        queue.push(neighbor);\n      }\n    }\n  }\n}`
+                                python: `from collections import deque
+
+class GraphTraversalSuite:
+    @staticmethod
+    def bfs_shortest_path(graph: dict, start, target) -> list:
+        """BFS Shortest Path in unweighted graph returning path nodes."""
+        queue = deque([[start]])
+        visited = {start}
+        while queue:
+            path = queue.popleft()
+            node = path[-1]
+            if node == target:
+                return path
+            for neighbor in graph.get(node, []):
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(path + [neighbor])
+        return []
+
+    @staticmethod
+    def num_islands(grid: list[list[str]]) -> int:
+        """2D Grid DFS Island Counter."""
+        if not grid: return 0
+        rows, cols = len(grid), len(grid[0])
+        islands = 0
+
+        def _dfs(r, c):
+            if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] != "1":
+                return
+            grid[r][c] = "0" # Sink island cell to mark visited
+            _dfs(r + 1, c); _dfs(r - 1, c)
+            _dfs(r, c + 1); _dfs(r, c - 1)
+
+        for r in range(rows):
+            for c in range(cols):
+                if grid[r][c] == "1":
+                    islands += 1
+                    _dfs(r, c)
+        return islands`,
+                                java: `import java.util.*;
+
+public class GraphTraversalSuite {
+    public static List<Integer> bfsShortestPath(List<List<Integer>> graph, int start, int target) {
+        int n = graph.size();
+        boolean[] visited = new boolean[n];
+        int[] parent = new int[n];
+        Arrays.fill(parent, -1);
+        Queue<Integer> queue = new LinkedList<>();
+        visited[start] = true;
+        queue.add(start);
+        boolean found = false;
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            if (curr == target) { found = true; break; }
+            for (int neighbor : graph.get(curr)) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    parent[neighbor] = curr;
+                    queue.add(neighbor);
+                }
+            }
+        }
+        if (!found) return new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        for (int at = target; at != -1; at = parent[at]) path.add(at);
+        Collections.reverse(path);
+        return path;
+    }
+}`,
+                                cpp: `#include <vector>
+#include <queue>
+#include <algorithm>
+
+class GraphTraversalSuite {
+public:
+    static std::vector<int> bfsShortestPath(const std::vector<std::vector<int>>& graph, int start, int target) {
+        int n = static_cast<int>(graph.size());
+        std::vector<bool> visited(n, false);
+        std::vector<int> parent(n, -1);
+        std::queue<int> q;
+        visited[start] = true;
+        q.push(start);
+        bool found = false;
+        while (!q.empty()) {
+            int curr = q.front(); q.pop();
+            if (curr == target) { found = true; break; }
+            for (int neighbor : graph[curr]) {
+                if (!visited[neighbor]) {
+                    visited[neighbor] = true;
+                    parent[neighbor] = curr;
+                    q.push(neighbor);
+                }
+            }
+        }
+        if (!found) return {};
+        std::vector<int> path;
+        for (int at = target; at != -1; at = parent[at]) path.push_back(at);
+        std::reverse(path.begin(), path.end());
+        return path;
+    }
+};`,
+                                javascript: `class GraphTraversalSuite {
+  static bfsShortestPath(graph, start, target) {
+    const visited = new Set([start]);
+    const queue = [[start]];
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const node = path[path.length - 1];
+      if (node === target) return path;
+      for (const neighbor of (graph.get(node) || [])) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push([...path, neighbor]);
+        }
+      }
+    }
+    return [];
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Analyzing graph traversal details:\n\n- **In-Place Grid Sinking (`grid[r][c] = '0'`):** In 2D grid matrix DFS, instead of allocating an extra `visited[rows][cols]` boolean array, we sink visited land cells by mutating `'1'` to `'0'`. This achieves **O(1)** extra memory space!\n- **Parent Tracking for Path Reconstruction:** In BFS, maintaining a flat `parent[]` array allows reconstructing the exact shortest route by walking backwards from `target` to `start` in $O(V)$ time."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common graph traversal pitfalls:\n\n- **Late Visited Marking in BFS:** Marking `visited` when popping from queue instead of enqueuing. If a node has degree 10, all 10 neighbors will enqueue it 10 times, causing catastrophic memory spikes.\n- **Forgetting Matrix Boundary Checks:** Accessing `grid[r][c]` without validating `0 <= r < rows` and `0 <= c < cols` leading to OutOfBounds crashes."
+                    },
+                    {
+                        heading: "12. Bipartite Graph Testing (Two-Coloring)",
+                        content: "A graph is **Bipartite** if its vertices can be divided into two independent sets such that no two adjacent vertices belong to the same set. \n\n- **Algorithm:** Use BFS/DFS to color vertices with 2 colors (e.g. 1 and -1). Assign `color[start] = 1`. For each neighbor `v` of `u`:\n  - If `v` is uncolored, set `color[v] = -color[u]`. \n  - If `v` is already colored and `color[v] == color[u]`, the graph contains an Odd Cycle and is **NOT Bipartite**!"
+                    },
+                    {
+                        heading: "13. Connected Components & Topological Foundation",
+                        content: "In an undirected graph, a **Connected Component** is a maximal subgraph in which any two vertices are connected by paths. \n\nTo count total components, iterate `for i in 0..V-1`. If vertex `i` is unvisited, launch a new BFS/DFS and increment `component_count++`. Every node reached during that traversal belongs to the same component."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where BFS and DFS power production engines:\n\n- **Social Networks (LinkedIn / Facebook):** BFS calculates 'Degrees of Connection' (1st-degree, 2nd-degree friends).\n- **Web Crawlers:** Google's web indexer uses BFS to download web pages level by level from seed URLs.\n- **Garbage Collection (Java JVM / V8 JS):** Mark-and-Sweep garbage collectors use DFS from root references to identify and mark reachable heap objects."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "BFS and DFS are tested in over 30% of software engineering interviews.\n\n- **Top Questions:** Number of Islands, Rotting Oranges (Multi-Source BFS), Course Schedule (Cycle Detection), Clone Graph, Word Ladder.\n- **Rule of Thumb:** If asked for 'Shortest Path' in unweighted graph $\\implies$ Use BFS. If asked for 'All Paths' or 'Deep Traversal' $\\implies$ Use DFS."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "BFS explores level-by-level using FIFO queues to guarantee unweighted shortest paths. DFS explores deeply using recursion or LIFO stacks for cycle detection and topological sorting. Protected by Visited Sets, both run in optimal $O(V + E)$ linear time."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why does BFS guarantee the Shortest Path in an unweighted graph while DFS does not?",
+                        options: [
+                            "Because BFS processes vertices in strict non-decreasing order of distance (level-by-level) from the source node.",
+                            "Because BFS uses recursion call stacks.",
+                            "Because BFS runs in O(V) while DFS runs in O(V^2).",
+                            "Because BFS automatically sorts edge weights."
+                        ],
+                        correctIndex: 0,
+                        explanation: "BFS expands in concentric rings level-by-level. Distance 1 nodes are visited before distance 2 nodes, ensuring the first time the target node is reached, it is via the minimum number of edge steps."
+                    },
+                    {
+                        id: "q2",
+                        question: "How can Directed Cycles be detected during a Depth-First Search (DFS)?",
+                        options: [
+                            "By counting the total number of edges.",
+                            "By using 3-Coloring (White, Gray, Black) and detecting a Back-Edge to a Gray node currently on the recursion stack.",
+                            "By checking if the queue size exceeds V.",
+                            "By running binary search on vertex IDs."
+                        ],
+                        correctIndex: 1,
+                        explanation: "During DFS, Gray nodes represent vertices currently on the active recursion stack. If DFS encounters a neighbor that is already Gray, a Back-Edge cycle is proven."
                     }
                 ]
             },
@@ -1437,27 +3369,235 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "dijkstras-algorithm",
                 categorySlug: "algorithms",
                 title: "Dijkstra's Shortest Path",
-                subtitle: "Single-source shortest path for non-negative weighted edge graphs",
+                subtitle: "Single-source shortest path, greedy Min-Heap edge relaxation, non-negative edge constraints, and path reconstruction",
                 difficulty: "Advanced",
-                readTime: "13 min read",
-                summary: "Master greedy priority queue relaxation for shortest weighted graph paths.",
-                overview: "Dijkstra's algorithm finds shortest paths from a single source node to all vertices in non-negative weighted graphs.",
-                keyConcepts: ["Priority Queue (Min-Heap) relaxation", "Edge Relaxation: dist[v] = min(dist[v], dist[u] + weight)", "Non-negative edge weight constraint"],
+                readTime: "40 min read",
+                summary: "A textbook-grade deep dive into Dijkstra's Algorithm. Master single-source shortest paths on weighted graphs, Min-Heap Priority Queue relaxation, proof of non-negative edge constraint, path reconstruction, and comparison against Bellman-Ford and A* search.",
+                overview: "Dijkstra's Algorithm (conceived by Edsger W. Dijkstra in 1956) solves the Single-Source Shortest Path (SSSP) problem for weighted graphs with non-negative edge weights. By combining greedy choice strategy with a Min-Heap Priority Queue, Dijkstra's algorithm iteratively extracts the unvisited vertex with the smallest tentative distance and 'relaxes' its outgoing edges. It operates in optimal O((V + E) log V) time.",
+                keyConcepts: [
+                    "Single-Source Shortest Path (SSSP) formulation",
+                    "Edge Relaxation Equation: if dist[u] + weight < dist[v]: dist[v] = dist[u] + weight",
+                    "Min-Heap Priority Queue Optimization (O((V + E) log V))",
+                    "Strict Non-Negative Edge Weight Constraint",
+                    "Path Reconstruction using Parent Pointers (parent[v] = u)",
+                    "Dijkstra vs Bellman-Ford (Handling Negative Weights) vs A* (Heuristic Search)"
+                ],
                 timeComplexity: { average: "O((V + E) log V)" },
-                spaceComplexity: "O(V)",
+                spaceComplexity: "O(V + E) graph + O(V) distance array & min-heap",
                 sections: [
                     {
-                        heading: "1. Min-Heap Dijkstra Implementation",
-                        content: "Repeatedly extracts the vertex with minimum tentative distance and relaxes its outgoing edges.",
+                        heading: "1. Introduction to Shortest Path Problems",
+                        content: "When driving using GPS navigation (like Google Maps), roads have non-equal travel times (weights). A 10-mile highway route taking 10 minutes is better than a 5-mile city route taking 30 minutes. \n\nStandard BFS treats all edges equally, making it useless for weighted graphs. Edsger Dijkstra invented **Dijkstra's Algorithm** to compute the single-source shortest path across weighted graphs, laying the foundation for modern spatial navigation."
+                    },
+                    {
+                        heading: "2. Core Concept & Edge Relaxation",
+                        content: "Dijkstra maintains a distance array `dist[]` initialized to `infinity`, with `dist[start] = 0`.\n\nThe core mathematical operation is **Edge Relaxation**:\nFor an edge `u -> v` with weight `w`:\n```python\nif dist[u] + w < dist[v]:\n    dist[v] = dist[u] + w\n    parent[v] = u\n```\nIf traveling to `v` via `u` yields a shorter total distance than the current known distance `dist[v]`, we update `dist[v]` with the smaller value."
+                    },
+                    {
+                        heading: "3. The Min-Heap Priority Queue Mechanism",
+                        content: "At each step, Dijkstra greedily selects the unvisited vertex `u` with the smallest `dist[u]`.\n\n- **Naive Array Scan:** Scanning an array of size $V$ to find minimum distance takes $O(V)$ time. Total algorithm runtime = $O(V^2)$.\n- **Min-Heap Priority Queue:** Storing tentative distances in a Min-Heap allows extracting the minimum distance node in **O(log V)** time. Decrementing distances and pushing edges takes $O(E \\log V)$. \nTotal Runtime: **O((V + E) log V)**."
+                    },
+                    {
+                        heading: "4. Step-by-Step Walkthrough",
+                        content: "Trace Dijkstra on a graph with vertices {A, B, C, D}, start = A.\nEdges: A->B (4), A->C (2), C->B (1), B->D (5), C->D (8).\n\n1. `dist = {A:0, B:inf, C:inf, D:inf}`. Push `(0, A)` to Min-Heap.\n2. Pop `(0, A)`. Relax neighbors of A:\n   - B: `0 + 4 = 4 < inf` -> `dist[B] = 4`, Push `(4, B)`\n   - C: `0 + 2 = 2 < inf` -> `dist[C] = 2`, Push `(2, C)`\n3. Pop minimum `(2, C)`. Relax neighbors of C:\n   - B: `2 + 1 = 3 < 4` -> `dist[B] = 3`, Push `(3, B)`\n   - D: `2 + 8 = 10 < inf` -> `dist[D] = 10`, Push `(10, D)`\n4. Pop minimum `(3, B)`. Relax neighbors of B:\n   - D: `3 + 5 = 8 < 10` -> `dist[D] = 8`, Push `(8, D)`\n5. Final Shortest Distances: A:0, C:2, B:3, D:8."
+                    },
+                    {
+                        heading: "5. The Non-Negative Edge Constraint",
+                        content: "Dijkstra's algorithm **FAILS on graphs with negative edge weights.**\n\n*Why?* Dijkstra operates greedily: once a node `u` is popped from the Min-Heap, Dijkstra marks `u` as 'finalized', assuming no shorter path to `u` can ever be discovered. If a negative edge exists later in the graph, it could retroactively reduce the distance to a finalized node, breaking Dijkstra's greedy invariant. \nFor graphs with negative edges, use **Bellman-Ford** ($O(V \\cdot E)$)."
+                    },
+                    {
+                        heading: "6. Path Reconstruction Architecture",
+                        content: "To extract the actual sequence of vertices (not just the numerical cost):\n\nMaintain a `parent[]` array. Whenever edge relaxation succeeds (`dist[u] + w < dist[v]`), assign `parent[v] = u`. \nTo reconstruct the path from `start` to `target`, start at `target` and walk backwards: `curr = parent[curr]` until reaching `start`. Reverse the collected list to obtain the forward route."
+                    },
+                    {
+                        heading: "7. Visualizing Dijkstra Edge Relaxation",
+                        content: "Visualizing Edge Relaxation and Min-Heap popping sequence:",
+                        diagram: `GRAPH WITH WEIGHTED EDGES:
+      (A) --- 4 ---> (B)
+       |              |
+       2              5
+       v              v
+      (C) --- 1 ---> (B) --- 5 ---> (D)
+
+Tentative Distance Updates:
+Pop (0, A) ==> dist[C]=2, dist[B]=4
+Pop (2, C) ==> dist[B] relaxed from 4 to (2+1=3)!
+Pop (3, B) ==> dist[D] relaxed to (3+5=8)!
+Shortest Path to D: A -> C -> B -> D (Cost = 8)`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: Priority Queue Stale Entries",
+                        content: "Standard standard library Min-Heaps (like C++ `std::priority_queue` or Python `heapq`) do not support an efficient `decreaseKey` operation. \n\nWhen edge relaxation finds a shorter path to `v`, we simply push a new pair `(new_dist, v)` into the heap. The old stale pair `(old_dist, v)` remains in the heap. \nWhen the stale pair is eventually popped, we discard it in $O(1)$ time by checking:\n```python\nif d > dist[u]:\n    continue  # Stale entry, ignore!\n```"
+                    },
+                    {
+                        heading: "9. Code Example: Production Dijkstra Implementation",
+                        content: "Below is a complete implementation of Dijkstra with path reconstruction across 4 languages.",
                         codeSnippet: {
-                            title: "Dijkstra Algorithm",
+                            title: "Dijkstra SSSP Implementation",
                             code: {
-                                python: `import heapq\ndef dijkstra(graph, src, n):\n    dist = [float('inf')] * n\n    dist[src] = 0\n    pq = [(0, src)]\n    while pq:\n        d, u = heapq.heappop(pq)\n        if d > dist[u]: continue\n        for v, weight in graph[u]:\n            if dist[u] + weight < dist[v]:\n                dist[v] = dist[u] + weight\n                heapq.heappush(pq, (dist[v], v))\n    return dist`,
-                                java: `import java.util.*;\nint[] dijkstra(List<List<int[]>> graph, int src, int n) {\n    int[] dist = new int[n]; Arrays.fill(dist, Integer.MAX_VALUE);\n    dist[src] = 0;\n    PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));\n    pq.add(new int[]{0, src});\n    while (!pq.isEmpty()) {\n        int[] curr = pq.poll(); int d = curr[0], u = curr[1];\n        if (d > dist[u]) continue;\n        for (int[] edge : graph.get(u)) {\n            int v = edge[0], weight = edge[1];\n            if (dist[u] + weight < dist[v]) {\n                dist[v] = dist[u] + weight; pq.add(new int[]{dist[v], v});\n            }\n        }\n    }\n    return dist;\n}`,
-                                cpp: `#include <queue>\nstd::vector<int> dijkstra(const std::vector<std::vector<std::pair<int, int>>>& graph, int src, int n) {\n    std::vector<int> dist(n, 1e9); dist[src] = 0;\n    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<>> pq;\n    pq.push({0, src});\n    while(!pq.empty()) {\n        auto [d, u] = pq.top(); pq.pop();\n        if (d > dist[u]) continue;\n        for (auto& [v, weight] : graph[u]) {\n            if (dist[u] + weight < dist[v]) {\n                dist[v] = dist[u] + weight; pq.push({dist[v], v});\n            }\n        }\n    }\n    return dist;\n}`,
-                                javascript: `function dijkstra(graph, src, n) {\n  const dist = new Array(n).fill(Infinity);\n  dist[src] = 0;\n  // Min-priority queue simulated array\n  const pq = [[0, src]];\n  while (pq.length > 0) {\n    pq.sort((a, b) => a[0] - b[0]);\n    const [d, u] = pq.shift();\n    if (d > dist[u]) continue;\n    for (const [v, weight] of (graph[u] || [])) {\n      if (dist[u] + weight < dist[v]) {\n        dist[v] = dist[u] + weight;\n        pq.push([dist[v], v]);\n      }\n    }\n  }\n  return dist;\n}`
+                                python: `import heapq
+
+class DijkstraSuite:
+    @staticmethod
+    def dijkstra(graph: dict, src: int, n: int) -> tuple[list[int], list[int]]:
+        """Dijkstra SSSP returning (distances, parents)."""
+        dist = [float('inf')] * n
+        parent = [-1] * n
+        dist[src] = 0
+        pq = [(0, src)] # (distance, node)
+
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d > dist[u]: # Ignore stale entry
+                continue
+            for v, weight in graph.get(u, []):
+                if dist[u] + weight < dist[v]:
+                    dist[v] = dist[u] + weight
+                    parent[v] = u
+                    heapq.heappush(pq, (dist[v], v))
+
+        return dist, parent
+
+    @staticmethod
+    def reconstruct_path(parent: list[int], target: int) -> list[int]:
+        path = []
+        curr = target
+        while curr != -1:
+            path.append(curr)
+            curr = parent[curr]
+        return path[::-1]`,
+                                java: `import java.util.*;
+
+public class DijkstraSuite {
+    public static class Edge {
+        int to, weight;
+        public Edge(int t, int w) { to = t; weight = w; }
+    }
+
+    public static int[] dijkstra(List<List<Edge>> graph, int src, int n) {
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+        pq.add(new int[]{0, src});
+
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int d = curr[0], u = curr[1];
+            if (d > dist[u]) continue;
+            for (Edge edge : graph.get(u)) {
+                if (dist[u] + edge.weight < dist[edge.to]) {
+                    dist[edge.to] = dist[u] + edge.weight;
+                    pq.add(new int[]{dist[edge.to], edge.to});
+                }
+            }
+        }
+        return dist;
+    }
+}`,
+                                cpp: `#include <vector>
+#include <queue>
+#include <limits>
+
+class DijkstraSuite {
+public:
+    struct Edge { int to, weight; };
+    static std::vector<int> dijkstra(const std::vector<std::vector<Edge>>& graph, int src, int n) {
+        std::vector<int> dist(n, std::numeric_limits<int>::max());
+        dist[src] = 0;
+        using Pair = std::pair<int, int>; // (dist, node)
+        std::priority_queue<Pair, std::vector<Pair>, std::greater<Pair>> pq;
+        pq.push({0, src});
+
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (d > dist[u]) continue;
+            for (const auto& edge : graph[u]) {
+                if (dist[u] + edge.weight < dist[edge.to]) {
+                    dist[edge.to] = dist[u] + edge.weight;
+                    pq.push({dist[edge.to], edge.to});
+                }
+            }
+        }
+        return dist;
+    }
+};`,
+                                javascript: `class DijkstraSuite {
+  static dijkstra(graph, src, n) {
+    const dist = new Array(n).fill(Infinity);
+    dist[src] = 0;
+    // Min-Priority Queue simulated via Min-Heap or Array
+    const pq = [[0, src]];
+    while (pq.length > 0) {
+      pq.sort((a, b) => a[0] - b[0]); // Simple min extraction
+      const [d, u] = pq.shift();
+      if (d > dist[u]) continue;
+      for (const edge of (graph[u] || [])) {
+        if (dist[u] + edge.weight < dist[edge.to]) {
+          dist[edge.to] = dist[u] + edge.weight;
+          pq.push([dist[edge.to], edge.to]);
+        }
+      }
+    }
+    return dist;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Key engineering aspects:\n\n- **Stale Entry Guard (`if d > dist[u]: continue`):** Crucial optimization. When multiple paths to `u` are pushed to the heap, older higher-distance entries are skipped in $O(1)$ time upon popping.\n- **Priority Queue Comparator:** Min-Heap ordering ensures that the vertex with the smallest tentative distance is always popped first."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common Dijkstra errors:\n\n- **Applying Dijkstra to Negative Edge Graphs:** Greedy assumption breaks, producing incorrect distances or infinite loops on negative cycles.\n- **Forgetting Stale Entry Validation:** Omitting `if d > dist[u]: continue` causes redundant edge evaluations, degrading performance from $O(E \\log V)$ towards $O(E \\cdot V)$."
+                    },
+                    {
+                        heading: "12. Dijkstra vs Other Shortest Path Algorithms",
+                        content: "Comparing shortest path algorithms:\n\n- **BFS:** $O(V + E)$, Unweighted graphs only.\n- **Dijkstra:** $O((V + E) \\log V)$, Weighted non-negative edges.\n- **Bellman-Ford:** $O(V \\cdot E)$, Handles negative edge weights and detects negative cycles.\n- **Floyd-Warshall:** $O(V^3)$, All-Pairs Shortest Path."
+                    },
+                    {
+                        heading: "13. A* Search Algorithm",
+                        content: "A* Search extends Dijkstra by incorporating a **Heuristic Function $h(v)$** estimating the distance from node $v$ to goal. \nPriority score: $f(v) = g(v) + h(v)$ (where $g(v)$ is Dijkstra's exact distance from start). If $h(v)$ is admissible (never overestimates distance), A* finds the shortest path while exploring far fewer nodes than Dijkstra."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where Dijkstra runs in production:\n\n- **GPS Vehicle Navigation (Google Maps / OpenStreetMap):** Finding optimal driving routes across road networks.\n- **Network Routing Protocols (OSPF & IS-IS):** Open Shortest Path First (OSPF) routers run Dijkstra to build IP routing tables.\n- **Robotics & Path Planning:** Mobile robots navigating 2D grid costmaps."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Top shortest path interview patterns:\n\n- **Questions:** Network Delay Time, Path with Maximum Probability, Minimum Cost to Reach Destination in Time.\n- **Key Signal:** When given a directed weighted graph with positive costs $\\implies$ Dijkstra with Min-Heap."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Dijkstra's algorithm combines greedy min-heap priority extraction with edge relaxation to compute single-source shortest paths in $O((V + E) \\log V)$ time for non-negative weighted graphs."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why does Dijkstra's Algorithm fail on graphs with Negative Edge Weights?",
+                        options: [
+                            "Because negative numbers cause integer overflow in 32-bit registers.",
+                            "Because Dijkstra greedily marks nodes as finalized upon extraction, assuming no future path can reduce their distance; a negative edge violates this assumption.",
+                            "Because Min-Heaps cannot store negative numbers.",
+                            "Because negative edges create undirected cycles."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Dijkstra operates greedily, assuming a popped node's distance is permanently final. A negative edge encountered later could retroactively reduce the distance to a finalized node, breaking Dijkstra's greedy invariant."
+                    },
+                    {
+                        id: "q2",
+                        question: "What is the time complexity of Dijkstra's Algorithm using a Min-Heap Priority Queue on a graph with V vertices and E edges?",
+                        options: [
+                            "O(V^2)",
+                            "O((V + E) log V)",
+                            "O(V * E)",
+                            "O(V + E)"
+                        ],
+                        correctIndex: 1,
+                        explanation: "Extracting the minimum distance node from the Min-Heap takes O(log V) time, and relaxing all E edges takes O(E log V) time, yielding total time complexity O((V + E) log V)."
                     }
                 ]
             },
@@ -1466,27 +3606,227 @@ After Find(4) executes, the tree instantly flattens:
                 slug: "topological-sort",
                 categorySlug: "algorithms",
                 title: "Topological Sort (Kahn's & DFS)",
-                subtitle: "Linear ordering of Directed Acyclic Graph (DAG) dependencies",
+                subtitle: "Linear dependency ordering of Directed Acyclic Graphs (DAGs), Kahn's In-Degree BFS algorithm, DFS post-order stack, and cycle detection",
                 difficulty: "Intermediate",
-                readTime: "11 min read",
-                summary: "Master dependency resolution in DAGs using Kahn's In-Degree algorithm.",
-                overview: "Topological Sort orders vertices in a DAG such that for every directed edge u -> v, u appears before v.",
-                keyConcepts: ["DAG requirement (No Directed Cycles)", "Kahn's Algorithm (In-Degree queue)", "Cycle Detection"],
+                readTime: "40 min read",
+                summary: "Master dependency resolution in Directed Acyclic Graphs (DAGs), Kahn's In-Degree BFS Algorithm, DFS Post-Order Stack Traversal, Directed Cycle Detection, and build system dependency resolution.",
+                overview: "Topological Sorting of a Directed Acyclic Graph (DAG) is a linear ordering of its vertices such that for every directed edge u -> v, vertex u comes before v in the ordering. If a graph contains even a single directed cycle, a valid topological sort is mathematically impossible. Topological sort is the foundation for build automation tools (Make, Bazel, Webpack), course prerequisite scheduling, package managers (npm, pip), and task execution graphs.",
+                keyConcepts: [
+                    "Directed Acyclic Graph (DAG) Requirement",
+                    "Topological Order Definition (u -> v implies u appears before v)",
+                    "Kahn's Algorithm (In-Degree Queue / BFS approach)",
+                    "DFS Post-Order Reverse Stack approach",
+                    "Directed Cycle Detection (If processed nodes count < V in Kahn's)",
+                    "Lexicographically Smallest Topological Sort (Min-Heap Kahn's)"
+                ],
                 timeComplexity: { average: "O(V + E)" },
                 spaceComplexity: "O(V)",
                 sections: [
                     {
-                        heading: "1. Kahn's Algorithm (In-Degree Queue)",
-                        content: "Processes vertices with 0 incoming edges, decrementing neighbor in-degrees.",
+                        heading: "1. Introduction to Dependency Ordering",
+                        content: "Consider compiling a C++ software project with 10 modules. Module C imports Module A. Module D imports Modules B and C. In what order must the compiler build these files?\n\nThis is the **Dependency Resolution Problem**. We model modules as Vertices and import dependencies as Directed Edges ($A \\to C$). A **Topological Sort** arranges these modules into a linear sequence where every dependency is compiled *before* the module that requires it."
+                    },
+                    {
+                        heading: "2. The DAG Requirement & Cycle Impossibility",
+                        content: "A Topological Sort is **ONLY possible if the graph is a Directed Acyclic Graph (DAG)**.\n\n*Proof:* Suppose a graph contains a directed cycle $A \\to B \\to C \\to A$. \nBy definition of topological sort:\n- $A \\to B \\implies A$ must appear before $B$.\n- $B \\to C \\implies B$ must appear before $C$.\n- $C \\to A \\implies C$ must appear before $A$.\n\nThis creates a mathematical contradiction ($A < B < C < A$). Therefore, **no cyclic graph can have a topological ordering.**"
+                    },
+                    {
+                        heading: "3. Kahn's Algorithm (In-Degree Queue / BFS)",
+                        content: "Kahn's Algorithm (1962) computes topological order using vertex **In-Degrees** (number of incoming edges).\n\n1. Calculate `in_degree[v]` for all vertices `v`.\n2. Enqueue all vertices with `in_degree[v] == 0` (nodes with zero prerequisites) into a FIFO Queue.\n3. While queue is not empty:\n   - Dequeue node `u` and append `u` to topological order.\n   - For each outgoing neighbor `v` of `u`, decrement `in_degree[v] -= 1`.\n   - If `in_degree[v] == 0`, enqueue `v`.\n4. If total nodes in topological order == $V$, return order. Else, graph has a **Cycle**!"
+                    },
+                    {
+                        heading: "4. DFS Post-Order Stack Algorithm",
+                        content: "Alternatively, topological sort can be computed using DFS:\n\n1. Run DFS from an unvisited node.\n2. Recursively visit all outgoing neighbors `v` of `u`.\n3. **Post-Order Step:** Once all neighbors of `u` are fully processed, push `u` onto a Stack.\n4. Repeat for all unvisited nodes in graph.\n5. Pop elements from Stack to produce the valid Topological Sort.\n\n*Intuition:* A node `u` is only pushed onto the stack *after* all its dependencies have already been processed and pushed below it."
+                    },
+                    {
+                        heading: "5. Directed Cycle Detection via Kahn's",
+                        content: "Kahn's algorithm doubles as an elegant **Directed Cycle Detector**.\n\nIf a directed graph contains a cycle (e.g. $X \\to Y \\to X$), the in-degrees of $X$ and $Y$ will never drop to 0. Consequently, neither $X$ nor $Y$ will ever be enqueued. \nWhen Kahn's loop finishes, if `topological_list.size() < V`, we know with 100% certainty that the graph contains a Cycle!"
+                    },
+                    {
+                        heading: "6. Lexicographically Smallest Topological Sort",
+                        content: "What if multiple valid topological orders exist, and we want the **lexicographically smallest** sequence?\n\nSimply replace Kahn's standard FIFO Queue with a **Min-Heap Priority Queue**! Whenever multiple 0-in-degree nodes are available, the Min-Heap pops the node with the smallest numerical/alphabetical ID first, guaranteeing the lexicographically smallest valid topological order."
+                    },
+                    {
+                        heading: "7. Visualizing Kahn's Queue & In-Degree Reduction",
+                        content: "Visualizing In-Degree array updates during Kahn's Algorithm:",
+                        diagram: `DAG DEPENDENCY GRAPH:
+  (5) ---> (0) <--- (4)
+   |                 |
+   v                 v
+  (2) ---> (3) ---> (1)
+
+Initial In-Degrees: {0:2, 1:2, 2:1, 3:1, 4:0, 5:0}
+Queue Initial (In-Degree = 0): [4, 5]
+
+Step 1: Pop 4 -> Order: [4]. Decrement neighbors 0 and 1.
+        In-Degrees: {0:1, 1:1, 2:1, 3:1, 4:0, 5:0}
+Step 2: Pop 5 -> Order: [4, 5]. Decrement neighbors 0 and 2.
+        In-Degrees: {0:0, 1:1, 2:0, 3:1}. Enqueue 0 and 2! Queue: [0, 2]
+Step 3: Pop 0 -> Order: [4, 5, 0]
+Step 4: Pop 2 -> Order: [4, 5, 0, 2]. Decrement 3 -> In-Degree[3]=0. Enqueue 3!
+Step 5: Pop 3 -> Order: [4, 5, 0, 2, 3]. Decrement 1 -> Enqueue 1!
+Step 6: Pop 1 -> Final Order: [4, 5, 0, 2, 3, 1]`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: In-Degree Array Prefetching",
+                        content: "Systems performance comparison:\n\n- **Kahn's BFS** uses flat primitive arrays `in_degree[]` and a contiguous queue buffer. Memory access is highly sequential, leveraging CPU L1 cache prefetching.\n- **DFS Stack** relies on recursion call frames or stack object allocations, incurring higher call overhead."
+                    },
+                    {
+                        heading: "9. Code Example: Production Topological Sort Suite",
+                        content: "Below is a complete implementation of Kahn's Algorithm and DFS Topological Sort across 4 languages.",
                         codeSnippet: {
-                            title: "Kahn's Topological Sort",
+                            title: "Topological Sort Suite (Kahn's & DFS)",
                             code: {
-                                python: `from collections import deque\ndef topological_sort(n, edges):\n    in_degree = [0] * n\n    graph = [[] for _ in range(n)]\n    for u, v in edges:\n        graph[u].append(v); in_degree[v] += 1\n    q = deque([i for i in range(n) if in_degree[i] == 0])\n    order = []\n    while q:\n        u = q.popleft(); order.append(u)\n        for v in graph[u]:\n            in_degree[v] -= 1\n            if in_degree[v] == 0: q.append(v)\n    return order if len(order) == n else []`,
-                                java: `import java.util.*;\nList<Integer> topologicalSort(int n, int[][] edges) {\n    int[] inDegree = new int[n];\n    List<List<Integer>> graph = new ArrayList<>();\n    for (int i = 0; i < n; i++) graph.add(new ArrayList<>());\n    for (int[] e : edges) { graph.get(e[0]).add(e[1]); inDegree[e[1]]++; }\n    Queue<Integer> q = new LinkedList<>();\n    for (int i = 0; i < n; i++) if (inDegree[i] == 0) q.add(i);\n    List<Integer> order = new ArrayList<>();\n    while (!q.isEmpty()) {\n        int u = q.poll(); order.add(u);\n        for (int v : graph.get(u)) if (--inDegree[v] == 0) q.add(v);\n    }\n    return order.size() == n ? order : new ArrayList<>();\n}`,
-                                cpp: `#include <vector>\n#include <queue>\nstd::vector<int> topologicalSort(int n, const std::vector<std::pair<int, int>>& edges) {\n    std::vector<int> inDegree(n, 0);\n    std::vector<std::vector<int>> graph(n);\n    for(auto& [u, v] : edges) { graph[u].push_back(v); inDegree[v]++; }\n    std::queue<int> q;\n    for(int i = 0; i < n; i++) if(inDegree[i] == 0) q.push(i);\n    std::vector<int> order;\n    while(!q.empty()) {\n        int u = q.front(); q.pop(); order.push_back(u);\n        for(int v : graph[u]) if(--inDegree[v] == 0) q.push(v);\n    }\n    return order.size() == n ? order : std::vector<int>();\n}`,
-                                javascript: `function topologicalSort(n, edges) {\n  const inDegree = new Array(n).fill(0);\n  const graph = Array.from({ length: n }, () => []);\n  for (const [u, v] of edges) { graph[u].push(v); inDegree[v]++; }\n  const q = [];\n  for (let i = 0; i < n; i++) if (inDegree[i] === 0) q.push(i);\n  const order = [];\n  while (q.length > 0) {\n    const u = q.shift(); order.push(u);\n    for (const v of graph[u]) if (--inDegree[v] === 0) q.push(v);\n  }\n  return order.length === n ? order : [];\n}`
+                                python: `from collections import deque
+
+class TopologicalSortSuite:
+    @staticmethod
+    def kahns_algorithm(n: int, edges: list[list[int]]) -> list[int]:
+        """Kahn's In-Degree BFS Topological Sort with Cycle Detection."""
+        in_degree = [0] * n
+        graph = [[] for _ in range(n)]
+        for u, v in edges:
+            graph[u].append(v)
+            in_degree[v] += 1
+
+        queue = deque([i for i in range(n) if in_degree[i] == 0])
+        order = []
+
+        while queue:
+            u = queue.popleft()
+            order.append(u)
+            for v in graph[u]:
+                in_degree[v] -= 1
+                if in_degree[v] == 0:
+                    queue.append(v)
+
+        return order if len(order) == n else [] # Return empty if cycle detected`,
+                                java: `import java.util.*;
+
+public class TopologicalSortSuite {
+    public static List<Integer> kahnsAlgorithm(int n, int[][] edges) {
+        int[] inDegree = new int[n];
+        List<List<Integer>> graph = new ArrayList<>();
+        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+        for (int[] e : edges) {
+            graph.get(e[0]).add(e[1]);
+            inDegree[e[1]]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        for (int i = 0; i < n; i++) if (inDegree[i] == 0) q.add(i);
+        List<Integer> order = new ArrayList<>();
+        while (!q.isEmpty()) {
+            int u = q.poll();
+            order.add(u);
+            for (int v : graph.get(u)) {
+                if (--inDegree[v] == 0) q.add(v);
+            }
+        }
+        return order.size() == n ? order : new ArrayList<>();
+    }
+}`,
+                                cpp: `#include <vector>
+#include <queue>
+
+class TopologicalSortSuite {
+public:
+    static std::vector<int> kahnsAlgorithm(int n, const std::vector<std::pair<int, int>>& edges) {
+        std::vector<int> inDegree(n, 0);
+        std::vector<std::vector<int>> graph(n);
+        for (const auto& [u, v] : edges) {
+            graph[u].push_back(v);
+            inDegree[v]++;
+        }
+        std::queue<int> q;
+        for (int i = 0; i < n; i++) if (inDegree[i] == 0) q.push(i);
+        std::vector<int> order;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            order.push_back(u);
+            for (int v : graph[u]) {
+                if (--inDegree[v] == 0) q.push(v);
+            }
+        }
+        return order.size() == n ? order : std::vector<int>();
+    }
+};`,
+                                javascript: `class TopologicalSortSuite {
+  static kahnsAlgorithm(n, edges) {
+    const inDegree = new Array(n).fill(0);
+    const graph = Array.from({ length: n }, () => []);
+    for (const [u, v] of edges) {
+      graph[u].push(v);
+      inDegree[v]++;
+    }
+    const q = [];
+    for (let i = 0; i < n; i++) if (inDegree[i] === 0) q.push(i);
+    const order = [];
+    while (q.length > 0) {
+      const u = q.shift();
+      order.push(u);
+      for (const v of graph[u]) {
+        if (--inDegree[v] === 0) q.push(v);
+      }
+    }
+    return order.length === n ? order : [];
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Reviewing Kahn's code logic:\n\n- **In-Degree Initialization:** We iterate through all edges `u -> v` and increment `in_degree[v]++`.\n- **Cycle Validation (`len(order) == n`):** If the output array contains fewer than $N$ vertices, some vertices remained trapped in a directed cycle with in-degree $> 0$, returning an empty array to signal failure."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common topological sort bugs:\n\n- **Running on Undirected Graphs:** In-degree concepts fail on undirected edges because every edge increments in-degrees of both endpoints.\n- **Ignoring Cycle Return Value:** Failing to check `len(order) == N` when graph might contain cyclic dependencies."
+                    },
+                    {
+                        heading: "12. Parallel Task Scheduling",
+                        content: "Kahn's algorithm unlocks **Parallel Execution Scheduling**.\n\nAll vertices present in the 0-in-degree queue at the exact same iteration step have zero remaining dependencies relative to each other. A multi-threaded build system (like Make `-j8`) can execute all nodes in the queue simultaneously across CPU worker threads!"
+                    },
+                    {
+                        heading: "13. Shortest Paths on DAGs in O(V + E) Time",
+                        content: "For general weighted graphs, Dijkstra takes $O((V + E) \\log V)$ time. \nHowever, for **DAGs**, we can find Single-Source Shortest Paths in strictly **O(V + E) linear time**! \nSimply process vertices in Topological Order and relax outgoing edges. Because nodes are processed in topological sequence, when node `u` is evaluated, its shortest distance `dist[u]` is already permanently finalized."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where Topological Sort powers infrastructure:\n\n- **Build Automation Tools (Bazel, CMake, Make, Webpack):** Ordering source file compilation tasks.\n- **Package Managers (npm, pip, Cargo):** Resolving package dependency installation trees.\n- **Data Pipeline Orchestrators (Apache Airflow, Luigi):** Executing Directed Acyclic Graphs of ETL data jobs."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Top topological sort interview patterns:\n\n- **Questions:** Course Schedule I & II, Alien Dictionary, Minimum Height Trees, Sequence Reconstruction.\n- **Key Signal:** Keywords like 'Prerequisites', 'Dependencies', 'Order of tasks' $\\implies$ Topological Sort!"
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Topological Sort orders vertices in DAGs such that all directed edge dependencies are satisfied in $O(V + E)$ linear time. Kahn's In-Degree BFS provides cycle detection and parallel task execution, while DFS post-order stack ordering provides concise recursive traversal."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "Why is a Topological Sort impossible on a graph containing a Directed Cycle?",
+                        options: [
+                            "Because cycles require O(V^2) memory space.",
+                            "Because a cycle creates a circular dependency paradox (A must come before B, B before C, and C before A).",
+                            "Because In-Degrees cannot be calculated for cyclic nodes.",
+                            "Because DFS cannot traverse cyclic graphs."
+                        ],
+                        correctIndex: 1,
+                        explanation: "A cycle A -> B -> C -> A enforces the ordering constraint A < B < C < A, which is a mathematical impossibility in any linear sequence."
+                    },
+                    {
+                        id: "q2",
+                        question: "How does Kahn's Algorithm detect if a directed graph contains a Cycle?",
+                        options: [
+                            "By checking if any vertex has an out-degree of 0.",
+                            "By comparing the total number of popped vertices against V; if fewer than V vertices were popped, a cycle exists.",
+                            "By running binary search on the adjacency list.",
+                            "By using a Min-Heap priority queue."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Vertices inside a directed cycle will never have their in-degree drop to 0. Thus, they are never enqueued, causing Kahn's output list length to be strictly less than V."
                     }
                 ]
             },
@@ -1497,25 +3837,264 @@ After Find(4) executes, the tree instantly flattens:
                 title: "Bit Manipulation",
                 subtitle: "Low-level bitwise operations, masks, and Brian Kernighan's trick",
                 difficulty: "Intermediate",
-                readTime: "9 min read",
-                summary: "Master AND, OR, XOR, shifts, mask clearance, and bit tricks.",
-                overview: "Bit manipulation executes binary arithmetic operations directly on integer bit patterns with zero memory overhead.",
-                keyConcepts: ["Clear lowest set bit: n & (n - 1)", "XOR property: a ^ a = 0, a ^ 0 = a", "Bitmask flag tracking"],
-                timeComplexity: { average: "O(1)" },
+                readTime: "45 min read",
+                summary: "A textbook-grade deep dive into Bit Manipulation. Master bitwise operators (AND, OR, XOR, NOT, Left/Right Shifts), two's complement binary representation, Brian Kernighan's bit clearing trick, bitmask subset state tracking, XOR properties, and high-performance system register tricks.",
+                overview: "Bit Manipulation operates directly on the raw binary digits (bits) of integers at the silicon hardware level. By bypassing high-level arithmetic abstraction and utilizing CPU Arithmetic Logic Unit (ALU) bitwise instructions (AND, OR, XOR, NOT, Bit-Shifts), bit manipulation achieves blazing fast O(1) operations with zero memory allocation. Mastering bitwise masks, bit clearing tricks, XOR mathematical identities, and bitmask state representation is essential for system software, graphics, embedded systems, and competitive programming.",
+                keyConcepts: [
+                    "Bitwise Operators: AND (&), OR (|), XOR (^), NOT (~), Left Shift (<<), Right Shift (>>)",
+                    "Two's Complement Binary Signed Integer Representation",
+                    "Brian Kernighan's Bit Trick: n & (n - 1) clears the lowest set bit",
+                    "Isolating Lowest Set Bit: n & (-n)",
+                    "XOR Properties: a ^ a = 0, a ^ 0 = a (Single Number Problem)",
+                    "Bitmask Subset Representation (32-bit integer as a set of up to 32 elements)"
+                ],
+                timeComplexity: { best: "O(1)", average: "O(1)", worst: "O(1)" },
                 spaceComplexity: "O(1)",
                 sections: [
                     {
-                        heading: "1. Kernighan Bit Count Trick",
-                        content: "Clears the rightmost set 1-bit in constant execution rounds equal to set bit count.",
+                        heading: "1. Introduction to Bit Manipulation",
+                        content: "At the lowest hardware layer of digital computers, data is not stored as decimal numbers or strings; it exists purely as low and high electrical voltages representing binary bits (`0` and `1`). \n\nHigh-level programming abstractions (like floating-point math or object structures) consume multiple CPU cycles. **Bit Manipulation** bypasses abstraction, executing mathematical logic directly on 32-bit or 64-bit CPU registers using hardware bitwise instructions in a **single clock cycle**."
+                    },
+                    {
+                        heading: "2. Two's Complement Representation",
+                        content: "How do computers store negative integers in binary?\n\nModern CPUs use **Two's Complement** representation for signed integers:\n1. To negate a number `-N`, take the bitwise NOT (`~N`) of its positive representation.\n2. Add `1` to the result: `-N = ~N + 1`.\n\n*Example (8-bit signed):*\n`+5 = 00000101_2`\n`~5 = 11111010_2`\n`-5 = 11111010 + 1 = 11111011_2`.\n\nThe most significant bit (MSB) acts as the **Sign Bit** (`0` = Positive, `1` = Negative)."
+                    },
+                    {
+                        heading: "3. The 6 Fundamental Bitwise Operators",
+                        content: "Understanding core bitwise operators:\n\n1. **AND (`&`):** Output bit is `1` ONLY if both input bits are `1`. (Used for *Masking / Checking* bits).\n2. **OR (`|`):** Output bit is `1` if either input bit is `1`. (Used for *Setting / Enabling* bits).\n3. **XOR (`^`):** Output bit is `1` if input bits *differ*. (Used for *Toggling / Flipping* bits).\n4. **NOT (`~`):** Flips all bits (`0 -> 1`, `1 -> 0`).\n5. **Left Shift (`<<`):** Shifts bits left by $k$ positions, filling with `0`s. (Equivalent to multiplying by $2^k$).\n6. **Right Shift (`>>`):** Shifts bits right by $k$ positions. (Equivalent to dividing by $2^k$)."
+                    },
+                    {
+                        heading: "4. Core Bit Manipulation Recipes",
+                        content: "Essential 1-line bit recipes:\n\n- **Get $i$-th bit:** `(n >> i) & 1` (Returns 0 or 1).\n- **Set $i$-th bit:** `n |= (1 << i)` (Forces $i$-th bit to 1).\n- **Clear $i$-th bit:** `n &= ~(1 << i)` (Forces $i$-th bit to 0).\n- **Toggle $i$-th bit:** `n ^= (1 << i)` (Flips $i$-th bit)."
+                    },
+                    {
+                        heading: "5. Brian Kernighan's Bit Trick",
+                        content: "How do you count the total number of set `1`-bits in an integer?\n\n- Naive approach: Shift `n` right 32 times, checking `n & 1` -> Always 32 iterations.\n- **Brian Kernighan's Trick:** `n &= (n - 1)`\n\n*Mechanism:* Subtracting 1 from `n` flips all bits up to the lowest set 1-bit. Performing `n & (n - 1)` clears that lowest set bit to 0. \nBy calling `n &= (n - 1)` in a loop, the loop runs **ONLY as many times as there are set 1-bits**, running in $O(K)$ time (where $K$ is the set bit count)!"
+                    },
+                    {
+                        heading: "6. Power of Two & Lowest Set Bit Isolator",
+                        content: "Two famous bit mathematical identities:\n\n1. **Check if $N$ is a Power of 2:** \n   A power of 2 in binary has exactly one set bit (e.g. `8 = 1000_2`). Subtracting 1 yields `7 = 0111_2`. Performing `8 & 7 = 1000 & 0111 = 0000`. \n   Formula: `(n > 0) && ((n & (n - 1)) == 0)`.\n2. **Isolate Lowest Set Bit:** \n   Formula: `n & (-n)`. (e.g. `12 = 1100_2`, `-12 = 0100_2`, `12 & -12 = 0100_2 = 4`)."
+                    },
+                    {
+                        heading: "7. Visualizing Bitwise Operations",
+                        content: "Visualizing Kernighan's Trick and Bit Isolator:",
+                        diagram: `KERNIGHAN'S TRICK: n & (n - 1)
+n     = 12 (1100_2)
+n - 1 = 11 (1011_2)
+-------------------
+n & (n - 1) = 8 (1000_2)  <-- Lowest set bit cleared!
+
+ISOLATE LOWEST SET BIT: n & (-n)
+n     = 12  (0000 1100_2)
+-n    = -12 (1111 0100_2)  (Two's complement)
+-------------------
+n & (-n)    = 4 (0000 0100_2) <-- Isolated lowest bit!`
+                    },
+                    {
+                        heading: "8. Hardware Perspective: CPU ALU Execution",
+                        content: "Why are bitwise operations blazingly fast?\n\nBitwise instructions (`AND`, `OR`, `XOR`, `SHL`, `SHR`) are executed directly by logic gates in the CPU Arithmetic Logic Unit (ALU). They require **1 clock cycle** and consume zero RAM memory bandwidth."
+                    },
+                    {
+                        heading: "9. Code Example: Production Bit Manipulation Suite",
+                        content: "Below is a complete implementation of Bit Counting, Power of Two, Single Number XOR, and Bitmask Subset Generator across 4 languages.",
                         codeSnippet: {
-                            title: "Brian Kernighan Set Bit Count",
+                            title: "Bit Manipulation Suite",
                             code: {
-                                python: `def count_set_bits(n):\n    count = 0\n    while n:\n        n &= (n - 1) # Clears rightmost set bit\n        count += 1\n    return count`,
-                                java: `int countSetBits(int n) {\n    int count = 0;\n    while (n != 0) {\n        n &= (n - 1);\n        count++;\n    }\n    return count;\n}`,
-                                cpp: `int countSetBits(int n) {\n    int count = 0;\n    while (n) {\n        n &= (n - 1);\n        count++;\n    }\n    return count;\n}`,
-                                javascript: `function countSetBits(n) {\n  let count = 0;\n  while (n > 0) {\n    n &= (n - 1);\n    count++;\n  }\n  return count;\n}`
+                                python: `class BitSuite:
+    @staticmethod
+    def count_set_bits(n: int) -> int:
+        """Brian Kernighan's O(K) set bit counter."""
+        count = 0
+        while n > 0:
+            n &= (n - 1)
+            count += 1
+        return count
+
+    @staticmethod
+    def is_power_of_two(n: int) -> bool:
+        """O(1) check if n is a power of 2."""
+        return n > 0 and (n & (n - 1)) == 0
+
+    @staticmethod
+    def single_number(nums: list[int]) -> int:
+        """Finds non-duplicate number using XOR cancellation."""
+        xor_sum = 0
+        for num in nums:
+            xor_sum ^= num
+        return xor_sum
+
+    @staticmethod
+    def generate_subsets(nums: list[int]) -> list[list[int]]:
+        """Generates all 2^N subsets using bitmask iteration."""
+        n = len(nums)
+        subsets = []
+        for mask in range(1 << n): # 0 to 2^n - 1
+            subset = []
+            for i in range(n):
+                if (mask >> i) & 1:
+                    subset.append(nums[i])
+            subsets.append(subset)
+        return subsets`,
+                                java: `import java.util.*;
+
+public class BitSuite {
+    public static int countSetBits(int n) {
+        int count = 0;
+        while (n != 0) {
+            n &= (n - 1);
+            count++;
+        }
+        return count;
+    }
+
+    public static boolean isPowerOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0;
+    }
+
+    public static int singleNumber(int[] nums) {
+        int xor = 0;
+        for (int num : nums) xor ^= num;
+        return xor;
+    }
+
+    public static List<List<Integer>> generateSubsets(int[] nums) {
+        int n = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        for (int mask = 0; mask < (1 << n); mask++) {
+            List<Integer> subset = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                if (((mask >> i) & 1) == 1) subset.add(nums[i]);
+            }
+            res.add(subset);
+        }
+        return res;
+    }
+}`,
+                                cpp: `#include <vector>
+
+class BitSuite {
+public:
+    static int countSetBits(int n) {
+        int count = 0;
+        while (n != 0) {
+            n &= (n - 1);
+            count++;
+        }
+        return count;
+    }
+
+    static bool isPowerOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0;
+    }
+
+    static int singleNumber(const std::vector<int>& nums) {
+        int xorSum = 0;
+        for (int num : nums) xorSum ^= num;
+        return xorSum;
+    }
+
+    static std::vector<std::vector<int>> generateSubsets(const std::vector<int>& nums) {
+        int n = static_cast<int>(nums.size());
+        std::vector<std::vector<int>> res;
+        for (int mask = 0; mask < (1 << n); mask++) {
+            std::vector<int> subset;
+            for (int i = 0; i < n; i++) {
+                if ((mask >> i) & 1) subset.push_back(nums[i]);
+            }
+            res.push_back(subset);
+        }
+        return res;
+    }
+};`,
+                                javascript: `class BitSuite {
+  static countSetBits(n) {
+    let count = 0;
+    while (n > 0) {
+      n &= (n - 1);
+      count++;
+    }
+    return count;
+  }
+
+  static isPowerOfTwo(n) {
+    return n > 0 && (n & (n - 1)) === 0;
+  }
+
+  static singleNumber(nums) {
+    let xor = 0;
+    for (const num of nums) xor ^= num;
+    return xor;
+  }
+
+  static generateSubsets(nums) {
+    const n = nums.length;
+    const res = [];
+    for (let mask = 0; mask < (1 << n); mask++) {
+      const subset = [];
+      for (let i = 0; i < n; i++) {
+        if ((mask >> i) & 1) subset.push(nums[i]);
+      }
+      res.push(subset);
+    }
+    return res;
+  }
+}`
                             }
                         }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Reviewing bit manipulation specifics:\n\n- **XOR Cancellation (`singleNumber`):** XORing a number with itself cancels it out (`A ^ A = 0`) and `A ^ 0 = A`. In an array where every number appears twice except one, XORing all elements cancels all pairs, leaving only the single non-duplicate number in $O(N)$ time and $O(1)$ space!\n- **Bitmask Subset Generation (`generateSubsets`):** A set of size $N$ has $2^N$ subsets. We iterate integer `mask` from `0` to `2^N - 1`. The $i$-th bit of `mask` determines whether `nums[i]` is included in that subset."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common bit manipulation bugs:\n\n- **Operator Precedence:** Bitwise operators (`&`, `|`, `^`) have LOWER operator precedence than comparison operators (`==`, `<`) in C, C++, and Java! \n  *Bug:* `if (n & 1 == 0)` evaluates as `n & (1 == 0)` $\\implies$ `n & 0` $\\implies$ ALWAYS `0`! \n  *Fix:* Always wrap bitwise expressions in parentheses: `if ((n & 1) == 0)`.\n- **32-Bit Shift Overflow:** Writing `1 << 35` in C/Java causes 32-bit integer overflow. Use 64-bit literal `1L << 35`."
+                    },
+                    {
+                        heading: "12. Bitmask State Representation",
+                        content: "Using integers as compact sets (Bitmasks):\n\n- Represent a set of up to 32 items using a single `uint32`.\n- Add element `i`: `mask |= (1 << i)`\n- Remove element `i`: `mask &= ~(1 << i)`\n- Check element `i`: `(mask >> i) & 1`\n- Toggle element `i`: `mask ^= (1 << i)`\n- Union of sets A and B: `A | B`\n- Intersection of sets A and B: `A & B`"
+                    },
+                    {
+                        heading: "13. Fast Submask Iteration",
+                        content: "How do you iterate through all submasks of a given bitmask `M` in $O(3^N)$ total time?\n\n```cpp\nfor (int sub = M; sub > 0; sub = (sub - 1) & M) {\n    // Process submask 'sub' of mask 'M'\n}\n```\nThis bit trick decrements `sub` and masks it with `M`, jumping directly to the next valid submask in $O(1)$ time per step."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where Bit Manipulation runs in industry software:\n\n- **Linux File Permissions (`chmod`):** Read (4 = `100_2`), Write (2 = `010_2`), Execute (1 = `001_2`). `chmod 755` sets bitmasks for Owner, Group, and Others.\n- **Network IP Subnet Masks:** IPv4 addresses use 32-bit subnet masks (`255.255.255.0` = `0xFFFFFF00`) to isolate network IDs from host IDs.\n- **Graphics RGBA Pixel Encoding:** Storing Red, Green, Blue, Alpha color channels as a single 32-bit integer (`(R << 24) | (G << 16) | (B << 8) | A`)."
+                    },
+                    {
+                        heading: "15. Interview Perspective",
+                        content: "Top bit manipulation questions:\n\n- **Questions:** Single Number I & II, Number of 1 Bits, Reverse Bits, Bitwise AND of Numbers Range, Subsets.\n- **Pro-Tip:** Remember `n & (n - 1)` clears lowest bit, `n & (-n)` isolates lowest bit, and wrap all bitwise expressions in `(...)`."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Bit Manipulation operates directly on CPU registers using hardware bitwise logic gates. Kernighan's `n & (n - 1)` trick, XOR cancellation, and 32-bit bitmask state tracking enable $O(1)$ constant-time execution with zero memory overhead."
+                    }
+                ],
+                quiz: [
+                    {
+                        id: "q1",
+                        question: "What does Brian Kernighan's bitwise expression `n & (n - 1)` accomplish?",
+                        options: [
+                            "It multiplies n by 2.",
+                            "It clears the lowest set 1-bit in n to 0.",
+                            "It reverses the binary digits of n.",
+                            "It isolates the highest set bit."
+                        ],
+                        correctIndex: 1,
+                        explanation: "Subtracting 1 from n flips all bits up to the lowest set 1-bit. Performing n & (n - 1) clears that lowest 1-bit to 0, running in O(K) iterations where K is the set bit count."
+                    },
+                    {
+                        id: "q2",
+                        question: "Why does `if (n & 1 == 0)` fail to check if n is even in C++ / Java?",
+                        options: [
+                            "Because bitwise AND does not work on even numbers.",
+                            "Because comparison operator `==` has higher operator precedence than bitwise AND `&`, evaluating as `n & (1 == 0)` which is always 0. Must use `((n & 1) == 0)`.",
+                            "Because 1 is an odd number.",
+                            "Because integer division is required."
+                        ],
+                        correctIndex: 1,
+                        explanation: "In C, C++, and Java, `==` has higher precedence than `&`. `n & 1 == 0` is evaluated as `n & (1 == 0)` => `n & 0` => `0`. Parentheses `((n & 1) == 0)` are mandatory."
                     }
                 ]
             }
