@@ -12,6 +12,7 @@ import { isCodeAnalysisPath, isCodeIdePath, isCodeJudgePath, isForumPath, isLear
 import { getProblems } from '../../app/lib/api/api';
 import { supabase } from '../../app/lib/api/supabase/client';
 import DailyProblemModal from './DailyProblemModal';
+import TitleBar from './TitleBar';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const { 
@@ -303,16 +304,19 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         : "bg-background";
 
     return (
-        <main className={`flex flex-col transition-colors duration-500 ${isSingleScreenPage ? "h-screen overflow-hidden" : "min-h-screen"} ${mainBgClass}`}>
-            {!isNavExcluded && (
-                <NavComponent
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                    setIsSubmissionsModalOpen={setIsSubmissionsModalOpen}
-                    onOpenSettings={() => setIsSettingsModalOpen(true)}
-                />
-            )}
-            <div className="flex-1 min-h-0 flex flex-col">
+        <main className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${mainBgClass}`}>
+            <div className="shrink-0 z-[100] relative">
+                <TitleBar />
+                {!isNavExcluded && (
+                    <NavComponent
+                        isSidebarOpen={isSidebarOpen}
+                        setIsSidebarOpen={setIsSidebarOpen}
+                        setIsSubmissionsModalOpen={setIsSubmissionsModalOpen}
+                        onOpenSettings={() => setIsSettingsModalOpen(true)}
+                    />
+                )}
+            </div>
+            <div className="flex-1 min-h-0 overflow-y-auto flex flex-col relative">
                 {children}
             </div>
             <SubmissionsModal

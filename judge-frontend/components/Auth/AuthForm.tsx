@@ -241,13 +241,78 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     setMessage("Password reset email sent.");
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.electronAPI?.onOAuthCallback) {
+      window.electronAPI.onOAuthCallback(async (url: string) => {
+        try {
+          const hashIndex = url.indexOf("#");
+          const queryIndex = url.indexOf("?");
+          const paramString =
+            hashIndex !== -1
+              ? url.substring(hashIndex + 1)
+              : queryIndex !== -1
+              ? url.substring(queryIndex + 1)
+              : "";
+          const params = new URLSearchParams(paramString);
+
+          const accessToken = params.get("access_token");
+          const refreshToken = params.get("refresh_token");
+
+          if (accessToken && refreshToken) {
+            const { error: sessionErr } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+
+            if (!sessionErr) {
+              router.replace(nextPath);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to restore desktop session:", err);
+        }
+      });
+    }
+  }, [nextPath, router]);
+
   const handleGoogleLogin = async () => {
     setError(null);
     try {
+      const isElectron =
+        typeof window !== "undefined" &&
+        (window.electronAPI !== undefined || navigator.userAgent.toLowerCase().includes("electron"));
+
+      const redirectTarget = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
+
+      if (isElectron) {
+        const { data, error: oauthErr } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: redirectTarget,
+            skipBrowserRedirect: true,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            },
+          }
+        });
+
+        if (oauthErr) throw oauthErr;
+
+        if (data?.url) {
+          if (window.electronAPI?.openExternal) {
+            window.electronAPI.openExternal(data.url);
+          } else {
+            window.open(data.url, '_blank');
+          }
+        }
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: typeof window !== "undefined" ? `${window.location.origin}/` : undefined,
+          redirectTo: redirectTarget,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',

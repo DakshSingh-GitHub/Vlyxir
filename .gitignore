@@ -7,3 +7,11 @@ __pycache__/
 .next/
 node_modules/
 test_supabase.mjs
+judge-frontend/dist
+judge-frontend/main.js
+judge-frontend/preload.js
+judge-frontend/*.log
+judge-frontend/frontend.log
+judge-frontend/out
+judge-frontend/.next
+judge-frontend/node_modules

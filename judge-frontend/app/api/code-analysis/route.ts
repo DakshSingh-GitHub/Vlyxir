@@ -4,6 +4,8 @@ import { analyzeCodeWithGemini } from "@/app/lib/api/gemini";
 import { createClient } from "@supabase/supabase-js";
 import { AIProvider } from "@/app/lib/api/ai-types";
 
+export const dynamic = "force-static";
+
 export async function POST(request: Request) {
     try {
         // Extract Authorization header

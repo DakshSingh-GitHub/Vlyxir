@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     root: dirname,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

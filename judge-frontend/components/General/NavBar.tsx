@@ -79,7 +79,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="sticky top-0 z-50 shrink-0 border-b border-white/5 bg-white/70 px-4 py-3 opacity-0 backdrop-blur-2xl transition-all duration-300 dark:border-gray-800/40 dark:bg-[#0B0C15]/80 md:px-8 md:py-4"
+            className="relative z-50 shrink-0 border-b border-white/5 bg-white/70 px-4 py-3 opacity-0 backdrop-blur-2xl transition-all duration-300 dark:border-gray-800/40 dark:bg-[#0B0C15]/80 md:px-8 md:py-4"
         >
             <div className="mx-auto flex max-w-450 items-center justify-between px-0 md:px-10">
                 <div

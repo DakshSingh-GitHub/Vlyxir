@@ -105,7 +105,7 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="sticky top-0 z-50 shrink-0 px-3 pt-4 pb-2 opacity-0 md:px-6 md:pt-6 md:pb-4"
+            className="relative z-50 shrink-0 px-3 pt-3 pb-2 opacity-0 md:px-6 md:pt-4 md:pb-3"
         >
             <div className="mx-auto flex max-w-400 justify-center">
                 <div className={`relative w-[92vw] max-w-[92vw] rounded-full px-5 py-3.5 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${isDark

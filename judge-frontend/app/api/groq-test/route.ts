@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { analyzeCodeWithGroq } from "@/app/lib/api/groq";
 
+export const dynamic = "force-static";
+
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
