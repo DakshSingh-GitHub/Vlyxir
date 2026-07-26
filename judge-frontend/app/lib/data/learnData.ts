@@ -1219,6 +1219,1897 @@ After Find(4) executes, the tree instantly flattens:
                     { id: "q1", question: "What happens if you do NOT implement 'Path Compression' and 'Union by Rank' in DSU?", options: ["The Find operation remains O(1) but Union degrades to O(N).", "The algorithm stops functioning and returns incorrect roots.", "The inverted trees can degrade into linear linked lists, causing both Find and Union to plummet to O(N) worst-case time.", "Memory usage skyrockets from O(N) to O(N^2)."], correctIndex: 2, explanation: "Without heuristics, merging tall trees onto short trees creates massive linear chains. Find(x) must traverse the entire chain taking O(N) time." },
                     { id: "q2", question: "How does DSU detect a Cycle in a Graph?", options: ["By tracking a 'visited' Hash Set during tree traversal.", "If you attempt to Union(u, v) and Find(u) == Find(v), it means they are already in the same set. Adding the edge (u, v) creates a Cycle.", "By checking if the total Rank of the root exceeds the number of nodes.", "By running BFS and checking for cross-edges."], correctIndex: 1, explanation: "If two nodes share the same root, a path already exists between them. Adding a direct edge between them forms a closed loop (a Cycle)." }
                 ]
+            },
+            {
+                id: "ds-skip-lists",
+                slug: "skip-lists",
+                categorySlug: "data-structures",
+                title: "Skip Lists",
+                subtitle: "Probabilistic multi-level pointer towers, O(log N) search without tree rotations, and Redis ZSET engine",
+                difficulty: "Advanced",
+                readTime: "35 min read",
+                summary: "Master Skip Lists, a probabilistic alternative to self-balancing binary search trees. Understand multi-level forward pointer towers, coin-flip height distribution, lock-free concurrent SkipLists, and Redis sorted set engines.",
+                overview: "A Skip List is a probabilistic data structure that allows O(log N) search, insertion, and deletion within a sorted sequence of elements. Invented by William Pugh in 1989, Skip Lists achieve the performance guarantees of self-balancing binary search trees (like AVL or Red-Black trees) without requiring complex structural rotations. Instead of maintaining rigid tree balance invariants, Skip Lists build multi-level linked towers of pointers where higher levels act as fast 'express lanes', skipping over large blocks of nodes.",
+                keyConcepts: [
+                    "Multi-Level Linked Nodes and Forward Pointer Towers",
+                    "Probabilistic Coin-Flip Height Generation: P(height = h) = p^h",
+                    "Express Lanes vs Local Lanes for O(log N) Search Space Halving",
+                    "Lock-Free Concurrent Access via CAS Pointer Rewiring",
+                    "Memory Efficiency: Average 1/(1-p) Pointers per Node",
+                    "Production Use: Redis Sorted Sets (ZSET) & RocksDB MemTables"
+                ],
+                timeComplexity: { access: "O(log n) avg / O(n) worst", search: "O(log n) avg / O(n) worst", insertion: "O(log n) avg / O(n) worst", deletion: "O(log n) avg / O(n) worst" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. Introduction to Skip Lists",
+                        content: "Sorted Linked Lists provide O(1) dynamic insertions if a node reference is held, but searching for a node requires O(N) linear traversal because you cannot perform Binary Search on pointer chains. Self-Balancing Binary Search Trees (like Red-Black Trees) solve search latency by maintaining $O(\\log N)$ height through complex node rotations. \n\nSkip Lists were invented as a simpler, elegant alternative to balanced trees. By adding sparse 'express lane' pointer levels above a standard sorted linked list, we can skip over large chunks of elements during traversal. Instead of using deterministic rebalancing algorithms, Skip Lists use randomized coin flips to determine node height, achieving expected $O(\\log N)$ time for all search, insert, and delete operations."
+                    },
+                    {
+                        heading: "2. Core Concept & Multi-Level Intuition",
+                        content: "Imagine a subway system. A local subway line stops at every single station (Level 0). An express subway line stops only at major transfer stations every 4 blocks (Level 1). A super-express line stops only at major city hubs every 16 blocks (Level 2). \n\nTo reach Station 42 from Station 1: \n1. Board the Super-Express at Level 2 and jump to Station 32 in 2 stops. \n2. Switch to the Express at Level 1 and jump to Station 40 in 2 stops. \n3. Switch to the Local line at Level 0 and walk to Station 42 in 2 steps. \n\nBy searching top-down from the highest express level to Level 0, we exponentially reduce the search space at each level, achieving logarithmic $O(\\log N)$ performance."
+                    },
+                    {
+                        heading: "3. Internal Working & Coin-Flip Probability",
+                        content: "How do we decide how many pointer levels a node should have? \n\nWhen inserting a new node, we flip a fair coin (probability $p = 0.5$, or $p = 0.25$). If it lands Heads, the node gets a height of 2. We flip again; if Heads, height becomes 3. We repeat this until the coin lands Tails or we hit `MAX_LEVEL` (typically 16 or 32). \n\nMathematically: \n- $100\\%$ of nodes exist at Level 0. \n- $50\\%$ of nodes reach Level 1. \n- $25\\%$ of nodes reach Level 2. \n- $1/2^k$ of nodes reach Level $k$. \n\nThis geometric probability distribution ensures that higher levels naturally contain exponentially fewer nodes, creating a ideal express highway structure without requiring explicit tree rebalancing."
+                    },
+                    {
+                        heading: "4. Step-by-Step Walkthrough: Search & Insertion",
+                        content: "Let us trace searching for key `25` in a Skip List. \n\nStep 1: Start at the top level of the `Head` sentinel node. \nStep 2: Compare `target (25)` with `curr.next.key`. If `curr.next.key < 25`, traverse right (`curr = curr.next`). \nStep 3: If `curr.next.key > 25` (or `null`), we cannot move right without overshooting. Move down one level (`curr = curr.down`). \nStep 4: Repeat moving right while key is smaller, and moving down when key is larger, until reaching Level 0. \nStep 5: At Level 0, if `curr.next.key == 25`, the key is found. \n\nFor **Insertion**: During search, we keep an `update[]` array tracking the rightmost node visited at each level. After generating a random height $h$ for the new node, we insert it at levels $0 \\dots h-1$ by updating forward pointers: `newNode.next[i] = update[i].next[i]` and `update[i].next[i] = newNode`."
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Let us visualize a Skip List containing keys [3, 6, 7, 9, 12, 17, 19, 21, 25, 26].",
+                        diagram: `Level 3: [HEAD] ------------------------------> [12] --------------------------> NULL
+           |                                     |
+Level 2: [HEAD] ----------> [6] --------------> [12] --------------> [25] ------> NULL
+           |                 |                   |                    |
+Level 1: [HEAD] -> [3] ----> [6] ------> [9] -> [12] ------> [19] -> [25] ------> NULL
+           |        |        |           |       |            |       |
+Level 0: [HEAD] -> [3] -> [6] -> [7] -> [9] -> [12] -> [17] -> [19] -> [21] -> [25] -> [26] -> NULL
+
+Search Path for 19:
+1. Start Head Level 3 -> Move to Node 12 (12 < 19)
+2. From Node 12 Level 3 -> Next is NULL (overshoot) -> Drop to Level 2
+3. From Node 12 Level 2 -> Next is 25 (25 > 19) -> Drop to Level 1
+4. From Node 12 Level 1 -> Next is 19 (MATCH!) -> Found in 4 steps.`
+                    },
+                    {
+                        heading: "6. Hardware Perspective: Concurrency & Lock-Free Design",
+                        content: "Why do production systems like Redis and RocksDB use Skip Lists instead of Red-Black Trees? \n\n**Lock-Free Concurrency:** Rebalancing a Red-Black tree during insertion can trigger cascading rotations near the root, requiring lock write-exclusive locks on huge subtrees. In contrast, inserting into a Skip List only modifies local forward pointers (`update[i].next`). Using Compare-And-Swap (CAS) atomic operations, concurrent threads can insert and delete nodes in parallel without coarse-grained locks. \n\nHowever, pointer towers incur CPU cache locality penalties compared to flat arrays, as node allocations are non-contiguous on the heap."
+                    },
+                    {
+                        heading: "7. Complexity Analysis & Formal Proof",
+                        content: "Let us analyze Skip List performance: \n\n- **Expected Search Time: O(log N).** The expected height of the list is $\\log_{1/p} N$. At each level, the expected number of forward steps is $1/p \\approx 2$. Total expected steps = $2 \\log_2 N = O(\\log N)$. \n- **Worst-Case Search Time: O(N).** In the astronomically improbable event that all coin flips return Tails (all nodes height 1), the structure degrades into a single linked list. \n- **Space Complexity: O(N).** Expected total pointers across all nodes = $\\sum_{i=0}^{\\infty} N \\cdot p^i = N \\cdot \\frac{1}{1-p}$. For $p=0.5$, total pointers = $2N$, which uses less memory overhead than a Red-Black tree node (which stores left, right, parent, and color)."
+                    },
+                    {
+                        heading: "8. Language-Specific Notes",
+                        content: "Skip List presence in standard libraries: \n\n- **Java:** `java.util.concurrent.ConcurrentSkipListMap` and `ConcurrentSkipListSet`. Provides scalable, thread-safe $O(\\log N)$ sorted map operations without global lock contention. \n- **C++:** `std::map` uses Red-Black trees by default, but high-performance storage engines (e.g., LevelDB, RocksDB) implement custom SkipLists for their in-memory MemTables. \n- **Redis:** Redis `ZSET` (Sorted Set) uses a hybrid structure: a Hash Table for $O(1)$ score lookups combined with a Skip List (with span fields) for range queries and rank calculations."
+                    },
+                    {
+                        heading: "9. Code Example: Skip List Implementation",
+                        content: "Below is a complete implementation of a Skip List with search and insert operations in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Skip List Implementation",
+                            code: {
+                                python: `import random\n\nclass Node:\n    def __init__(self, key: int, level: int):\n        self.key = key\n        self.forward = [None] * level\n\nclass SkipList:\n    def __init__(self, max_level: int = 16, p: float = 0.5):\n        self.max_level = max_level\n        self.p = p\n        self.header = Node(-1, self.max_level)\n        self.level = 1\n\n    def _random_level(self) -> int:\n        lvl = 1\n        while random.random() < self.p and lvl < self.max_level:\n            lvl += 1\n        return lvl\n\n    def search(self, key: int) -> bool:\n        curr = self.header\n        for i in range(self.level - 1, -1, -1):\n            while curr.forward[i] and curr.forward[i].key < key:\n                curr = curr.forward[i]\n        curr = curr.forward[0]\n        return curr is not None and curr.key == key\n\n    def insert(self, key: int) -> None:\n        update = [None] * self.max_level\n        curr = self.header\n        for i in range(self.level - 1, -1, -1):\n            while curr.forward[i] and curr.forward[i].key < key:\n                curr = curr.forward[i]\n            update[i] = curr\n\n        new_lvl = self._random_level()\n        if new_lvl > self.level:\n            for i in range(self.level, new_lvl):\n                update[i] = self.header\n            self.level = new_lvl\n\n        new_node = Node(key, new_lvl)\n        for i in range(new_lvl):\n            new_node.forward[i] = update[i].forward[i]\n            update[i].forward[i] = new_node`,
+                                java: `import java.util.Random;\n\npublic class SkipList {\n    private static class Node {\n        int key;\n        Node[] forward;\n        Node(int key, int level) {\n            this.key = key;\n            this.forward = new Node[level];\n        }\n    }\n\n    private final int maxLevel = 16;\n    private final double p = 0.5;\n    private final Node header = new Node(-1, maxLevel);\n    private int level = 1;\n    private final Random rand = new Random();\n\n    private int randomLevel() {\n        int lvl = 1;\n        while (rand.nextDouble() < p && lvl < maxLevel) lvl++;\n        return lvl;\n    }\n\n    public boolean search(int key) {\n        Node curr = header;\n        for (int i = level - 1; i >= 0; i--) {\n            while (curr.forward[i] != null && curr.forward[i].key < key) {\n                curr = curr.forward[i];\n            }\n        }\n        curr = curr.forward[0];\n        return curr != null && curr.key == key;\n    }\n\n    public void insert(int key) {\n        Node[] update = new Node[maxLevel];\n        Node curr = header;\n        for (int i = level - 1; i >= 0; i--) {\n            while (curr.forward[i] != null && curr.forward[i].key < key) {\n                curr = curr.forward[i];\n            }\n            update[i] = curr;\n        }\n\n        int newLvl = randomLevel();\n        if (newLvl > level) {\n            for (int i = level; i < newLvl; i++) update[i] = header;\n            level = newLvl;\n        }\n\n        Node newNode = new Node(key, newLvl);\n        for (int i = 0; i < newLvl; i++) {\n            newNode.forward[i] = update[i].forward[i];\n            update[i].forward[i] = newNode;\n        }\n    }`,
+                                cpp: `#include <iostream>\n#include <vector>\n#include <cstdlib>\n\nstruct Node {\n    int key;\n    std::vector<Node*> forward;\n    Node(int k, int level) : key(k), forward(level, nullptr) {}\n};\n\nclass SkipList {\nprivate:\n    int maxLevel;\n    float p;\n    int level;\n    Node* header;\n\n    int randomLevel() {\n        int lvl = 1;\n        while (((float)rand() / RAND_MAX) < p && lvl < maxLevel) lvl++;\n        return lvl;\n    }\n\npublic:\n    SkipList(int maxLvl = 16, float prob = 0.5) : maxLevel(maxLvl), p(prob), level(1) {\n        header = new Node(-1, maxLevel);\n    }\n\n    bool search(int key) {\n        Node* curr = header;\n        for (int i = level - 1; i >= 0; i--) {\n            while (curr->forward[i] && curr->forward[i]->key < key) {\n                curr = curr->forward[i];\n            }\n        }\n        curr = curr->forward[0];\n        return curr && curr->key == key;\n    }\n\n    void insert(int key) {\n        std::vector<Node*> update(maxLevel, nullptr);\n        Node* curr = header;\n        for (int i = level - 1; i >= 0; i--) {\n            while (curr->forward[i] && curr->forward[i]->key < key) {\n                curr = curr->forward[i];\n            }\n            update[i] = curr;\n        }\n\n        int newLvl = randomLevel();\n        if (newLvl > level) {\n            for (int i = level; i < newLvl; i++) update[i] = header;\n            level = newLvl;\n        }\n\n        Node* newNode = new Node(key, newLvl);\n        for (int i = 0; i < newLvl; i++) {\n            newNode->forward[i] = update[i]->forward[i];\n            update[i]->forward[i] = newNode;\n        }\n    }\n};`,
+                                javascript: `class Node {\n  constructor(key, level) {\n    this.key = key;\n    this.forward = new Array(level).fill(null);\n  }\n}\n\nclass SkipList {\n  constructor(maxLevel = 16, p = 0.5) {\n    this.maxLevel = maxLevel;\n    this.p = p;\n    this.header = new Node(-1, this.maxLevel);\n    this.level = 1;\n  }\n\n  randomLevel() {\n    let lvl = 1;\n    while (Math.random() < this.p && lvl < this.maxLevel) lvl++;\n    return lvl;\n  }\n\n  search(key) {\n    let curr = this.header;\n    for (let i = this.level - 1; i >= 0; i--) {\n      while (curr.forward[i] && curr.forward[i].key < key) {\n        curr = curr.forward[i];\n      }\n    }\n    curr = curr.forward[0];\n    return curr !== null && curr.key === key;\n  }\n\n  insert(key) {\n    const update = new Array(this.maxLevel).fill(null);\n    let curr = this.header;\n    for (let i = this.level - 1; i >= 0; i--) {\n      while (curr.forward[i] && curr.forward[i].key < key) {\n        curr = curr.forward[i];\n      }\n      update[i] = curr;\n    }\n\n    const newLvl = this.randomLevel();\n    if (newLvl > this.level) {\n      for (let i = this.level; i < newLvl; i++) update[i] = this.header;\n      this.level = newLvl;\n    }\n\n    const newNode = new Node(key, newLvl);\n    for (let i = 0; i < newLvl; i++) {\n      newNode.forward[i] = update[i].forward[i];\n      update[i].forward[i] = newNode;\n    }\n  }\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Dissecting the Skip List operations: \n- **`update[]` array:** During search, `update[i]` stores the predecessor node at level `i` whose forward pointer will need to be rewired when inserting a new node. \n- **`randomLevel()`:** Generates geometric distribution. With $p=0.5$, half of all nodes have level 1, a quarter level 2, an eighth level 3, matching the optimal binary search hierarchy. \n- **Pointer Wiring:** Inserting at level `i` requires standard linked list rewiring: `newNode.forward[i] = update[i].forward[i]` followed by `update[i].forward[i] = newNode`."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common pitfalls when implementing Skip Lists: \n- **Forgetting to update the max list level:** If `randomLevel()` returns a level higher than the current `list.level`, you must extend `update[i]` pointers to point to `header`. \n- **Memory Leaks in C++:** Deleting a node requires unlinking pointers across all levels of its tower before `delete node` is called. \n- **Bad Random Generator:** Relying on weak pseudo-random number generators with biased probability can lead to unbalanced heights and $O(N)$ lookup degradation."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge case handling: \n- **Duplicate Keys:** Skip Lists can allow duplicates by storing identical keys adjacent to each other at Level 0, or by storing key-value pairs where values are updated on key collision. \n- **Empty List:** Head node's `forward` array initially points to `null` across all levels. Searching an empty list immediately returns false at Level 0."
+                    },
+                    {
+                        heading: "13. Comparison: Skip List vs Red-Black Tree",
+                        content: "Comparing Skip Lists to Red-Black Trees: \n- **Search Speed:** Identical $O(\\log N)$ time complexity. Red-Black trees have slightly tighter height bounds. \n- **Implementation Complexity:** Skip Lists are significantly simpler (~100 lines of code) compared to Red-Black tree rotations and recoloring logic (~300+ lines). \n- **Concurrent Locking:** Skip Lists excel in concurrent multithreaded systems because node insertion only requires local atomic CAS operations, whereas tree rotations require locking large subtrees."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Skip Lists in production systems: \n- **Redis Sorted Sets (ZSET):** Redis uses Skip Lists to power `ZADD`, `ZRANGE`, and `ZRANK` commands in $O(\\log N)$ time. \n- **RocksDB & LevelDB:** Google's LevelDB and Meta's RocksDB use Skip Lists to implement `MemTable` (in-memory write buffers) to ingest high-throughput writes in sorted order before flushing to disk. \n- **Java Concurrent collections:** `ConcurrentSkipListMap` powers lock-free, concurrent sorted maps in high-frequency trading platforms."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview focus: \n- **Question:** Design a SkipList (LeetCode Hard 1206). \n- **Key Takeaways:** Demonstrate understanding of probabilistic balancing vs deterministic tree rotations. Explain why Redis chose Skip Lists over Red-Black trees (range queries + concurrent simplicity)."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Skip Lists deliver the performance of balanced search trees through probabilistic simplicity. By maintaining multi-level pointer towers initialized via random coin flips, Skip Lists achieve expected $O(\\log N)$ search, insertion, and deletion while unlocking lock-free concurrent scalability."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why does Redis use Skip Lists instead of Red-Black Trees for its Sorted Sets (ZSET)?", options: ["Skip Lists use less memory than arrays.", "Skip Lists support simple range queries and unlock lock-free concurrent operations without complex tree rotations.", "Red-Black trees cannot store floating point scores.", "Skip Lists guarantee O(1) worst-case search."], correctIndex: 1, explanation: "Skip Lists allow simple range scanning by traversing Level 0 pointers, and they eliminate complex tree rotations, simplifying concurrent thread access." },
+                    { id: "q2", question: "In a Skip List with p = 0.5, what is the probability that a newly inserted node reaches level 3?", options: ["50%", "25%", "12.5%", "6.25%"], correctIndex: 2, explanation: "The probability of reaching level h is p^(h-1). For level 3 with p=0.5: 0.5^(3-1) = 0.5^2 = 0.25 (or 1/8 = 12.5% for level 3 height)." }
+                ]
+            },
+            {
+                id: "ds-lru-lfu-cache",
+                slug: "lru-lfu-cache-structures",
+                categorySlug: "data-structures",
+                title: "LRU & LFU Cache Data Structures",
+                subtitle: "Hybrid HashMap + Doubly Linked List for O(1) eviction policies under memory constraints",
+                difficulty: "Intermediate",
+                readTime: "40 min read",
+                summary: "Master low-latency caching structures. Implement Least Recently Used (LRU) via HashMap + Doubly Linked List, and Least Frequently Used (LFU) via Frequency-Bucket Doubly Linked Lists for O(1) time complexity.",
+                overview: "Memory caches operating under fixed capacity constraints must evict old entries when full. Choosing which item to evict requires tracking temporal access patterns (LRU - Least Recently Used) or frequency access counts (LFU - Least Frequently Used). A naive Array or Single List takes O(N) time to find the eviction candidate. LRU and LFU cache architectures combine HashMaps with Doubly Linked Lists to execute GET, PUT, and EVICT operations in guaranteed O(1) constant time.",
+                keyConcepts: [
+                    "LRU Eviction Protocol: Remove the element accessed longest ago",
+                    "LFU Eviction Protocol: Remove the element with minimum total access count",
+                    "HashMap + Sentinel Node Doubly Linked List for O(1) LRU Operations",
+                    "Min-Frequency Tracking + Doubly-Linked Frequency Buckets for O(1) LFU",
+                    "Constant Time O(1) Get, Put, and Evict Complexity Guarantees",
+                    "Production Cache Eviction: Redis LRU/LFU approximations & Memcached"
+                ],
+                timeComplexity: { access: "O(1)", search: "O(1)", insertion: "O(1)", deletion: "O(1)" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. Introduction to Cache Eviction",
+                        content: "Computer memory architectures are hierarchical: fast RAM is small and expensive, while slow disk storage is cheap and massive. Caches sit in front of slow storage to serve frequently accessed data in nanoseconds. \n\nHowever, because cache memory is strictly bounded (e.g., 2GB limit), adding new data when the cache is full requires evicting existing data. An eviction strategy dictates which item to drop. The two most fundamental policies are: \n1. **LRU (Least Recently Used):** Evicts the item that has not been accessed for the longest period of time. \n2. **LFU (Least Frequently Used):** Evicts the item that has been requested the fewest total times."
+                    },
+                    {
+                        heading: "2. The LRU Architecture: HashMap + Doubly Linked List",
+                        content: "Why do we need two data structures combined for LRU? \n- A **Hash Map** provides $O(1)$ key lookup, but has no concept of element order or age. \n- A **Doubly Linked List** preserves access order (Most Recent at Head, Least Recent at Tail), but searching for an element inside a list takes $O(N)$ time. \n\nBy combining them: \n- Hash Map key maps to the **Node reference** in the Doubly Linked List. \n- When `get(key)` is called, we locate the node in $O(1)$ via the HashMap, detach it from its current list position in $O(1)$, and move it to the Head (Most Recently Used position) in $O(1)$. \n- When the cache is full, we evict the node at `tail.prev` (Least Recently Used position) in $O(1)$ and delete its key from the HashMap."
+                    },
+                    {
+                        heading: "3. The LFU Architecture: Double HashMap + Frequency Buckets",
+                        content: "LFU requires evicting the node with the minimum access frequency (`freq`). If multiple nodes share the same minimum frequency, LRU tie-breaking is applied to evict the least recently used among them. \n\nA naive min-heap implementation gives $O(\\log N)$ updates per access. To achieve strict $O(1)$ time for LFU, we use: \n1. `keyToNode` Hash Map: Maps `key` $\\rightarrow$ `Node(key, val, freq)`. \n2. `freqToList` Hash Map: Maps `freq` $\\rightarrow$ `DoublyLinkedList of Nodes`. \n3. `minFreq` Integer variable: Tracks the current global minimum frequency. \n\nWhen a node's frequency increments from $F$ to $F+1$, we remove it from `freqToList[F]` in $O(1)$, insert it into `freqToList[F+1]` in $O(1)$, and update `minFreq` if `freqToList[F]` becomes empty."
+                    },
+                    {
+                        heading: "4. Memory Visualization: LRU Cache State",
+                        content: "Visualizing an LRU Cache of Capacity 3 during GET and PUT operations.",
+                        diagram: `INITIAL STATE (Capacity 3):
+HashMap: { "A": Node(A), "B": Node(B), "C": Node(C) }
+List: [HEAD] <-> [C] <-> [B] <-> [A] <-> [TAIL]
+                   (MRU)           (LRU)
+
+OPERATION: get("B") -> Move Node(B) to MRU (Head)
+List: [HEAD] <-> [B] <-> [C] <-> [A] <-> [TAIL]
+
+OPERATION: put("D", 4) -> Cache Full! Evict LRU (Node A at tail.prev)
+1. Delete "A" from HashMap
+2. Unlink Node(A) from List
+3. Insert Node(D) at MRU Head
+HashMap: { "B": Node(B), "C": Node(C), "D": Node(D) }
+List: [HEAD] <-> [D] <-> [B] <-> [C] <-> [TAIL]`
+                    },
+                    {
+                        heading: "5. Sentinel Nodes Pattern",
+                        content: "When implementing doubly-linked lists for caches, managing edge cases (empty list, 1 element, removing head/tail) leads to error-prone null checks. \n\nThe **Sentinel Nodes Pattern** solves this by initializing pseudo-nodes `dummyHead` and `dummyTail`. All real data nodes are inserted *between* `dummyHead` and `dummyTail`. Deleting or inserting a node `N` requires zero `null` checks: \n```java\n// Node insertion after head\nN.next = head.next;\nN.prev = head;\nhead.next.prev = N;\nhead.next = N;\n```"
+                    },
+                    {
+                        heading: "6. Complexity Analysis",
+                        content: "Complexity guarantees for LRU and LFU: \n\n- **LRU Cache:** \n  - `get(key)`: $O(1)$ HashMap lookup + $O(1)$ pointer move. \n  - `put(key, val)`: $O(1)$ HashMap insert + $O(1)$ node move/eviction. \n  - Space: $O(N)$ where $N$ is capacity. \n- **LFU Cache:** \n  - `get(key)`: $O(1)$ key lookup + $O(1)$ frequency bucket migration. \n  - `put(key, val)`: $O(1)$ bucket migration/eviction. \n  - Space: $O(N)$ for key and frequency buckets."
+                    },
+                    {
+                        heading: "7. Hardware & System Dynamics: Cache Pollution",
+                        content: "A major weakness of pure LRU is **Cache Pollution**. If a database batch query scans 1 million records once (e.g., a backup job), LRU flushes out all high-value hot items from the cache to store items that will never be requested again. \n\nLFU resists cache pollution because single-access batch items have a frequency of 1, so they are evicted first. However, LFU suffers from **Frequency Stagnation**: an item heavily accessed 3 hours ago retains a high frequency count forever even if it becomes completely cold. Production caches like Redis use Approximated LRU/LFU with logarithmic decay factors."
+                    },
+                    {
+                        heading: "8. Language-Specific Notes",
+                        content: "Built-in language support for LRU: \n- **Python:** `collections.OrderedDict` provides built-in $O(1)$ LRU functionality via `move_to_end()` and `popitem(last=False)`. `@functools.lru_cache` decorator wraps functions with LRU caching. \n- **Java:** `java.util.LinkedHashMap` has a built-in `removeEldestEntry(Map.Entry eldest)` method that can be overridden to implement an LRU cache in 5 lines of code. \n- **C++ / JS:** Standard libraries do not include an explicit LRU class, requiring custom implementation of `std::list` + `std::unordered_map`."
+                    },
+                    {
+                        heading: "9. Code Example: LRU Cache Implementation",
+                        content: "Production-grade implementation of LRU Cache using Sentinel Nodes in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "LRU Cache (HashMap + Doubly Linked List)",
+                            code: {
+                                python: `class Node:\n    def __init__(self, key: int = 0, val: int = 0):\n        self.key = key\n        self.val = val\n        self.prev = None\n        self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = {}\n        self.head = Node()\n        self.tail = Node()\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _add_node(self, node: Node) -> None:\n        node.prev = self.head\n        node.next = self.head.next\n        self.head.next.prev = node\n        self.head.next = node\n\n    def _remove_node(self, node: Node) -> None:\n        prev_node = node.prev\n        next_node = node.next\n        prev_node.next = next_node\n        next_node.prev = prev_node\n\n    def _move_to_head(self, node: Node) -> None:\n        self._remove_node(node)\n        self._add_node(node)\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        node = self.cache[key]\n        self._move_to_head(node)\n        return node.val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            node = self.cache[key]\n            node.val = value\n            self._move_to_head(node)\n        else:\n            new_node = Node(key, value)\n            self.cache[key] = new_node\n            self._add_node(new_node)\n            if len(self.cache) > self.capacity:\n                lru = self.tail.prev\n                self._remove_node(lru)\n                del self.cache[lru.key]`,
+                                java: `import java.util.HashMap;\nimport java.util.Map;\n\npublic class LRUCache {\n    private static class Node {\n        int key, val;\n        Node prev, next;\n        Node(int k, int v) { this.key = k; this.val = v; }\n    }\n\n    private final int capacity;\n    private final Map<Integer, Node> cache = new HashMap<>();\n    private final Node head = new Node(0, 0);\n    private final Node tail = new Node(0, 0);\n\n    public LRUCache(int capacity) {\n        this.capacity = capacity;\n        head.next = tail;\n        tail.prev = head;\n    }\n\n    private void addNode(Node node) {\n        node.prev = head;\n        node.next = head.next;\n        head.next.prev = node;\n        head.next = node;\n    }\n\n    private void removeNode(Node node) {\n        node.prev.next = node.next;\n        node.next.prev = node.prev;\n    }\n\n    private void moveToHead(Node node) {\n        removeNode(node);\n        addNode(node);\n    }\n\n    public int get(int key) {\n        Node node = cache.get(key);\n        if (node == null) return -1;\n        moveToHead(node);\n        return node.val;\n    }\n\n    public void put(int key, int value) {\n        Node node = cache.get(key);\n        if (node != null) {\n            node.val = value;\n            moveToHead(node);\n        } else {\n            Node newNode = new Node(key, value);\n            cache.put(key, newNode);\n            addNode(newNode);\n            if (cache.size() > capacity) {\n                Node lru = tail.prev;\n                removeNode(lru);\n                cache.remove(lru.key);\n            }\n        }\n    }`,
+                                cpp: `#include <unordered_map>\n\nclass LRUCache {\nprivate:\n    struct Node {\n        int key, val;\n        Node* prev;\n        Node* next;\n        Node(int k, int v) : key(k), val(v), prev(nullptr), next(nullptr) {}\n    };\n\n    int capacity;\n    std::unordered_map<int, Node*> cache;\n    Node* head;\n    Node* tail;\n\n    void addNode(Node* node) {\n        node->prev = head;\n        node->next = head->next;\n        head->next->prev = node;\n        head->next = node;\n    }\n\n    void removeNode(Node* node) {\n        node->prev->next = node->next;\n        node->next->prev = node->prev;\n    }\n\n    void moveToHead(Node* node) {\n        removeNode(node);\n        addNode(node);\n    }\n\npublic:\n    LRUCache(int cap) : capacity(cap) {\n        head = new Node(0, 0);\n        tail = new Node(0, 0);\n        head->next = tail;\n        tail->prev = head;\n    }\n\n    int get(int key) {\n        if (cache.find(key) == cache.end()) return -1;\n        Node* node = cache[key];\n        moveToHead(node);\n        return node->val;\n    }\n\n    void put(int key, int value) {\n        if (cache.find(key) != cache.end()) {\n            Node* node = cache[key];\n            node->val = value;\n            moveToHead(node);\n        } else {\n            Node* newNode = new Node(key, value);\n            cache[key] = newNode;\n            addNode(newNode);\n            if (cache.size() > capacity) {\n                Node* lru = tail->prev;\n                removeNode(lru);\n                cache.erase(lru->key);\n                delete lru;\n            }\n        }\n    }\n};`,
+                                javascript: `class Node {\n  constructor(key = 0, val = 0) {\n    this.key = key;\n    this.val = val;\n    this.prev = null;\n    this.next = null;\n  }\n}\n\nclass LRUCache {\n  constructor(capacity) {\n    this.capacity = capacity;\n    this.cache = new Map();\n    this.head = new Node();\n    this.tail = new Node();\n    this.head.next = this.tail;\n    this.tail.prev = this.head;\n  }\n\n  _addNode(node) {\n    node.prev = this.head;\n    node.next = this.head.next;\n    this.head.next.prev = node;\n    this.head.next = node;\n  }\n\n  _removeNode(node) {\n    node.prev.next = node.next;\n    node.next.prev = node.prev;\n  }\n\n  _moveToHead(node) {\n    this._removeNode(node);\n    this._addNode(node);\n  }\n\n  get(key) {\n    if (!this.cache.has(key)) return -1;\n    const node = this.cache.get(key);\n    this._moveToHead(node);\n    return node.val;\n  }\n\n  put(key, value) {\n    if (this.cache.has(key)) {\n      const node = this.cache.get(key);\n      node.val = value;\n      this._moveToHead(node);\n    } else {\n      const newNode = new Node(key, value);\n      this.cache.set(key, newNode);\n      this._addNode(newNode);\n      if (this.cache.size > this.capacity) {\n        const lru = this.tail.prev;\n        this._removeNode(lru);\n        this.cache.delete(lru.key);\n      }\n    }\n  }\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Key design details: \n- **Sentinel Dummy Nodes:** `head` and `tail` prevent edge checks when list has 0 or 1 items. \n- **Key stored in Node:** Storing `key` inside the `Node` object is essential during eviction! When evicting `tail.prev`, we must look up `lru.key` to delete it from `cache` dictionary in $O(1)$ time."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Common pitfalls: \n- **Forgetting to store key in Node:** If `Node` only stores `value`, you cannot remove the evicted tail node from `cache` map in $O(1)$. \n- **Dangling pointers in C++:** Failing to `delete lru` when evicting leads to memory leaks. \n- **Not updating existing keys on `put`:** If `put(key, new_val)` is called on an existing key, you must update its value AND move it to the MRU position."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge cases to handle: \n- **Capacity = 1:** Eviction occurs on every second insertion. Dummy head/tail sentinels handle capacity 1 effortlessly. \n- **Updating existing key:** Does not increase cache size, but alters list order."
+                    },
+                    {
+                        heading: "13. Comparison: LRU vs LFU vs ARC",
+                        content: "Comparing eviction policies: \n- **LRU:** Excellent for temporal locality; simple $O(1)$ memory footprint. Vulnerable to sequential scan cache pollution. \n- **LFU:** Excellent for long-term frequency tracking; immune to single scan pollution. Vulnerable to frequency stagnation. \n- **ARC (Adaptive Replacement Cache):** Dynamically tunes balance between LRU and LFU using two lists. Used in ZFS file system."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Production caching systems: \n- **CPU Cache Management:** Hardware L1/L2 caches use pseudo-LRU eviction algorithms. \n- **Database Buffer Pools:** PostgreSQL and InnoDB use LRU variant buffer pools to keep database pages in RAM. \n- **Web Browsers:** Chrome uses LRU caching for back/forward web page assets."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview strategies: \n- **LeetCode 146 (LRU Cache) & LeetCode 460 (LFU Cache):** Classic FAANG interview questions testing combined data structure design. \n- Always mention Sentinel Nodes to show clean software engineering practices."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "LRU and LFU caches demonstrate the power of hybrid data structures. By combining HashMaps for instant $O(1)$ access with Doubly Linked Lists for order management, they achieve guaranteed constant-time cache read, write, and eviction operations."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why is a Doubly Linked List required alongside a HashMap in an LRU Cache?", options: ["HashMaps cannot store key-value pairs.", "Doubly Linked Lists allow deleting any node in O(1) time once its pointer is found via the HashMap.", "Singly Linked Lists do not support tail appends.", "HashMap lookups take O(log N) time."], correctIndex: 1, explanation: "To move a node to MRU or delete it, a Doubly Linked List allows updating node.prev.next and node.next.prev in O(1) time without searching." },
+                    { id: "q2", question: "What is the primary weakness of pure LRU compared to LFU?", options: ["LRU takes O(N) time for get().", "LRU is vulnerable to Cache Pollution when a large sequential scan evicts all hot items.", "LRU cannot handle integer keys.", "LFU uses less RAM."], correctIndex: 1, explanation: "A single large sequential scan of cold items will replace all hot items in an LRU cache, whereas LFU protects items with high frequency counts." }
+                ]
+            },
+            {
+                id: "ds-b-trees",
+                slug: "b-trees-and-b-plus-trees",
+                categorySlug: "data-structures",
+                title: "B-Trees & B+ Trees",
+                subtitle: "Self-balancing multi-way search trees optimized for disk block I/O and database indexing",
+                difficulty: "Advanced",
+                readTime: "45 min read",
+                summary: "Master disk-oriented multi-way search trees. Understand page-aligned node sizing, B-Tree order M branching invariants, node splitting/merging, B+ Tree linked leaf chains, and database storage engines.",
+                overview: "Unlike main memory (RAM) where pointer chasing incurs nanosecond CPU cache penalties, secondary storage (SSD/HDD) operates in physical blocks (Pages, typically 4KB or 8KB). Binary trees perform terribly on disk because each node fetch requires a separate slow disk read. B-Trees and B+ Trees solve this by increasing the node branching factor (fanout M), packing hundreds of keys into a single page-aligned disk block. This reduces tree height to 3 or 4 levels for billions of records, guaranteeing O(log_M N) disk reads.",
+                keyConcepts: [
+                    "Multi-Way Search Trees: Nodes contain up to M children and M-1 keys",
+                    "Page-Aligned Node Sizing to match 4KB / 8KB OS disk blocks",
+                    "Node Splitting on Overflow (keys > M-1) and Merging on Underflow",
+                    "B+ Tree Variant: Data stored EXCLUSIVELY in leaf nodes; internal nodes are routing pointers",
+                    "B+ Tree Leaf Doubly Linked List Chains for ultra-fast Range Queries",
+                    "Production Engines: MySQL InnoDB, PostgreSQL, SQLite, Btrfs"
+                ],
+                timeComplexity: { access: "O(log n)", search: "O(log n)", insertion: "O(log n)", deletion: "O(log n)" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Disk I/O Problem",
+                        content: "Main memory (RAM) latency is measured in nanoseconds ($10^{-9}$s). Disk I/O (SSD/HDD) latency is measured in microseconds or milliseconds ($10^{-3}$s) — roughly 100,000x slower. \n\nIf you store 1,000,000,000 records in a balanced Binary Search Tree (height $\\approx 30$), searching for a record requires following 30 pointers. If each node sits on a separate disk block, finding a record requires 30 separate disk reads ($30 \\times 10ms = 300ms$), which is unacceptably slow for database queries. \n\nB-Trees solve this by abandoning binary branching. Instead of 2 children per node, a B-Tree node has a high branching factor $M$ (e.g., $M = 512$). The tree height collapses from 30 down to 3 ($512^3 \\approx 134$ million records). Finding any record requires only 3 disk block reads."
+                    },
+                    {
+                        heading: "2. Core Invariants of B-Trees (Order M)",
+                        content: "A B-Tree of Order $M$ satisfies strict balance invariants: \n1. Every node has at most $M$ children and at most $M-1$ keys. \n2. Every internal node (except root) has at least $\\lceil M/2 \\rceil$ children. \n3. The root has at least 2 children (unless it is a leaf). \n4. All leaves appear at the EXACT same depth (perfect height balance). \n5. A non-leaf node with $K$ children contains $K-1$ sorted keys that act as separation boundaries for its subtrees."
+                    },
+                    {
+                        heading: "3. The B+ Tree Variant",
+                        content: "In modern database engines (MySQL InnoDB, PostgreSQL), the **B+ Tree** variant is universally preferred over standard B-Trees. \n\nKey differences in B+ Trees: \n- **Internal Nodes:** Store ONLY search keys and child pointers (no actual data records/payloads). This maximizes fanout per page. \n- **Leaf Nodes:** Store ALL actual data records (or record pointers). \n- **Leaf Pointer Chain:** All leaf nodes are linked sequentially in a doubly-linked list (`leaf.next` / `leaf.prev`). \n\nWhy is B+ Tree superior for databases? \nFor Range Queries (e.g., `SELECT * FROM users WHERE age BETWEEN 20 AND 30`), a standard B-Tree requires expensive in-order tree traversals across levels. A B+ Tree simply searches for `age = 20` to land on a leaf node, and then sequentially iterates across the leaf linked list!"
+                    },
+                    {
+                        heading: "4. Step-by-Step Walkthrough: B-Tree Node Insertion",
+                        content: "Inserting key `35` into a B-Tree of Order 3 (Max 2 keys per node): \n\nStep 1: Traverse down to the appropriate leaf node. \nStep 2: If leaf node has space (keys < 2), insert key in sorted order. \nStep 3: If leaf node overflows (3 keys: e.g., `[20, 30, 35]`): \n- Find the median key (`30`). \n- **Split** the node into two sibling nodes: `[20]` and `[35]`. \n- **Push the median key (`30`) UP** into the parent node. \nStep 4: If parent node overflows, recursively split parent. If root overflows, create a new root with the median key, increasing tree height by 1. \n\nNotice that B-Trees grow **UPWARDS** from the leaves to the root, guaranteeing that all leaves stay perfectly level."
+                    },
+                    {
+                        heading: "5. Structural Visualization: B+ Tree",
+                        content: "Visualizing a B+ Tree of Order 3 with leaf linked list chain.",
+                        diagram: `INTERNAL ROUTING NODES (Page-aligned disk blocks):
+                        [ 50 ]
+                       /      \
+                [ 20 | 35 ]   [ 65 | 80 ]
+
+LEAF DATA NODES (Linked Chain):
+  [10 | 15] <---> [20 | 30] <---> [35 | 40] <---> [50 | 60] <---> [65 | 70] <---> [80 | 90]
+     ^                                                                               ^
+  Min Leaf                                                                        Max Leaf
+
+Range Query (WHERE key BETWEEN 25 AND 65):
+1. Search root [50] -> 25 < 50 -> Left child
+2. Search [20 | 35] -> 20 < 25 < 35 -> Middle child
+3. Land on Leaf [20 | 30] -> Find key 30.
+4. Follow leaf linked list right: [35 | 40] -> [50 | 60] -> [65 | 70] (Stop at 65!).
+No tree re-traversal needed!`
+                    },
+                    {
+                        heading: "6. Hardware Perspective: Page Alignment & SSD Blocks",
+                        content: "Operating System kernels read data from disk in **Pages** (4096 bytes). \n\nIf a B+ Tree node size is configured to match the 4KB page size: \n- Key size = 8 bytes (int64). Pointer size = 8 bytes. \n- Each 4KB page node holds ~250 keys and 251 pointers ($M = 251$). \n- Tree capacity at height 3 = $251^3 \\approx 15.8$ million records. \n- Tree capacity at height 4 = $251^4 \\approx 3.9$ billion records. \n\nWhen the OS reads a B+ Tree node, a single disk I/O operation loads all 250 keys into the CPU's L1/L2 cache, where Binary Search finds the next child pointer in nanoseconds."
+                    },
+                    {
+                        heading: "7. Complexity Analysis",
+                        content: "Formal complexity metrics for B-Trees of Order $M$: \n\n- **Search Time:** $O(\\log_M N) = O(\\frac{\\log_2 N}{\\log_2 M})$. With $M = 250$, search takes $\\approx \\frac{1}{8}$ the depth of a binary tree. \n- **Insert Time:** $O(M \\log_M N)$ including node splitting. \n- **Delete Time:** $O(M \\log_M N)$ including node merging and redistribution. \n- **Space Complexity:** $O(N)$ with memory utilization guaranteed between $50\\%$ and $100\\%$ per node."
+                    },
+                    {
+                        heading: "8. Language-Specific Ecosystem",
+                        content: "Production implementations of B/B+ Trees: \n- **C / C++:** Databases like SQLite, MySQL (InnoDB engine), and WiredTiger (MongoDB engine) implement B+ Trees in C/C++ with direct memory-mapped file I/O (`mmap`). \n- **Java:** Apache Derby and H2 database engine implement disk-backed B+ Trees. \n- **Go:** BoltDB and BadgerDB use B+ Trees for embedded transactional key-value stores."
+                    },
+                    {
+                        heading: "9. Code Example: B-Tree Search & Split Logic",
+                        content: "Implementation of B-Tree Node structure and search/insert split operations in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "B-Tree Node Search & Split Implementation",
+                            code: {
+                                python: `class BTreeNode:\n    def __init__(self, t: int, leaf: bool = True):\n        self.t = t\n        self.keys = []\n        self.children = []\n        self.leaf = leaf\n\nclass BTree:\n    def __init__(self, t: int = 3):\n        self.root = BTreeNode(t, True)\n        self.t = t\n\n    def search(self, node: BTreeNode, k: int):\n        i = 0\n        while i < len(node.keys) and k > node.keys[i]:\n            i += 1\n        if i < len(node.keys) and node.keys[i] == k:\n            return (node, i)\n        if node.leaf:\n            return None\n        return self.search(node.children[i], k)\n\n    def split_child(self, parent: BTreeNode, i: int, child: BTreeNode):\n        t = self.t\n        new_node = BTreeNode(t, child.leaf)\n        median_key = child.keys[t - 1]\n\n        new_node.keys = child.keys[t:]\n        child.keys = child.keys[:t - 1]\n\n        if not child.leaf:\n            new_node.children = child.children[t:]\n            child.children = child.children[:t]\n\n        parent.children.insert(i + 1, new_node)\n        parent.keys.insert(i, median_key)`,
+                                java: `import java.util.ArrayList;\nimport java.util.List;\n\npublic class BTree {\n    static class BTreeNode {\n        int t;\n        List<Integer> keys = new ArrayList<>();\n        List<BTreeNode> children = new ArrayList<>();\n        boolean leaf;\n\n        BTreeNode(int t, boolean leaf) {\n            this.t = t;\n            this.leaf = leaf;\n        }\n    }\n\n    private final int t;\n    private BTreeNode root;\n\n    public BTree(int t) {\n        this.t = t;\n        this.root = new BTreeNode(t, true);\n    }\n\n    public BTreeNode search(BTreeNode node, int k) {\n        int i = 0;\n        while (i < node.keys.size() && k > node.keys.get(i)) i++;\n        if (i < node.keys.size() && node.keys.get(i) == k) return node;\n        if (node.leaf) return null;\n        return search(node.children.get(i), k);\n    }\n\n    private void splitChild(BTreeNode parent, int i, BTreeNode child) {\n        BTreeNode newNode = new BTreeNode(t, child.leaf);\n        int medianKey = child.keys.get(t - 1);\n\n        for (int j = t; j < child.keys.size(); j++) newNode.keys.add(child.keys.get(j));\n        if (!child.leaf) {\n            for (int j = t; j < child.children.size(); j++) newNode.children.add(child.children.get(j));\n        }\n\n        while (child.keys.size() >= t) child.keys.remove(child.keys.size() - 1);\n        if (!child.leaf) {\n            while (child.children.size() > t) child.children.remove(child.children.size() - 1);\n        }\n\n        parent.children.add(i + 1, newNode);\n        parent.keys.add(i, medianKey);\n    }\n}`,
+                                cpp: `#include <vector>\n#include <iostream>\n\nstruct BTreeNode {\n    int t;\n    std::vector<int> keys;\n    std::vector<BTreeNode*> children;\n    bool leaf;\n    BTreeNode(int _t, bool _leaf) : t(_t), leaf(_leaf) {}\n};\n\nclass BTree {\nprivate:\n    BTreeNode* root;\n    int t;\n\npublic:\n    BTree(int _t) : t(_t) {\n        root = new BTreeNode(t, true);\n    }\n\n    BTreeNode* search(BTreeNode* node, int k) {\n        int i = 0;\n        while (i < node->keys.size() && k > node->keys[i]) i++;\n        if (i < node->keys.size() && node->keys[i] == k) return node;\n        if (node->leaf) return nullptr;\n        return search(node->children[i], k);\n    }\n};`,
+                                javascript: `class BTreeNode {\n  constructor(t, leaf = true) {\n    this.t = t;\n    this.keys = [];\n    this.children = [];\n    this.leaf = leaf;\n  }\n}\n\nclass BTree {\n  constructor(t = 3) {\n    this.t = t;\n    this.root = new BTreeNode(t, true);\n  }\n\n  search(node, k) {\n    let i = 0;\n    while (i < node.keys.length && k > node.keys[i]) i++;\n    if (i < node.keys.length && node.keys[i] === k) return node;\n    if (node.leaf) return null;\n    return this.search(node.children[i], k);\n  }\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Architecture breakdown: \n- **Degree Parameter `t`:** Minimum degree defining capacity limits. Minimum keys = $t-1$, Maximum keys = $2t-1$. \n- **`splitChild` Operation:** When a node reaches $2t-1$ keys, it splits around median index $t-1$. The median moves up to `parent`, maintaining tree depth balance."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Implementation gotchas: \n- **Splitting top-down vs bottom-up:** Splitting full nodes proactively during downward traversal prevents two-pass recursive splits back up the tree. \n- **Not updating page pointers:** In disk-backed databases, splitting a node requires writing two new page blocks to disk and updating parent offset IDs."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge conditions: \n- **Root Overflow:** Splitting the root is the ONLY operation that increases tree height. \n- **Underflow on Delete:** Deleting a key that drops node capacity below $\\lceil M/2 \\rceil - 1$ requires borrowing keys from adjacent siblings or merging nodes."
+                    },
+                    {
+                        heading: "13. Comparison: B-Tree vs B+ Tree vs LSM Tree",
+                        content: "Comparing storage engine structures: \n- **B-Tree:** Keys stored in internal nodes; fast single-key lookup. Complex range queries. \n- **B+ Tree:** Keys ONLY in leaves; leaf linked list unlocks ultra-fast Range Scans. Standard for OLTP RDBMS (MySQL, PostgreSQL). \n- **LSM Tree (Log-Structured Merge Tree):** Appends writes to memory MemTable before SSTable disk flush. Faster writes than B+ Tree, slower reads. Used in Cassandra, RocksDB."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Where B+ Trees run infrastructure: \n- **Relational Databases:** Primary keys and clustered indexes in MySQL (InnoDB) and PostgreSQL are B+ Trees. \n- **File Systems:** NTFS (Windows), HFS+ (macOS), Ext4, and XFS (Linux) store file metadata and directory listings in B-Trees."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview focus: \n- System Design interviews heavily evaluate understanding of database indexing, B+ Tree leaf linked lists, and why SSD page alignment dictates tree fanout."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "B-Trees and B+ Trees solve secondary storage I/O limits through high branching fanout. By keeping all leaves at identical depth and packing hundreds of keys per disk page block, they guarantee sub-second queries across multi-terabyte databases."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why are B+ Trees preferred over Binary Search Trees for database indexes on disk?", options: ["B+ Trees use floating point comparisons.", "High branching factor (fanout) packs hundreds of keys into page-aligned disk blocks, collapsing tree height and minimizing slow disk reads.", "Binary Search Trees take O(N^2) memory.", "B+ Trees do not support range queries."], correctIndex: 1, explanation: "High fanout matches the physical disk page size (e.g. 4KB), reducing tree height to 3-4 levels for billions of rows." },
+                    { id: "q2", question: "What structural feature of a B+ Tree enables ultra-fast range queries (e.g., BETWEEN X AND Y)?", options: ["All internal nodes store data payloads.", "Leaf nodes are linked in a continuous doubly-linked list.", "Leaves are sorted vertically.", "Internal nodes use Skip Lists."], correctIndex: 1, explanation: "Once the starting key is located in a leaf node, the query simply traverses the leaf linked list horizontally without re-traversing internal tree levels." }
+                ]
+            },
+            {
+                id: "ds-bloom-filters",
+                slug: "bloom-filters",
+                categorySlug: "data-structures",
+                title: "Bloom Filters & Probabilistic Structures",
+                subtitle: "Space-efficient bit arrays with k hash functions, false-positive math, and Counting Bloom Filters",
+                difficulty: "Intermediate",
+                readTime: "30 min read",
+                summary: "Master space-efficient probabilistic set membership. Understand bitvector mapping, k independent hash functions, zero false negative guarantees, false positive probability math, and Counting Bloom Filters.",
+                overview: "A Bloom Filter is a space-efficient probabilistic data structure invented by Burton Howard Bloom in 1970. It tests whether an element is a member of a set in O(k) time using negligible memory compared to Hash Table sets. A Bloom Filter offers a unique trade-off: it guarantees zero false negatives (if it says an element is absent, it is 100% absent), but allows configurable false positives (if it says an element is present, it might be present).",
+                keyConcepts: [
+                    "Bitvector Storage: Compact m-bit array initialized to zeroes",
+                    "k Independent Hash Functions mapping keys to bit indices",
+                    "Zero False Negatives Guarantee: If bit IS 0, element WAS NEVER added",
+                    "False Positive Probability Formula: p approx (1 - e^{-kn/m})^k",
+                    "Optimal Hash Functions Count Formula: k = (m/n) * ln(2)",
+                    "Counting Bloom Filters: Enabling deletion via n-bit counters per bucket"
+                ],
+                timeComplexity: { access: "O(k)", search: "O(k)", insertion: "O(k)", deletion: "N/A (Counting Bloom Filter: O(k))" },
+                spaceComplexity: "O(m) bits",
+                sections: [
+                    {
+                        heading: "1. The Space Crisis in Massive Sets",
+                        content: "Suppose Chrome wants to warn users when they visit a malicious URL. \n\nIf the malicious URL database contains 500 million URLs (averaging 50 bytes each), a standard Hash Set requires $500M \\times 50 = 25\\text{ GB}$ of RAM on every user's computer or phone, which is unfeasible. \n\nA **Bloom Filter** solves this by compressing 500 million URLs into just **600 MB** of RAM with a $1\\%$ false positive tolerance. Instead of storing actual string URLs, it sets bits in a tiny bit array."
+                    },
+                    {
+                        heading: "2. How a Bloom Filter Works",
+                        content: "A Bloom Filter consists of: \n1. A **Bit Array** of size $m$, initialized to all 0s. \n2. $k$ independent, fast hash functions ($h_1, h_2, \\dots, h_k$). \n\n- **Adding an Element ($X$):** Pass $X$ through all $k$ hash functions to get $k$ array indices: $i_1 = h_1(X) \\pmod m, \\dots, i_k = h_k(X) \\pmod m$. Set `bit_array[i_1] = 1, ..., bit_array[i_k] = 1`. \n- **Querying an Element ($Y$):** Pass $Y$ through the $k$ hash functions. Check if ALL bits at indices $h_1(Y), \\dots, h_k(Y)$ are equal to 1. \n  - If ANY bit is 0 $\\rightarrow$ $Y$ is **DEFINITELY NOT** in the set ($100\\%$ certainty). \n  - If ALL bits are 1 $\\rightarrow$ $Y$ is **PROBABLY** in the set (with a small false positive chance)."
+                    },
+                    {
+                        heading: "3. Why False Negatives Are Impossible",
+                        content: "Why are false negatives mathematically impossible? \n\nWhen element $X$ is added, its $k$ bit locations are explicitly flipped to 1. Since standard Bloom Filters NEVER clear bits back to 0, those $k$ bits will remain 1 forever. Therefore, if a subsequent search for $X$ finds any bit set to 0, $X$ could never have been added to the filter."
+                    },
+                    {
+                        heading: "4. Memory & Mathematical Formulas",
+                        content: "Given $n$ expected items and a target false-positive probability $p$: \n\n1. **Optimal Bit Array Size ($m$):** \n   $$m = -\\frac{n \\ln p}{(\\ln 2)^2} \\approx -1.44 \\cdot n \\cdot \\log_2 p$$ \n2. **Optimal Number of Hash Functions ($k$):** \n   $$k = \\frac{m}{n} \\cdot \\ln 2 \\approx 0.7 \\cdot \\frac{m}{n}$$ \n\n*Example:* For $n = 1,000,000$ items and $p = 1\\%$ ($0.01$): \n- $m \\approx 9.58$ million bits ($\\approx 1.2$ Megabytes). \n- $k = 7$ hash functions. \nOnly 1.2MB of RAM to index 1 million items!"
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Visualizing a Bloom Filter of size m=10 with k=3 hash functions.",
+                        diagram: `Bit Array (Size 10): [ 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 ]
+
+1. INSERT "cat":
+h1("cat")=1, h2("cat")=4, h3("cat")=7
+Bit Array: [ 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 ]
+                 ^         ^         ^
+
+2. QUERY "dog":
+h1("dog")=3, h2("dog")=4, h3("dog")=9
+Check Bit 3 -> VALUE IS 0!
+Result: "dog" is DEFINITELY NOT PRESENT.
+
+3. QUERY "fish" (False Positive case):
+h1("fish")=1, h2("fish")=4, h3("fish")=7 (Bits happen to overlap!)
+Check Bits 1,4,7 -> All 1!
+Result: "fish" PROBABLY PRESENT (False Positive!).`
+                    },
+                    {
+                        heading: "6. Double Hashing Optimization",
+                        content: "Running $k$ separate hash algorithms (MurmurHash, CityHash, FNV) per item is CPU intensive. \n\nKirsch and Mitzenmacher proved that you only need TWO hash functions ($h_1$ and $h_2$) to simulate $k$ independent hash functions: \n$$g_i(x) = (h_1(x) + i \\cdot h_2(x)) \\pmod m \\quad \\text{for } i = 0 \\dots k-1$$ \nThis reduces CPU overhead drastically while preserving optimal false positive rates."
+                    },
+                    {
+                        heading: "7. Counting Bloom Filters (Supporting Deletion)",
+                        content: "Standard Bloom Filters CANNOT delete elements. If you flip a bit from 1 to 0 during deletion, you might accidentally clear a bit shared by 5 other inserted elements! \n\nA **Counting Bloom Filter** replaces each bit with a 4-bit integer counter. \n- Add item $\\rightarrow$ Increment counters at indices $i_1 \\dots i_k$. \n- Delete item $\\rightarrow$ Decrement counters at indices $i_1 \\dots i_k$. \nThis enables deletion at the cost of 4x memory usage."
+                    },
+                    {
+                        heading: "8. Complexity Analysis",
+                        content: "Complexity metrics: \n- **Insert Time:** $O(k)$ to compute $k$ hashes and flip bits. \n- **Query Time:** $O(k)$ to compute $k$ hashes and read bits. \n- **Space Complexity:** $O(m)$ bits, completely independent of item payload string length!"
+                    },
+                    {
+                        heading: "9. Code Example: Bloom Filter Implementation",
+                        content: "Complete implementation of Bloom Filter using Kirsch-Mitzenmacher double hashing in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Bloom Filter Implementation",
+                            code: {
+                                python: `import math\n\nclass BloomFilter:\n    def __init__(self, n: int, p: float):\n        self.n = n\n        self.p = p\n        self.m = int(- (n * math.log(p)) / (math.log(2) ** 2))\n        self.k = int((self.m / n) * math.log(2))\n        self.bit_array = [0] * self.m\n\n    def _hash(self, item: str, seed: int) -> int:\n        hash_val = 0\n        for char in item:\n            hash_val = (hash_val * seed + ord(char)) % self.m\n        return hash_val\n\n    def add(self, item: str) -> None:\n        h1 = self._hash(item, 31)\n        h2 = self._hash(item, 37)\n        for i in range(self.k):\n            idx = (h1 + i * h2) % self.m\n            self.bit_array[idx] = 1\n\n    def contains(self, item: str) -> bool:\n        h1 = self._hash(item, 31)\n        h2 = self._hash(item, 37)\n        for i in range(self.k):\n            idx = (h1 + i * h2) % self.m\n            if self.bit_array[idx] == 0:\n                return False\n        return True`,
+                                java: `import java.util.BitSet;\n\npublic class BloomFilter {\n    private final int m;\n    private final int k;\n    private final BitSet bitSet;\n\n    public BloomFilter(int n, double p) {\n        this.m = (int) Math.ceil((-n * Math.log(p)) / (Math.log(2) * Math.log(2)));\n        this.k = (int) Math.round((double) m / n * Math.log(2));\n        this.bitSet = new BitSet(m);\n    }\n\n    private int getHash(String item, int seed) {\n        int hash = 0;\n        for (int i = 0; i < item.length(); i++) {\n            hash = seed * hash + item.charAt(i);\n        }\n        return Math.abs(hash % m);\n    }\n\n    public void add(String item) {\n        int h1 = getHash(item, 31);\n        int h2 = getHash(item, 37);\n        for (int i = 0; i < k; i++) {\n            int idx = Math.abs((h1 + i * h2) % m);\n            bitSet.set(idx);\n        }\n    }\n\n    public boolean contains(String item) {\n        int h1 = getHash(item, 31);\n        int h2 = getHash(item, 37);\n        for (int i = 0; i < k; i++) {\n            int idx = Math.abs((h1 + i * h2) % m);\n            if (!bitSet.get(idx)) return false;\n        }\n        return true;\n    }`,
+                                cpp: `#include <vector>\n#include <string>\n#include <cmath>\n#include <functional>\n\nclass BloomFilter {\nprivate:\n    int m;\n    int k;\n    std::vector<bool> bitArray;\n\n    std::size_t getHash(const std::string& item, std::size_t seed) const {\n        return std::hash<std::string>{}(item + std::to_string(seed));\n    }\n\npublic:\n    BloomFilter(int n, double p) {\n        m = std::ceil((-n * std::log(p)) / (std::log(2) * std::log(2)));\n        k = std::round(((double)m / n) * std::log(2));\n        bitArray.assign(m, false);\n    }\n\n    void add(const std::string& item) {\n        std::size_t h1 = getHash(item, 1);\n        std::size_t h2 = getHash(item, 2);\n        for (int i = 0; i < k; i++) {\n            std::size_t idx = (h1 + i * h2) % m;\n            bitArray[idx] = true;\n        }\n    }\n\n    bool contains(const std::string& item) const {\n        std::size_t h1 = getHash(item, 1);\n        std::size_t h2 = getHash(item, 2);\n        for (int i = 0; i < k; i++) {\n            std::size_t idx = (h1 + i * h2) % m;\n            if (!bitArray[idx]) return false;\n        }\n        return true;\n    }\n};`,
+                                javascript: `class BloomFilter {\n  constructor(n, p) {\n    this.m = Math.ceil((-n * Math.log(p)) / (Math.log(2) ** 2));\n    this.k = Math.round((this.m / n) * Math.log(2));\n    this.bitArray = new Uint8Array(this.m);\n  }\n\n  _hash(item, seed) {\n    let hash = 0;\n    for (let i = 0; i < item.length; i++) {\n      hash = (hash << 5) - hash + item.charCodeAt(i) + seed;\n      hash |= 0;\n    }\n    return Math.abs(hash) % this.m;\n  }\n\n  add(item) {\n    const h1 = this._hash(item, 1);\n    const h2 = this._hash(item, 2);\n    for (let i = 0; i < this.k; i++) {\n      const idx = (h1 + i * h2) % this.m;\n      this.bitArray[idx] = 1;\n    }\n  }\n\n  contains(item) {\n    const h1 = this._hash(item, 1);\n    const h2 = this._hash(item, 2);\n    for (let i = 0; i < this.k; i++) {\n      const idx = (h1 + i * h2) % this.m;\n      if (this.bitArray[idx] === 0) return false;\n    }\n    return true;\n  }\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Implementation breakdown: \n- Kirsch-Mitzenmacher formula `(h1 + i * h2) % m` derives $k$ indices dynamically. \n- `Uint8Array` / `BitSet` allocates memory at the bit level for space optimization."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Pitfalls: \n- Attempting to delete items from a standard Bloom Filter (corrupts shared bits). \n- Underestimating $n$, causing the bit array to saturate with 1s ($p \\rightarrow 100\\%$)."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge conditions: \n- Saturation: When bit array becomes $>80\\%$ ones, false positive rate spikes exponentially. Resize/rehash required."
+                    },
+                    {
+                        heading: "13. Comparison: Bloom Filter vs Cuckoo Filter",
+                        content: "Comparison: \n- **Bloom Filter:** Faster insert; no deletion support. \n- **Cuckoo Filter:** Supports deletion; uses cuckoo hashing tables for fingerprints; better space efficiency for low false positive rates."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Production systems using Bloom Filters: \n- **Google Chrome:** Checks URLs against malicious site lists. \n- **Apache Cassandra & RocksDB:** Uses Bloom Filters on SSTables to skip reading files from disk if a key does not exist. \n- **Medium / Recommendation Engines:** Prevents recommending articles a user has already read."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview focus: \n- System Design: Reduce database reads by placing Bloom Filters in front of SSD lookups. Explain why 0 false negatives is the critical safety property."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Bloom Filters provide massive space savings for membership testing. By accepting a controllable false positive rate in exchange for zero false negatives, they serve as crucial gatekeepers for high-throughput distributed systems."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What is the primary guarantee provided by a Bloom Filter?", options: ["Zero False Positives.", "Zero False Negatives (If it returns false, the item is 100% absent).", "Constant time deletion.", "Exact count of items."], correctIndex: 1, explanation: "If any bit at the calculated hash indices is 0, the item could never have been inserted, guaranteeing zero false negatives." },
+                    { id: "q2", question: "What happens to a standard Bloom Filter when you attempt to delete an element by clearing its bit indices to 0?", options: ["It operates normally.", "It corrupts the filter by potentially erasing 1s that are shared by other inserted elements.", "It automatically resizes the filter.", "It triggers a rehash."], correctIndex: 1, explanation: "Bits in a Bloom Filter can be shared by multiple elements. Resetting a bit to 0 causes false negatives for all other elements sharing that bit position." }
+                ]
+            },
+            {
+                id: "ds-monotonic-queue-stack",
+                slug: "monotonic-stacks-and-deques",
+                categorySlug: "data-structures",
+                title: "Monotonic Stacks & Deques",
+                subtitle: "Strict monotonic order maintenance, Next Greater Element, and O(1) Sliding Window Maximum",
+                difficulty: "Intermediate",
+                readTime: "35 min read",
+                summary: "Master Monotonic linear structures. Understand monotonic increasing/decreasing invariants, Next Greater/Smaller Element algorithms, amortized O(1) stack popping, and Sliding Window Maximum O(1) queries.",
+                overview: "Monotonic Stacks and Monotonic Deques are specialized adaptations of standard linear collections that enforce a strict monotonic invariant (either strictly non-increasing or strictly non-decreasing). By popping elements that break the monotonic property before inserting new items, these structures efficiently process range boundary constraints and answer 'next element' or 'sliding window max/min' queries in amortized O(1) time.",
+                keyConcepts: [
+                    "Monotonic Invariants: Non-increasing or Non-decreasing order",
+                    "Next Greater Element (NGE) & Next Smaller Element patterns",
+                    "Amortized O(1) Complexity: Each element is pushed and popped AT MOST ONCE",
+                    "Sliding Window Maximum / Minimum via Monotonic Deque",
+                    "Histogram Area Calculation & Trapping Rain Water algorithms",
+                    "Range Boundary Pruning"
+                ],
+                timeComplexity: { access: "O(1)", search: "O(n)", insertion: "O(1) amortized", deletion: "O(1) amortized" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Range Boundary Problem",
+                        content: "Suppose you are given an array of stock prices `[73, 74, 75, 71, 69, 72, 76]`. For each day, you need to find how many days you must wait until a warmer temperature occurs. \n\nBrute force nested loops take $O(N^2)$ time. A **Monotonic Stack** solves this problem in linear **$O(N)$** time by maintaining a stack of elements in strictly decreasing order."
+                    },
+                    {
+                        heading: "2. The Monotonic Stack Invariant",
+                        content: "A Monotonic Stack maintains sorted order internally during Push operations: \n- **Monotonic Decreasing Stack:** Top of stack is ALWAYS the smallest element. Before pushing $X$, pop all elements $\\le X$. \n- **Monotonic Increasing Stack:** Top of stack is ALWAYS the largest element. Before pushing $X$, pop all elements $\\ge X$. \n\nWhen an element $Y$ is popped by new element $X$, $X$ is the **Next Greater Element** for $Y$!"
+                    },
+                    {
+                        heading: "3. The Monotonic Deque (Sliding Window Maximum)",
+                        content: "How do you find the maximum number in a sliding window of size $K$ as it moves across an array of size $N$? \n\nUsing a **Monotonic Decreasing Deque**: \n1. Store array indices in the Deque. \n2. Before pushing index $i$ at the back, pop all indices from the back whose values are $\\le arr[i]$. \n3. Remove indices from the front that fall outside the sliding window boundary ($idx \\le i - K$). \n4. The element at the **FRONT** of the deque is ALWAYS the maximum element in the current window!"
+                    },
+                    {
+                        heading: "4. Step-by-Step Walkthrough: Sliding Window Max",
+                        content: "Array: `[1, 3, -1, -3, 5]`, Window size $K = 3$. \n\n- $i=0 (val=1)$: Deque = `[0]` \n- $i=1 (val=3)$: $3 > 1$, pop 0. Deque = `[1]` \n- $i=2 (val=-1)$: $-1 < 3$, push 2. Deque = `[1, 2]`. Window full! Max = `arr[front]` = `arr[1]` = **3**. \n- $i=3 (val=-3)$: Push 3. Deque = `[1, 2, 3]`. Window slides (pop front if $idx \\le 0$). Max = `arr[1]` = **3**. \n- $i=4 (val=5)$: $5 > -3, -1, 3$, pop 3, 2, 1! Deque = `[4]`. Max = `arr[4]` = **5**."
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Visualizing Monotonic Stack processing for Next Greater Element on [2, 1, 5].",
+                        diagram: `Array: [2, 1, 5]
+
+Step 1: Process 2 -> Stack: [2]
+Step 2: Process 1 -> 1 < 2, Push 1 -> Stack: [2, 1] (Decreasing Order preserved)
+Step 3: Process 5 -> 5 > 1: Pop 1! NGE of 1 is 5.
+                 -> 5 > 2: Pop 2! NGE of 2 is 5.
+                 -> Push 5 -> Stack: [5]`
+                    },
+                    {
+                        heading: "6. Amortized Analysis Proof",
+                        content: "Why is the loop inside a Monotonic Stack $O(N)$ overall even with nested `while` loops? \n\n**Aggregate Amortized Proof:** \nEach index $i \\in [0, N-1]$ is pushed onto the stack/deque **exactly once**. \nEach index can be popped from the stack/deque **at most once**. \nTotal push operations = $N$. Total pop operations $\\le N$. \nTotal execution steps across the entire array = $2N = O(N)$ time!"
+                    },
+                    {
+                        heading: "7. Common Monotonic Templates",
+                        content: "Template selection guide: \n- **Next Greater Element:** Monotonic Decreasing Stack. \n- **Next Smaller Element:** Monotonic Increasing Stack. \n- **Largest Rectangle in Histogram:** Monotonic Increasing Stack (finding left/right smaller boundaries)."
+                    },
+                    {
+                        heading: "8. Language Support",
+                        content: "Language structures used: \n- **Python:** Standard `list` for stack, `collections.deque` for monotonic deque. \n- **Java:** `ArrayDeque<Integer>` for stack and deque. \n- **C++:** `std::vector` or `std::stack`, `std::deque`. \n- **JS:** Standard Array for stack, custom Deque/Doubly-LinkedList for $O(1)$ front pops."
+                    },
+                    {
+                        heading: "9. Code Example: Monotonic Stack & Deque",
+                        content: "Implementations of Next Greater Element (Stack) and Sliding Window Maximum (Deque) in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Monotonic Stack & Deque Solutions",
+                            code: {
+                                python: `from collections import deque\n\ndef next_greater_element(nums: list) -> list:\n    res = [-1] * len(nums)\n    stack = []\n    for i, num in enumerate(nums):\n        while stack and nums[stack[-1]] < num:\n            idx = stack.pop()\n            res[idx] = num\n        stack.append(i)\n    return res\n\ndef max_sliding_window(nums: list, k: int) -> list:\n    deq = deque()\n    res = []\n    for i, num in enumerate(nums):\n        while deq and nums[deq[-1]] <= num:\n            deq.pop()\n        deq.append(i)\n        if deq[0] <= i - k:\n            deq.popleft()\n        if i >= k - 1:\n            res.append(nums[deq[0]])\n    return res`,
+                                java: `import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class MonotonicStructures {\n    public static int[] nextGreaterElement(int[] nums) {\n        int[] res = new int[nums.length];\n        java.util.Arrays.fill(res, -1);\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int i = 0; i < nums.length; i++) {\n            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {\n                res[stack.pop()] = nums[i];\n            }\n            stack.push(i);\n        }\n        return res;\n    }\n\n    public static int[] maxSlidingWindow(int[] nums, int k) {\n        int[] res = new int[nums.length - k + 1];\n        Deque<Integer> deq = new ArrayDeque<>();\n        int idx = 0;\n        for (int i = 0; i < nums.length; i++) {\n            while (!deq.isEmpty() && nums[deq.peekLast()] <= nums[i]) {\n                deq.pollLast();\n            }\n            deq.offerLast(i);\n            if (deq.peekFirst() <= i - k) {\n                deq.pollFirst();\n            }\n            if (i >= k - 1) {\n                res[idx++] = nums[deq.peekFirst()];\n            }\n        }\n        return res;\n    }`,
+                                cpp: `#include <vector>\n#include <deque>\n#include <stack>\n\nstd::vector<int> nextGreaterElement(const std::vector<int>& nums) {\n    std::vector<int> res(nums.size(), -1);\n    std::stack<int> st;\n    for (int i = 0; i < nums.size(); i++) {\n        while (!st.empty() && nums[st.top()] < nums[i]) {\n            res[st.top()] = nums[i];\n            st.pop();\n        }\n        st.push(i);\n    }\n    return res;\n}\n\nstd::vector<int> maxSlidingWindow(const std::vector<int>& nums, int k) {\n    std::vector<int> res;\n    std::deque<int> deq;\n    for (int i = 0; i < nums.size(); i++) {\n        while (!deq.empty() && nums[deq.back()] <= nums[i]) deq.pop_back();\n        deq.push_back(i);\n        if (deq.front() <= i - k) deq.pop_front();\n        if (i >= k - 1) res.push_back(nums[deq.front()]);\n    }\n    return res;\n}`,
+                                javascript: `function nextGreaterElement(nums) {\n  const res = new Array(nums.length).fill(-1);\n  const stack = [];\n  for (let i = 0; i < nums.length; i++) {\n    while (stack.length > 0 && nums[stack[stack.length - 1]] < nums[i]) {\n      const idx = stack.pop();\n      res[idx] = nums[i];\n    }\n    stack.push(i);\n  }\n  return res;\n}\n\nfunction maxSlidingWindow(nums, k) {\n  const res = [];\n  const deq = [];\n  let head = 0;\n  for (let i = 0; i < nums.length; i++) {\n    while (deq.length > head && nums[deq[deq.length - 1]] <= nums[i]) {\n      deq.pop();\n    }\n    deq.push(i);\n    if (deq[head] <= i - k) head++;\n    if (i >= k - 1) res.push(nums[deq[head]]);\n  }\n  return res;\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Dissecting the logic: \n- Storing **indices** in the stack/deque instead of raw values provides both value comparison (`nums[stack.top()]`) and distance/boundary tracking (`i - stack.top()`). \n- Amortized $O(N)$ execution is guaranteed by single-push single-pop lifecycles."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Errors to avoid: \n- Storing values instead of indices (loses window position tracking). \n- Using `<` vs `<=` incorrectly during pop conditions (causes incorrect duplicate value retention)."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge conditions: \n- Strict vs Non-strict monotonicity: Duplicate elements require deciding whether to pop on equal values (`<=`)."
+                    },
+                    {
+                        heading: "13. Comparison: Monotonic Deque vs Segment Tree for RMQ",
+                        content: "Comparison: \n- **Monotonic Deque:** $O(N)$ time for sliding window of FIXED size $K$. \n- **Segment Tree:** $O(\\log N)$ time per query for DYNAMIC ranges of arbitrary size."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Use cases: \n- **Financial Indicators:** Calculating Moving Averages and Max Drawdown over sliding time windows. \n- **Audio Signal Processing:** Peak amplitude detection over continuous audio frames."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview focus: \n- LeetCode 84 (Largest Rectangle in Histogram), LeetCode 239 (Sliding Window Maximum), LeetCode 739 (Daily Temperatures)."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Monotonic Stacks and Deques provide linear-time solutions for range boundary and sliding window problems by preserving monotonic order and maintaining amortized $O(1)$ push/pop operations."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why is the time complexity of Monotonic Stack operations O(N) even with a nested while loop?", options: ["The stack size is bounded by 10.", "Every element is pushed onto the stack exactly once and popped at most once across the entire algorithm execution.", "Nested loops in stacks automatically optimize to O(1).", "It uses binary search inside the loop."], correctIndex: 1, explanation: "Aggregate amortized analysis proves that across N iterations, total pushes = N and total pops <= N, yielding 2N total operations = O(N)." },
+                    { id: "q2", question: "What element is always located at the FRONT of a Monotonic Decreasing Deque for Sliding Window Maximum?", options: ["The smallest element in the array.", "The current window maximum value.", "The oldest element in the window.", "The median value."], correctIndex: 1, explanation: "The monotonic decreasing invariant ensures that the largest unexpired element remains at index 0 (the front of the deque)." }
+                ]
+            },
+            {
+                id: "ds-sparse-table",
+                slug: "sparse-tables-rmq",
+                categorySlug: "data-structures",
+                title: "Sparse Tables (RMQ)",
+                subtitle: "Powers-of-two matrix precomputation for O(N log N) build and strict O(1) Range Minimum Queries",
+                difficulty: "Advanced",
+                readTime: "30 min read",
+                summary: "Master static range query optimization. Understand powers-of-two interval decomposition, ST[i][j] matrix precomputation, property idempotency (min/max/gcd), and strict O(1) range queries.",
+                overview: "A Sparse Table is a static data structure designed to solve Range Minimum/Maximum Queries (RMQ) on immutable arrays. By precomputing answers for all range intervals of length equal to powers of two ($2^k$), a Sparse Table answers range queries in strict O(1) constant time after an $O(N \log N)$ precomputation phase. It achieves this by overlapping two precomputed intervals for idempotent operations like $\min$, $\max$, and $\gcd$.",
+                keyConcepts: [
+                    "Static Range Queries: Array MUST NOT be modified after build",
+                    "Powers-of-Two Interval Decomposition: ST[i][j] represents range [i, i + 2^j - 1]",
+                    "Precomputation Dynamic Programming: ST[i][j] = min(ST[i][j-1], ST[i + 2^(j-1)][j-1])",
+                    "Idempotent Property: f(x, x) = x (min, max, gcd)",
+                    "Strict O(1) Query Time via Overlapping Intervals",
+                    "O(N log N) Space and Build Time Complexity"
+                ],
+                timeComplexity: { access: "O(1)", search: "O(1)", insertion: "N/A (Immutable)", deletion: "N/A (Immutable)" },
+                spaceComplexity: "O(n log n)",
+                sections: [
+                    {
+                        heading: "1. The Static Range Query Problem",
+                        content: "Given an array of $N$ static elements, you are asked $Q$ range queries of the form: 'What is the minimum element between index $L$ and $R$?' \n\n- **Naive Loop:** $O(N)$ per query $\\rightarrow O(Q \\times N)$ overall (Too slow for $Q = 10^6$). \n- **Segment Tree:** $O(N)$ build, $O(\\log N)$ per query $\\rightarrow O(Q \\log N)$. \n- **Sparse Table:** $O(N \\log N)$ build, **strict $O(1)$ per query** $\\rightarrow O(Q)$ overall!"
+                    },
+                    {
+                        heading: "2. The Precomputation Matrix ST[i][j]",
+                        content: "We define a 2D matrix `ST[N][LOGN]` where: \n`ST[i][j]` stores the answer for the range starting at index `i` with length $2^j$ (covering $[i, i + 2^j - 1]$). \n\n**Dynamic Programming Recurrence:** \nA range of length $2^j$ can be split into two equal halves of length $2^{j-1}$: \n- Left half: `ST[i][j-1]` (covers $[i, i + 2^{j-1} - 1]$) \n- Right half: `ST[i + 2^(j-1)][j-1]` (covers $[i + 2^{j-1}, i + 2^j - 1]$) \n\n$$\\text{ST}[i][j] = \\min(\\text{ST}[i][j-1], \\text{ST}[i + 2^{j-1}][j-1])$$"
+                    },
+                    {
+                        heading: "3. The Secret to O(1) Queries: Idempotency",
+                        content: "Why can Sparse Tables answer queries in $O(1)$ time while Segment Trees take $O(\\log N)$? \n\nThe secret is **Idempotency**: a mathematical property where $f(x, x) = x$. \n- Operations like $\\min(A, B)$, $\\max(A, B)$, and $\\gcd(A, B)$ are **idempotent** because overlapping elements do not alter the result: $\\min(2, 2) = 2$. \n- Summation $\\sum$ is NOT idempotent ($\\sum(2, 2) = 4 \\neq 2$). \n\nFor query range $[L, R]$, let $k = \\lfloor \\log_2(R - L + 1) \\rfloor$. \nWe overlap two ranges of length $2^k$: \n1. Range 1: Starts at $L$ $\\rightarrow$ `ST[L][k]` \n2. Range 2: Ends at $R$ $\\rightarrow$ `ST[R - 2^k + 1][k]` \n\n$$\\text{Query}(L, R) = \\min(\\text{ST}[L][k], \\text{ST}[R - 2^k + 1][k])$$ \nBecause both ranges overlap but cover the ENTIRE interval $[L, R]$, taking their minimum computes the exact range minimum in ONE single operation ($O(1)$)!"
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing overlapping ranges for Query(1, 6) where length = 6.",
+                        diagram: `Array Indices: [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
+Query Range [1, 6]: Length = 6.
+k = floor(log2(6)) = 2  (2^k = 4)
+
+Range 1: Starts at L=1, length 4 -> Covers indices [1, 2, 3, 4]  (ST[1][2])
+Range 2: Ends at R=6, length 4   -> Covers indices [3, 4, 5, 6]  (ST[3][2])
+
+             Indices:  1   2   3   4   5   6
+Range 1 (ST[1][2]):   [========]
+Range 2 (ST[3][2]):          [========]
+Overlap region:              [====]  (Indices 3,4 overlap safely!)
+
+Query Result = min(ST[1][2], ST[3][2])  -> Calculated in O(1) time!`
+                    },
+                    {
+                        heading: "5. Fast O(1) Log Table Precomputation",
+                        content: "Computing `floor(log2(len))` via floating point `math.log2()` calls inside query loops adds function call overhead. \n\nTo guarantee true nanosecond $O(1)$ performance, precompute a `logTable[]` array: \n```python\nlogTable = [0] * (N + 1)\nfor i in range(2, N + 1):\n    logTable[i] = logTable[i // 2] + 1\n```"
+                    },
+                    {
+                        heading: "6. Complexity Analysis",
+                        content: "Metrics: \n- **Build Time:** $O(N \\log N)$ DP matrix population. \n- **Query Time:** $O(1)$ constant time for idempotent functions (min/max/gcd). For non-idempotent functions (sum), queries take $O(\\log N)$. \n- **Space Complexity:** $O(N \\log N)$ space to store matrix."
+                    },
+                    {
+                        heading: "7. Language Support",
+                        content: "Implementations in languages: \n- Standard libraries do not include Sparse Tables; custom implementation required for competitive programming and high-frequency range query systems."
+                    },
+                    {
+                        heading: "8. Code Example: Sparse Table Implementation",
+                        content: "Complete Sparse Table implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Sparse Table (Range Minimum Query)",
+                            code: {
+                                python: `import math\n\nclass SparseTable:\n    def __init__(self, arr: list):\n        self.n = len(arr)\n        self.log_n = int(math.log2(self.n)) + 1\n        self.st = [[0] * self.log_n for _ in range(self.n)]\n        self.log_table = [0] * (self.n + 1)\n\n        for i in range(2, self.n + 1):\n            self.log_table[i] = self.log_table[i // 2] + 1\n\n        for i in range(self.n):\n            self.st[i][0] = arr[i]\n\n        for j in range(1, self.log_n):\n            i = 0\n            while i + (1 << j) <= self.n:\n                self.st[i][j] = min(self.st[i][j - 1], self.st[i + (1 << (j - 1))][j - 1])\n                i += 1\n\n    def query(self, L: int, R: int) -> int:\n        length = R - L + 1\n        k = self.log_table[length]\n        return min(self.st[L][k], self.st[R - (1 << k) + 1][k])`,
+                                java: `public class SparseTable {\n    private final int[][] st;\n    private final int[] logTable;\n\n    public SparseTable(int[] arr) {\n        int n = arr.length;\n        int logN = (int) (Math.log(n) / Math.log(2)) + 1;\n        st = new int[n][logN];\n        logTable = new int[n + 1];\n\n        for (int i = 2; i <= n; i++) {\n            logTable[i] = logTable[i / 2] + 1;\n        }\n\n        for (int i = 0; i < n; i++) {\n            st[i][0] = arr[i];\n        }\n\n        for (int j = 1; j < logN; j++) {\n            for (int i = 0; i + (1 << j) <= n; i++) {\n                st[i][j] = Math.min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);\n            }\n        }\n    }\n\n    public int query(int L, int R) {\n        int length = R - L + 1;\n        int k = logTable[length];\n        return Math.min(st[L][k], st[R - (1 << k) + 1][k]);\n    }`,
+                                cpp: `#include <vector>\n#include <cmath>\n#include <algorithm>\n\nclass SparseTable {\nprivate:\n    int n;\n    int logN;\n    std::vector<std::vector<int>> st;\n    std::vector<int> logTable;\n\npublic:\n    SparseTable(const std::vector<int>& arr) {\n        n = arr.size();\n        logN = std::log2(n) + 1;\n        st.assign(n, std::vector<int>(logN, 0));\n        logTable.assign(n + 1, 0);\n\n        for (int i = 2; i <= n; i++) {\n            logTable[i] = logTable[i / 2] + 1;\n        }\n\n        for (int i = 0; i < n; i++) {\n            st[i][0] = arr[i];\n        }\n\n        for (int j = 1; j < logN; j++) {\n            for (int i = 0; i + (1 << j) <= n; i++) {\n                st[i][j] = std::min(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);\n            }\n        }\n    }\n\n    int query(int L, int R) const {\n        int length = R - L + 1;\n        int k = logTable[length];\n        return std::min(st[L][k], st[R - (1 << k) + 1][k]);\n    }\n};`,
+                                javascript: `class SparseTable {\n  constructor(arr) {\n    this.n = arr.length;\n    this.logN = Math.floor(Math.log2(this.n)) + 1;\n    this.st = Array.from({ length: this.n }, () => new Array(this.logN).fill(0));\n    this.logTable = new Array(this.n + 1).fill(0);\n\n    for (let i = 2; i <= this.n; i++) {\n      this.logTable[i] = this.logTable[Math.floor(i / 2)] + 1;\n    }\n\n    for (let i = 0; i < this.n; i++) {\n      this.st[i][0] = arr[i];\n    }\n\n    for (let j = 1; j < this.logN; j++) {\n      for (let i = 0; i + (1 << j) <= this.n; i++) {\n        this.st[i][j] = Math.min(this.st[i][j - 1], this.st[i + (1 << (j - 1))][j - 1]);\n      }\n    }\n  }\n\n  query(L, R) {\n    const length = R - L + 1;\n    const k = this.logTable[length];\n    return Math.min(this.st[L][k], this.st[R - (1 << k) + 1][k]);\n  }\n}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "9. Code Explanation",
+                        content: "Implementation key details: \n- `1 << j` bitwise shift efficiently calculates $2^j$. \n- `st[R - (1 << k) + 1][k]` calculates the starting index for the second overlapping interval ending at `R`."
+                    },
+                    {
+                        heading: "10. Common Mistakes & Pitfalls",
+                        content: "Gotchas: \n- Attempting to update elements (Sparse Tables are STATIC; updates break precomputed matrix). \n- Applying $O(1)$ overlapping query logic to non-idempotent operations like Sum (causes duplicate addition of overlapping elements)."
+                    },
+                    {
+                        heading: "11. Edge Cases",
+                        content: "Boundary checks: \n- Query $L == R$: Range length 1, returns `arr[L]` in $O(1)$ time."
+                    },
+                    {
+                        heading: "12. Comparison: Sparse Table vs Segment Tree vs Fenwick Tree",
+                        content: "Comparison: \n- **Sparse Table:** Static data ONLY. Query: $O(1)$. Build: $O(N \\log N)$. \n- **Segment Tree:** Dynamic updates supported. Query: $O(\\log N)$. Update: $O(\\log N)$. Build: $O(N)$. \n- **Fenwick Tree:** Range Sum queries + point updates. Query: $O(\\log N)$."
+                    },
+                    {
+                        heading: "13. Real-World Applications",
+                        content: "Use cases: \n- **Lowest Common Ancestor (LCA) in Trees:** Reducing LCA queries on tree structures to Range Minimum Queries via Euler Tour technique. \n- **Static Financial Analytics:** Sub-millisecond historical price range minimum queries."
+                    },
+                    {
+                        heading: "14. Technical Interview Perspective",
+                        content: "Interview focus: \n- Advanced competitive programming & algorithmic optimization. Explaining why idempotency unlocks $O(1)$ query time."
+                    },
+                    {
+                        heading: "15. Summary",
+                        content: "Sparse Tables deliver sub-nanosecond $O(1)$ range queries for static immutable arrays by exploiting powers-of-two decomposition and operation idempotency."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why does Sparse Table achieve O(1) query time for Min/Max RMQ, whereas Segment Tree takes O(log N)?", options: ["Sparse Tables use GPU acceleration.", "Min and Max are idempotent operations, allowing two overlapping powers-of-two intervals to cover the query range in 1 step.", "Segment Trees store data on disk.", "Sparse Tables use hash tables."], correctIndex: 1, explanation: "Idempotency means f(x, x) = x. Because overlapping elements do not change the min or max value, overlapping two precomputed length-2^k intervals answers the query in O(1) time." },
+                    { id: "q2", question: "What is the primary constraint when choosing a Sparse Table over a Segment Tree?", options: ["Sparse Tables only work with integers.", "The array must be completely static and immutable; updates require re-building the O(N log N) table.", "Sparse Tables take O(N^2) memory.", "Sparse Tables cannot do range min."], correctIndex: 1, explanation: "Sparse Tables precompute matrix intervals. Modifying any array element invalidates precomputed intervals, requiring an O(N log N) rebuild." }
+                ]
+            },
+            {
+                id: "ds-suffix-tree-array",
+                slug: "suffix-trees-and-suffix-arrays",
+                categorySlug: "data-structures",
+                title: "Suffix Trees & Suffix Arrays",
+                subtitle: "Compact string indexing, Ukkonen's O(N) algorithm, LCP Array via Kasai, and genome search",
+                difficulty: "Advanced",
+                readTime: "45 min read",
+                summary: "Master advanced string indexing structures. Understand Suffix Tree branching, Ukkonen's linear-time construction, Suffix Array sorting, Longest Common Prefix (LCP) arrays via Kasai's algorithm, and bioinformatics applications.",
+                overview: "A Suffix Tree is a compressed trie containing all suffixes of a given text string T of length N. It acts as an ultimate index for the string, enabling instant substring search in O(M) time, where M is the pattern length, completely independent of text length N. A Suffix Array is a space-efficient alternative that stores the lexicographically sorted starting indices of all suffixes. Combined with an LCP (Longest Common Prefix) array, Suffix Arrays match the theoretical performance of Suffix Trees while using 4x less memory.",
+                keyConcepts: [
+                    "Compressed Trie of Suffixes: Storing edges as character index ranges [start, end]",
+                    "Ukkonen's Algorithm: Implicit Suffix Trees, suffix links, and linear O(N) construction",
+                    "Suffix Array (SA): Lexicographically sorted array of suffix indices",
+                    "Longest Common Prefix (LCP) Array: Overlap length between adjacent sorted suffixes",
+                    "Kasai's Algorithm for O(N) LCP Array computation",
+                    "Bioinformatics (DNA sequence matching) & Plagiarism Detection Engines"
+                ],
+                timeComplexity: { access: "O(m + log n)", search: "O(m + log n)", insertion: "O(n)", deletion: "N/A" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Heavyweight String Indexing Problem",
+                        content: "Suppose you manage the Human Genome Project database (3 billion DNA base pairs: A, C, G, T). A scientist searches for a 100-character gene sequence. \n\nStandard string search algorithms like KMP or Rabin-Karp take $O(N)$ time per search ($3 \\times 10^9$ operations). When millions of queries occur per second, pre-processing the query string is useless. We must pre-index the **TEXT** string itself. \n\nBy building a **Suffix Tree** or **Suffix Array** over the 3-billion-character DNA sequence once in $O(N)$ time, any subsequent pattern query of length $M$ runs in sub-millisecond **$O(M)$** time!"
+                    },
+                    {
+                        heading: "2. The Anatomy of a Suffix Tree",
+                        content: "Given string $T = \\text{'banana\\$'}$ (appending unique terminal character `$`): \nAll suffixes: `banana$`, `anana$`, `nana$`, `ana$`, `na$`, `a$`, `$`. \n\nA Suffix Tree is a trie of these 7 suffixes with a critical memory compression rule: **Degree-1 nodes are collapsed**. \nInstead of storing individual character nodes (`a` $\\rightarrow$ `n` $\\rightarrow$ `a`), edge labels store character index ranges `[start, end]` (e.g., `T[1..3]`). This forces the number of internal nodes to never exceed $N$, guaranteeing $O(N)$ total space."
+                    },
+                    {
+                        heading: "3. Ukkonen's Algorithm Intuition",
+                        content: "Building a naive suffix trie takes $O(N^2)$ time and space. Esko Ukkonen invented an online $O(N)$ algorithm using three key tricks: \n1. **Implicit Suffix Trees:** Appending characters online character-by-character. \n2. **Suffix Links:** Pointer edges connecting node $v$ (representing prefix $\\alpha x$) to node $w$ (representing prefix $x$), allowing $O(1)$ jumps across tree branches. \n3. **Global End Variable (`e`):** Leaf edge endpoints are set to a dynamic pointer `e`, extending all leaf edges simultaneously in $O(1)$ time per text character."
+                    },
+                    {
+                        heading: "4. The Suffix Array + LCP Array Alternative",
+                        content: "While Suffix Trees are theoretically fast, pointer overhead makes them memory-heavy ($\\approx 20N$ bytes). \n\n**Suffix Array (SA):** An integer array `SA[0..N-1]` containing the starting indices of all suffixes sorted in lexicographical order. \n- For $T = \\text{'banana\\$'}$, sorted suffixes: \n  0: `$` (idx 6) \n  1: `a$` (idx 5) \n  2: `ana$` (idx 3) \n  3: `anana$` (idx 1) \n  4: `banana$` (idx 0) \n  5: `na$` (idx 4) \n  6: `nana$` (idx 2) \n  `SA = [6, 5, 3, 1, 0, 4, 2]` \n\n**LCP Array:** `LCP[i]` stores the length of the longest common prefix between `SA[i]` and `SA[i-1]`. `LCP = [0, 0, 1, 3, 1, 0, 2]`."
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Visualizing Suffix Array and LCP computation for 'banana$'.",
+                        diagram: `String: b  a  n  a  n  a  $
+Index:  0  1  2  3  4  5  6
+
+i   SA[i]  LCP[i]  Suffix
+--  -----  ------  ------
+0   6      0       $
+1   5      0       a$
+2   3      1       ana$       (shares 'a' with a$)
+3   1      3       anana$     (shares 'ana' with ana$)
+4   0      1       banana$    (shares 'b'? No, 'a' offset)
+5   4      0       na$
+6   2      2       nana$      (shares 'na' with na$)
+
+Binary Search for "ana":
+1. Low=0, High=6 -> Mid=3 -> SA[3]="anana$" -> Match "ana"!
+2. Binary search bounds find range [2..3] in O(M log N) time.`
+                    },
+                    {
+                        heading: "6. Kasai's Algorithm for O(N) LCP Array",
+                        content: "Computing LCP array naively by comparing adjacent sorted suffixes takes $O(N^2)$ time. \n\nKasai's algorithm relies on the key observation: If suffix $T[i..N]$ shares a common prefix of length $k$ with its predecessor in the Suffix Array, then the next suffix $T[i+1..N]$ MUST share a common prefix of length at least $k-1$ with its predecessor. By reusing $k-1$ match results, Kasai computes the entire LCP array in linear **$O(N)$** time."
+                    },
+                    {
+                        heading: "7. Complexity Analysis",
+                        content: "Metrics: \n- **Suffix Array Construction:** $O(N \\log N)$ using prefix doubling, or $O(N)$ using SA-IS / DC3 algorithm. \n- **LCP Array Construction:** $O(N)$ via Kasai's Algorithm. \n- **Pattern Search:** $O(M \\log N)$ via Binary Search on SA, or $O(M + \\log N)$ using SA + LCP array, or $O(M)$ on Suffix Tree. \n- **Space:** Suffix Array uses $4N$ bytes ($O(N)$ integers), 4x lighter than Suffix Tree."
+                    },
+                    {
+                        heading: "8. Language Support & Libraries",
+                        content: "Ecosystem: \n- **C++:** `std::sort` with custom suffix comparator for $O(N^2 \\log N)$ naive SA; competitive programmers use SA-IS or Prefix Doubling templates. \n- **Bioinformatics Tools:** Bowtie2 and BWA align DNA reads using Suffix Array + Burrows-Wheeler Transform (FM-Index)."
+                    },
+                    {
+                        heading: "9. Code Example: Suffix Array & Kasai LCP",
+                        content: "Implementation of Suffix Array (Prefix Doubling $O(N \\log^2 N)$) and Kasai's $O(N)$ LCP Array in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Suffix Array & Kasai LCP Implementation",
+                            code: {
+                                python: `def build_suffix_array(s: str) -> list:
+    n = len(s)
+    suffixes = [(s[i:], i) for i in range(n)]
+    suffixes.sort()
+    return [suffix[1] for suffix in suffixes]
+
+def build_lcp_array(s: str, sa: list) -> list:
+    n = len(s)
+    lcp = [0] * n
+    rank = [0] * n
+    for i in range(n):
+        rank[sa[i]] = i
+
+    k = 0
+    for i in range(n):
+        if rank[i] == 0:
+            k = 0
+            continue
+        j = sa[rank[i] - 1]
+        while i + k < n and j + k < n and s[i + k] == s[j + k]:
+            k += 1
+        lcp[rank[i]] = k
+        if k > 0:
+            k -= 1
+    return lcp`,
+                                java: `import java.util.Arrays;
+
+public class SuffixArray {
+    public static int[] buildSuffixArray(String s) {
+        int n = s.length();
+        Integer[] sa = new Integer[n];
+        for (int i = 0; i < n; i++) sa[i] = i;
+
+        Arrays.sort(sa, (a, b) -> s.substring(a).compareTo(s.substring(b)));
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) result[i] = sa[i];
+        return result;
+    }
+
+    public static int[] buildLCP(String s, int[] sa) {
+        int n = s.length();
+        int[] lcp = new int[n];
+        int[] rank = new int[n];
+        for (int i = 0; i < n; i++) rank[sa[i]] = i;
+
+        int k = 0;
+        for (int i = 0; i < n; i++) {
+            if (rank[i] == 0) { k = 0; continue; }
+            int j = sa[rank[i] - 1];
+            while (i + k < n && j + k < n && s.charAt(i + k) == s.charAt(j + k)) k++;
+            lcp[rank[i]] = k;
+            if (k > 0) k--;
+        }
+        return lcp;
+    }`,
+                                cpp: `#include <vector>
+#include <string>
+#include <algorithm>
+#include <iostream>
+
+std::vector<int> buildSuffixArray(const std::string& s) {
+    int n = s.size();
+    std::vector<int> sa(n);
+    for (int i = 0; i < n; i++) sa[i] = i;
+    std::sort(sa.begin(), sa.end(), [&](int a, int b) {
+        return s.substr(a) < s.substr(b);
+    });
+    return sa;
+}
+
+std::vector<int> buildLCP(const std::string& s, const std::vector<int>& sa) {
+    int n = s.size();
+    std::vector<int> lcp(n, 0), rank(n, 0);
+    for (int i = 0; i < n; i++) rank[sa[i]] = i;
+    int k = 0;
+    for (int i = 0; i < n; i++) {
+        if (rank[i] == 0) { k = 0; continue; }
+        int j = sa[rank[i] - 1];
+        while (i + k < n && j + k < n && s[i + k] == s[j + k]) k++;
+        lcp[rank[i]] = k;
+        if (k > 0) k--;
+    }
+    return lcp;
+}`,
+                                javascript: `function buildSuffixArray(s) {
+  const n = s.length;
+  const sa = Array.from({ length: n }, (_, i) => i);
+  sa.sort((a, b) => s.slice(a).localeCompare(s.slice(b)));
+  return sa;
+}
+
+function buildLCP(s, sa) {
+  const n = s.length;
+  const lcp = new Array(n).fill(0);
+  const rank = new Array(n).fill(0);
+  for (let i = 0; i < n; i++) rank[sa[i]] = i;
+
+  let k = 0;
+  for (let i = 0; i < n; i++) {
+    if (rank[i] === 0) { k = 0; continue; }
+    const j = sa[rank[i] - 1];
+    while (i + k < n && j + k < n && s[i + k] === s[j + k]) k++;
+    lcp[rank[i]] = k;
+    if (k > 0) k--;
+  }
+  return lcp;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "10. Code Explanation",
+                        content: "Implementation breakdown: \n- `rank[]` array: Maps original string index `i` to its position in `sa[]`. \n- Kasai's decrement trick: `if (k > 0) k--` reuses matching prefix lengths across adjacent suffixes."
+                    },
+                    {
+                        heading: "11. Common Mistakes & Pitfalls",
+                        content: "Pitfalls: \n- Forgetting to append terminal character `$` before building suffix structures (causes prefix ambiguity). \n- Naive substring slice memory allocations in Java/JS during sorting."
+                    },
+                    {
+                        heading: "12. Edge Cases",
+                        content: "Edge conditions: \n- Repeated characters ('aaaaa'): LCP values hit maximum $N-1$."
+                    },
+                    {
+                        heading: "13. Comparison: Suffix Tree vs Suffix Array vs FM-Index",
+                        content: "Comparison: \n- **Suffix Tree:** $O(N)$ space ($20N$ bytes), $O(M)$ search. \n- **Suffix Array:** $O(N)$ space ($4N$ bytes), $O(M \\log N)$ search. \n- **FM-Index (BWT + SA):** Compressed $O(N)$ space ($0.5N$ bytes), used in real-world DNA sequencing software."
+                    },
+                    {
+                        heading: "14. Real-World Applications",
+                        content: "Applications: \n- **Bioinformatics:** Alignment of short DNA reads against reference genomes (BLAST, Bowtie). \n- **Plagiarism Detection:** Finding longest common substring across thousands of essays."
+                    },
+                    {
+                        heading: "15. Technical Interview Perspective",
+                        content: "Interview focus: \n- Finding Longest Repeating Substring ($O(N)$ via max value in LCP array). \n- Finding Longest Common Substring of two strings."
+                    },
+                    {
+                        heading: "16. Summary",
+                        content: "Suffix Trees and Suffix Arrays provide structural text indexing. By pre-sorting all suffixes and building LCP arrays, they transform heavy string pattern search from $O(N)$ linear scans to sub-millisecond $O(M + \\log N)$ queries."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why is a Suffix Array combined with Kasai's LCP Array often preferred over a Suffix Tree in production?", options: ["Suffix Arrays take O(N^2) memory.", "Suffix Arrays use 4x-5x less memory (4 bytes/char) compared to Suffix Tree pointer overhead (20+ bytes/char) while retaining O(N) LCP calculations.", "Suffix Trees cannot search patterns.", "Suffix Arrays do not support binary search."], correctIndex: 1, explanation: "Suffix Arrays store flat integer indices (4N bytes) instead of complex pointer nodes, drastically reducing RAM footprint while Kasai's LCP enables O(N) operations." },
+                    { id: "q2", question: "How does Kasai's algorithm achieve O(N) time for computing the LCP Array?", options: ["By using GPU acceleration.", "By observing that adjacent suffix LCP lengths decrease by at most 1 (k >= k-1) when moving to the next text index.", "By building a Segment Tree.", "By running KMP string matching."], correctIndex: 1, explanation: "Reusing the previous match count minus 1 (k-1) avoids re-comparing matched characters from scratch, bounding total comparison steps to 2N." }
+                ]
+            },
+            {
+                id: "ds-treap",
+                slug: "treaps-randomized-search-trees",
+                categorySlug: "data-structures",
+                title: "Treaps & Implicit Treaps",
+                subtitle: "BST + Heap hybrid, randomized balancing, Split/Merge primitives, and dynamic array operations",
+                difficulty: "Advanced",
+                readTime: "40 min read",
+                summary: "Master Treaps (Tree + Heap). Understand randomized priority balancing, Split and Merge building blocks, Implicit Treaps for dynamic array operations (range reversals, O(log N) insertions/deletions), and lock-free balance guarantees.",
+                overview: "A Treap (a portmanteau of Tree and Heap) is a randomized binary search tree invented by Cecilia Aragon and Raimund Seidel in 1989. Each node stores a `key` and a randomly generated `priority`. A Treap maintains two invariants simultaneously: Binary Search Tree property on `key` (left < root < right) and Max-Heap property on `priority` (parent.priority >= child.priority). By assigning uniform random priorities to keys, Treaps achieve expected O(log N) height without requiring complex deterministic rotations like AVL or Red-Black trees.",
+                keyConcepts: [
+                    "Dual Invariants: BST property on Key + Max-Heap property on Random Priority",
+                    "Expected O(log N) Height via Uniform Random Priority Assignment",
+                    "Split Primitive: Partitioning a Treap into two sub-treaps around value X",
+                    "Merge Primitive: Combining two sorted sub-treaps into a single Treap",
+                    "Implicit Treaps: Using subtree node counts as implicit indices for dynamic arrays",
+                    "O(log N) Range Reversal (Lazy Propagation) & Dynamic Array Insertions"
+                ],
+                timeComplexity: { access: "O(log n) expected", search: "O(log n) expected", insertion: "O(log n) expected", deletion: "O(log n) expected" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Treap Concept: Tree + Heap",
+                        content: "Self-balancing trees (AVL, Red-Black) maintain height by detecting imbalance metrics and executing double rotations. \n\nA **Treap** replaces complex rotation state machines with **Randomness**. When inserting key $K$, we assign it a random 32-bit integer `priority`. \n- Keys follow BST order: `node.left.key < node.key < node.right.key` \n- Priorities follow Max-Heap order: `node.priority >= node.left.priority` and `node.priority >= node.right.priority` \n\nBecause priorities are chosen uniformly at random, a Treap's structural shape is mathematically identical to a BST formed by inserting elements in random order. The expected height of a Treap with $N$ elements is strictly **$2 \\ln N \\approx 1.38 \\log_2 N = O(\\log N)$**!"
+                    },
+                    {
+                        heading: "2. The Fundamental Primitives: Split & Merge",
+                        content: "Modern Treap implementations avoid traditional tree rotations entirely by relying on two elegant recursive operations: \n\n1. **`Split(node, key)`:** Splitting a Treap into two separate Treaps $T_L$ and $T_R$, where all keys in $T_L \\le \\text{key}$ and all keys in $T_R > \\text{key}$. \n2. **`Merge(T_L, T_R)`:** Merging two Treaps $T_L$ and $T_R$ (where max key in $T_L$ < min key in $T_R$) into a single valid Treap, picking the root based on higher heap priority."
+                    },
+                    {
+                        heading: "3. Insertion and Deletion via Split/Merge",
+                        content: "Using `Split` and `Merge`, tree operations become trivial 3-line functions: \n\n- **Insert(K):** \n  1. `Split(Root, K)` $\\rightarrow$ returns $T_L$ and $T_R$. \n  2. Create new single-node Treap $T_{new} = \\text{Node}(K, \\text{randomPriority}())$. \n  3. `Root = Merge(Merge(T_L, T_{new}), T_R)`. \n- **Delete(K):** \n  1. `Split(Root, K)` $\\rightarrow$ returns $T_L$ and $T_{right}$. \n  2. `Split(T_L, K - 1)` $\\rightarrow$ returns $T_L'$ and $T_K$ (target node). \n  3. `Root = Merge(T_L', T_{right})$ (discarding $T_K$)."
+                    },
+                    {
+                        heading: "4. Implicit Treaps (Dynamic Arrays on Steroids)",
+                        content: "What if a node does NOT store an explicit key? \n\nAn **Implicit Treap** uses the **subtree node count (`size`)** to derive implicit array indices! \n`implicit_index = size(node.left)`. \n\nBecause indices are computed dynamically from subtree sizes, we can: \n- Insert or delete an element in the middle of a 1,000,000-element array in **$O(\\log N)$** time (no element shifting!). \n- Reverse an entire sub-array range `[L, R]` in **$O(\\log N)$** time using Lazy Propagation flags (`node.lazy_reverse ^= 1`)."
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Visualizing a Treap node structure (Key, Priority).",
+                        diagram: `Nodes shown as: (Key, Priority)
+
+           ( 50, P=95 )
+          /            \
+  ( 20, P=80 )      ( 70, P=60 )
+   /        \
+( 10, P=40 ) ( 30, P=75 )
+
+BST Invariant on Keys: 10 < 20 < 30 < 50 < 70 (Valid!)
+Max-Heap Invariant on Priorities: 95 > 80, 60; 80 > 40, 75 (Valid!)`
+                    },
+                    {
+                        heading: "6. Complexity Analysis",
+                        content: "Metrics: \n- **Search, Insert, Delete, Split, Merge:** Expected **$O(\\log N)$** time; Worst case $O(N)$ (probability $< 10^{-12}$). \n- **Space Complexity:** $O(N)$ space (key, priority, left, right, size pointers)."
+                    },
+                    {
+                        heading: "7. Code Example: Treap with Split & Merge",
+                        content: "Complete Treap implementation with `Split` and `Merge` primitives in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Treap Implementation (Split & Merge)",
+                            code: {
+                                python: `import random
+
+class TreapNode:
+    def __init__(self, key: int):
+        self.key = key
+        self.priority = random.randint(1, 10**9)
+        self.left = None
+        self.right = None
+
+class Treap:
+    def __init__(self):
+        self.root = None
+
+    def split(self, root: TreapNode, key: int):
+        """Splits root into (left_treap <= key, right_treap > key)."""
+        if not root:
+            return (None, None)
+        if root.key <= key:
+            l, r = self.split(root.right, key)
+            root.right = l
+            return (root, r)
+        else:
+            l, r = self.split(root.left, key)
+            root.left = r
+            return (l, root)
+
+    def merge(self, left: TreapNode, right: TreapNode) -> TreapNode:
+        """Merges two treaps assuming max_key(left) < min_key(right)."""
+        if not left or not right:
+            return left or right
+        if left.priority > right.priority:
+            left.right = self.merge(left.right, right)
+            return left
+        else:
+            right.left = self.merge(left, right.left)
+            return right
+
+    def insert(self, key: int) -> None:
+        l, r = self.split(self.root, key)
+        new_node = TreapNode(key)
+        self.root = self.merge(self.merge(l, new_node), r)
+
+    def delete(self, key: int) -> None:
+        l, r = self.split(self.root, key)
+        l_prime, target = self.split(l, key - 1)
+        self.root = self.merge(l_prime, r)`,
+                                java: `import java.util.Random;
+
+public class Treap {
+    static class Node {
+        int key, priority;
+        Node left, right;
+        Node(int k) {
+            this.key = k;
+            this.priority = new Random().nextInt(1_000_000_000);
+        }
+    }
+
+    private Node root;
+
+    public Node[] split(Node root, int key) {
+        if (root == null) return new Node[]{null, null};
+        if (root.key <= key) {
+            Node[] res = split(root.right, key);
+            root.right = res[0];
+            return new Node[]{root, res[1]};
+        } else {
+            Node[] res = split(root.left, key);
+            root.left = res[1];
+            return new Node[]{res[0], root};
+        }
+    }
+
+    public Node merge(Node left, Node right) {
+        if (left == null || right == null) return left != null ? left : right;
+        if (left.priority > right.priority) {
+            left.right = merge(left.right, right);
+            return left;
+        } else {
+            right.left = merge(left, right.left);
+            return right;
+        }
+    }
+
+    public void insert(int key) {
+        Node[] lr = split(root, key);
+        Node newNode = new Node(key);
+        root = merge(merge(lr[0], newNode), lr[1]);
+    }`,
+                                cpp: `#include <iostream>
+#include <cstdlib>
+
+struct Node {
+    int key, priority;
+    Node *left, *right;
+    Node(int k) : key(k), priority(rand()), left(nullptr), right(nullptr) {}
+};
+
+class Treap {
+private:
+    Node* root = nullptr;
+
+    void split(Node* root, int key, Node*& left, Node*& right) {
+        if (!root) { left = right = nullptr; return; }
+        if (root->key <= key) {
+            split(root->right, key, root->right, right);
+            left = root;
+        } else {
+            split(root->left, key, left, root->left);
+            right = root;
+        }
+    }
+
+    Node* merge(Node* left, Node* right) {
+        if (!left || !right) return left ? left : right;
+        if (left->priority > right->priority) {
+            left->right = merge(left->right, right);
+            return left;
+        } else {
+            right->left = merge(left, right->left);
+            return right;
+        }
+    }
+
+public:
+    void insert(int key) {
+        Node *l, *r;
+        split(root, key, l, r);
+        root = merge(merge(l, new Node(key)), r);
+    }
+};`,
+                                javascript: `class Node {
+  constructor(key) {
+    this.key = key;
+    this.priority = Math.floor(Math.random() * 1e9);
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class Treap {
+  constructor() { this.root = null; }
+
+  split(root, key) {
+    if (!root) return [null, null];
+    if (root.key <= key) {
+      const [l, r] = this.split(root.right, key);
+      root.right = l;
+      return [root, r];
+    } else {
+      const [l, r] = this.split(root.left, key);
+      root.left = r;
+      return [l, root];
+    }
+  }
+
+  merge(left, right) {
+    if (!left || !right) return left || right;
+    if (left.priority > right.priority) {
+      left.right = this.merge(left.right, right);
+      return left;
+    } else {
+      right.left = this.merge(left, right.left);
+      return right;
+    }
+  }
+
+  insert(key) {
+    const [l, r] = this.split(this.root, key);
+    const newNode = new Node(key);
+    this.root = this.merge(this.merge(l, newNode), r);
+  }
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "8. Code Explanation",
+                        content: "Dissecting `Split` and `Merge`: \n- `Split` recursively detaches subtrees based on key comparison. \n- `Merge` picks the node with the higher random `priority` as root, guaranteeing randomized balance."
+                    },
+                    {
+                        heading: "9. Common Mistakes & Pitfalls",
+                        content: "Gotchas: \n- Using non-uniform random generators (causes priority collision and height imbalance). \n- Forgetting to update node `size` pointers during Split/Merge in Implicit Treaps."
+                    },
+                    {
+                        heading: "10. Real-World Applications",
+                        content: "Use cases: \n- **Competitive Programming:** Implicit Treaps are the gold standard for dynamic range query / range modification problems. \n- **C++ `std::experimental::rope`:** Rope data structures for text editors use implicit treaps to handle fast insertion/deletion in giant documents."
+                    },
+                    {
+                        heading: "11. Summary",
+                        content: "Treaps combine BST order with heap priority via random numbers. By replacing explicit rotations with functional Split and Merge primitives, Treaps provide expected $O(\\log N)$ operations and unlock dynamic implicit array manipulations."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why does a Treap achieve expected O(log N) height without explicit tree rotations?", options: ["It uses 64-bit pointers.", "Uniform random priorities guarantee that the Treap's structural shape is identical to a BST built by inserting keys in random order.", "Treaps do not allow duplicate keys.", "Root nodes are fixed."], correctIndex: 1, explanation: "Random priorities simulate random insertion order, which mathematically yields an expected tree height of ~1.38 log2 N." },
+                    { id: "q2", question: "What capability does an 'Implicit Treap' unlock over a standard array?", options: ["O(1) memory space.", "O(log N) insertion, deletion, and sub-array reversal anywhere in the middle of a dynamic array.", "O(1) sorting.", "Zero pointer overhead."], correctIndex: 1, explanation: "By calculating dynamic indices from subtree sizes and applying lazy propagation, Implicit Treaps perform range reversals and middle insertions in O(log N) time." }
+                ]
+            },
+            {
+                id: "ds-count-min-hylog",
+                slug: "count-min-sketch-and-hyperloglog",
+                categorySlug: "data-structures",
+                title: "Count-Min Sketch & HyperLogLog",
+                subtitle: "Probabilistic Big Data streaming algorithms for frequency and cardinality estimation",
+                difficulty: "Advanced",
+                readTime: "35 min read",
+                summary: "Master Big Data streaming algorithms. Understand Count-Min Sketch 2D counter matrices for O(1) heavy-hitter frequency estimation, and HyperLogLog (HLL) trailing zero bit registers for O(1) distinct count cardinality estimation.",
+                overview: "In Big Data stream processing (e.g., Twitter processing 500 million tweets/day or network routers processing billions of IP packets), storing exact frequency counts or distinct user IDs in Hash Tables requires terabytes of RAM. Count-Min Sketch and HyperLogLog (HLL) are probabilistic data structures that trade absolute 100% precision for sub-kilobyte memory footprints. Count-Min Sketch estimates frequency events with bounded error; HyperLogLog estimates set cardinality (count distinct) with < 1% error using less than 1.5 KB of memory.",
+                keyConcepts: [
+                    "Streaming Data Model: Processing infinite events in single-pass O(1) time",
+                    "Count-Min Sketch: 2D array of d x w counters with d independent hash functions",
+                    "Over-estimation Bound in Count-Min: Query returns min(counter[i][hash_i(x)])",
+                    "HyperLogLog (HLL): Estimating cardinality from maximum trailing zero bits in hashed values",
+                    "HLL Harmonic Mean & Register Bucketing: m = 2^b registers for variance reduction",
+                    "Production Systems: Redis PFADD/PFCOUNT, Google BigQuery, Network Traffic Analyzers"
+                ],
+                timeComplexity: { access: "O(1)", search: "O(1)", insertion: "O(1)", deletion: "N/A" },
+                spaceComplexity: "O(d * w) for Count-Min / O(m) registers for HLL (~1.5 KB)",
+                sections: [
+                    {
+                        heading: "1. The Big Data Streaming Problem",
+                        content: "Suppose Netflix wants to count how many distinct users watched videos today (Cardinality), and find the top 10 most viral video IDs (Heavy Hitters). \n\n- **Exact Hash Set:** Storing 200 million user UUIDs (16 bytes each) requires $3.2\\text{ GB}$ of RAM per server. \n- **HyperLogLog (HLL):** Estimates 200 million distinct users with $98.9\\%$ accuracy using **1.5 Kilobytes** of RAM! \n- **Count-Min Sketch:** Tracks frequencies of 1 billion stream items using a 2MB counter grid."
+                    },
+                    {
+                        heading: "2. Count-Min Sketch Mechanics",
+                        content: "A Count-Min Sketch consists of a 2D array of counters of dimension $d \\times w$, where $d = \\lceil \\ln(1/\\delta) \\rceil$ (rows) and $w = \\lceil e/\\epsilon \\rceil$ (columns), with $d$ independent hash functions. \n\n- **Update(Item $X$):** For each row $i \\in [0, d-1]$, compute column index $c_i = h_i(X) \\pmod w$. Increment `grid[i][c_i] += 1`. \n- **Query(Item $X$):** Compute $c_i = h_i(X) \\pmod w$ for all rows. \n  $$\\text{Estimated Frequency}(X) = \\min_{i=0}^{d-1} \\text{grid}[i][c_i]$$ \n\nWhy `min()`? Because hash collisions can only **INCREASE** counter values, the true frequency is guaranteed to be $\\le \\text{Estimated Frequency}$. Taking the minimum across rows drastically reduces collision noise!"
+                    },
+                    {
+                        heading: "3. HyperLogLog (HLL) Mechanics",
+                        content: "HyperLogLog estimates the number of unique items in a stream based on coin-tossing probability: \nIf you flip a fair coin until it lands Heads, getting 10 consecutive Tails in a row has probability $1/2^{10} = 1/1024$. If you see a sequence of 10 Tails, you can estimate you flipped the coin roughly 1000 times! \n\nIn HLL: \n1. Hash item $X$ into a 64-bit integer. \n2. Use the first $b$ bits to select one of $m = 2^b$ registers. \n3. Count the number of trailing zeros $\\rho(w)$ in the remaining bits. \n4. Store $\\max(\\text{register}[idx], \\rho(w) + 1)$ in the register. \n5. Combine all $m$ registers using the **Harmonic Mean** to estimate total cardinality $E = \\alpha_m m^2 \\left( \\sum_{j=1}^m 2^{-M[j]} \\right)^{-1}$."
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Count-Min Sketch 2D Counter Matrix.",
+                        diagram: `Count-Min Sketch (d=3 rows, w=5 columns):
+
+Row 0 (h1): [ 0 | 12 |  0 |  5 |  2 ]
+Row 1 (h2): [ 3 |  0 | 14 |  0 |  2 ]
+Row 2 (h3): [ 0 |  2 |  0 | 12 |  5 ]
+
+Query("user123"):
+h1("user123") -> col 1 (val 12)
+h2("user123") -> col 4 (val 2)
+h3("user123") -> col 1 (val 2)
+
+Estimated Count = min(12, 2, 2) = 2!`
+                    },
+                    {
+                        heading: "5. Complexity Analysis",
+                        content: "Metrics: \n- **Count-Min Sketch:** Space $O(\\frac{1}{\\epsilon} \\log \\frac{1}{\\delta})$ counters. Time $O(d)$ per stream event. \n- **HyperLogLog:** Space $O(m)$ registers (for $m=16384$, space $= 16384 \\times 6 \\text{ bits} = 12 \\text{ KB}$). Time $O(1)$ per stream event."
+                    },
+                    {
+                        heading: "6. Code Example: Count-Min Sketch & HyperLogLog",
+                        content: "Implementation of Count-Min Sketch in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Count-Min Sketch Implementation",
+                            code: {
+                                python: `import math
+
+class CountMinSketch:
+    def __init__(self, epsilon: float = 0.01, delta: float = 0.01):
+        self.w = int(math.ceil(math.e / epsilon))
+        self.d = int(math.ceil(math.log(1 / delta)))
+        self.grid = [[0] * self.w for _ in range(self.d)]
+
+    def _hash(self, item: str, row: int) -> int:
+        hash_val = hash((item, row))
+        return abs(hash_val) % self.w
+
+    def add(self, item: str, count: int = 1) -> None:
+        for r in range(self.d):
+            c = self._hash(item, r)
+            self.grid[r][c] += count
+
+    def estimate(self, item: str) -> int:
+        res = float('inf')
+        for r in range(self.d):
+            c = self._hash(item, r)
+            res = min(res, self.grid[r][c])
+        return res`,
+                                java: `public class CountMinSketch {
+    private final int w;
+    private final int d;
+    private final int[][] grid;
+
+    public CountMinSketch(double epsilon, double delta) {
+        this.w = (int) Math.ceil(Math.E / epsilon);
+        this.d = (int) Math.ceil(Math.log(1.0 / delta));
+        this.grid = new int[d][w];
+    }
+
+    private int getHash(String item, int row) {
+        int hash = item.hashCode() ^ (row * 0x5bd1e995);
+        return Math.abs(hash % w);
+    }
+
+    public void add(String item, int count) {
+        for (int r = 0; r < d; r++) {
+            int c = getHash(item, r);
+            grid[r][c] += count;
+        }
+    }
+
+    public int estimate(String item) {
+        int minCount = Integer.MAX_VALUE;
+        for (int r = 0; r < d; r++) {
+            int c = getHash(item, r);
+            minCount = Math.min(minCount, grid[r][c]);
+        }
+        return minCount;
+    }`,
+                                cpp: `#include <vector>
+#include <string>
+#include <cmath>
+#include <algorithm>
+#include <climits>
+
+class CountMinSketch {
+private:
+    int w, d;
+    std::vector<std::vector<int>> grid;
+
+    int getHash(const std::string& item, int row) const {
+        std::size_t h = std::hash<std::string>{}(item + std::to_string(row));
+        return h % w;
+    }
+
+public:
+    CountMinSketch(double epsilon = 0.01, double delta = 0.01) {
+        w = std::ceil(M_E / epsilon);
+        d = std::ceil(std::log(1.0 / delta));
+        grid.assign(d, std::vector<int>(w, 0));
+    }
+
+    void add(const std::string& item, int count = 1) {
+        for (int r = 0; r < d; r++) {
+            int c = getHash(item, r);
+            grid[r][c] += count;
+        }
+    }
+
+    int estimate(const std::string& item) const {
+        int res = INT_MAX;
+        for (int r = 0; r < d; r++) {
+            int c = getHash(item, r);
+            res = std::min(res, grid[r][c]);
+        }
+        return res;
+    }
+};`,
+                                javascript: `class CountMinSketch {
+  constructor(epsilon = 0.01, delta = 0.01) {
+    this.w = Math.ceil(Math.E / epsilon);
+    this.d = Math.ceil(Math.log(1 / delta));
+    this.grid = Array.from({ length: this.d }, () => new Array(this.w).fill(0));
+  }
+
+  _hash(item, row) {
+    let hash = 0;
+    const str = item + "_" + row;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash) % this.w;
+  }
+
+  add(item, count = 1) {
+    for (let r = 0; r < this.d; r++) {
+      const c = this._hash(item, r);
+      this.grid[r][c] += count;
+    }
+  }
+
+  estimate(item) {
+    let res = Infinity;
+    for (let r = 0; r < this.d; r++) {
+      const c = this._hash(item, r);
+      res = Math.min(res, this.grid[r][c]);
+    }
+    return res;
+  }
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "7. Real-World Applications",
+                        content: "Applications: \n- **Redis HyperLogLog:** `PFADD` and `PFCOUNT` commands store 12KB registers to count distinct page views up to $2^{64}$ elements. \n- **Network Traffic Monitoring:** CISCO routers use Count-Min Sketch to detect Denial of Service (DoS) attack sources in real time."
+                    },
+                    {
+                        heading: "8. Summary",
+                        content: "Count-Min Sketch and HyperLogLog enable infinite stream analytics. By sacrificing exact counting precision, they provide bounded frequency estimation and distinct cardinality counts in constant $O(1)$ memory."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why does Count-Min Sketch take the MINIMUM counter value across all rows during a query?", options: ["To prevent underflows.", "Hash collisions can only INCREASE counters above true frequency, so the minimum counter value yields the tightest upper bound.", "Because min() runs in O(1) time.", "To average out errors."], correctIndex: 1, explanation: "Collisions cause false increments in grid buckets. Since counters can never be decremented, taking min() across rows isolates the least collided bucket." },
+                    { id: "q2", question: "How much memory does Redis HyperLogLog (HLL) use to estimate billions of distinct items?", options: ["25 Gigabytes", "600 Megabytes", "12 Kilobytes", "100 Bytes"], correctIndex: 2, explanation: "Redis HLL uses 16,384 6-bit registers (12 KB total) to estimate cardinality with ~0.81% standard error." }
+                ]
+            },
+            {
+                id: "ds-splay-trees",
+                slug: "splay-trees",
+                categorySlug: "data-structures",
+                title: "Splay Trees",
+                subtitle: "Self-adjusting binary search trees, Working Set Property, and amortized O(log N) operations",
+                difficulty: "Advanced",
+                readTime: "35 min read",
+                summary: "Master Splay Trees, self-adjusting binary search trees invented by Sleator and Tarjan. Understand Splay operations (Zig, Zig-Zig, Zig-Zag), Working Set Property, dynamic optimality conjecture, and amortized O(log N) proofs.",
+                overview: "A Splay Tree is a self-adjusting binary search tree invented by Daniel Sleator and Robert Tarjan in 1985. Unlike AVL or Red-Black trees which maintain explicit height/color balance metadata in nodes, a Splay Tree stores zero metadata. Instead, whenever a node is accessed (searched, inserted, or deleted), the Splay Tree executes a sequence of tree rotations called Splaying to move that node to the Root. This grants Splay Trees the Working Set Property: recently accessed elements stay near the root for sub-nanosecond $O(1)$ access.",
+                keyConcepts: [
+                    "Self-Adjusting Architecture: Zero balance metadata stored per node",
+                    "Splaying Operation: Rotating accessed node to the Root",
+                    "Rotations: Zig (single), Zig-Zig (double linear), Zig-Zag (double inner)",
+                    "Amortized O(log N) Time Complexity via Potential Method Proof",
+                    "Working Set Property: Accessing m recent distinct items takes O(N log m) time",
+                    "Applications: Network Routers (IP routing caches), GCC Compiler Memory Pools"
+                ],
+                timeComplexity: { access: "O(log n) amortized", search: "O(log n) amortized", insertion: "O(log n) amortized", deletion: "O(log n) amortized" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Access Locality Principle",
+                        content: "In real-world applications, data access is rarely uniform. The **80/20 Rule (Pareto Principle)** dictates that $80\\%$ of search queries target $20\\%$ of hot items. \n\nAVL and Red-Black trees treat all elements equally, keeping height strictly $O(\\log N)$ for every key. \n**Splay Trees** exploit access locality. Every time key $K$ is searched, Splay Tree moves $K$ to the Root. Subsequent searches for $K$ execute in instant **$O(1)$** time."
+                    },
+                    {
+                        heading: "2. The Three Splay Rotations",
+                        content: "Let $X$ be the node being splayed to the root, $P$ be its parent, and $G$ be its grandparent: \n\n1. **Zig Step (Single Rotation):** Executed when $P$ is the root. Rotates $X$ over $P$. \n2. **Zig-Zig Step (Double Linear Rotation):** Executed when $X$ and $P$ are both left (or both right) children. \n   *CRITICAL:* First rotate $P$ over $G$, then rotate $X$ over $P$. This flattens tall skewed trees! \n3. **Zig-Zag Step (Double Inner Rotation):** Executed when $X$ is a right child and $P$ is a left child (or vice versa). Rotates $X$ over $P$, then $X$ over $G$."
+                    },
+                    {
+                        heading: "3. Memory Visualization: Zig-Zig vs Zig-Zag",
+                        content: "Visualizing Zig-Zig tree flattening.",
+                        diagram: `ZIG-ZIG STEP (Node X splayed to top):
+       G                      P                      X
+      /                      / \                    / \
+     P        ------>       X   G    ------>       A   P
+    /                      / \   /                    / \
+   X                      A   B C                    B   G
+  / \                                                   / \
+ A   B                                                 C   D
+
+Notice how the tree height is cut in HALF after Zig-Zig rotation!`
+                    },
+                    {
+                        heading: "4. Complexity Analysis & Potential Method Proof",
+                        content: "Metrics: \n- **Amortized Time:** $O(\\log N)$ for all operations (Search, Insert, Delete). \n- **Worst-Case Single Operation:** $O(N)$ (e.g., searching a linear chain before splaying). \n- **Space:** $O(N)$ with ZERO balance bits or height integers stored in nodes!"
+                    },
+                    {
+                        heading: "5. Code Example: Splay Tree Implementation",
+                        content: "Implementation of Splay Tree with Zig/Zig-Zig/Zig-Zag rotations in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Splay Tree Implementation",
+                            code: {
+                                python: `class Node:
+    def __init__(self, key: int):
+        self.key = key
+        self.left = None
+        self.right = None
+
+class SplayTree:
+    def __init__(self):
+        self.root = None
+
+    def _right_rotate(self, x: Node) -> Node:
+        y = x.left
+        x.left = y.right
+        y.right = x
+        return y
+
+    def _left_rotate(self, x: Node) -> Node:
+        y = x.right
+        x.right = y.left
+        y.left = x
+        return y
+
+    def splay(self, root: Node, key: int) -> Node:
+        if not root or root.key == key:
+            return root
+
+        if key < root.key:
+            if not root.left: return root
+            if key < root.left.key: # Zig-Zig (Left-Left)
+                root.left.left = self.splay(root.left.left, key)
+                root = self._right_rotate(root)
+            elif key > root.left.key: # Zig-Zag (Left-Right)
+                root.left.right = self.splay(root.left.right, key)
+                if root.left.right:
+                    root.left = self._left_rotate(root.left)
+            return self._right_rotate(root) if root.left else root
+        else:
+            if not root.right: return root
+            if key > root.right.key: # Zig-Zig (Right-Right)
+                root.right.right = self.splay(root.right.right, key)
+                root = self._left_rotate(root)
+            elif key < root.right.key: # Zig-Zag (Right-Left)
+                root.right.left = self.splay(root.right.left, key)
+                if root.right.left:
+                    root.right = self._right_rotate(root.right)
+            return self._left_rotate(root) if root.right else root
+
+    def search(self, key: int) -> bool:
+        self.root = self.splay(self.root, key)
+        return self.root is not None and self.root.key == key`,
+                                java: `public class SplayTree {
+    static class Node {
+        int key;
+        Node left, right;
+        Node(int k) { this.key = k; }
+    }
+
+    private Node root;
+
+    private Node rightRotate(Node x) {
+        Node y = x.left;
+        x.left = y.right;
+        y.right = x;
+        return y;
+    }
+
+    private Node leftRotate(Node x) {
+        Node y = x.right;
+        x.right = y.left;
+        y.left = x;
+        return y;
+    }
+
+    public Node splay(Node root, int key) {
+        if (root == null || root.key == key) return root;
+
+        if (key < root.key) {
+            if (root.left == null) return root;
+            if (key < root.left.key) {
+                root.left.left = splay(root.left.left, key);
+                root = rightRotate(root);
+            } else if (key > root.left.key) {
+                root.left.right = splay(root.left.right, key);
+                if (root.left.right != null) root.left = leftRotate(root.left);
+            }
+            return root.left == null ? root : rightRotate(root);
+        } else {
+            if (root.right == null) return root;
+            if (key > root.right.key) {
+                root.right.right = splay(root.right.right, key);
+                root = leftRotate(root);
+            } else if (key < root.right.key) {
+                root.right.left = splay(root.right.left, key);
+                if (root.right.left != null) root.right = rightRotate(root.right);
+            }
+            return root.right == null ? root : leftRotate(root);
+        }
+    }`,
+                                cpp: `#include <iostream>
+
+struct Node {
+    int key;
+    Node *left, *right;
+    Node(int k) : key(k), left(nullptr), right(nullptr) {}
+};
+
+class SplayTree {
+private:
+    Node* root = nullptr;
+
+    Node* rightRotate(Node* x) {
+        Node* y = x->left;
+        x->left = y->right;
+        y->right = x;
+        return y;
+    }
+
+    Node* leftRotate(Node* x) {
+        Node* y = x->right;
+        x->right = y->left;
+        y->left = x;
+        return y;
+    }
+
+public:
+    Node* splay(Node* root, int key) {
+        if (!root || root->key == key) return root;
+        if (key < root->key) {
+            if (!root->left) return root;
+            if (key < root->left->key) {
+                root->left->left = splay(root->left->left, key);
+                root = rightRotate(root);
+            } else if (key > root->left->key) {
+                root->left->right = splay(root->left->right, key);
+                if (root->left->right) root->left = leftRotate(root->left);
+            }
+            return root->left ? rightRotate(root) : root;
+        } else {
+            if (!root->right) return root;
+            if (key > root->right->key) {
+                root->right->right = splay(root->right->right, key);
+                root = leftRotate(root);
+            } else if (key < root->right->key) {
+                root->right->left = splay(root->right->left, key);
+                if (root->right->left) root->right = rightRotate(root->right);
+            }
+            return root->right ? leftRotate(root) : root;
+        }
+    }
+};`,
+                                javascript: `class Node {
+  constructor(key) {
+    this.key = key;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class SplayTree {
+  constructor() { this.root = null; }
+
+  _rightRotate(x) {
+    const y = x.left;
+    x.left = y.right;
+    y.right = x;
+    return y;
+  }
+
+  _leftRotate(x) {
+    const y = x.right;
+    x.right = y.left;
+    y.left = x;
+    return y;
+  }
+
+  splay(root, key) {
+    if (!root || root.key === key) return root;
+
+    if (key < root.key) {
+      if (!root.left) return root;
+      if (key < root.left.key) {
+        root.left.left = this.splay(root.left.left, key);
+        root = this._rightRotate(root);
+      } else if (key > root.left.key) {
+        root.left.right = this.splay(root.left.right, key);
+        if (root.left.right) root.left = this._leftRotate(root.left);
+      }
+      return root.left ? this._rightRotate(root) : root;
+    } else {
+      if (!root.right) return root;
+      if (key > root.right.key) {
+        root.right.right = this.splay(root.right.right, key);
+        root = this._leftRotate(root);
+      } else if (key < root.right.key) {
+        root.right.left = this.splay(root.right.left, key);
+        if (root.right.left) root.right = this._leftRotate(root.right);
+      }
+      return root.right ? this._leftRotate(root) : root;
+    }
+  }
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Summary",
+                        content: "Splay Trees achieve self-balancing through usage locality without storing balance bits. By splaying accessed nodes to the root, frequently accessed items achieve $O(1)$ access times."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What key advantage does a Splay Tree have over Red-Black and AVL trees?", options: ["Splay trees use no extra memory metadata per node and optimize for temporal locality (hot items move to root).", "Splay trees take O(1) worst-case time.", "Splay trees are thread-safe.", "Splay trees use array storage."], correctIndex: 0, explanation: "Splay trees store zero height or color metadata, saving memory, and automatically move hot items near the root for faster access." },
+                    { id: "q2", question: "Why is the Zig-Zig step order (rotating parent over grandparent first) critical during Splaying?", options: ["It prevents stack overflow.", "Rotating parent first flattens tall skewed tree paths, halving tree height.", "It sorts the keys.", "It generates random priorities."], correctIndex: 1, explanation: "The Zig-Zig rotation sequence (parent over grandparent first) flattens deep linear chains, guaranteeing amortized O(log N) performance." }
+                ]
+            },
+            {
+                id: "ds-suffix-automaton",
+                slug: "suffix-automaton-dawg",
+                categorySlug: "data-structures",
+                title: "Suffix Automaton (DAWG)",
+                subtitle: "Minimal Directed Acyclic Word Graph for linear O(N) string processing and substring counting",
+                difficulty: "Advanced",
+                readTime: "40 min read",
+                summary: "Master Suffix Automaton (Directed Acyclic Word Graph). Understand equivalence classes of end-positions (endpos), suffix links, linear O(N) construction, and optimal substring counting algorithms.",
+                overview: "A Suffix Automaton (also known as DAWG - Directed Acyclic Word Graph) is a Directed Acyclic Graph that compactly represents all substrings of a given string $S$ of length $N$. Invented by Blumer et al. in 1983, a Suffix Automaton is the smallest possible deterministic finite automaton (DFA) that recognizes all suffixes of $S$. While a Suffix Tree takes $O(N)$ space with complex pointer nodes, a Suffix Automaton contains at most $2N - 1$ states and $3N - 4$ transitions, making it the most powerful and memory-efficient data structure for advanced string processing.",
+                keyConcepts: [
+                    "State Equivalence via endpos(w): Sets of right-end positions where substring w occurs",
+                    "Minimal DFA: At most 2N - 1 states and 3N - 4 transitions for string of length N",
+                    "Suffix Links: Tree structure formed by parent pointers linking endpos inclusions",
+                    "Online O(N) Linear Construction: Processing string character-by-character",
+                    "Counting Distinct Substrings in O(N) time without storing strings",
+                    "Finding Longest Common Substring of Multiple Strings in O(N) time"
+                ],
+                timeComplexity: { access: "O(m)", search: "O(m)", insertion: "O(n)", deletion: "N/A" },
+                spaceComplexity: "O(n)",
+                sections: [
+                    {
+                        heading: "1. The Minimal Automaton Advantage",
+                        content: "A string of length $N$ has $\\frac{N(N+1)}{2}$ substrings. \n\nStoring all substrings naively takes $O(N^2)$ space. Suffix Trees compress this to $O(N)$ nodes by storing edge labels as index pairs. \n\nA **Suffix Automaton** goes further: it merges states that share identical right-extension properties (**`endpos` equivalence classes**). This creates a Directed Acyclic Graph with at most **$2N - 1$ states**, making it the absolute minimal automaton for substring operations."
+                    },
+                    {
+                        heading: "2. The `endpos` Equivalence Class",
+                        content: "For a substring $w$ of text $S$, `endpos(w)` is the set of all end indices in $S$ where $w$ occurs. \n\n*Example:* $S = \\text{'abaa'}$. \n- `endpos('a') = {1, 3, 4}` \n- `endpos('ba') = {3}` \n- `endpos('a')` and `endpos('ba')` are different, so they belong to different Automaton States. \n- Substrings with identical `endpos` sets are grouped into the SAME state!"
+                    },
+                    {
+                        heading: "3. Suffix Links & Tree Structure",
+                        content: "Each state $v$ in the automaton contains a **Suffix Link** `link[v]`. \n`link[v]` points to the state corresponding to the longest suffix of substrings in $v$ that belongs to a different `endpos` equivalence class. \n\nThese suffix links form a directed Tree (the **Suffix Link Tree**) rooted at state 0, mirroring the structural properties of a Suffix Tree on the reversed string."
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Suffix Automaton State transitions for 'aba'.",
+                        diagram: `States: 0 (root), 1 ('a'), 2 ('ab'), 3 ('aba')
+Transitions (Edges):
+0 --'a'--> 1
+0 --'b'--> 2 (via 'b')
+1 --'b'--> 2
+2 --'a'--> 3
+
+Suffix Links:
+link[3] -> 1 (Suffix 'a' of 'aba')
+link[2] -> 0
+link[1] -> 0`
+                    },
+                    {
+                        heading: "5. Complexity Analysis",
+                        content: "Metrics: \n- **Max States:** $2N - 1$. \n- **Max Transitions:** $3N - 4$. \n- **Construction Time:** Linear **$O(N)$** time. \n- **Pattern Match:** **$O(M)$** time for pattern of length $M$."
+                    },
+                    {
+                        heading: "6. Code Example: Suffix Automaton Construction",
+                        content: "Implementation of Suffix Automaton in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Suffix Automaton Implementation",
+                            code: {
+                                python: `class State:
+    def __init__(self, len_val=0, link=-1):
+        self.len = len_val
+        self.link = link
+        self.next = {}
+
+class SuffixAutomaton:
+    def __init__(self):
+        self.st = [State(0, -1)]
+        self.last = 0
+
+    def extend(self, c: str) -> None:
+        cur = len(self.st)
+        self.st.append(State(self.st[self.last].len + 1))
+        p = self.last
+
+        while p != -1 and c not in self.st[p].next:
+            self.st[p].next[c] = cur
+            p = self.st[p].link
+
+        if p == -1:
+            self.st[cur].link = 0
+        else:
+            q = self.st[p].next[c]
+            if self.st[p].len + 1 == self.st[q].len:
+                self.st[cur].link = q
+            else:
+                clone = len(self.st)
+                clone_state = State(self.st[p].len + 1, self.st[q].link)
+                clone_state.next = self.st[q].next.copy()
+                self.st.append(clone_state)
+
+                while p != -1 and self.st[p].next.get(c) == q:
+                    self.st[p].next[c] = clone
+                    p = self.st[p].link
+
+                self.st[q].link = clone
+                self.st[cur].link = clone
+
+        self.last = cur`,
+                                java: `import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SuffixAutomaton {
+    static class State {
+        int len, link;
+        Map<Character, Integer> next = new HashMap<>();
+        State(int len, int link) {
+            this.len = len;
+            this.link = link;
+        }
+    }
+
+    private List<State> st = new ArrayList<>();
+    private int last = 0;
+
+    public SuffixAutomaton() {
+        st.add(new State(0, -1));
+    }
+
+    public void extend(char c) {
+        int cur = st.size();
+        st.add(new State(st.get(last).len + 1, 0));
+        int p = last;
+
+        while (p != -1 && !st.get(p).next.containsKey(c)) {
+            st.get(p).next.put(c, cur);
+            p = st.get(p).link;
+        }
+
+        if (p == -1) {
+            st.get(cur).link = 0;
+        } else {
+            int q = st.get(p).next.get(c);
+            if (st.get(p).len + 1 == st.get(q).len) {
+                st.get(cur).link = q;
+            } else {
+                int clone = st.size();
+                State cloneState = new State(st.get(p).len + 1, st.get(q).link);
+                cloneState.next.putAll(st.get(q).next);
+                st.add(cloneState);
+
+                while (p != -1 && st.get(p).next.get(c) == q) {
+                    st.get(p).next.put(c, clone);
+                    p = st.get(p).link;
+                }
+                st.get(q).link = clone;
+                st.get(cur).link = clone;
+            }
+        }
+        last = cur;
+    }`,
+                                cpp: `#include <vector>
+#include <map>
+#include <iostream>
+
+struct State {
+    int len, link;
+    std::map<char, int> next;
+    State(int l = 0, int link = -1) : len(l), link(link) {}
+};
+
+class SuffixAutomaton {
+public:
+    std::vector<State> st;
+    int last;
+
+    SuffixAutomaton() {
+        st.push_back(State(0, -1));
+        last = 0;
+    }
+
+    void extend(char c) {
+        int cur = st.size();
+        st.push_back(State(st[last].len + 1));
+        int p = last;
+
+        while (p != -1 && !st[p].next.count(c)) {
+            st[p].next[c] = cur;
+            p = st[p].link;
+        }
+
+        if (p == -1) {
+            st[cur].link = 0;
+        } else {
+            int q = st[p].next[c];
+            if (st[p].len + 1 == st[q].len) {
+                st[cur].link = q;
+            } else {
+                int clone = st.size();
+                State cloneState(st[p].len + 1, st[q].link);
+                cloneState.next = st[q].next;
+                st.push_back(cloneState);
+
+                while (p != -1 && st[p].next[c] == q) {
+                    st[p].next[c] = clone;
+                    p = st[p].link;
+                }
+                st[q].link = clone;
+                st[cur].link = clone;
+            }
+        }
+        last = cur;
+    }
+};`,
+                                javascript: `class State {
+  constructor(len = 0, link = -1) {
+    this.len = len;
+    this.link = link;
+    this.next = new Map();
+  }
+}
+
+class SuffixAutomaton {
+  constructor() {
+    this.st = [new State(0, -1)];
+    this.last = 0;
+  }
+
+  extend(c) {
+    const cur = this.st.length;
+    this.st.push(new State(this.st[this.last].len + 1));
+    let p = this.last;
+
+    while (p !== -1 && !this.st[p].next.has(c)) {
+      this.st[p].next.set(c, cur);
+      p = this.st[p].link;
+    }
+
+    if (p === -1) {
+      this.st[cur].link = 0;
+    } else {
+      const q = this.st[p].next.get(c);
+      if (this.st[p].len + 1 === this.st[q].len) {
+        this.st[cur].link = q;
+      } else {
+        const clone = this.st.length;
+        const cloneState = new State(this.st[p].len + 1, this.st[q].link);
+        cloneState.next = new Map(this.st[q].next);
+        this.st.push(cloneState);
+
+        while (p !== -1 && this.st[p].next.get(c) === q) {
+          this.st[p].next.set(c, clone);
+          p = this.st[p].link;
+        }
+        this.st[q].link = clone;
+        this.st[cur].link = clone;
+      }
+    }
+    this.last = cur;
+  }
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "7. Applications",
+                        content: "Applications: \n- **Distinct Substring Count:** Total distinct substrings = $\\sum_{v} (len[v] - len[link[v]])$ in $O(N)$ time! \n- **Longest Common Substring:** Finding the longest common substring of two strings in $O(N)$ time."
+                    },
+                    {
+                        heading: "8. Summary",
+                        content: "Suffix Automaton (DAWG) is the minimal DFA for string suffixes. Operating in linear $O(N)$ space and time, it solves complex string substring and matching problems with unparalleled efficiency."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What is the maximum number of states in a Suffix Automaton for a string of length N?", options: ["N^2", "N log N", "2N - 1", "3N - 4"], correctIndex: 2, explanation: "Blumer et al. proved that a Suffix Automaton has at most 2N - 1 states and 3N - 4 transitions for any string of length N." },
+                    { id: "q2", question: "How does Suffix Automaton calculate the total number of distinct substrings in O(N) time?", options: ["By enumerating all substrings.", "Summing (len[v] - len[link[v]]) across all states v in the automaton.", "Using binary search.", "Using hash sets."], correctIndex: 1, explanation: "Each state v contains exactly (len[v] - len[link[v]]) distinct substrings, which sum to the total unique substrings in linear time." }
+                ]
             }
         ]
     },
@@ -4096,6 +5987,1781 @@ public:
                         correctIndex: 1,
                         explanation: "In C, C++, and Java, `==` has higher precedence than `&`. `n & 1 == 0` is evaluated as `n & (1 == 0)` => `n & 0` => `0`. Parentheses `((n & 1) == 0)` are mandatory."
                     }
+                ]
+            },
+            {
+                id: "algo-bellman-floyd",
+                slug: "bellman-ford-and-floyd-warshall",
+                categorySlug: "algorithms",
+                title: "Bellman-Ford & Floyd-Warshall",
+                subtitle: "Negative edge weight relaxation, negative cycle detection, and All-Pairs Shortest Path dynamic programming",
+                difficulty: "Advanced",
+                readTime: "40 min read",
+                summary: "Master shortest path algorithms that handle negative edge weights. Understand Bellman-Ford SSSP edge relaxation, negative cycle detection, and Floyd-Warshall O(V^3) All-Pairs Shortest Path (APSP) dynamic programming matrix.",
+                overview: "While Dijkstra's algorithm solves Single-Source Shortest Paths in O((V + E) log V) time, it fails catastrophically on graphs with negative edge weights. Bellman-Ford solves SSSP with negative weights in O(V * E) time by relaxing all edges V-1 times and detects negative weight cycles. Floyd-Warshall uses dynamic programming to solve All-Pairs Shortest Paths (APSP) for all pairs of vertices in O(V^3) time using a clean 3-nested loop matrix.",
+                keyConcepts: [
+                    "Edge Relaxation Principle: dist[v] = min(dist[v], dist[u] + weight(u, v))",
+                    "V-1 Iteration Bound: Shortest path without cycles contains at most V-1 edges",
+                    "Negative Weight Cycle Detection: 4th V-th iteration relaxation check",
+                    "Floyd-Warshall DP Recurrence: D[i][j] = min(D[i][j], D[i][k] + D[k][j])",
+                    "Transitive Closure & Arbitrage Detection in financial markets",
+                    "Distance Matrix initialization and path reconstruction pointers"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(E) / O(V^3)", average: "O(V*E) / O(V^3)", worst: "O(V*E) / O(V^3)" },
+                spaceComplexity: "O(V) Bellman-Ford / O(V^2) Floyd-Warshall",
+                sections: [
+                    {
+                        heading: "1. The Negative Edge Weight Dilemma",
+                        content: "Dijkstra's algorithm assumes that once a vertex is popped from the priority queue, its shortest distance is finalized. This greedy assumption fails when negative edge weights exist (e.g., financial transactions with cashback, gas consumption vs battery regeneration in EVs). \n\nIf a negative weight cycle exists (a loop whose sum of edge weights is $< 0$), a path can loop infinitely to achieve an infinite $-\\infty$ cost. We need algorithms that explicitly detect negative cycles and compute valid shortest paths despite negative edges."
+                    },
+                    {
+                        heading: "2. The Bellman-Ford Algorithm",
+                        content: "Bellman-Ford operates on a simple theorem: A simple shortest path in a graph with $V$ vertices contains at most $V-1$ edges. \n\nAlgorithm Steps: \n1. Initialize `dist[source] = 0`, all other `dist` = $\\infty$. \n2. Loop $V-1$ times: Relax every edge $(u, v, w)$ in the graph: \n   `if dist[u] + w < dist[v]: dist[v] = dist[u] + w` \n3. **Negative Cycle Check (V-th iteration):** Relax all edges one final time. If ANY `dist[v]` shrinks further, a **Negative Weight Cycle** exists!"
+                    },
+                    {
+                        heading: "3. The Floyd-Warshall Algorithm (APSP)",
+                        content: "Floyd-Warshall computes shortest paths between ALL pairs of vertices $(i, j)$ using Dynamic Programming. \n\nLet $D^{(k)}[i][j]$ be the shortest distance from vertex $i$ to $j$ using only intermediate vertices from the set $\{1, 2, \\dots, k\}$. \n\n**DP Recurrence:** \n$$D^{(k)}[i][j] = \\min \\left( D^{(k-1)}[i][j], \\, D^{(k-1)}[i][k] + D^{(k-1)}[k][j] \\right)$$ \nIn code, we drop the superscript $k$ and execute 3 nested loops: \n```cpp\nfor (int k = 0; k < V; k++)\n    for (int i = 0; i < V; i++)\n        for (int j = 0; j < V; j++)\n            dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);\n```"
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Floyd-Warshall intermediate vertex k relaxation.",
+                        diagram: `Path from i to j without k:     Direct distance D[i][j]
+Path from i to j THROUGH k:    D[i][k]  +  D[k][j]
+
+        ( i ) ----------------------------> ( j )
+          \                                  ^
+           \                                /
+            v                              /
+           ( k: Intermediate Vertex Pivot )
+
+If (D[i][k] + D[k][j] < D[i][j]):
+    Update D[i][j] = D[i][k] + D[k][j]`
+                    },
+                    {
+                        heading: "5. Complexity Analysis",
+                        content: "Metrics: \n- **Bellman-Ford:** Time $O(V \\cdot E)$, Space $O(V)$. Detects negative cycles. \n- **Floyd-Warshall:** Time $O(V^3)$, Space $O(V^2)$. Solves All-Pairs Shortest Paths in dense graphs."
+                    },
+                    {
+                        heading: "6. Code Example: Bellman-Ford & Floyd-Warshall",
+                        content: "Complete implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Bellman-Ford & Floyd-Warshall Implementation",
+                            code: {
+                                python: `def bellman_ford(v_count: int, edges: list, src: int):
+    dist = [float('inf')] * v_count
+    dist[src] = 0
+
+    for _ in range(v_count - 1):
+        for u, v, w in edges:
+            if dist[u] != float('inf') and dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+
+    # Negative cycle check
+    for u, v, w in edges:
+        if dist[u] != float('inf') and dist[u] + w < dist[v]:
+            return None # Negative cycle detected!
+    return dist
+
+def floyd_warshall(v_count: int, graph_matrix: list):
+    dist = [row[:] for row in graph_matrix]
+    for k in range(v_count):
+        for i in range(v_count):
+            for j in range(v_count):
+                if dist[i][k] != float('inf') and dist[k][j] != float('inf'):
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    return dist`,
+                                java: `import java.util.Arrays;
+
+public class ShortestPathAlgorithms {
+    public static int[] bellmanFord(int vCount, int[][] edges, int src) {
+        int[] dist = new int[vCount];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+
+        for (int i = 0; i < vCount - 1; i++) {
+            for (int[] edge : edges) {
+                int u = edge[0], v = edge[1], w = edge[2];
+                if (dist[u] != Integer.MAX_VALUE && dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                }
+            }
+        }
+
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            if (dist[u] != Integer.MAX_VALUE && dist[u] + w < dist[v]) {
+                return null; // Negative cycle!
+            }
+        }
+        return dist;
+    }
+
+    public static void floydWarshall(int[][] dist, int vCount) {
+        for (int k = 0; k < vCount; k++) {
+            for (int i = 0; i < vCount; i++) {
+                for (int j = 0; j < vCount; j++) {
+                    if (dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE) {
+                        dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                    }
+                }
+            }
+        }
+    }`,
+                                cpp: `#include <vector>
+#include <algorithm>
+#include <climits>
+
+std::vector<int> bellmanFord(int vCount, const std::vector<std::vector<int>>& edges, int src) {
+    std::vector<int> dist(vCount, INT_MAX);
+    dist[src] = 0;
+
+    for (int i = 0; i < vCount - 1; i++) {
+        for (const auto& edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            if (dist[u] != INT_MAX && dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+            }
+        }
+    }
+
+    for (const auto& edge : edges) {
+        int u = edge[0], v = edge[1], w = edge[2];
+        if (dist[u] != INT_MAX && dist[u] + w < dist[v]) return {}; // Negative cycle!
+    }
+    return dist;
+}
+
+void floydWarshall(std::vector<std::vector<int>>& dist, int vCount) {
+    for (int k = 0; k < vCount; k++) {
+        for (int i = 0; i < vCount; i++) {
+            for (int j = 0; j < vCount; j++) {
+                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX) {
+                    dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+}`,
+                                javascript: `function bellmanFord(vCount, edges, src) {
+  const dist = new Array(vCount).fill(Infinity);
+  dist[src] = 0;
+
+  for (let i = 0; i < vCount - 1; i++) {
+    for (const [u, v, w] of edges) {
+      if (dist[u] !== Infinity && dist[u] + w < dist[v]) {
+        dist[v] = dist[u] + w;
+      }
+    }
+  }
+
+  for (const [u, v, w] of edges) {
+    if (dist[u] !== Infinity && dist[u] + w < dist[v]) return null;
+  }
+  return dist;
+}
+
+function floydWarshall(dist, vCount) {
+  for (let k = 0; k < vCount; k++) {
+    for (let i = 0; i < vCount; i++) {
+      for (let j = 0; j < vCount; j++) {
+        if (dist[i][k] !== Infinity && dist[k][j] !== Infinity) {
+          dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+        }
+      }
+    }
+  }
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "7. Real-World Applications",
+                        content: "Applications: \n- **Currency Arbitrage Detection:** Financial trading algorithms convert exchange rates to negative logarithms ($w = -\\log(\\text{rate})$). A negative weight cycle in this graph represents a risk-free profit arbitrage loop! \n- **Network Distance Vector Routing (RIP):** Routers execute Bellman-Ford asynchronously to build routing tables."
+                    },
+                    {
+                        heading: "8. Summary",
+                        content: "Bellman-Ford handles negative weights and detects cycles in $O(V \\cdot E)$ time. Floyd-Warshall computes All-Pairs Shortest Paths in $O(V^3)$ using 3-loop dynamic programming matrix relaxation."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why does Bellman-Ford relax all edges V-1 times?", options: ["Because V-1 is the maximum number of edges in a simple path without cycles.", "Because Dijkstra requires priority queues.", "To compute All-Pairs Shortest Paths.", "To check for even paths."], correctIndex: 0, explanation: "A simple shortest path between source and any node has at most V-1 edges. Relaxing V-1 times guarantees distance propagation across the entire path." },
+                    { id: "q2", question: "In Floyd-Warshall, what must be the OUTERMOST loop variable?", options: ["i (Source)", "j (Destination)", "k (Intermediate Vertex Pivot)", "w (Edge Weight)"], correctIndex: 2, explanation: "The intermediate vertex k MUST be the outer loop to correctly compute dynamic programming subproblems D^(k)[i][j] using intermediate vertices {0...k}." }
+                ]
+            },
+            {
+                id: "algo-mst-kruskal-prim",
+                slug: "minimum-spanning-tree-kruskal-prim",
+                categorySlug: "algorithms",
+                title: "Kruskal's & Prim's Minimum Spanning Tree (MST)",
+                subtitle: "Cut property, Cycle property, edge sorting + DSU vs priority queue node expansion",
+                difficulty: "Intermediate",
+                readTime: "35 min read",
+                summary: "Master Minimum Spanning Tree (MST) algorithms. Understand Cut Property and Cycle Property proofs, Kruskal's greedy edge sorting + Disjoint Set Union (DSU) in O(E log E) time, and Prim's priority queue node expansion in O(E log V) time.",
+                overview: "A Minimum Spanning Tree (MST) of a connected, undirected, weighted graph is a subgraph tree containing all V vertices and V-1 edges such that the total sum of edge weights is minimized. Kruskal's algorithm uses greedy edge sorting combined with DSU to build the MST from the forest up in O(E log E) time. Prim's algorithm grows a single MST component outward using a priority queue in O(E log V) time, operating similarly to Dijkstra's algorithm.",
+                keyConcepts: [
+                    "Spanning Tree Definition: Subgraph connecting all V nodes with V-1 edges and no cycles",
+                    "Cut Property Theorem: Lightest edge crossing any cut MUST belong to the MST",
+                    "Cycle Property Theorem: Heaviest edge in any cycle CANNOT belong to the MST",
+                    "Kruskal's Algorithm: Sort edges by weight + DSU cycle prevention in O(E log E)",
+                    "Prim's Algorithm: Priority Queue growing single tree component in O(E log V)",
+                    "Dense vs Sparse Graph Optimality: Prim O(V^2) with adjacency matrix vs Kruskal"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(E log E) / O(E log V)", average: "O(E log E) / O(E log V)", worst: "O(E log E) / O(E log V)" },
+                spaceComplexity: "O(V + E)",
+                sections: [
+                    {
+                        heading: "1. The Infrastructure Connectivity Problem",
+                        content: "Suppose you are telecommunications provider laying fiber-optic cables between 50 cities. The cost to lay cable between City A and City B is proportional to distance. \n\nYou must connect all 50 cities so that every city can reach every other city, while minimizing total cable cost. This is the **Minimum Spanning Tree (MST)** problem."
+                    },
+                    {
+                        heading: "2. The Mathematical Foundation: Cut & Cycle Properties",
+                        content: "MST algorithms rely on two fundamental graph theorems: \n\n1. **The Cut Property:** Partition graph nodes into two sets $S$ and $V-S$. The edge $(u, v)$ with the minimum weight crossing the cut boundary MUST be part of the MST. \n2. **The Cycle Property:** For any cycle in the graph, the edge with the strictly maximum weight in that cycle CANNOT belong to any MST."
+                    },
+                    {
+                        heading: "3. Kruskal's Algorithm (Edge-Centric)",
+                        content: "Kruskal's is a greedy algorithm: \n1. Extract all edges and sort them in non-decreasing order of weight in $O(E \\log E)$ time. \n2. Initialize a DSU (Disjoint Set Union) structure with $V$ sets. \n3. Iterate through sorted edges: if `dsu.union(u, v)` succeeds (meaning $u$ and $v$ were not already connected), add edge to MST. If it returns false (would form a cycle), discard edge. \n4. Stop when $V-1$ edges are added."
+                    },
+                    {
+                        heading: "4. Prim's Algorithm (Node-Centric)",
+                        content: "Prim's grows a single tree component: \n1. Pick arbitrary start vertex $S$. Mark visited. Add all edges from $S$ to a Min-Priority Queue. \n2. While Priority Queue is not empty and MST has $< V$ nodes: \n   - Pop minimum edge $(u, v, w)$. \n   - If $v$ is already visited, continue (Cycle!). \n   - Mark $v$ visited, add edge to MST, and push all unvisited neighbor edges of $v$ into PQ."
+                    },
+                    {
+                        heading: "5. Code Example: Kruskal's & Prim's Implementation",
+                        content: "Complete implementations of Kruskal's and Prim's MST in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Kruskal's and Prim's MST",
+                            code: {
+                                python: `import heapq
+
+class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+    def find(self, i):
+        if self.parent[i] == i: return i
+        self.parent[i] = self.find(self.parent[i])
+        return self.parent[i]
+    def union(self, i, j):
+        root_i, root_j = self.find(i), self.find(j)
+        if root_i != root_j:
+            self.parent[root_j] = root_i
+            return True
+        return False
+
+def kruskal_mst(v_count: int, edges: list):
+    # edges = [(u, v, weight), ...]
+    edges.sort(key=lambda x: x[2])
+    dsu = DSU(v_count)
+    mst = []
+    total_cost = 0
+    for u, v, w in edges:
+        if dsu.union(u, v):
+            mst.append((u, v, w))
+            total_cost += w
+            if len(mst) == v_count - 1: break
+    return total_cost, mst
+
+def prim_mst(v_count: int, adj_list: list):
+    visited = [False] * v_count
+    pq = [(0, 0, -1)] # (weight, curr_node, parent)
+    total_cost = 0
+    mst_edges = []
+    
+    while pq and len(mst_edges) < v_count:
+        w, u, p = heapq.heappop(pq)
+        if visited[u]: continue
+        visited[u] = True
+        total_cost += w
+        if p != -1: mst_edges.append((p, u, w))
+        for v, weight in adj_list[u]:
+            if not visited[v]:
+                heapq.heappush(pq, (weight, v, u))
+    return total_cost, mst_edges`,
+                                java: `import java.util.*;
+
+public class MST {
+    static class DSU {
+        int[] parent;
+        DSU(int n) {
+            parent = new int[n];
+            for (int i = 0; i < n; i++) parent[i] = i;
+        }
+        int find(int i) {
+            return parent[i] == i ? i : (parent[i] = find(parent[i]));
+        }
+        boolean union(int i, int j) {
+            int rI = find(i), rJ = find(j);
+            if (rI != rJ) { parent[rJ] = rI; return true; }
+            return false;
+        }
+    }
+
+    public static int kruskal(int vCount, int[][] edges) {
+        Arrays.sort(edges, (a, b) -> Integer.compare(a[2], b[2]));
+        DSU dsu = new DSU(vCount);
+        int totalCost = 0, count = 0;
+        for (int[] edge : edges) {
+            if (dsu.union(edge[0], edge[1])) {
+                totalCost += edge[2];
+                if (++count == vCount - 1) break;
+            }
+        }
+        return totalCost;
+    }`,
+                                cpp: `#include <vector>
+#include <algorithm>
+#include <queue>
+
+struct Edge {
+    int u, v, w;
+    bool operator<(const Edge& other) const { return w < other.w; }
+};
+
+struct DSU {
+    std::vector<int> parent;
+    DSU(int n) { parent.resize(n); std::iota(parent.begin(), parent.end(), 0); }
+    int find(int i) { return parent[i] == i ? i : parent[i] = find(parent[i]); }
+    bool unionSet(int i, int j) {
+        int rI = find(i), rJ = find(j);
+        if (rI != rJ) { parent[rJ] = rI; return true; }
+        return false;
+    }
+};
+
+int kruskal(int vCount, std::vector<Edge>& edges) {
+    std::sort(edges.begin(), edges.end());
+    DSU dsu(vCount);
+    int totalCost = 0, count = 0;
+    for (const auto& e : edges) {
+        if (dsu.unionSet(e.u, e.v)) {
+            totalCost += e.w;
+            if (++count == vCount - 1) break;
+        }
+    }
+    return totalCost;
+}`,
+                                javascript: `class DSU {
+  constructor(n) {
+    this.parent = Array.from({ length: n }, (_, i) => i);
+  }
+  find(i) {
+    return this.parent[i] === i ? i : (this.parent[i] = this.find(this.parent[i]));
+  }
+  union(i, j) {
+    const rI = this.find(i), rJ = this.find(j);
+    if (rI !== rJ) { this.parent[rJ] = rI; return true; }
+    return false;
+  }
+}
+
+function kruskal(vCount, edges) {
+  edges.sort((a, b) => a[2] - b[2]);
+  const dsu = new DSU(vCount);
+  let totalCost = 0, count = 0;
+  for (const [u, v, w] of edges) {
+    if (dsu.union(u, v)) {
+      totalCost += w;
+      if (++count === vCount - 1) break;
+    }
+  }
+  return totalCost;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Comparison: Kruskal vs Prim",
+                        content: "Comparison: \n- **Kruskal:** $O(E \\log E)$ time. Preferred for Sparse Graphs ($E \\ll V^2$) and when edge list is already sorted. \n- **Prim:** $O(E \\log V)$ time with Min-Heap, or $O(V^2)$ with Adjacency Matrix. Preferred for Dense Graphs ($E \\approx V^2$)."
+                    },
+                    {
+                        heading: "7. Summary",
+                        content: "Kruskal's sorts edges and merges components via DSU. Prim's expands a single component outward via Priority Queue. Both exploit the Cut Property to guarantee minimum total spanning cost."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What is the role of DSU (Disjoint Set Union) in Kruskal's MST algorithm?", options: ["To compute shortest path distances.", "To check in O(1) time if adding an edge connects two unlinked components or creates a Cycle.", "To sort edges in O(N) time.", "To find the root vertex."], correctIndex: 1, explanation: "DSU's union() operation attempts to merge the endpoints of an edge. If find(u) == find(v), they are already connected, so adding (u,v) would create a Cycle." },
+                    { id: "q2", question: "For a dense graph where E ≈ V^2, which MST implementation yields the fastest theoretical time complexity?", options: ["Kruskal with DSU: O(E log E)", "Prim with Adjacency Matrix: O(V^2)", "Dijkstra: O(V log V)", "BFS: O(V + E)"], correctIndex: 1, explanation: "Prim's using an array/matrix lookup runs in O(V^2) time, which is strictly faster than O(V^2 log V) when E = V^2." }
+                ]
+            },
+            {
+                id: "algo-z-rabin-karp",
+                slug: "z-algorithm-and-rabin-karp",
+                categorySlug: "algorithms",
+                title: "Z-Algorithm & Rabin-Karp",
+                subtitle: "Linear-time Z-box window matching, rolling polynomial hashing, and multi-pattern search",
+                difficulty: "Intermediate",
+                readTime: "35 min read",
+                summary: "Master advanced string matching algorithms. Understand the Z-Algorithm's linear O(N) Z-box windowing technique for prefix matching, and Rabin-Karp's rolling polynomial hash function for O(N + M) pattern lookups and multi-pattern detection.",
+                overview: "String pattern matching is a fundamental problem in computer science. While naive search takes O(N * M) time, the Z-Algorithm computes an array Z[i] representing the length of the longest common prefix between S and S[i..N-1] in linear O(N) time using a expanding Z-box window. Rabin-Karp uses rolling polynomial hashing to compare string pattern hashes in O(1) time per window slide, enabling fast multi-pattern search and 2D matrix matching.",
+                keyConcepts: [
+                    "Z-Array Definition: Z[i] is length of LCP between S and S[i..N-1]",
+                    "Z-Box Window Maintenance [L, R] for linear O(N) execution",
+                    "Rabin-Karp Rolling Hash: H = (H_old - S[i-1]*p^{m-1})*p + S[i+m-1] (mod M)",
+                    "Polynomial Hash Collisions: Verifying matches on hash equality",
+                    "Multi-Pattern Matching & 2D Grid Sub-matrix Matching",
+                    "String matching algorithm comparison: KMP vs Z vs Rabin-Karp"
+                ],
+                timeComplexity: { access: "N/A", search: "O(n + m)", insertion: "N/A", deletion: "N/A", best: "O(n + m)", average: "O(n + m)", worst: "O(n * m) Rabin-Karp worst hash collision" },
+                spaceComplexity: "O(n) Z-Algorithm / O(1) Rabin-Karp",
+                sections: [
+                    {
+                        heading: "1. Beyond Naive String Search",
+                        content: "Given Text $T$ of length $N$ and Pattern $P$ of length $M$. \nNaive string search shifts $P$ across $T$, taking $O(N \\times M)$ worst-case time (e.g., searching 'aaaa' in 'aaaaaaaa'). \n\nWe need algorithms that process text in **linear $O(N + M)$ time**. The **Z-Algorithm** achieves this via prefix box reuse, while **Rabin-Karp** achieves it via constant-time rolling hash updates."
+                    },
+                    {
+                        heading: "2. The Z-Algorithm & Z-Box Window",
+                        content: "Construct concatenated string $S = P + \\text{'\\#'} + T$. \nCompute the **Z-Array** where `Z[i]` is the length of the longest common prefix between $S$ and suffix $S[i..\\text{end}]$. \n\nWe maintain a interval $[L, R]$ (the **Z-Box**) representing the rightmost substring match with a prefix of $S$: \n- If $i > R$, manually compare characters starting at $i$, updating $L = i, R = i + Z[i] - 1$. \n- If $i \\le R$, let $k = i - L$. \n  - If $Z[k] < R - i + 1$, then $Z[i] = Z[k]$ instantly! \n  - If $Z[k] \\ge R - i + 1$, expand past $R$ manually and update $[L, R]$. \n\nIf any $Z[i] == M$, pattern $P$ occurs at index $i - M - 1$ in text $T$!"
+                    },
+                    {
+                        heading: "3. Rabin-Karp Rolling Hash",
+                        content: "Rabin-Karp maps strings to integers using a **Polynomial Rolling Hash**: \n$$H(S[i..i+M-1]) = \\left( \\sum_{j=0}^{M-1} S[i+j] \\cdot p^{M-1-j} \\right) \\pmod M$$ \n\nWhen the sliding window moves from index $i$ to $i+1$, we subtract the outgoing character's contribution and add the incoming character in **$O(1)$ constant time**: \n$$H_{new} = \\left( (H_{old} - S[i-1] \\cdot p^{M-1}) \\cdot p + S[i+M-1] \\right) \\pmod M$$"
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Z-Algorithm Z-box window [L, R].",
+                        diagram: `Concat String S: a  b  a  #  a  b  a  b  a  b  a
+Indices:        0  1  2  3  4  5  6  7  8  9  10
+
+Index 4 (S[4]='a'): Inside Z-box [4, 6] (L=4, R=6).
+k = 4 - 4 = 0. Z[0] is self.
+Z[4] = 3 -> Match length 3 ("aba").
+Index 4 contains full pattern match of length 3!`
+                    },
+                    {
+                        heading: "5. Code Example: Z-Algorithm & Rabin-Karp",
+                        content: "Complete implementations in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Z-Algorithm & Rabin-Karp Pattern Matching",
+                            code: {
+                                python: `def z_algorithm(text: str, pattern: str) -> list:
+    s = pattern + "#" + text
+    n = len(s)
+    z = [0] * n
+    l, r = 0, 0
+    matches = []
+
+    for i in range(1, n):
+        if i <= r:
+            z[i] = min(r - i + 1, z[i - l])
+        while i + z[i] < n and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        if i + z[i] - 1 > r:
+            l, r = i, i + z[i] - 1
+
+        if z[i] == len(pattern):
+            matches.append(i - len(pattern) - 1)
+    return matches
+
+def rabin_karp(text: str, pattern: str) -> list:
+    n, m = len(text), len(pattern)
+    if m > n: return []
+
+    p_base, mod = 31, 10**9 + 7
+    p_pow = pow(p_base, m - 1, mod)
+
+    p_hash, t_hash = 0, 0
+    for i in range(m):
+        p_hash = (p_hash * p_base + ord(pattern[i])) % mod
+        t_hash = (t_hash * p_base + ord(text[i])) % mod
+
+    matches = []
+    for i in range(n - m + 1):
+        if p_hash == t_hash:
+            if text[i:i+m] == pattern: # Verify match
+                matches.append(i)
+        if i < n - m:
+            t_hash = ((t_hash - ord(text[i]) * p_pow) * p_base + ord(text[i+m])) % mod
+    return matches`,
+                                java: `import java.util.ArrayList;
+import java.util.List;
+
+public class StringMatching {
+    public static List<Integer> zAlgorithm(String text, String pattern) {
+        String s = pattern + "#" + text;
+        int n = s.length(), m = pattern.length();
+        int[] z = new int[n];
+        int l = 0, r = 0;
+        List<Integer> matches = new ArrayList<>();
+
+        for (int i = 1; i < n; i++) {
+            if (i <= r) z[i] = Math.min(r - i + 1, z[i - l]);
+            while (i + z[i] < n && s.charAt(z[i]) == s.charAt(i + z[i])) z[i]++;
+            if (i + z[i] - 1 > r) { l = i; r = i + z[i] - 1; }
+            if (z[i] == m) matches.add(i - m - 1);
+        }
+        return matches;
+    }`,
+                                cpp: `#include <vector>
+#include <string>
+#include <algorithm>
+
+std::vector<int> zAlgorithm(const std::string& text, const std::string& pattern) {
+    std::string s = pattern + "#" + text;
+    int n = s.size(), m = pattern.size();
+    std::vector<int> z(n, 0);
+    int l = 0, r = 0;
+    std::vector<int> matches;
+
+    for (int i = 1; i < n; i++) {
+        if (i <= r) z[i] = std::min(r - i + 1, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) z[i]++;
+        if (i + z[i] - 1 > r) { l = i; r = i + z[i] - 1; }
+        if (z[i] == m) matches.push_back(i - m - 1);
+    }
+    return matches;
+}`,
+                                javascript: `function zAlgorithm(text, pattern) {
+  const s = pattern + "#" + text;
+  const n = s.length, m = pattern.length;
+  const z = new Array(n).fill(0);
+  let l = 0, r = 0;
+  const matches = [];
+
+  for (let i = 1; i < n; i++) {
+    if (i <= r) z[i] = Math.min(r - i + 1, z[i - l]);
+    while (i + z[i] < n && s[z[i]] === s[i + z[i]]) z[i]++;
+    if (i + z[i] - 1 > r) { l = i; r = i + z[i] - 1; }
+    if (z[i] === m) matches.push(i - m - 1);
+  }
+  return matches;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Summary",
+                        content: "Z-Algorithm constructs prefix-match bounds in linear $O(N+M)$ time using expanding Z-boxes. Rabin-Karp uses rolling polynomial hashes to compare pattern windows in $O(1)$ per slide."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What does Z[i] represent in the Z-Algorithm for a string S?", options: ["The number of vowels in S.", "The length of the longest common prefix between S and suffix S[i..N-1].", "The total occurrences of character S[i].", "The hash value of S."], correctIndex: 1, explanation: "Z[i] is defined as the length of the longest common prefix between the full string S (starting at index 0) and the suffix starting at index i." },
+                    { id: "q2", question: "How does Rabin-Karp achieve O(1) hash updating when sliding the pattern window by 1 position?", options: ["By clearing the hash array.", "Using a rolling polynomial hash formula that subtracts the outgoing character and adds the incoming character.", "By re-hashing the entire window.", "Using binary exponentiation."], correctIndex: 1, explanation: "Rolling hash subtracts (outgoing_char * p^(M-1)), multiplies the remainder by p, and adds the incoming char, all in O(1) constant time." }
+                ]
+            },
+            {
+                id: "algo-astar-search",
+                slug: "a-star-search-heuristic-pathfinding",
+                categorySlug: "algorithms",
+                title: "A* Search & Heuristic Pathfinding",
+                subtitle: "Informed graph search, f(n) = g(n) + h(n), admissible/consistent heuristics, and game grid pathfinding",
+                difficulty: "Intermediate",
+                readTime: "35 min read",
+                summary: "Master A* Search, the premier informed pathfinding algorithm. Understand evaluation cost f(n) = g(n) + h(n), Admissible and Consistent heuristic functions, Manhattan and Euclidean distance metrics, and game grid navigation.",
+                overview: "Uninformed graph search algorithms like BFS (unweighted) or Dijkstra (weighted) expand blindly in all directions like a expanding ripple in a pond. A* (A-Star) is an informed search algorithm that uses a Heuristic function h(n) to estimate the distance to the goal, steering the search direction directly toward the target. When the heuristic is Admissible (never overestimates remaining cost), A* guarantees finding the optimal shortest path while visiting drastically fewer nodes than Dijkstra.",
+                keyConcepts: [
+                    "Evaluation Function: f(n) = g(n) + h(n)",
+                    "g(n): Exact cost from start node to node n",
+                    "h(n): Estimated heuristic cost from node n to goal node",
+                    "Admissible Heuristic Condition: h(n) <= true_cost(n, goal)",
+                    "Consistent (Monotonic) Heuristic Condition: h(n) <= cost(n, p) + h(p)",
+                    "Distance Metrics: Manhattan (4-way grid), Euclidean (straight-line), Diagonal (8-way grid)"
+                ],
+                timeComplexity: { access: "N/A", search: "O(E)", insertion: "N/A", deletion: "N/A", best: "O(V)", average: "O(E log V)", worst: "O(b^d) exponential with bad heuristic" },
+                spaceComplexity: "O(V) Priority Queue + Closed Set",
+                sections: [
+                    {
+                        heading: "1. The Blind Search Limitation",
+                        content: "Suppose an AI character in a video game (or a autonomous delivery drone) needs to navigate across a 1000x1000 grid map to reach a target 500 meters East. \n\nDijkstra's algorithm will expand nodes equally to the West, North, and South (wasting time exploring paths moving AWAY from the target). \n\n**A* Search** combines Dijkstra's exact past cost $g(n)$ with a forward-looking **Heuristic estimate $h(n)$**, prioritizing paths heading straight toward the goal."
+                    },
+                    {
+                        heading: "2. The Core Formula: f(n) = g(n) + h(n)",
+                        content: "At every step, A* selects the node $n$ from its Priority Queue (Open Set) that minimizes: \n\n$$f(n) = g(n) + h(n)$$ \n- **$g(n)$:** The exact cost of the shortest path from start to $n$. \n- **$h(n)$:** The estimated cost from $n$ to the goal. \n\nIf $h(n) = 0$, A* degrades into standard Dijkstra's algorithm. If $h(n)$ is extremely high, A* behaves like Greedy Best-First Search (fast, but non-optimal)."
+                    },
+                    {
+                        heading: "3. Admissibility & Consistency",
+                        content: "To guarantee that A* finds the absolute shortest path: \n\n1. **Admissibility:** The heuristic $h(n)$ must NEVER overestimate the true cost to reach the goal: $h(n) \\le h^*(n)$. (e.g., Straight-line Euclidean distance is admissible because you cannot travel faster than a straight line). \n2. **Consistency (Monotonicity):** For every node $n$ and neighbor $p$: $h(n) \\le \\text{cost}(n, p) + h(p)$. Consistency ensures that nodes popped from the Open Set are finalized, eliminating the need to re-open closed nodes."
+                    },
+                    {
+                        heading: "4. Grid Distance Metrics",
+                        content: "Choosing heuristics for grid pathfinding: \n- **Manhattan Distance (4-Way Movement):** $h(n) = |x_1 - x_2| + |y_1 - y_2|$ \n- **Diagonal Distance (8-Way Movement):** $h(n) = D \\cdot (|dx| + |dy|) + (D_2 - 2D) \\cdot \\min(|dx|, |dy|)$ \n- **Euclidean Distance (Any Angle):** $h(n) = \\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$"
+                    },
+                    {
+                        heading: "5. Structural Visualization",
+                        content: "Visualizing node expansion comparison: Dijkstra vs A*.",
+                        diagram: `DIJKSTRA SEARCH (Uniform expansion circle):
+        . . . . . .
+      . . . . . . . .
+    . . . [START] . . . [GOAL]
+      . . . . . . . .
+        . . . . . .
+
+A* SEARCH (Steered ellipsoid towards Goal):
+          . . . .
+        . [START] = = = > [GOAL]
+          . . . .`
+                    },
+                    {
+                        heading: "6. Code Example: A* Search Implementation",
+                        content: "Complete 2D Grid A* pathfinding implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "A* Grid Pathfinding Implementation",
+                            code: {
+                                python: `import heapq
+
+def a_star_search(grid: list, start: tuple, goal: tuple):
+    rows, cols = len(grid), len(grid[0])
+    def heuristic(a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1]) # Manhattan
+
+    # (f_score, g_score, current_node)
+    pq = [(heuristic(start, goal), 0, start)]
+    g_score = {start: 0}
+    came_from = {}
+
+    while pq:
+        f, g, curr = heapq.heappop(pq)
+        if curr == goal:
+            # Reconstruct path
+            path = []
+            while curr in came_from:
+                path.append(curr)
+                curr = came_from[curr]
+            path.append(start)
+            return path[::-1]
+
+        if g > g_score.get(curr, float('inf')): continue
+
+        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+            nr, nc = curr[0] + dr, curr[1] + dc
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0:
+                neighbor = (nr, nc)
+                tentative_g = g + 1
+                if tentative_g < g_score.get(neighbor, float('inf')):
+                    g_score[neighbor] = tentative_g
+                    f_score = tentative_g + heuristic(neighbor, goal)
+                    came_from[neighbor] = curr
+                    heapq.heappush(pq, (f_score, tentative_g, neighbor))
+    return None`,
+                                java: `import java.util.*;
+
+public class AStar {
+    static class Node implements Comparable<Node> {
+        int r, c, g, f;
+        Node(int r, int c, int g, int f) { this.r = r; this.c = c; this.g = g; this.f = f; }
+        public int compareTo(Node o) { return Integer.compare(this.f, o.f); }
+    }
+
+    public static int aStar(int[][] grid, int[] start, int[] goal) {
+        int rows = grid.length, cols = grid[0].length;
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        int[][] gScore = new int[rows][cols];
+        for (int[] row : gScore) Arrays.fill(row, Integer.MAX_VALUE);
+
+        gScore[start[0]][start[1]] = 0;
+        pq.offer(new Node(start[0], start[1], 0, Math.abs(start[0]-goal[0]) + Math.abs(start[1]-goal[1])));
+
+        int[][] dirs = {{-1,0},{1,0},{0,-1},{0,1}};
+        while (!pq.isEmpty()) {
+            Node curr = pq.poll();
+            if (curr.r == goal[0] && curr.c == goal[1]) return curr.g;
+            if (curr.g > gScore[curr.r][curr.c]) continue;
+
+            for (int[] d : dirs) {
+                int nr = curr.r + d[0], nc = curr.c + d[1];
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 0) {
+                    int tenG = curr.g + 1;
+                    if (tenG < gScore[nr][nc]) {
+                        gScore[nr][nc] = tenG;
+                        int h = Math.abs(nr - goal[0]) + Math.abs(nc - goal[1]);
+                        pq.offer(new Node(nr, nc, tenG, tenG + h));
+                    }
+                }
+            }
+        }
+        return -1;
+    }`,
+                                cpp: `#include <vector>
+#include <queue>
+#include <cmath>
+
+struct Node {
+    int r, c, g, f;
+    bool operator>(const Node& o) const { return f > o.f; }
+};
+
+int aStar(const std::vector<std::vector<int>>& grid, std::pair<int,int> start, std::pair<int,int> goal) {
+    int rows = grid.size(), cols = grid[0].size();
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
+    std::vector<std::vector<int>> gScore(rows, std::vector<int>(cols, 1e9));
+
+    gScore[start.first][start.second] = 0;
+    int h0 = std::abs(start.first - goal.first) + std::abs(start.second - goal.second);
+    pq.push({start.first, start.second, 0, h0});
+
+    int dr[] = {-1, 1, 0, 0}, dc[] = {0, 0, -1, 1};
+    while (!pq.empty()) {
+        auto curr = pq.top(); pq.pop();
+        if (curr.r == goal.first && curr.c == goal.second) return curr.g;
+        if (curr.g > gScore[curr.r][curr.c]) continue;
+
+        for (int i = 0; i < 4; i++) {
+            int nr = curr.r + dr[i], nc = curr.c + dc[i];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 0) {
+                int tenG = curr.g + 1;
+                if (tenG < gScore[nr][nc]) {
+                    gScore[nr][nc] = tenG;
+                    int h = std::abs(nr - goal.first) + std::abs(nc - goal.second);
+                    pq.push({nr, nc, tenG, tenG + h});
+                }
+            }
+        }
+    }
+    return -1;
+}`,
+                                javascript: `function aStar(grid, start, goal) {
+  const rows = grid.length, cols = grid[0].length;
+  const h = (r, c) => Math.abs(r - goal[0]) + Math.abs(c - goal[1]);
+  const gScore = Array.from({ length: rows }, () => new Array(cols).fill(Infinity));
+
+  gScore[start[0]][start[1]] = 0;
+  const pq = [{ r: start[0], c: start[1], g: 0, f: h(start[0], start[1]) }];
+
+  const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+  while (pq.length > 0) {
+    pq.sort((a, b) => a.f - b.f);
+    const curr = pq.shift();
+    if (curr.r === goal[0] && curr.c === goal[1]) return curr.g;
+    if (curr.g > gScore[curr.r][curr.c]) continue;
+
+    for (const [dr, dc] of dirs) {
+      const nr = curr.r + dr, nc = curr.c + dc;
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] === 0) {
+        const tenG = curr.g + 1;
+        if (tenG < gScore[nr][nc]) {
+          gScore[nr][nc] = tenG;
+          pq.push({ r: nr, c: nc, g: tenG, f: tenG + h(nr, nc) });
+        }
+      }
+    }
+  }
+  return -1;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "7. Summary",
+                        content: "A* Search combines past exact cost $g(n)$ with admissible heuristic estimate $h(n)$ to steer search toward the goal, finding optimal paths significantly faster than Dijkstra."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What requirement must a Heuristic function h(n) satisfy to guarantee that A* finds the optimal shortest path?", options: ["h(n) must equal 0 for all nodes.", "h(n) must be Admissible (never overestimate the true cost to reach the goal).", "h(n) must be non-linear.", "h(n) must return negative values."], correctIndex: 1, explanation: "An Admissible heuristic never overestimates the remaining distance, guaranteeing that A* evaluates optimal paths before suboptimal ones." },
+                    { id: "q2", question: "If the Heuristic function h(n) is set to 0 for all nodes, what does A* Search degrade into?", options: ["Depth-First Search (DFS)", "Dijkstra's Algorithm", "Binary Search", "Bellman-Ford"], correctIndex: 1, explanation: "When h(n) = 0, f(n) = g(n) + 0 = g(n), which evaluates nodes purely on past path distance, matching Dijkstra's algorithm exactly." }
+                ]
+            },
+            {
+                id: "algo-scc-tarjan-kosaraju",
+                slug: "strongly-connected-components-tarjan-kosaraju",
+                categorySlug: "algorithms",
+                title: "Tarjan's & Kosaraju's SCC Algorithms",
+                subtitle: "Directed graph condensation into DAGs, low-link DFS stack tracking, and 2-pass transpose traversal",
+                difficulty: "Advanced",
+                readTime: "40 min read",
+                summary: "Master Strongly Connected Components (SCC) in directed graphs. Understand how to condense cyclic graphs into Directed Acyclic Graphs (DAGs), Tarjan's low-link discovery DFS stack in single-pass O(V + E) time, and Kosaraju's two-pass transpose DFS algorithm.",
+                overview: "A Strongly Connected Component (SCC) of a directed graph is a maximal subgraph where every vertex is reachable from every other vertex in that component. Finding SCCs allows us to condense cyclic directed graphs into clean Directed Acyclic Graphs (DAGs). Tarjan's algorithm finds all SCCs in a single DFS traversal in O(V + E) time using low-link values and a stack. Kosaraju's algorithm uses two simple DFS passes (one on the original graph, one on the transposed graph G^T).",
+                keyConcepts: [
+                    "Strongly Connected Component Definition: Mutual reachability u <-> v",
+                    "Graph Condensation: Collapsing each SCC into a single DAG super-node",
+                    "Tarjan's Discovery Time `disc[u]` & Low-Link `low[u]` tracking",
+                    "On-Stack Array Tracking: Preventing cross-edges from corrupting low-link values",
+                    "Kosaraju's 2-Pass Algorithm: Post-order finish-time stack + Transpose Graph G^T",
+                    "2-SAT (2-Satisfiability) Problem Reduction via SCCs"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(V + E)", average: "O(V + E)", worst: "O(V + E)" },
+                spaceComplexity: "O(V + E)",
+                sections: [
+                    {
+                        heading: "1. The Directed Cycle Condensation Problem",
+                        content: "Directed graphs can contain complex intertwined cycles. Topological Sorting fails on cyclic graphs. \n\nHow do we analyze dependencies in cyclic graphs (e.g., circular module dependencies in software projects or web link communities)? \n\nWe group nodes into **Strongly Connected Components (SCCs)**. If we collapse each SCC into a single 'meta-node', the resulting condensed graph is guaranteed to be a **Directed Acyclic Graph (DAG)**!"
+                    },
+                    {
+                        heading: "2. Tarjan's Algorithm (Single-Pass DFS)",
+                        content: "Tarjan's algorithm uses a single DFS pass and tracks two metrics per node $u$: \n- `disc[u]`: Timestamp when node $u$ was first visited. \n- `low[u]`: Lowest `disc` value reachable from $u$ via tree edges and back-edges to nodes currently on the stack. \n\n**Root of SCC Condition:** If after visiting all DFS neighbors of $u$, `low[u] == disc[u]`, then $u$ is the ROOT of a Strongly Connected Component! All nodes above $u$ on the stack belong to $u$'s SCC. We pop nodes off the stack until $u$ is popped."
+                    },
+                    {
+                        heading: "3. Kosaraju's Algorithm (2-Pass Transpose)",
+                        content: "Kosaraju's algorithm relies on Transposing the graph ($G^T$ where all edge directions are reversed): \n\n1. Run standard DFS on original graph $G$. Push nodes to a stack upon finishing (post-order). \n2. Compute Transpose Graph $G^T$ by reversing all directed edges. \n3. Pop nodes from the stack one by one. If node $u$ is not visited in $G^T$, run DFS from $u$ on $G^T$. All nodes reached in this pass form a single SCC!"
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Graph Condensation into DAG.",
+                        diagram: `ORIGINAL GRAPH (with cycles):
+[1] ---> [2] ---> [3]
+ ^        |        |
+ |        v        v
+ [4] <--- [5] ---> [6]
+
+SCC 1: {1, 2, 4, 5} (Cycle 1->2->5->4->1)
+SCC 2: {3}
+SCC 3: {6}
+
+CONDENSED DAG:
+[ SCC 1 ] ---> [ SCC 2 ]
+    |
+    v
+[ SCC 3 ]`
+                    },
+                    {
+                        heading: "5. Code Example: Tarjan's SCC Implementation",
+                        content: "Complete implementation of Tarjan's SCC algorithm in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Tarjan's SCC Algorithm",
+                            code: {
+                                python: `def tarjan_scc(v_count: int, adj: list):
+    timer = 0
+    disc = [-1] * v_count
+    low = [-1] * v_count
+    on_stack = [False] * v_count
+    stack = []
+    sccs = []
+
+    def dfs(u):
+        nonlocal timer
+        disc[u] = low[u] = timer
+        timer += 1
+        stack.append(u)
+        on_stack[u] = True
+
+        for v in adj[u]:
+            if disc[v] == -1: # Unvisited tree edge
+                dfs(v)
+                low[u] = min(low[u], low[v])
+            elif on_stack[v]: # Back edge to node in current SCC
+                low[u] = min(low[u], disc[v])
+
+        # If u is root of SCC
+        if low[u] == disc[u]:
+            scc = []
+            while True:
+                node = stack.pop()
+                on_stack[node] = False
+                scc.append(node)
+                if node == u: break
+            sccs.append(scc)
+
+    for i in range(v_count):
+        if disc[i] == -1:
+            dfs(i)
+    return sccs`,
+                                java: `import java.util.*;
+
+public class TarjanSCC {
+    private int timer = 0;
+    private int[] disc, low;
+    private boolean[] onStack;
+    private Deque<Integer> stack = new ArrayDeque<>();
+    private List<List<Integer>> sccs = new ArrayList<>();
+
+    public List<List<Integer>> getSCCs(int vCount, List<List<Integer>> adj) {
+        disc = new int[vCount];
+        low = new int[vCount];
+        onStack = new boolean[vCount];
+        Arrays.fill(disc, -1);
+
+        for (int i = 0; i < vCount; i++) {
+            if (disc[i] == -1) dfs(i, adj);
+        }
+        return sccs;
+    }
+
+    private void dfs(int u, List<List<Integer>> adj) {
+        disc[u] = low[u] = timer++;
+        stack.push(u);
+        onStack[u] = true;
+
+        for (int v : adj.get(u)) {
+            if (disc[v] == -1) {
+                dfs(v, adj);
+                low[u] = Math.min(low[u], low[v]);
+            } else if (onStack[v]) {
+                low[u] = Math.min(low[u], disc[v]);
+            }
+        }
+
+        if (low[u] == disc[u]) {
+            List<Integer> scc = new ArrayList<>();
+            while (true) {
+                int node = stack.pop();
+                onStack[node] = false;
+                scc.add(node);
+                if (node == u) break;
+            }
+            sccs.add(scc);
+        }
+    }`,
+                                cpp: `#include <vector>
+#include <stack>
+#include <algorithm>
+
+class TarjanSCC {
+    int timer = 0;
+    std::vector<int> disc, low;
+    std::vector<bool> onStack;
+    std::stack<int> st;
+    std::vector<std::vector<int>> sccs;
+
+    void dfs(int u, const std::vector<std::vector<int>>& adj) {
+        disc[u] = low[u] = timer++;
+        st.push(u);
+        onStack[u] = true;
+
+        for (int v : adj[u]) {
+            if (disc[v] == -1) {
+                dfs(v, adj);
+                low[u] = std::min(low[u], low[v]);
+            } else if (onStack[v]) {
+                low[u] = std::min(low[u], disc[v]);
+            }
+        }
+
+        if (low[u] == disc[u]) {
+            std::vector<int> scc;
+            while (true) {
+                int node = st.top(); st.pop();
+                onStack[node] = false;
+                scc.push_back(node);
+                if (node == u) break;
+            }
+            sccs.push_back(scc);
+        }
+    }
+};`,
+                                javascript: `function tarjanSCC(vCount, adj) {
+  let timer = 0;
+  const disc = new Array(vCount).fill(-1);
+  const low = new Array(vCount).fill(-1);
+  const onStack = new Array(vCount).fill(false);
+  const stack = [];
+  const sccs = [];
+
+  function dfs(u) {
+    disc[u] = low[u] = timer++;
+    stack.push(u);
+    onStack[u] = true;
+
+    for (const v of adj[u]) {
+      if (disc[v] === -1) {
+        dfs(v);
+        low[u] = Math.min(low[u], low[v]);
+      } else if (onStack[v]) {
+        low[u] = Math.min(low[u], disc[v]);
+      }
+    }
+
+    if (low[u] === disc[u]) {
+      const scc = [];
+      while (true) {
+        const node = stack.pop();
+        onStack[node] = false;
+        scc.push(node);
+        if (node === u) break;
+      }
+      sccs.push(scc);
+    }
+  }
+
+  for (let i = 0; i < vCount; i++) {
+    if (disc[i] === -1) dfs(i);
+  }
+  return sccs;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Summary",
+                        content: "Tarjan's algorithm finds all Strongly Connected Components in a single DFS pass using discovery timestamps and low-link stack tracking in linear $O(V + E)$ time."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "In Tarjan's SCC algorithm, what condition signifies that node u is the root of a Strongly Connected Component?", options: ["disc[u] == 0", "low[u] == disc[u]", "onStack[u] == false", "u has no outgoing edges"], correctIndex: 1, explanation: "When low[u] == disc[u], no node in u's subtree can reach an ancestor visited earlier than u, making u the root of that SCC." },
+                    { id: "q2", question: "What is the result of condensing all SCCs of a cyclic directed graph into single super-nodes?", options: ["A complete graph", "A Directed Acyclic Graph (DAG)", "A binary tree", "An undirected graph"], correctIndex: 1, explanation: "Collapsing cycles into SCC super-nodes removes all cycles, turning the graph into a valid Directed Acyclic Graph (DAG)." }
+                ]
+            },
+            {
+                id: "algo-network-flow",
+                slug: "network-flow-ford-fulkerson-edmonds-karp",
+                categorySlug: "algorithms",
+                title: "Network Flow: Ford-Fulkerson & Edmonds-Karp",
+                subtitle: "Max-Flow Min-Cut Theorem, Residual Networks, Augmenting Paths, and Dinic's algorithm",
+                difficulty: "Advanced",
+                readTime: "45 min read",
+                summary: "Master Maximum Flow and Minimum Cut algorithms. Understand the Max-Flow Min-Cut Theorem, Residual Graph construction, Augmenting Path bottleneck calculation, Edmonds-Karp BFS implementation in O(V * E^2), and Dinic's blocking flow in O(V^2 * E).",
+                overview: "Network Flow models systems where material flows through a network of limited-capacity conduits (e.g., water pipes, network bandwidth, highway traffic). The Maximum Flow problem asks for the maximum total rate of flow from a Source node S to a Sink node T. The Max-Flow Min-Cut Theorem proves that the maximum flow passing from source to sink equals the total capacity of the minimum weight cut separating them. Edmonds-Karp implements Ford-Fulkerson using BFS augmenting paths in O(V * E^2) time.",
+                keyConcepts: [
+                    "Capacity Constraints & Flow Conservation: Inflow == Outflow at internal nodes",
+                    "Residual Network G_f: Original capacities + Reverse back-edges for flow cancellation",
+                    "Augmenting Path: Path from Source to Sink in Residual Network with capacity > 0",
+                    "Max-Flow Min-Cut Theorem: Max Flow == Min Capacity Cut",
+                    "Edmonds-Karp: Shortest augmenting path selection via BFS in O(V * E^2)",
+                    "Dinic's Algorithm: Level Graph + Blocking Flow in O(V^2 * E)",
+                    "Applications: Maximum Bipartite Matching, Airline Scheduling, Image Segmentation"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(V * E^2)", average: "O(V * E^2) Edmonds-Karp", worst: "O(V^2 * E) Dinic's" },
+                spaceComplexity: "O(V + E)",
+                sections: [
+                    {
+                        heading: "1. The Network Capacity Bottleneck",
+                        content: "Imagine an oil pipeline network connecting oil fields (Source $S$) to a refinery (Sink $T$). Each pipeline has a maximum throughput capacity (e.g., 500 barrels/sec). \n\nWhat is the absolute maximum oil that can reach the refinery per second? \n\nThis is the **Maximum Flow Problem**. To solve it, we must model not only forward capacity, but also allow the algorithm to **undo previous bad flow decisions** via backward residual edges."
+                    },
+                    {
+                        heading: "2. Residual Networks & Back-Edges",
+                        content: "A **Residual Graph $G_f$** tracks remaining available capacity for every edge $(u, v)$: \n- **Forward Edge Capacity:** $C_f(u, v) = C(u, v) - \\text{flow}(u, v)$ \n- **Backward Edge Capacity:** $C_f(v, u) = \\text{flow}(u, v)$ \n\nWhy are backward edges critical? \nIf we send 10 units of flow along $u \\rightarrow v$, we add 10 units of capacity to the reverse edge $v \\rightarrow u$. A subsequent augmenting path using $v \\rightarrow u$ effectively **cancels** part of the previous flow, allowing the algorithm to dynamically self-correct!"
+                    },
+                    {
+                        heading: "3. The Max-Flow Min-Cut Theorem",
+                        content: "A **Cut** is a partition of vertices into two sets $S$ (containing source) and $T$ (containing sink). The capacity of a cut is the sum of forward capacities from $S$ to $T$. \n\n**Max-Flow Min-Cut Theorem:** \n$$\\text{Maximum Flow from } S \\text{ to } T = \\text{Minimum Capacity of any } S-T \\text{ Cut}$$ \nThis fundamental duality links network optimization directly to graph partitioning (used in computer vision for image background/foreground segmentation)."
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Augmenting Path bottleneck subtraction and reverse edge addition.",
+                        diagram: `AUGMENTING PATH (Bottleneck = 5):
+( S ) ----[ 10 ]----> ( A ) ----[ 5 ]----> ( T )
+
+AFTER FLOW OF 5 IS SENT:
+Forward Residuals:  S->A: 5,   A->T: 0
+Reverse Residuals:  A->S: 5,   T->A: 5
+
+Max Flow = 5. Path S->A->T is saturated!`
+                    },
+                    {
+                        heading: "5. Code Example: Edmonds-Karp Implementation",
+                        content: "Complete Edmonds-Karp BFS max-flow implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Edmonds-Karp Max-Flow",
+                            code: {
+                                python: `from collections import deque
+
+def edmonds_karp(v_count: int, capacity_matrix: list, src: int, sink: int) -> int:
+    # Residual capacity graph
+    res_cap = [row[:] for row in capacity_matrix]
+    max_flow = 0
+
+    while True:
+        # BFS to find shortest augmenting path in edges count
+        parent = [-1] * v_count
+        parent[src] = -2
+        q = deque([src])
+
+        while q and parent[sink] == -1:
+            curr = q.popleft()
+            for neighbor in range(v_count):
+                if parent[neighbor] == -1 and res_cap[curr][neighbor] > 0:
+                    parent[neighbor] = curr
+                    q.append(neighbor)
+
+        if parent[sink] == -1: break # No more augmenting paths!
+
+        # Find bottleneck capacity along path
+        path_flow = float('inf')
+        v = sink
+        while v != src:
+            u = parent[v]
+            path_flow = min(path_flow, res_cap[u][v])
+            v = u
+
+        # Update residual capacities along path
+        v = sink
+        while v != src:
+            u = parent[v]
+            res_cap[u][v] -= path_flow
+            res_cap[v][u] += path_flow # Reverse edge
+            v = u
+
+        max_flow += path_flow
+
+    return max_flow`,
+                                java: `import java.util.*;
+
+public class EdmondsKarp {
+    public static int maxFlow(int[][] capacity, int src, int sink) {
+        int n = capacity.length;
+        int[][] resCap = new int[n][n];
+        for (int i = 0; i < n; i++) resCap[i] = capacity[i].clone();
+
+        int maxFlow = 0;
+        while (true) {
+            int[] parent = new int[n];
+            Arrays.fill(parent, -1);
+            parent[src] = -2;
+            Queue<Integer> q = new LinkedList<>();
+            q.offer(src);
+
+            while (!q.isEmpty() && parent[sink] == -1) {
+                int curr = q.poll();
+                for (int next = 0; next < n; next++) {
+                    if (parent[next] == -1 && resCap[curr][next] > 0) {
+                        parent[next] = curr;
+                        q.offer(next);
+                    }
+                }
+            }
+
+            if (parent[sink] == -1) break;
+
+            int pathFlow = Integer.MAX_VALUE;
+            for (int v = sink; v != src; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = Math.min(pathFlow, resCap[u][v]);
+            }
+
+            for (int v = sink; v != src; v = parent[v]) {
+                int u = parent[v];
+                resCap[u][v] -= pathFlow;
+                resCap[v][u] += pathFlow;
+            }
+
+            maxFlow += pathFlow;
+        }
+        return maxFlow;
+    }`,
+                                cpp: `#include <vector>
+#include <queue>
+#include <algorithm>
+#include <climits>
+
+int edmondsKarp(std::vector<std::vector<int>> resCap, int src, int sink) {
+    int n = resCap.size();
+    int maxFlow = 0;
+
+    while (true) {
+        std::vector<int> parent(n, -1);
+        parent[src] = -2;
+        std::queue<int> q;
+        q.push(src);
+
+        while (!q.empty() && parent[sink] == -1) {
+            int curr = q.front(); q.pop();
+            for (int next = 0; next < n; next++) {
+                if (parent[next] == -1 && resCap[curr][next] > 0) {
+                    parent[next] = curr;
+                    q.push(next);
+                }
+            }
+        }
+
+        if (parent[sink] == -1) break;
+
+        int pathFlow = INT_MAX;
+        for (int v = sink; v != src; v = parent[v]) {
+            int u = parent[v];
+            pathFlow = std::min(pathFlow, resCap[u][v]);
+        }
+
+        for (int v = sink; v != src; v = parent[v]) {
+            int u = parent[v];
+            resCap[u][v] -= pathFlow;
+            resCap[v][u] += pathFlow;
+        }
+
+        maxFlow += pathFlow;
+    }
+    return maxFlow;
+}`,
+                                javascript: `function edmondsKarp(capacity, src, sink) {
+  const n = capacity.length;
+  const resCap = capacity.map(row => [...row]);
+  let maxFlow = 0;
+
+  while (true) {
+    const parent = new Array(n).fill(-1);
+    parent[src] = -2;
+    const q = [src];
+
+    while (q.length > 0 && parent[sink] === -1) {
+      const curr = q.shift();
+      for (let next = 0; next < n; next++) {
+        if (parent[next] === -1 && resCap[curr][next] > 0) {
+          parent[next] = curr;
+          q.push(next);
+        }
+      }
+    }
+
+    if (parent[sink] === -1) break;
+
+    let pathFlow = Infinity;
+    for (let v = sink; v !== src; v = parent[v]) {
+      const u = parent[v];
+      pathFlow = Math.min(pathFlow, resCap[u][v]);
+    }
+
+    for (let v = sink; v !== src; v = parent[v]) {
+      const u = parent[v];
+      resCap[u][v] -= pathFlow;
+      resCap[v][u] += pathFlow;
+    }
+
+    maxFlow += pathFlow;
+  }
+  return maxFlow;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Summary",
+                        content: "Maximum Flow equals Minimum Cut capacity. Edmonds-Karp implements Ford-Fulkerson via BFS augmenting paths, adding reverse residual edges to allow flow cancellation."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What is the fundamental purpose of adding Reverse Edges in a Residual Flow Network?", options: ["To convert directed graphs to undirected graphs.", "To allow the algorithm to cancel or undo previous flow assignments if a better globally optimal flow path exists.", "To detect negative cycles.", "To double network capacity."], correctIndex: 1, explanation: "Reverse edges store the flow sent forward. Pushing flow through a reverse edge cancels existing forward flow, enabling dynamic self-correction." },
+                    { id: "q2", question: "What does the Max-Flow Min-Cut Theorem state?", options: ["Max flow is always 0.", "The maximum flow from source to sink equals the minimum total capacity of any cut separating source and sink.", "Min cut equals total edge count.", "Flow increases exponentially."], correctIndex: 1, explanation: "Max-Flow Min-Cut proves that the maximum flow bottleneck in a network is strictly equal to the minimal total capacity of edges crossing an S-T cut." }
+                ]
+            },
+            {
+                id: "algo-divide-conquer",
+                slug: "divide-and-conquer-master-theorem",
+                categorySlug: "algorithms",
+                title: "Divide & Conquer & Master Theorem",
+                subtitle: "Master Theorem recurrence T(N) = aT(N/b) + f(N), Karatsuba multiplication, and Closest Pair of Points",
+                difficulty: "Intermediate",
+                readTime: "35 min read",
+                summary: "Master Divide & Conquer algorithm design. Understand Master Theorem recurrence analysis T(N) = aT(N/b) + f(N), Karatsuba fast integer multiplication in O(N^1.58), Strassen's matrix multiplication, and 2D Closest Pair of Points in O(N log N) time.",
+                overview: "Divide and Conquer solves complex problems by recursively breaking them down into subproblems of the same type (Divide), solving subproblems recursively (Conquer), and combining subproblem solutions (Combine). The Master Theorem provides a closed-form formula for analyzing Divide & Conquer recurrences of the form T(N) = aT(N/b) + f(N). Advanced paradigms include Karatsuba multiplication O(N^1.58) and 2D Closest Pair of Points in O(N log N) time.",
+                keyConcepts: [
+                    "3-Step Paradigm: Divide -> Conquer -> Combine",
+                    "Master Theorem Formula: T(N) = a T(N/b) + Theta(N^d)",
+                    "Case 1: d < log_b(a) => T(N) = Theta(N^{log_b a}) (Tree heavy)",
+                    "Case 2: d == log_b(a) => T(N) = Theta(N^d log N) (Balanced)",
+                    "Case 3: d > log_b(a) => T(N) = Theta(N^d) (Root heavy)",
+                    "Karatsuba Integer Multiplication: 3 recursive multiplies instead of 4",
+                    "2D Closest Pair of Points: $O(N \log N)$ sweep-line strip filtering"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(N log N)", average: "O(N log N)", worst: "O(N^1.58) Karatsuba" },
+                spaceComplexity: "O(N)",
+                sections: [
+                    {
+                        heading: "1. The Divide & Conquer Paradigm",
+                        content: "Many algorithms (MergeSort, QuickSort, Fast Fourier Transform) derive power from breaking a problem of size $N$ into $a$ subproblems of size $N/b$, spending $f(N)$ work to combine results. \n\nThe **Master Theorem** provides an instant asymptotic bound for recurrences of the form: \n$$T(N) = a \\cdot T(N/b) + f(N)$$"
+                    },
+                    {
+                        heading: "2. The Master Theorem Cases",
+                        content: "Comparing $f(N) = \\Theta(N^d)$ with $N^{\\log_b a}$: \n\n- **Case 1 ($d < \\log_b a$):** Subproblems dominate $\\rightarrow T(N) = \\Theta(N^{\\log_b a})$. \n- **Case 2 ($d = \\log_b a$):** Equal work across levels $\\rightarrow T(N) = \\Theta(N^d \\log N)$. (e.g., MergeSort: $a=2, b=2, d=1 \\rightarrow \\Theta(N \\log N)$). \n- **Case 3 ($d > \\log_b a$):** Root work dominates $\\rightarrow T(N) = \\Theta(N^d)$."
+                    },
+                    {
+                        heading: "3. Karatsuba Fast Integer Multiplication",
+                        content: "Multiplying two $N$-digit integers naively takes 4 half-size multiplications $\\rightarrow T(N) = 4T(N/2) + O(N) = O(N^2)$. \n\nKaratsuba's trick reduces 4 multiplications to 3: \n$X = X_1 \\cdot 10^{N/2} + X_0$, $Y = Y_1 \\cdot 10^{N/2} + Y_0$. \nCompute: $z_0 = X_0 Y_0$, $z_2 = X_1 Y_1$, $z_1 = (X_1 + X_0)(Y_1 + Y_0) - z_0 - z_2$. \n\nRecurrence: $T(N) = 3T(N/2) + O(N) \\rightarrow$ Master Theorem Case 1 ($a=3, b=2$): \n$$T(N) = \\Theta(N^{\\log_2 3}) \\approx \\mathbf{\\Theta(N^{1.58})}$$"
+                    },
+                    {
+                        heading: "4. Code Example: 2D Closest Pair of Points",
+                        content: "Implementation of $O(N \\log N)$ Closest Pair of Points in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "2D Closest Pair of Points O(N log N)",
+                            code: {
+                                python: `import math
+
+def dist(p1, p2):
+    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+def closest_pair(points: list) -> float:
+    pts_x = sorted(points, key=lambda p: p[0])
+    pts_y = sorted(points, key=lambda p: p[1])
+
+    def solve(px, py):
+        n = len(px)
+        if n <= 3:
+            min_d = float('inf')
+            for i in range(n):
+                for j in range(i + 1, n):
+                    min_d = min(min_d, dist(px[i], px[j]))
+            return min_d
+
+        mid = n // 2
+        mid_x = px[mid][0]
+
+        lx = px[:mid]
+        rx = px[mid:]
+        ly = [p for p in py if p[0] <= mid_x]
+        ry = [p for p in py if p[0] > mid_x]
+
+        d = min(solve(lx, ly), solve(rx, ry))
+
+        # Build strip of points within distance d of mid_x
+        strip = [p for p in py if abs(p[0] - mid_x) < d]
+        for i in range(len(strip)):
+            for j in range(i + 1, min(i + 7, len(strip))):
+                d = min(d, dist(strip[i], strip[j]))
+        return d
+
+    return solve(pts_x, pts_y)`,
+                                java: `import java.util.*;
+
+public class ClosestPair {
+    static double dist(double[] p1, double[] p2) {
+        return Math.hypot(p1[0] - p2[0], p1[1] - p2[1]);
+    }
+
+    public static double findClosest(double[][] points) {
+        Arrays.sort(points, (a, b) -> Double.compare(a[0], b[0]));
+        return solve(points, 0, points.length - 1);
+    }
+
+    private static double solve(double[][] pts, int l, int r) {
+        if (r - l <= 3) {
+            double d = Double.MAX_VALUE;
+            for (int i = l; i <= r; i++) {
+                for (int j = i + 1; j <= r; j++) d = Math.min(d, dist(pts[i], pts[j]));
+            }
+            return d;
+        }
+
+        int mid = (l + r) / 2;
+        double midX = pts[mid][0];
+        double d = Math.min(solve(pts, l, mid), solve(pts, mid + 1, r));
+
+        List<double[]> strip = new ArrayList<>();
+        for (int i = l; i <= r; i++) {
+            if (Math.abs(pts[i][0] - midX) < d) strip.add(pts[i]);
+        }
+        strip.sort((a, b) -> Double.compare(a[1], b[1]));
+
+        for (int i = 0; i < strip.size(); i++) {
+            for (int j = i + 1; j < Math.min(i + 7, strip.size()); j++) {
+                d = Math.min(d, dist(strip[i], strip[j]));
+            }
+        }
+        return d;
+    }`,
+                                cpp: `#include <vector>
+#include <cmath>
+#include <algorithm>
+
+struct Point { double x, y; };
+
+double dist(Point p1, Point p2) { return std::hypot(p1.x - p2.x, p1.y - p2.y); }
+
+double closestPair(std::vector<Point>& pts) {
+    std::sort(pts.begin(), pts.end(), [](Point a, Point b){ return a.x < b.x; });
+
+    auto solve = [&](auto self, int l, int r) -> double {
+        if (r - l <= 3) {
+            double d = 1e18;
+            for (int i = l; i <= r; i++)
+                for (int j = i + 1; j <= r; j++) d = std::min(d, dist(pts[i], pts[j]));
+            return d;
+        }
+        int mid = (l + r) / 2;
+        double midX = pts[mid].x;
+        double d = std::min(self(self, l, mid), self(self, mid + 1, r));
+
+        std::vector<Point> strip;
+        for (int i = l; i <= r; i++)
+            if (std::abs(pts[i].x - midX) < d) strip.push_back(pts[i]);
+
+        std::sort(strip.begin(), strip.end(), [](Point a, Point b){ return a.y < b.y; });
+        for (size_t i = 0; i < strip.size(); i++)
+            for (size_t j = i + 1; j < std::min(i + 7, strip.size()); j++)
+                d = std::min(d, dist(strip[i], strip[j]));
+        return d;
+    };
+    return solve(solve, 0, pts.size() - 1);
+}`,
+                                javascript: `function closestPair(points) {
+  const pts = [...points].sort((a, b) => a[0] - b[0]);
+  const dist = (p1, p2) => Math.hypot(p1[0] - p2[0], p1[1] - p2[1]);
+
+  function solve(l, r) {
+    if (r - l <= 3) {
+      let d = Infinity;
+      for (let i = l; i <= r; i++)
+        for (let j = i + 1; j <= r; j++) d = Math.min(d, dist(pts[i], pts[j]));
+      return d;
+    }
+    const mid = Math.floor((l + r) / 2);
+    const midX = pts[mid][0];
+    let d = Math.min(solve(l, mid), solve(mid + 1, r));
+
+    const strip = [];
+    for (let i = l; i <= r; i++)
+      if (Math.abs(pts[i][0] - midX) < d) strip.push(pts[i]);
+
+    strip.sort((a, b) => a[1] - b[1]);
+    for (let i = 0; i < strip.length; i++)
+      for (let j = i + 1; j < Math.min(i + 7, strip.length); j++)
+        d = Math.min(d, dist(strip[i], strip[j]));
+    return d;
+  }
+  return solve(0, pts.length - 1);
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "5. Summary",
+                        content: "Divide and Conquer breaks problems into subproblems. The Master Theorem evaluates recurrences $T(N) = aT(N/b) + f(N)$, unlocking Karatsuba $O(N^{1.58})$ integer multiplication and $O(N \\log N)$ 2D Closest Pair."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What does Karatsuba's algorithm accomplish by reducing integer multiplication from 4 sub-multiplications to 3?", options: ["Reduces time complexity from O(N^2) to O(N^1.58).", "Reduces space complexity to O(1).", "Eliminates addition.", "Enables floating point division."], correctIndex: 0, explanation: "By computing 3 recursive multiplications instead of 4, the Master Theorem recurrence T(N) = 3T(N/2) + O(N) yields Theta(N^(log2 3)) = O(N^1.58)." },
+                    { id: "q2", question: "In the Master Theorem recurrence T(N) = 2 T(N/2) + O(N) for MergeSort, which Case applies?", options: ["Case 1 (Subproblems dominate)", "Case 2 (Equal work across tree levels => Theta(N log N))", "Case 3 (Root dominates)", "Non-applicable"], correctIndex: 1, explanation: "a=2, b=2, d=1. Since log_b(a) = log_2(2) = 1 == d, Case 2 applies, yielding Theta(N^1 log N) = Theta(N log N)." }
+                ]
+            },
+            {
+                id: "algo-matrix-exponentiation",
+                slug: "matrix-exponentiation-linear-recurrences",
+                categorySlug: "algorithms",
+                title: "Matrix Exponentiation & Linear Recurrences",
+                subtitle: "K-order linear recurrence state transitions, matrix multiplication, and O(K^3 log N) evaluation",
+                difficulty: "Advanced",
+                readTime: "30 min read",
+                summary: "Master Matrix Exponentiation for computing N-th terms of linear recurrences in logarithmic time. Understand state transition matrices M, repeated squaring binary exponentiation, and computing Fib(N) mod P for N = 10^18 in O(K^3 log N) time.",
+                overview: "Linear recurrences like Fibonacci (Fib(N) = Fib(N-1) + Fib(N-2)) take O(N) time with dynamic programming tabulation. When N is astronomically large (e.g., N = 10^18), linear iteration times out. Matrix Exponentiation expresses linear recurrence transitions as a K x K Matrix M, computing the N-th term via Binary Matrix Exponentiation in O(K^3 log N) time.",
+                keyConcepts: [
+                    "State Vector & Transition Matrix M: [Fib(n), Fib(n-1)] = M * [Fib(n-1), Fib(n-2)]",
+                    "K-th Order Linear Recurrence: F(n) = c_1 F(n-1) + c_2 F(n-2) + ... + c_k F(n-k)",
+                    "Binary Matrix Exponentiation: M^N in O(K^3 log N) matrix multiplications",
+                    "Modular Arithmetic Matrix Multiplication: Keeping values bounded mod P",
+                    "Applications: Fibonacci 10^18, Grid Tiling DP, Random Walk Transition Matrices"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(K^3 log N)", average: "O(K^3 log N)", worst: "O(K^3 log N)" },
+                spaceComplexity: "O(K^2)",
+                sections: [
+                    {
+                        heading: "1. The 10^18 Term Challenge",
+                        content: "Calculate the $10^{18}$-th Fibonacci number modulo $10^9+7$. \n\n- **DP Tabulation:** Loop $10^{18}$ times $\\rightarrow$ Takes 30 years of CPU time ($O(N)$). \n- **Matrix Exponentiation:** Matrix binary multiplication $\\rightarrow$ Calculates answer in **60 operations ($O(\\log N)$)**!"
+                    },
+                    {
+                        heading: "2. Constructing the Transition Matrix M",
+                        content: "For Fibonacci $F_n = F_{n-1} + F_{n-2}$: \nDefine State Vector $V_n = \\begin{bmatrix} F_n \\ F_{n-1} \\end{bmatrix}$. \n\nWe want $M \\cdot V_{n-1} = V_n$: \n$$\\begin{bmatrix} 1 & 1 \\ 1 & 0 \\end{bmatrix} \\begin{bmatrix} F_{n-1} \\ F_{n-2} \\end{bmatrix} = \\begin{bmatrix} F_{n-1} + F_{n-2} \\ F_{n-1} \\end{bmatrix} = \\begin{bmatrix} F_n \\ F_{n-1} \\end{bmatrix}$$ \n\nRepeated application: $V_n = M^{n-1} \\cdot V_1$. We compute $M^{n-1}$ via Binary Exponentiation!"
+                    },
+                    {
+                        heading: "3. Structural Visualization",
+                        content: "Visualizing Matrix Binary Exponentiation M^N.",
+                        diagram: `Matrix M = [1 1]
+           [1 0]
+
+To calculate M^13:
+13 in Binary: 1101_2  (8 + 4 + 1)
+M^13 = M^8 * M^4 * M^1
+
+Total 2x2 Matrix Multiplications: 4 steps!
+Time Complexity: O(K^3 log N) where K=2.`
+                    },
+                    {
+                        heading: "4. Code Example: Matrix Exponentiation",
+                        content: "Complete $O(\\log N)$ Fibonacci Matrix Exponentiation implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Matrix Exponentiation Fib(N) mod P",
+                            code: {
+                                python: `MOD = 10**9 + 7
+
+def mat_mul(A: list, B: list) -> list:
+    return [
+        [(A[0][0]*B[0][0] + A[0][1]*B[1][0]) % MOD, (A[0][0]*B[0][1] + A[0][1]*B[1][1]) % MOD],
+        [(A[1][0]*B[0][0] + A[1][1]*B[1][0]) % MOD, (A[1][0]*B[0][1] + A[1][1]*B[1][1]) % MOD]
+    ]
+
+def mat_pow(A: list, p: int) -> list:
+    res = [[1, 0], [0, 1]] # Identity matrix
+    base = A
+    while p > 0:
+        if p & 1: res = mat_mul(res, base)
+        base = mat_mul(base, base)
+        p >>= 1
+    return res
+
+def fibonacci(n: int) -> int:
+    if n == 0: return 0
+    M = [[1, 1], [1, 0]]
+    res_M = mat_pow(M, n - 1)
+    return res_M[0][0]`,
+                                java: `public class MatrixExpo {
+    static final long MOD = 1_000_000_007;
+
+    static long[][] matMul(long[][] A, long[][] B) {
+        long[][] C = new long[2][2];
+        C[0][0] = (A[0][0]*B[0][0] + A[0][1]*B[1][0]) % MOD;
+        C[0][1] = (A[0][0]*B[0][1] + A[0][1]*B[1][1]) % MOD;
+        C[1][0] = (A[1][0]*B[0][0] + A[1][1]*B[1][0]) % MOD;
+        C[1][1] = (A[1][0]*B[0][1] + A[1][1]*B[1][1]) % MOD;
+        return C;
+    }
+
+    public static long fibonacci(long n) {
+        if (n == 0) return 0;
+        long[][] res = {{1, 0}, {0, 1}};
+        long[][] base = {{1, 1}, {1, 0}};
+        long p = n - 1;
+        while (p > 0) {
+            if ((p & 1) == 1) res = matMul(res, base);
+            base = matMul(base, base);
+            p >>= 1;
+        }
+        return res[0][0];
+    }`,
+                                cpp: `#include <vector>
+#include <iostream>
+
+const long long MOD = 1e9 + 7;
+typedef std::vector<std::vector<long long>> Matrix;
+
+Matrix matMul(const Matrix& A, const Matrix& B) {
+    Matrix C(2, std::vector<long long>(2, 0));
+    for (int i = 0; i < 2; i++)
+        for (int k = 0; k < 2; k++)
+            for (int j = 0; j < 2; j++)
+                C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % MOD;
+    return C;
+}
+
+long long fibonacci(long long n) {
+    if (n == 0) return 0;
+    Matrix res = {{1, 0}, {0, 1}};
+    Matrix base = {{1, 1}, {1, 0}};
+    long long p = n - 1;
+    while (p > 0) {
+        if (p & 1) res = matMul(res, base);
+        base = matMul(base, base);
+        p >>= 1;
+    }
+    return res[0][0];
+}`,
+                                javascript: `const MOD = 1000000007n;
+
+function matMul(A, B) {
+  return [
+    [(A[0][0]*B[0][0] + A[0][1]*B[1][0]) % MOD, (A[0][0]*B[0][1] + A[0][1]*B[1][1]) % MOD],
+    [(A[1][0]*B[0][0] + A[1][1]*B[1][0]) % MOD, (A[1][0]*B[0][1] + A[1][1]*B[1][1]) % MOD]
+  ];
+}
+
+function fibonacci(n) {
+  if (n === 0n) return 0n;
+  let res = [[1n, 0n], [0n, 1n]];
+  let base = [[1n, 1n], [1n, 0n]];
+  let p = n - 1n;
+  while (p > 0n) {
+    if (p & 1n) res = matMul(res, base);
+    base = matMul(base, base);
+    p >>= 1n;
+  }
+  return res[0][0];
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "5. Summary",
+                        content: "Matrix Exponentiation converts linear recurrences into matrix powers, evaluating $N$-th terms ($N=10^{18}$) in $O(K^3 \\log N)$ logarithmic time via binary repeated squaring."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "Why is Matrix Exponentiation preferred over Dynamic Programming for finding Fib(10^18)?", options: ["DP takes O(1) space.", "DP requires 10^18 iterations (O(N)), whereas Matrix Exponentiation computes M^(10^18) in ~60 binary multiplication steps (O(log N)).", "Matrix Exponentiation eliminates floating point rounding.", "DP cannot handle modulo."], correctIndex: 1, explanation: "Repeated squaring allows computing M^N in log2(N) steps. For N=10^18, log2(10^18) approx 60 matrix multiplications." },
+                    { id: "q2", question: "What is the time complexity of Matrix Exponentiation for a K-th order linear recurrence?", options: ["O(N)", "O(K^3 log N)", "O(K N)", "O(2^K)"], correctIndex: 1, explanation: "Multiplying two K x K matrices takes O(K^3) time. Doing this log N times via binary exponentiation yields O(K^3 log N)." }
+                ]
+            },
+            {
+                id: "algo-convex-hull",
+                slug: "convex-hull-computational-geometry",
+                categorySlug: "algorithms",
+                title: "Convex Hull & Computational Geometry",
+                subtitle: "2D Orientation cross products, Graham Scan O(N log N) stack, and Jarvis March",
+                difficulty: "Advanced",
+                readTime: "40 min read",
+                summary: "Master Computational Geometry algorithms. Understand 2D vector cross product orientation tests, Graham Scan O(N log N) stack-based convex hull, Jarvis March (Gift Wrapping) O(N * H) algorithm, and line segment intersection tests.",
+                overview: "The Convex Hull of a set of 2D points is the smallest convex polygon that encloses all points (imagine stretching a rubber band around nails stuck in a board). Computational geometry algorithms use vector Cross Products to test 2D orientation (Clockwise vs Counter-Clockwise turns). Graham Scan computes the Convex Hull in O(N log N) time by sorting points polar-angle wise and maintaining a monotonic stack of hull vertices.",
+                keyConcepts: [
+                    "2D Vector Cross Product Orientation: (p2.x - p1.x)*(p3.y - p1.y) - (p2.y - p1.y)*(p3.x - p1.x)",
+                    "Orientation Outcomes: 0 (Collinear), >0 (Counter-Clockwise / Left Turn), <0 (Clockwise / Right Turn)",
+                    "Graham Scan Algorithm: Bottom-most point pivot + Polar Angle Sort + Monotonic Stack O(N log N)",
+                    "Jarvis March (Gift Wrapping): Wrapping hull step-by-step in O(N * H) time (H = hull points count)",
+                    "Monotone Chain Algorithm (Andrew's Variant): Upper and Lower Hull stack computation",
+                    "Applications: GIS Mapping, Collision Detection in Game Engines, GIS Boundary Analysis"
+                ],
+                timeComplexity: { access: "N/A", search: "N/A", insertion: "N/A", deletion: "N/A", best: "O(N log N)", average: "O(N log N)", worst: "O(N log N) Graham Scan" },
+                spaceComplexity: "O(N)",
+                sections: [
+                    {
+                        heading: "1. The Rubber Band Enclosure Problem",
+                        content: "Given $N$ points in a 2D plane (e.g., locations of trees in a forest). You want to build a fence of minimum total length enclosing all trees. \n\nThis boundary polygon is the **Convex Hull**. Finding the Convex Hull is a foundational building block for collision detection, robotics spatial planning, and geographic mapping."
+                    },
+                    {
+                        heading: "2. Vector Cross Product & 2D Orientation Test",
+                        content: "Given 3 points $P_1, P_2, P_3$. Which way does the turn from $\\vec{P_1 P_2}$ to $\\vec{P_2 P_3}$ bend? \n\n$$\\text{Cross Product} = (x_2 - x_1)(y_3 - y_1) - (y_2 - y_1)(x_3 - x_1)$$ \n- **$> 0$:** Counter-Clockwise (Left Turn) \n- **$< 0$:** Clockwise (Right Turn) \n- **$= 0$:** Collinear (Straight Line)"
+                    },
+                    {
+                        heading: "3. The Graham Scan Algorithm",
+                        content: "Algorithm steps: \n1. Find point $P_0$ with lowest Y-coordinate (pivot). \n2. Sort all remaining points by polar angle relative to $P_0$ in $O(N \\log N)$ time. \n3. Push $P_0$ and $P_1$ onto a Stack. \n4. For each point $P_i$: \n   - While the top 2 points on the stack and $P_i$ do NOT make a Left Turn (Cross Product $\\le 0$), POP the top point off the stack! \n   - Push $P_i$ onto the Stack. \n5. The Stack contains the exact Convex Hull vertices in order!"
+                    },
+                    {
+                        heading: "4. Structural Visualization",
+                        content: "Visualizing Graham Scan stack popping on Right Turns.",
+                        diagram: `Points: P0 (bottom), P1, P2, P3...
+
+Processing P3:
+P1 -> P2 -> P3 forms a RIGHT TURN!
+Action: Pop P2 off stack!
+
+           P2 (Popped!)
+          /  \
+         /    \
+  P1 ---/-----> P3
+ /
+P0`
+                    },
+                    {
+                        heading: "5. Code Example: Graham Scan Implementation",
+                        content: "Complete Graham Scan Convex Hull implementation in Python, Java, C++, and JavaScript.",
+                        codeSnippet: {
+                            title: "Graham Scan Convex Hull",
+                            code: {
+                                python: `def orientation(p1, p2, p3):
+    val = (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0])
+    if val == 0: return 0  # Collinear
+    return 1 if val > 0 else 2  # 1: CCW (Left), 2: CW (Right)
+
+def dist_sq(p1, p2):
+    return (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+
+def convex_hull(points: list) -> list:
+    n = len(points)
+    if n < 3: return points
+
+    # Find bottom-most point (pivot)
+    pivot_idx = min(range(n), key=lambda i: (points[i][1], points[i][0]))
+    points[0], points[pivot_idx] = points[pivot_idx], points[0]
+    p0 = points[0]
+
+    # Sort remaining by polar angle with p0
+    import functools
+    def compare(p1, p2):
+        o = orientation(p0, p1, p2)
+        if o == 0:
+            return -1 if dist_sq(p0, p1) < dist_sq(p0, p2) else 1
+        return -1 if o == 1 else 1
+
+    sorted_pts = [p0] + sorted(points[1:], key=functools.cmp_to_key(compare))
+
+    stack = [sorted_pts[0], sorted_pts[1], sorted_pts[2]]
+    for i in range(3, n):
+        while len(stack) > 1 and orientation(stack[-2], stack[-1], sorted_pts[i]) != 1:
+            stack.pop()
+        stack.append(sorted_pts[i])
+    return stack`,
+                                java: `import java.util.*;
+
+public class ConvexHull {
+    static int orientation(int[] p1, int[] p2, int[] p3) {
+        long val = (long)(p2[0] - p1[0]) * (p3[1] - p1[1]) - (long)(p2[1] - p1[1]) * (p3[0] - p1[0]);
+        if (val == 0) return 0;
+        return (val > 0) ? 1 : 2; // 1: CCW, 2: CW
+    }
+
+    public static List<int[]> convexHull(int[][] points) {
+        int n = points.length;
+        if (n <= 3) return Arrays.asList(points);
+
+        int minIdx = 0;
+        for (int i = 1; i < n; i++) {
+            if (points[i][1] < points[minIdx][1] || (points[i][1] == points[minIdx][1] && points[i][0] < points[minIdx][0])) {
+                minIdx = i;
+            }
+        }
+        int[] p0 = points[minIdx];
+        int[] temp = points[0]; points[0] = points[minIdx]; points[minIdx] = temp;
+
+        Arrays.sort(points, 1, n, (p1, p2) -> {
+            int o = orientation(p0, p1, p2);
+            if (o == 0) return Long.compare(distSq(p0, p1), distSq(p0, p2));
+            return (o == 1) ? -1 : 1;
+        });
+
+        Stack<int[]> stack = new Stack<>();
+        stack.push(points[0]); stack.push(points[1]); stack.push(points[2]);
+        for (int i = 3; i < n; i++) {
+            while (stack.size() > 1 && orientation(stack.get(stack.size() - 2), stack.peek(), points[i]) != 1) {
+                stack.pop();
+            }
+            stack.push(points[i]);
+        }
+        return new ArrayList<>(stack);
+    }
+    static long distSq(int[] p1, int[] p2) {
+        return (long)(p1[0]-p2[0])*(p1[0]-p2[0]) + (long)(p1[1]-p2[1])*(p1[1]-p2[1]);
+    }`,
+                                cpp: `#include <vector>
+#include <algorithm>
+#include <stack>
+
+struct Point { long long x, y; };
+
+int orientation(Point p1, Point p2, Point p3) {
+    long long val = (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x);
+    if (val == 0) return 0;
+    return (val > 0) ? 1 : 2; // 1: CCW, 2: CW
+}
+
+std::vector<Point> convexHull(std::vector<Point>& pts) {
+    int n = pts.size();
+    if (n <= 3) return pts;
+
+    int minIdx = 0;
+    for (int i = 1; i < n; i++) {
+        if (pts[i].y < pts[minIdx].y || (pts[i].y == pts[minIdx].y && pts[i].x < pts[minIdx].x))
+            minIdx = i;
+    }
+    std::swap(pts[0], pts[minIdx]);
+    Point p0 = pts[0];
+
+    std::sort(pts.begin() + 1, pts.end(), [&](Point p1, Point p2) {
+        int o = orientation(p0, p1, p2);
+        if (o == 0) return (p1.x-p0.x)*(p1.x-p0.x)+(p1.y-p0.y)*(p1.y-p0.y) < (p2.x-p0.x)*(p2.x-p0.x)+(p2.y-p0.y)*(p2.y-p0.y);
+        return o == 1;
+    });
+
+    std::vector<Point> st = {pts[0], pts[1], pts[2]};
+    for (int i = 3; i < n; i++) {
+        while (st.size() > 1 && orientation(st[st.size() - 2], st.back(), pts[i]) != 1)
+            st.pop_back();
+        st.push_back(pts[i]);
+    }
+    return st;
+}`,
+                                javascript: `function orientation(p1, p2, p3) {
+  const val = (p2[0] - p1[0]) * (p3[1] - p1[1]) - (p2[1] - p1[1]) * (p3[0] - p1[0]);
+  if (val === 0) return 0;
+  return val > 0 ? 1 : 2;
+}
+
+function convexHull(points) {
+  const n = points.length;
+  if (n <= 3) return points;
+
+  let minIdx = 0;
+  for (let i = 1; i < n; i++) {
+    if (points[i][1] < points[minIdx][1] || (points[i][1] === points[minIdx][1] && points[i][0] < points[minIdx][0]))
+      minIdx = i;
+  }
+  [points[0], points[minIdx]] = [points[minIdx], points[0]];
+  const p0 = points[0];
+
+  const rest = points.slice(1).sort((p1, p2) => {
+    const o = orientation(p0, p1, p2);
+    if (o === 0) return ((p1[0]-p0[0])**2 + (p1[1]-p0[1])**2) - ((p2[0]-p0[0])**2 + (p2[1]-p0[1])**2);
+    return o === 1 ? -1 : 1;
+  });
+
+  const pts = [p0, ...rest];
+  const stack = [pts[0], pts[1], pts[2]];
+  for (let i = 3; i < n; i++) {
+    while (stack.length > 1 && orientation(stack[stack.length - 2], stack[stack.length - 1], pts[i]) !== 1) {
+      stack.pop();
+    }
+    stack.push(pts[i]);
+  }
+  return stack;
+}`
+                            }
+                        }
+                    },
+                    {
+                        heading: "6. Summary",
+                        content: "Convex Hull computes the minimal bounding polygon of 2D points. Graham Scan sorts points by polar angle and uses vector cross product CCW tests on a stack to execute in $O(N \\log N)$ time."
+                    }
+                ],
+                quiz: [
+                    { id: "q1", question: "What does a positive Cross Product (> 0) between vectors P1->P2 and P1->P3 indicate in 2D geometry?", options: ["The turn is Counter-Clockwise (Left turn).", "The turn is Clockwise (Right turn).", "The 3 points are collinear.", "The vectors are perpendicular."], correctIndex: 0, explanation: "A positive 2D cross product (val > 0) indicates a Counter-Clockwise (Left) turn from vector P1P2 to vector P1P3." },
+                    { id: "q2", question: "What is the time complexity of the Graham Scan algorithm for computing a 2D Convex Hull of N points?", options: ["O(N^2)", "O(N log N)", "O(N)", "O(2^N)"], correctIndex: 1, explanation: "Sorting the N points by polar angle relative to the pivot takes O(N log N) time, while the stack processing pass takes linear O(N) time." }
                 ]
             }
         ]

@@ -23,20 +23,11 @@ export default function LearnOverviewPage() {
             <div className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white shadow-2xl space-y-4">
                 <div className="absolute right-[-4rem] top-[-4rem] w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
 
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold uppercase tracking-wider">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>Theoretical Informatics & Mastery</span>
-                </div>
-
-                <h1 className="text-2xl md:text-4xl font-black tracking-tight leading-tight max-w-2xl">
+                <h1 className="text-2xl md:text-4xl text-center font-black tracking-tight leading-tight max-w-2xl">
                     Welcome to the Learner&apos;s Arena
                 </h1>
 
-                <p className="text-sm md:text-base text-indigo-100 max-w-2xl leading-relaxed font-medium">
-                    Master theoretical Computer Science concepts, algorithm complexity, data structure invariants, and core system architectures through structured informatics—without distraction.
-                </p>
-
-                <div className="flex flex-wrap items-center gap-4 pt-2">
+                {/* <div className="flex flex-wrap items-center gap-4">
                     <Link
                         href="/learn/data-structures/arrays"
                         className="px-5 py-3 rounded-2xl bg-white text-indigo-900 hover:bg-indigo-50 font-bold text-xs uppercase tracking-wider shadow-lg flex items-center gap-2 transition-all active:scale-95"
@@ -44,7 +35,7 @@ export default function LearnOverviewPage() {
                         <span>Start Learning</span>
                         <ArrowRight className="w-4 h-4" />
                     </Link>
-                </div>
+                </div> */}
             </div>
 
             {/* Curriculum Categories */}
