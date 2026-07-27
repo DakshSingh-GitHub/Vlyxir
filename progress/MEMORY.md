@@ -1,12 +1,12 @@
 # Learner Arena Expansion: Session Memory
 
 ## Date
-July 26, 2026
+July 26, 2026 (Updated July 27, 2026)
 
 ## Overview
-During this session, we completed a major expansion of both the **Data Structures Curriculum** (21 topics) and **Algorithms Curriculum** (19 topics) for the Learner Arena (`learnData.ts`). We added 9 brand new textbook-grade pedagogical chapters under the Algorithms category (`id: "algo"`), bringing the total Algorithms curriculum to **19 comprehensive chapters**. All topics strictly follow the **16-Section Golden Standard Template** and multi-language code snippets (Python, Java, C++, JavaScript).
+During this session, we completed a major expansion of both the **Data Structures Curriculum** (**31 topics**) and **Algorithms Curriculum** (**29 topics**) for the Learner Arena (`learnData.ts`). We added 10 brand new textbook-grade pedagogical chapters under the Data Structures category (`id: "ds"`), bringing the total Data Structures curriculum to **31 comprehensive chapters**. All topics strictly follow the **16-Section Golden Standard Template** and multi-language code snippets (Python, Java, C++, JavaScript).
 
-## Data Structure Topics Completed (21 Total)
+## Data Structure Topics Completed (31 Total)
 1. **Arrays**: Memory mechanics, Static vs Dynamic scaling, Amortized O(1).
 2. **Linked Lists**: Singly, Doubly, Circular variations, and Cache Locality penalties.
 3. **Stacks**: Call Stack mechanics, LIFO structures, and DFS traversals.
@@ -28,8 +28,18 @@ During this session, we completed a major expansion of both the **Data Structure
 19. **Count-Min Sketch & HyperLogLog**: Probabilistic streaming structures; Count-Min Sketch frequency bounds and HyperLogLog cardinality estimation ($<1\%$ error across billions of items).
 20. **Splay Trees**: Self-adjusting binary search tree reorganizing accessed elements closer to the root via Zig, Zig-Zig, and Zig-Zag rotations.
 21. **Suffix Automaton (DAWG)**: Minimal Directed Acyclic Word Graph representing all suffixes of a string in linear $O(N)$ space ($2N-1$ states).
+22. **Red-Black Trees & Self-Balancing BST Mechanics**: 5 Red-Black color invariants, Black-Height balance proofs, Left/Right Rotations, and recoloring.
+23. **AVL Trees & Height-Balanced BST Mechanics**: Strict Balance Factor $\{-1, 0, +1\}$, Single (LL, RR) & Double (LR, RL) Rotations, and $1.44 \log_2 N$ height ceiling.
+24. **K-D Trees (K-Dimensional Spatial Search Trees)**: Axis-aligned splitting hyperplanes, cyclic dimension selection $d = depth \bmod K$, and logarithmic spatial nearest neighbor search.
+25. **Persistent Data Structures & Path Copying**: Fully vs Partially Persistent versioning, Path Copying vs Fat Nodes, and Persistent Segment Trees (Chairman Trees) for range $K$-th smallest queries.
+26. **Fibonacci Heaps & Amortized $O(1)$ Priority Queues**: Lazy consolidation root forest, constant amortized $O(1)$ insert, merge, decrease-key, and Dijkstra acceleration to $O(E + V \log V)$.
+27. **Van Emde Boas Trees (vEB Tree)**: Recursive universe sizing $U = 2^{2^k}$, High/Low bit decomposition $\sqrt{U}$, and $O(\log \log U)$ integer priority operations.
+28. **R-Trees & Spatial Indexing**: Minimum Bounding Rectangles (MBR), spatial containment bounding hierarchies, node splitting heuristics, and PostGIS GIS spatial indexing.
+29. **Cuckoo Hashing & Deterministic $O(1)$ Lookups**: Dual hash functions $h_1(x), h_2(x)$, displacement kick-out loops, deterministic worst-case $O(1)$ search/delete, and router packet caches.
+30. **Roaring Bitmaps & Compressed Bitvectors**: 2-level 16-bit key chunking, 3 container types (Array, Bitset, RLE), SIMD bitwise AND/OR operations, and production search engine indexing (Lucene, ElasticSearch).
+31. **Dancing Links & Knuth's Algorithm X (DLX)**: Toroidal circular doubly-linked sparse matrix nodes, $O(1)$ cover/uncover pointer manipulation, and Exact Cover problem solving (Sudoku, Pentominoes, N-Queens).
 
-## Algorithm Topics Completed (19 Total)
+## Algorithm Topics Completed (29 Total)
 1. **Binary Search**: Logarithmic search space halving, loop invariants, lower/upper bounds, binary search on answer spaces.
 2. **Sorting Algorithms**: $\Omega(N \log N)$ decision tree lower bound proof, QuickSort (Lomuto/Hoare), MergeSort, HeapSort, non-comparison sorts, production hybrids (Timsort/Introsort).
 3. **Two Pointers & Sliding Window**: Converging pointers, fast/slow runners, fixed & variable sliding windows, hash frequency tracking.
@@ -49,37 +59,59 @@ During this session, we completed a major expansion of both the **Data Structure
 17. **Divide & Conquer & Master Theorem**: Master Theorem recurrence analysis ($T(N) = a T(N/b) + f(N)$), Karatsuba multiplication ($O(N^{1.58})$), 2D Closest Pair of Points ($O(N \log N)$).
 18. **Matrix Exponentiation & Linear Recurrences**: Expressing $K$-order linear recurrences as state transition matrices $M$, computing $M^N \pmod P$ via Binary Exponentiation in $O(K^3 \log N)$ time.
 19. **Convex Hull & Computational Geometry**: Vector cross product 2D orientation tests ($\vec{AB} \times \vec{AC}$), Graham Scan $O(N \log N)$ stack algorithm, Jarvis March (Gift Wrapping).
+20. **Knuth-Morris-Pratt (KMP) & Failure Automaton**: Longest Prefix Suffix (LPS) $\pi$-array construction, deterministic state transitions, and linear $O(N + M)$ string searching.
+21. **Lowest Common Ancestor (LCA) & Binary Lifting**: Tree depth jump tables $up[u][j] = 2^j$-th ancestor, logarithmic $O(\log N)$ queries, and tree path aggregation.
+22. **Heavy-Light Decomposition (HLD)**: Decomposing tree edges into heavy edges and light chains, contiguous Segment Tree indexing, and $O(\log^2 N)$ tree path queries.
+23. **Segment Tree & Lazy Propagation**: Divide-and-conquer binary range trees, deferred range update lazy flags, and $O(\log N)$ point/range queries and updates.
+24. **Fenwick Tree (Binary Indexed Tree - BIT)**: Bitwise lowest set bit isolation ($i \ \& \ (-i)$), 1-based implicit array layout, and $O(\log N)$ prefix sums with minimal memory overhead.
+25. **Dinic's & Push-Relabel Maximum Flow**: Level graph construction via BFS, blocking flow execution via DFS ($O(V^2 E)$), and preflow push-relabel excess flow ($O(V^3)$).
+26. **Fast Fourier Transform (FFT) & Polynomial Multiplication**: Cooley-Tukey Radix-2 divide-and-conquer, complex roots of unity $e^{2\pi i / N}$, and $O(N \log N)$ polynomial convolution.
+27. **Eulerian & Hamiltonian Paths / Circuits**: Euler's Degree Parity Theorem, Hierholzer's $O(V+E)$ post-order stack algorithm, and NP-Complete Hamiltonian Bitmask DP ($O(N^2 2^N)$).
+28. **Hopcroft-Karp Maximum Bipartite Matching**: Layered BFS level graphs, multi-path DFS augmenting path execution in $O(E \sqrt{V})$ time.
+29. **Suffix Automaton & String Processing (DAWG)**: Minimal Directed Acyclic Word Graph representing all $N(N+1)/2$ substrings, right-sets, suffix links, and linear $O(N)$ construction ($2N-1$ states).
 
 ---
 
 ## File Line Index Map (`learnData.ts`)
-To prevent future agents from reading the entire 10,000+ line file, use these exact line bounds:
+To prevent future agents from reading the entire 12,000+ line file, use these exact line bounds:
 
-- **Data Structures Category (`id: "ds"`)**: Lines 65 – 3116
-- **Algorithms Category (`id: "algo"`)**: Lines 3117 – 7769
-  - `algo-binary-search` ("Binary Search"): Lines 3124 – 3398
-  - `algo-sorting` ("Sorting Algorithms"): Lines 3399 – 3794
-  - `algo-two-pointers` ("Two Pointers & Sliding Window"): Lines 3795 – 4149
-  - `algo-dp` ("Dynamic Programming"): Lines 4150 – 4436
-  - `algo-greedy` ("Greedy Algorithms"): Lines 4437 – 4754
-  - `algo-backtracking` ("Backtracking Algorithms"): Lines 4755 – 5007
-  - `algo-bfs-dfs` ("Graph BFS & DFS"): Lines 5008 – 5258
-  - `algo-dijkstra` ("Dijkstra's Shortest Path"): Lines 5259 – 5495
-  - `algo-topological-sort` ("Topological Sort"): Lines 5496 – 5724
-  - `algo-bit-manipulation` ("Bit Manipulation"): Lines 5725 – 5992
-  - `algo-bellman-floyd` ("Bellman-Ford & Floyd-Warshall"): Lines 5993 – 6191
-  - `algo-mst-kruskal-prim` ("Kruskal's & Prim's MST"): Lines 6192 – 6385
-  - `algo-z-rabin-karp` ("Z-Algorithm & Rabin-Karp"): Lines 6386 – 6540
-  - `algo-astar-search` ("A* Search & Heuristic Pathfinding"): Lines 6541 – 6751
-  - `algo-scc-tarjan-kosaraju` ("Tarjan's & Kosaraju's SCC Algorithms"): Lines 6752 – 6980
-  - `algo-network-flow` ("Network Flow: Ford-Fulkerson & Edmonds-Karp"): Lines 6981 – 7211
-  - `algo-divide-conquer` ("Divide & Conquer & Master Theorem"): Lines 7212 – 7399
-  - `algo-matrix-exponentiation` ("Matrix Exponentiation & Linear Recurrences"): Lines 7400 – 7553
-  - `algo-convex-hull` ("Convex Hull & Computational Geometry"): Lines 7554 – 7768
-- **CS Core Category (`id: "cs-core"`)**: Lines 7770 – 8747
-- **System Design Category (`id: "sys-design"`)**: Lines 8748 – 9241
-- **Mathematics & Bitwise Tricks Category (`id: "math"`)**: Lines 9242 – 9734
-- **Advanced Data Structures & Strings Category (`id: "adv-ds"`)**: Lines 9735 – end
+- **Data Structures Category (`id: "ds"`)**: Lines 66 – 3976
+  - `ds-arrays`: Lines 73 – 186
+  - `ds-linked-lists`: Lines 187 – 303
+  - `ds-stacks`: Lines 304 – 422
+  - `ds-queues`: Lines 423 – 539
+  - `ds-trees`: Lines 540 – 666
+  - `ds-heaps`: Lines 667 – 781
+  - `ds-hashtables`: Lines 782 – 881
+  - `ds-graphs`: Lines 882 – 995
+  - `ds-tries`: Lines 996 – 1108
+  - `ds-dsu`: Lines 1109 – 1223
+  - `ds-skip-lists`: Lines 1224 – 1336
+  - `ds-lru-lfu-cache`: Lines 1337 – 1450
+  - `ds-b-trees`: Lines 1451 – 1566
+  - `ds-bloom-filters`: Lines 1567 – 1682
+  - `ds-monotonic-queue-stack`: Lines 1683 – 1789
+  - `ds-sparse-table`: Lines 1790 – 1898
+  - `ds-suffix-tree-array`: Lines 1899 – 2117
+  - `ds-treap`: Lines 2118 – 2376
+  - `ds-count-min-hylog`: Lines 2377 – 2578
+  - `ds-splay-trees`: Lines 2579 – 2845
+  - `ds-suffix-automaton`: Lines 2846 – 3114
+  - `ds-red-black-tree`: Lines 3115 – 3200
+  - `ds-avl-tree`: Lines 3201 – 3286
+  - `ds-kd-tree`: Lines 3287 – 3372
+  - `ds-persistent-data-structures`: Lines 3373 – 3458
+  - `ds-fibonacci-heap`: Lines 3459 – 3544
+  - `ds-van-emde-boas-tree`: Lines 3545 – 3630
+  - `ds-r-tree`: Lines 3631 – 3716
+  - `ds-cuckoo-hashing`: Lines 3717 – 3802
+  - `ds-roaring-bitmaps`: Lines 3803 – 3888
+  - `ds-dancing-links`: Lines 3889 – 3976
+- **Algorithms Category (`id: "algo"`)**: Lines 3977 – 9489
+- **CS Core Category (`id: "cs-core"`)**: Lines 9490 – 10467
+- **System Design Category (`id: "sys-design"`)**: Lines 10468 – 10961
+- **Mathematics & Bitwise Tricks Category (`id: "math"`)**: Lines 10962 – 11454
+- **Advanced Data Structures & Strings Category (`id: "adv-ds"`)**: Lines 11455 – 11958
 
 ---
 

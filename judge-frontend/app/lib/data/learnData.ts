@@ -3110,6 +3110,866 @@ class SuffixAutomaton {
                     { id: "q1", question: "What is the maximum number of states in a Suffix Automaton for a string of length N?", options: ["N^2", "N log N", "2N - 1", "3N - 4"], correctIndex: 2, explanation: "Blumer et al. proved that a Suffix Automaton has at most 2N - 1 states and 3N - 4 transitions for any string of length N." },
                     { id: "q2", question: "How does Suffix Automaton calculate the total number of distinct substrings in O(N) time?", options: ["By enumerating all substrings.", "Summing (len[v] - len[link[v]]) across all states v in the automaton.", "Using binary search.", "Using hash sets."], correctIndex: 1, explanation: "Each state v contains exactly (len[v] - len[link[v]]) distinct substrings, which sum to the total unique substrings in linear time." }
                 ]
+            },
+            {
+                "id": "ds-red-black-tree",
+                "slug": "red-black-tree",
+                "categorySlug": "ds",
+                "title": "Red-Black Trees & Self-Balancing Mechanics",
+                "subtitle": "5 Red-Black Invariants, Black-Height consistency, rotations, recoloring, and O(log N) worst-case search/insertion/deletion bounds",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master Red-Black Trees. Learn how the 5 Red-Black color invariants enforce strict logarithmic height guarantees (height <= 2 * log2(N+1)), preventing BST degradation to O(N) linear chains during dynamic insertions and deletions.",
+                "overview": "A Red-Black Tree is a self-balancing binary search tree where each node stores an extra color bit (Red or Black). By enforcing 5 color properties—such as requiring that no two adjacent nodes are both Red, and every path from root to leaf contains the exact same number of Black nodes—Red-Black Trees guarantee that the longest path from root to leaf is no more than twice the shortest path. Left and Right tree rotations combined with node recoloring re-balance the tree after operations in O(log N) time.",
+                "keyConcepts": [
+                    "5 Red-Black Invariants: Every node is Red/Black, Root is Black, Leaves (NIL) are Black, Red parents have Black children, Equal Black-Height on all paths",
+                    "Tree Rotations: Left-Rotate and Right-Rotate pointer updates",
+                    "Insertion Restructuring: Uncle coloring check (Recolor vs Rotate + Recolor)",
+                    "Deletion Restructuring: Double-black node handling & Sibling case shifts",
+                    "Production Standard: Linux kernel rbtree, C++ std::map / std::set, Java TreeMap"
+                ],
+                "timeComplexity": {
+                    "access": "O(log N)",
+                    "search": "O(log N)",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(1)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. The BST Degradation Problem",
+                        "content": "Inserting sorted data $[1, 2, 3, 4, 5]$ into a naive Binary Search Tree produces a single skewed line ($O(N)$ lookup time). \\n\\n**Red-Black Trees** dynamically adjust tree topology during insertions/deletions using node colors (Red/Black) and tree rotations, guaranteeing **$O(\\log N)$ worst-case height**!"
+                    },
+                    {
+                        "heading": "2. The 5 Red-Black Invariants & Tree Rotations",
+                        "content": "1. Every node is either **RED** or **BLACK**. \\n2. The **ROOT** is always **BLACK**. \\n3. All **LEAVES (NIL)** are **BLACK**. \\n4. If a node is **RED**, both its children must be **BLACK** (No consecutive Red nodes). \\n5. Every simple path from a node to descendant NIL leaves contains the **same count of BLACK nodes** (Black-Height)."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Left Rotation and Recoloring on Red-Black Tree.",
+                        "diagram": "Inserting node X (RED) under parent P (RED):\n\n    [G] (BLACK)                   [P] (BLACK)\n   /   \\                         /   \\\n[P] (RED) [U] (BLACK)   -->   [X] (RED) [G] (RED)\n  \\                                      \\\n  [X] (RED)                              [U] (BLACK)"
+                    },
+                    {
+                        "heading": "4. Code Example: Red-Black Tree Engine",
+                        "content": "Complete Red-Black Tree implementation with insertions and rotations in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Red-Black Tree Self-Balancing Engine",
+                            "code": {
+                                "python": "RED, BLACK = True, False\n\nclass RBNode:\n    def __init__(self, val, color=RED, left=None, right=None, parent=None):\n        self.val = val\n        self.color = color\n        self.left = left\n        self.right = right\n        self.parent = parent\n\nclass RedBlackTree:\n    def __init__(self):\n        self.NIL = RBNode(0, color=BLACK)\n        self.root = self.NIL\n\n    def left_rotate(self, x):\n        y = x.right\n        x.right = y.left\n        if y.left != self.NIL: y.left.parent = x\n        y.parent = x.parent\n        if x.parent is None: self.root = y\n        elif x == x.parent.left: x.parent.left = y\n        else: x.parent.right = y\n        y.left = x\n        x.parent = y\n\n    def right_rotate(self, y):\n        x = y.left\n        y.left = x.right\n        if x.right != self.NIL: x.right.parent = y\n        x.parent = y.parent\n        if y.parent is None: self.root = x\n        elif y == y.parent.right: y.parent.right = x\n        else: y.parent.left = x\n        x.right = y\n        y.parent = x",
+                                "java": "public class RedBlackTree {\n    private static final boolean RED = true, BLACK = false;\n    static class Node {\n        int val; boolean color; Node left, right, parent;\n        Node(int val) { this.val = val; this.color = RED; }\n    }\n    private Node root;\n\n    private void leftRotate(Node x) {\n        Node y = x.right;\n        x.right = y.left;\n        if (y.left != null) y.left.parent = x;\n        y.parent = x.parent;\n        if (x.parent == null) root = y;\n        else if (x == x.parent.left) x.parent.left = y;\n        else x.parent.right = y;\n        y.left = x; x.parent = y;\n    }\n}",
+                                "cpp": "#include <iostream>\n\nenum Color { RED, BLACK };\n\nstruct Node {\n    int val; Color color; Node *left, *right, *parent;\n    Node(int v) : val(v), color(RED), left(nullptr), right(nullptr), parent(nullptr) {}\n};\n\nclass RedBlackTree {\n    Node* root;\n    void leftRotate(Node* x) {\n        Node* y = x->right;\n        x->right = y->left;\n        if (y->left) y->left->parent = x;\n        y->parent = x->parent;\n        if (!x->parent) root = y;\n        else if (x == x->parent->left) x->parent->left = y;\n        else x->parent->right = y;\n        y.left = x; x->parent = y;\n    }\n};",
+                                "javascript": "const RED = true, BLACK = false;\n\nclass RBNode {\n  constructor(val, color = RED) {\n    this.val = val; this.color = color;\n    this.left = null; this.right = null; this.parent = null;\n  }\n}\n\nclass RedBlackTree {\n  constructor() { this.root = null; }\n\n  leftRotate(x) {\n    const y = x.right;\n    x.right = y.left;\n    if (y.left) y.left.parent = x;\n    y.parent = x.parent;\n    if (!x.parent) this.root = y;\n    else if (x === x.parent.left) x.parent.left = y;\n    else x.parent.right = y;\n    y.left = x; x.parent = y;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Red-Black Trees enforce 5 color invariants that guarantee Black-Height balance across all paths, achieving strict $O(\\log N)$ time complexity for search, insertion, and deletion."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the maximum ratio between the longest path and shortest path from root to leaf in a Red-Black Tree?",
+                        "options": [
+                            "Equal length",
+                            "Longest path is at most 2 times the shortest path",
+                            "Longest path is N times",
+                            "Unbounded"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Because Red nodes cannot be adjacent and all paths have equal Black-Height, the longest path (alternating Red-Black) is at most twice the shortest (all Black)."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "In a Red-Black Tree, what color is the root node required to be?",
+                        "options": [
+                            "Always RED",
+                            "Always BLACK",
+                            "Can be either",
+                            "Green"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Invariant 2 mandates that the root node of a Red-Black Tree is always BLACK."
+                    }
+                ]
+            },
+            {
+                "id": "ds-avl-tree",
+                "slug": "avl-tree",
+                "categorySlug": "ds",
+                "title": "AVL Trees & Height Balance Mechanics",
+                "subtitle": "Strict Balance Factor {-1, 0, +1}, Single & Double Rotations (LL, RR, LR, RL), and strict O(log N) height ceiling guarantees",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master AVL Trees. Learn how the strict Balance Factor invariant (|Height(Left) - Height(Right)| <= 1) guarantees the tightest possible logarithmic height ceiling (Height <= 1.44 * log2 N), making AVL Trees ideal for lookup-heavy workloads.",
+                "overview": "An AVL Tree (named after inventors Adelson-Velsky and Landis) was the first self-balancing binary search tree ever invented. In an AVL Tree, the heights of the two child subtrees of any node differ by at most one. If at any time they differ by more than one, rebalancing is performed via tree rotations. AVL Trees are more rigidly balanced than Red-Black Trees, resulting in faster lookup operations at the expense of slightly more expensive insertions and deletions.",
+                "keyConcepts": [
+                    "Balance Factor: BF(node) = Height(Left) - Height(Right) in {-1, 0, +1}",
+                    "Single Rotations: LL (Left-Left) and RR (Right-Right) rotations",
+                    "Double Rotations: LR (Left-Right) and RL (Right-Left) rotations",
+                    "Strict Height Bound: Maximum Height <= 1.44 * log2(N)",
+                    "Comparison: Faster searches than Red-Black, slightly higher insertion re-balance cost"
+                ],
+                "timeComplexity": {
+                    "access": "O(log N)",
+                    "search": "O(log N)",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(1)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Rigid Height Balance Guarantees",
+                        "content": "While Red-Black Trees allow paths to differ in length by up to 2x, **AVL Trees** enforce a strict height difference limit: **Balance Factor $\\in \\{-1, 0, +1\\}$**. \\n\\nThis guarantees a maximum height ceiling of **$1.44 \\log_2 N$**, optimizing lookup speeds for search-heavy databases!"
+                    },
+                    {
+                        "heading": "2. The 4 Rotation Cases",
+                        "content": "- **Left-Left (LL) Case:** Right Rotate parent node $N$. \\n- **Right-Right (RR) Case:** Left Rotate parent node $N$. \\n- **Left-Right (LR) Case:** Left Rotate child, then Right Rotate parent $N$. \\n- **Right-Left (RL) Case:** Right Rotate child, then Left Rotate parent $N$."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Left-Right (LR) Double Rotation on AVL Tree.",
+                        "diagram": "Unbalanced Node Z (BF = +2):\n      [Z] (+2)                        [Z] (+2)                    [Y] (0)\n     /                               /                           /   \\\n   [X] (-1)     -- (Left Rotate) -> [Y] (+1)   -- (Right) ->   [X]   [Z]\n     \\                             /\n     [Y]                         [X]"
+                    },
+                    {
+                        "heading": "4. Code Example: AVL Tree Engine",
+                        "content": "Complete AVL Tree implementation with height updates and rotations in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "AVL Tree Self-Balancing Engine",
+                            "code": {
+                                "python": "class AVLNode:\n    def __init__(self, val):\n        self.val = val\n        self.height = 1\n        self.left = None\n        self.right = None\n\nclass AVLTree:\n    def get_height(self, node: AVLNode) -> int:\n        return node.height if node else 0\n\n    def get_balance(self, node: AVLNode) -> int:\n        return self.get_height(node.left) - self.get_height(node.right) if node else 0\n\n    def right_rotate(self, z: AVLNode) -> AVLNode:\n        y = z.left\n        T3 = y.right\n        y.right = z\n        z.left = T3\n        z.height = 1 + max(self.get_height(z.left), self.get_height(z.right))\n        y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))\n        return y\n\n    def left_rotate(self, z: AVLNode) -> AVLNode:\n        y = z.right\n        T2 = y.left\n        y.left = z\n        z.right = T2\n        z.height = 1 + max(self.get_height(z.left), self.get_height(z.right))\n        y.height = 1 + max(self.get_height(y.left), self.get_height(y.right))\n        return y",
+                                "java": "public class AVLTree {\n    static class Node {\n        int val, height = 1; Node left, right;\n        Node(int val) { this.val = val; }\n    }\n    private int height(Node n) { return n == null ? 0 : n.height; }\n    private int getBalance(Node n) { return n == null ? 0 : height(n.left) - height(n.right); }\n\n    private Node rightRotate(Node y) {\n        Node x = y.left, T2 = x.right;\n        x.right = y; y.left = T2;\n        y.height = Math.max(height(y.left), height(y.right)) + 1;\n        x.height = Math.max(height(x.left), height(x.right)) + 1;\n        return x;\n    }\n}",
+                                "cpp": "#include <algorithm>\n\nstruct Node {\n    int val, height = 1; Node *left = nullptr, *right = nullptr;\n    Node(int v) : val(v) {}\n};\n\nclass AVLTree {\n    int height(Node* n) { return n ? n->height : 0; }\n    int getBalance(Node* n) { return n ? height(n->left) - height(n->right) : 0; }\n\n    Node* rightRotate(Node* y) {\n        Node* x = y->left; Node* T2 = x->right;\n        x->right = y; y.left = T2;\n        y.height = std::max(height(y->left), height(y->right)) + 1;\n        x.height = std::max(height(x->left), height(x->right)) + 1;\n        return x;\n    }\n};",
+                                "javascript": "class AVLNode {\n  constructor(val) {\n    this.val = val; this.height = 1;\n    this.left = null; this.right = null;\n  }\n}\n\nclass AVLTree {\n  getHeight(n) { return n ? n.height : 0; }\n  getBalance(n) { return n ? this.getHeight(n.left) - this.getHeight(n.right) : 0; }\n\n  rightRotate(y) {\n    const x = y.left, T2 = x.right;\n    x.right = y; y.left = T2;\n    y.height = Math.max(this.getHeight(y.left), this.getHeight(y.right)) + 1;\n    x.height = Math.max(this.getHeight(x.left), this.getHeight(x.right)) + 1;\n    return x;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "AVL Trees enforce strict balance factors in $\\{-1, 0, +1\\}$, maintaining a tight $1.44 \\log_2 N$ height ceiling for faster lookups than Red-Black Trees."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the maximum allowed difference in height between left and right subtrees in an AVL Tree?",
+                        "options": [
+                            "0",
+                            "1",
+                            "2",
+                            "log N"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "The AVL balance factor invariant requires |Height(Left) - Height(Right)| <= 1 at every node."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "Which rotation pair is used to resolve a Left-Right (LR) imbalance in an AVL Tree?",
+                        "options": [
+                            "Single Left Rotate",
+                            "Single Right Rotate",
+                            "Left Rotate on child, then Right Rotate on parent",
+                            "Right Rotate on child, then Left Rotate on parent"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "An LR imbalance is resolved by first applying a Left Rotation on the left child, followed by a Right Rotation on the parent."
+                    }
+                ]
+            },
+            {
+                "id": "ds-kd-tree",
+                "slug": "k-d-tree",
+                "categorySlug": "ds",
+                "title": "K-D Trees (K-Dimensional Spatial Search Trees)",
+                "subtitle": "Axis-aligned splitting hyperplanes, cyclic dimension indexing d = depth mod K, and logarithmic spatial nearest-neighbor search",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master K-D Trees. Learn how K-Dimensional Binary Search Trees partition multidimensional space using cyclic axis-aligned hyperplanes, enabling logarithmic O(log N) spatial nearest-neighbor search and range bounding box queries.",
+                "overview": "A K-D Tree (short for K-Dimensional Tree) is a space-partitioning data structure for organizing points in a K-dimensional space. K-D Trees extend Binary Search Trees by alternating the splitting axis at each tree level (e.g. splitting along X-axis at depth 0, Y-axis at depth 1, Z-axis at depth 2, and cycling back to X at depth 3). This multi-dimensional spatial partitioning enables efficient Nearest Neighbor (NN) searches and range queries in GIS, computer graphics, and machine learning (KNN algorithms).",
+                "keyConcepts": [
+                    "Axis Selection Rule: Splitting dimension d = depth % K",
+                    "Median Partitioning: Choosing median point along current dimension for optimal height",
+                    "Bounding Box Distance Pruning: Skipping subtrees whose bounding box is further than current best distance",
+                    "Nearest Neighbor (NN) Search Algorithm",
+                    "Applications: GIS Location Services, K-Nearest Neighbors (KNN), Collision Detection in 3D Engines"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(log N) avg / O(N) worst",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Searching Multidimensional Space",
+                        "content": "1D Binary Search Trees split numbers along a line. How do we search 2D points $(x, y)$ or 3D points $(x, y, z)$? \\n\\n**K-D Trees** alternate the coordinate axis used for binary splitting at each level ($x \\rightarrow y \\rightarrow z \\rightarrow x$), partitioning space into axis-aligned hyper-rectangles!"
+                    },
+                    {
+                        "heading": "2. Nearest Neighbor (NN) Search Protocol",
+                        "content": "To find the closest point to target $P$: \\n1. Descend the tree to find the leaf bucket containing $P$, tracking `best_dist`. \\n2. Backtrack up the tree. At node $N$, check if the distance from $P$ to node $N$'s splitting hyperplane is LESS than `best_dist`. \\n3. If YES, search the opposite branch (the target sphere overlaps the hyperplane boundary!). If NO, prune the entire branch!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing 2D K-D Tree spatial splits (X-split at depth 0, Y-split at depth 1).",
+                        "diagram": "2D Space Partition:                     K-D Tree Structure:\n   Y ^                                          [P1: (5,4)] (Split X)\n     |     Region 1  |  Region 2                   /         \\\n     |  (P2)         |    (P4)            [P2: (2,7)]       [P3: (8,1)]\n     |  -------------+--------------        (Split Y)         (Split Y)\n     |     Region 3  |  Region 4\n     +-----------------------------> X"
+                    },
+                    {
+                        "heading": "4. Code Example: K-D Tree Engine",
+                        "content": "Complete 2D/3D K-D Tree build and Nearest Neighbor search implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "K-D Tree Construction & Nearest Neighbor Search",
+                            "code": {
+                                "python": "import math\n\nclass KDNode:\n    def __init__(self, point, left=None, right=None):\n        self.point = point\n        self.left = left\n        self.right = right\n\ndef build_kd_tree(points, depth=0, k=2):\n    if not points: return None\n    axis = depth % k\n    points.sort(key=lambda p: p[axis])\n    mid = len(points) // 2\n    return KDNode(\n        point=points[mid],\n        left=build_kd_tree(points[:mid], depth + 1, k),\n        right=build_kd_tree(points[mid + 1:], depth + 1, k)\n    )\n\ndef distance_sq(p1, p2):\n    return sum((a - b)**2 for a, b in zip(p1, p2))\n\ndef nearest_neighbor(root, target, depth=0, k=2, best=None):\n    if root is None: return best\n    if best is None or distance_sq(target, root.point) < distance_sq(target, best.point):\n        best = root\n    axis = depth % k\n    next_branch = root.left if target[axis] < root.point[axis] else root.right\n    opposite_branch = root.right if target[axis] < root.point[axis] else root.left\n    \n    best = nearest_neighbor(next_branch, target, depth + 1, k, best)\n    # Check if hyperplane crosses distance sphere\n    if (target[axis] - root.point[axis])**2 < distance_sq(target, best.point):\n        best = nearest_neighbor(opposite_branch, target, depth + 1, k, best)\n    return best",
+                                "java": "import java.util.*;\n\npublic class KDTree {\n    static class Node {\n        double[] point; Node left, right;\n        Node(double[] pt) { this.point = pt; }\n    }\n    public static Node buildKDTree(List<double[]> points, int depth, int k) {\n        if (points.isEmpty()) return null;\n        int axis = depth % k;\n        points.sort((a, b) -> Double.compare(a[axis], b[axis]));\n        int mid = points.size() / 2;\n        Node node = new Node(points.get(mid));\n        node.left = buildKDTree(new ArrayList<>(points.subList(0, mid)), depth + 1, k);\n        node.right = buildKDTree(new ArrayList<>(points.subList(mid + 1, points.size())), depth + 1, k);\n        return node;\n    }\n}",
+                                "cpp": "#include <vector>\n#include <algorithm>\n#include <cmath>\n\nstruct Node {\n    std::vector<double> point; Node *left = nullptr, *right = nullptr;\n    Node(std::vector<double> pt) : point(pt) {}\n};\n\nNode* buildKDTree(std::vector<std::vector<double>>& pts, int depth = 0, int k = 2) {\n    if (pts.empty()) return nullptr;\n    int axis = depth % k;\n    std::sort(pts.begin(), pts.end(), [axis](const auto& a, const auto& b){ return a[axis] < b[axis]; });\n    int mid = pts.size() / 2;\n    Node* node = new Node(pts[mid]);\n    std::vector<std::vector<double>> leftPts(pts.begin(), pts.begin() + mid);\n    std::vector<std::vector<double>> rightPts(pts.begin() + mid + 1, pts.end());\n    node->left = buildKDTree(leftPts, depth + 1, k);\n    node->right = buildKDTree(rightPts, depth + 1, k);\n    return node;\n};",
+                                "javascript": "class KDNode {\n  constructor(point) {\n    this.point = point;\n    this.left = null; this.right = null;\n  }\n}\n\nfunction buildKDTree(points, depth = 0, k = 2) {\n  if (points.length === 0) return null;\n  const axis = depth % k;\n  points.sort((a, b) => a[axis] - b[axis]);\n  const mid = Math.floor(points.length / 2);\n  const node = new KDNode(points[mid]);\n  node.left = buildKDTree(points.slice(0, mid), depth + 1, k);\n  node.right = buildKDTree(points.slice(mid + 1), depth + 1, k);\n  return node;\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "K-D Trees partition K-dimensional space using alternating axis-aligned hyperplanes, enabling logarithmic average time for Nearest Neighbor searches and spatial range queries."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "How does a K-D Tree determine which dimension axis to split on at depth d?",
+                        "options": [
+                            "Random choice",
+                            "d % K (cyclic dimension choice)",
+                            "Always X axis",
+                            "Dimension with largest range"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "K-D trees cycle through dimensions at each depth level using axis = depth % K."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "When does K-D Tree Nearest Neighbor search prune the opposite sub-branch during backtracking?",
+                        "options": [
+                            "Never prune",
+                            "When the distance from target to the splitting hyperplane is greater than or equal to current best distance",
+                            "When the tree is balanced",
+                            "When points are collinear"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "If the target's distance to the splitting hyperplane exceeds current best distance, the target sphere cannot intersect the opposite region, safely pruning that branch."
+                    }
+                ]
+            },
+            {
+                "id": "ds-persistent-data-structures",
+                "slug": "persistent-data-structures-path-copying",
+                "categorySlug": "ds",
+                "title": "Persistent Data Structures & Path Copying",
+                "subtitle": "Immutable data structure state versioning, Path Copying vs Fat Nodes, and Persistent Segment Trees (Chairman Trees)",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master Persistent Data Structures. Learn how Path Copying and Fat Node techniques maintain access to all historical modification states of data structures, enabling time-travel queries and persistent range operations in O(log N) space per version.",
+                "overview": "A Persistent Data Structure preserves previous versions of itself when modified. Ephemeral data structures overwrite state, losing past history. Partially Persistent structures allow queries on all historical versions but updates only on the latest version; Fully Persistent structures allow both queries and updates on any past version. Path Copying creates new nodes only along the modified root-to-leaf path ($O(\\log N)$ new nodes per edit), sharing unchanged tree branches with previous versions.",
+                "keyConcepts": [
+                    "Ephemeral vs Partially Persistent vs Fully Persistent Data Structures",
+                    "Path Copying Technique: Creating new nodes exclusively on modified paths",
+                    "Fat Node Technique: Storing version-stamped modification lists in nodes",
+                    "Persistent Segment Tree (Chairman Tree): Range K-th smallest queries over prefix versions",
+                    "Applications: Git Version Control, Functional Programming Languages, Undo/Redo Engines"
+                ],
+                "timeComplexity": {
+                    "access": "O(log N)",
+                    "search": "O(log N)",
+                    "insertion": "O(log N) time/space",
+                    "deletion": "O(log N) time/space",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N + Q log N)",
+                "sections": [
+                    {
+                        "heading": "1. Time-Travel Data Structures",
+                        "content": "Standard array operations destroy past values when modifying an element. \\n\\nHow do we preserve all $V$ historical versions of a tree without cloning the entire $O(N)$ tree on every edit? \\n\\n**Path Copying** allocates new nodes ONLY along the path from root to modified leaf ($O(\\log N)$ space per version), sharing unmodified subtrees with previous versions!"
+                    },
+                    {
+                        "heading": "2. Persistent Segment Tree (Chairman Tree)",
+                        "content": "To find the $K$-th smallest element in array subarray $A[L \\dots R]$: \\n1. Build Persistent Segment Tree version $root[i]$ representing the frequency count of numbers in prefix $A[1 \\dots i]$. \\n2. Range frequency counts in $A[L \\dots R]$ equal $root[R] - root[L-1]$! \\n3. Binary search down the persistent tree in **$O(\\log N)$ time per range query**!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Path Copying on a Persistent Binary Tree.",
+                        "diagram": "Version 0 Root [R0]                     Version 1 Root [R1] (Modified Node 4)\n       /        \\                                /        \\\n   [A]            [B]  <-- SHARED BRANCH! --> [A']          [B]\n  /   \\          /   \\                       /   \\         /   \\\n[1]   [2]      [3]   [4]                   [1]   [4']    [3]   [4]\n                                                 (New Node)"
+                    },
+                    {
+                        "heading": "4. Code Example: Persistent Segment Tree Engine",
+                        "content": "Complete Persistent Segment Tree implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Persistent Segment Tree (Path Copying)",
+                            "code": {
+                                "python": "class Node:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass PersistentSegmentTree:\n    def __init__(self, size: int):\n        self.n = size\n        self.roots = [self._build(0, size - 1)]\n\n    def _build(self, l: int, r: int) -> Node:\n        if l == r: return Node(0)\n        mid = (l + r) // 2\n        return Node(0, self._build(l, mid), self._build(mid + 1, r))\n\n    def update(self, prev_root: Node, idx: int, delta: int, l: int = 0, r: int = None) -> Node:\n        if r is None: r = self.n - 1\n        if l == r:\n            return Node(prev_root.val + delta)\n        mid = (l + r) // 2\n        if idx <= mid:\n            return Node(prev_root.val + delta, self.update(prev_root.left, idx, delta, l, mid), prev_root.right)\n        else:\n            return Node(prev_root.val + delta, prev_root.left, self.update(prev_root.right, idx, delta, mid + 1, r))\n\n    def query(self, node_l: Node, node_r: Node, k: int, l: int = 0, r: int = None) -> int:\n        if r is None: r = self.n - 1\n        if l == r: return l\n        count = node_r.left.val - node_l.left.val\n        mid = (l + r) // 2\n        if count >= k:\n            return self.query(node_l.left, node_r.left, k, l, mid)\n        else:\n            return self.query(node_l.right, node_r.right, k - count, mid + 1, r)",
+                                "java": "public class PersistentSegmentTree {\n    static class Node {\n        int val; Node left, right;\n        Node(int val, Node left, Node right) { this.val = val; this.left = left; this.right = right; }\n    }\n    public static Node update(Node prev, int idx, int val, int l, int r) {\n        if (l == r) return new Node(prev.val + val, null, null);\n        int mid = (l + r) / 2;\n        if (idx <= mid)\n            return new Node(prev.val + val, update(prev.left, idx, val, l, mid), prev.right);\n        else\n            return new Node(prev.val + val, prev.left, update(prev.right, idx, val, mid + 1, r));\n    }\n}",
+                                "cpp": "#include <vector>\n\nstruct Node {\n    int val; Node *left = nullptr, *right = nullptr;\n    Node(int v, Node* l = nullptr, Node* r = nullptr) : val(v), left(l), right(r) {}\n};\n\nNode* update(Node* prev, int idx, int val, int l, int r) {\n    if (l == r) return new Node(prev->val + val);\n    int mid = (l + r) / 2;\n    if (idx <= mid)\n        return new Node(prev->val + val, update(prev->left, idx, val, l, mid), prev->right);\n    else\n        return new Node(prev->val + val, prev->left, update(prev->right, idx, val, mid + 1, r));\n};",
+                                "javascript": "class Node {\n  constructor(val = 0, left = null, right = null) {\n    this.val = val; this.left = left; this.right = right;\n  }\n}\n\nfunction update(prev, idx, val, l, r) {\n  if (l === r) return new Node(prev.val + val);\n  const mid = Math.floor((l + r) / 2);\n  if (idx <= mid)\n    return new Node(prev.val + val, update(prev.left, idx, val, l, mid), prev.right);\n  else\n    return new Node(prev.val + val, prev.left, update(prev.right, idx, val, mid + 1, r));\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Persistent Data Structures use Path Copying to create $O(\\log N)$ new nodes per edit, allowing instant access and queries across all historical data versions."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "How many new nodes are created when updating a single element in a Persistent Segment Tree of size N using Path Copying?",
+                        "options": [
+                            "1 node",
+                            "O(log N) nodes",
+                            "O(N) nodes",
+                            "O(N^2) nodes"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Path copying only duplicates nodes along the path from root to leaf, creating log2(N) new nodes while sharing unmodified subtrees."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What is the difference between Partially Persistent and Fully Persistent data structures?",
+                        "options": [
+                            "Partially persistent supports no queries",
+                            "Partially persistent allows updates on all past versions",
+                            "Partially persistent allows updates only on the latest version; Fully persistent allows updates on any version",
+                            "They are identical"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "Partially persistent allows queries on all historical versions but modifications only on the current state; fully persistent allows modifying any past version."
+                    }
+                ]
+            },
+            {
+                "id": "ds-fibonacci-heap",
+                "slug": "fibonacci-heap-priority-queue",
+                "categorySlug": "ds",
+                "title": "Fibonacci Heaps & Amortized O(1) Priority Queues",
+                "subtitle": "Lazy consolidation root forest, amortized O(1) insert/decrease-key, Cascading Cuts, and Dijkstra's algorithm acceleration",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master Fibonacci Heaps. Learn how lazy consolidation root forests achieve constant amortized O(1) bounds for Insert, Merge, and Decrease-Key operations, accelerating Dijkstra's shortest path algorithm to O(E + V log V).",
+                "overview": "A Fibonacci Heap is a priority queue data structure consisting of a collection of min-heap-ordered trees. Unlike Binary Heaps where `decrease-key` requires $O(\\log N)$ bubbling up, Fibonacci Heaps perform operations lazily. `insert`, `merge`, and `decrease-key` take strict $O(1)$ amortized time. Tree consolidation occurs strictly during `extract-min`. Cascading Cuts maintain tree structural bounds, ensuring maximum node degree stays logarithmic in $N$.",
+                "keyConcepts": [
+                    "Lazy Operation Philosophy: Defer structural consolidation until Extract-Min",
+                    "Root List Circular Doubly-Linked Forest",
+                    "Decrease-Key Operation: Cut node to root list in O(1) amortized time",
+                    "Cascading Cut Mechanism: Cutting parent when 2 children are lost",
+                    "Dijkstra Acceleration: Reducing shortest path runtime from O((V+E) log V) to O(E + V log V)"
+                ],
+                "timeComplexity": {
+                    "access": "O(1)",
+                    "search": "N/A",
+                    "insertion": "O(1) amortized",
+                    "deletion": "O(log N) amortized",
+                    "best": "O(1)",
+                    "average": "O(1) insert/decrease-key",
+                    "worst": "O(log N) extract-min"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. The Decrease-Key Bottleneck",
+                        "content": "Binary Heaps require $O(\\log N)$ time for `decrease-key`. In graph algorithms like Dijkstra's, executing $E$ `decrease-key` calls takes $O(E \\log V)$ time. \\n\\n**Fibonacci Heaps** defer tree consolidation lazily, reducing `decrease-key` to **$O(1)$ amortized time** and dropping total Dijkstra runtime to **$O(E + V \\log V)$**!"
+                    },
+                    {
+                        "heading": "2. Cascading Cuts & Extract-Min Consolidation",
+                        "content": "- **Decrease-Key:** Cut node $X$ from its parent $P$, add $X$ to the root list, and set $X.mark = false$. \\n- **Cascading Cut:** If parent $P$ was already marked (lost a child previously), cut $P$ as well and recurse upward! This maintains Fibonacci degree bounds. \\n- **Extract-Min:** Remove min node, add its children to root list, then **consolidate** roots of equal degree using an array table."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Root List Consolidation during Extract-Min.",
+                        "diagram": "Root List before Extract-Min (Unconsolidated Trees):\n(Min: 2) -> [2] <-> [7] <-> [5] <-> [12] <-> [18]\n\nConsolidation Phase: Link trees of equal degree\n  [2]           [5]\n  /             /\n[7]          [12]\n               |\n             [18]"
+                    },
+                    {
+                        "heading": "4. Code Example: Fibonacci Heap Engine",
+                        "content": "Complete Fibonacci Heap implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Fibonacci Heap Priority Queue",
+                            "code": {
+                                "python": "class FibNode:\n    def __init__(self, key, val=None):\n        self.key = key\n        self.val = val\n        self.degree = 0\n        self.marked = False\n        self.parent = self.child = None\n        self.left = self.right = self\n\nclass FibonacciHeap:\n    def __init__(self):\n        self.min_node = None\n        self.total_nodes = 0\n\n    def insert(self, key, val=None) -> FibNode:\n        node = FibNode(key, val)\n        if not self.min_node:\n            self.min_node = node\n        else:\n            self._add_to_root_list(node)\n            if node.key < self.min_node.key:\n                self.min_node = node\n        self.total_nodes += 1\n        return node\n\n    def _add_to_root_list(self, node):\n        node.left = self.min_node\n        node.right = self.min_node.right\n        self.min_node.right.left = node\n        self.min_node.right = node",
+                                "java": "public class FibonacciHeap {\n    static class Node {\n        int key; int degree; boolean marked;\n        Node parent, child, left, right;\n        Node(int key) { this.key = key; left = right = this; }\n    }\n    private Node minNode;\n    private int totalNodes;\n\n    public Node insert(int key) {\n        Node node = new Node(key);\n        if (minNode == null) { minNode = node; }\n        else {\n            node.left = minNode; node.right = minNode.right;\n            minNode.right.left = node; minNode.right = node;\n            if (node.key < minNode.key) minNode = node;\n        }\n        totalNodes++; return node;\n    }\n}",
+                                "cpp": "#include <iostream>\n\nstruct Node {\n    int key; int degree = 0; bool marked = false;\n    Node *parent = nullptr, *child = nullptr, *left, *right;\n    Node(int k) : key(k), left(this), right(this) {}\n};\n\nclass FibonacciHeap {\n    Node* minNode = nullptr; int totalNodes = 0;\npublic:\n    Node* insert(int key) {\n        Node* node = new Node(key);\n        if (!minNode) minNode = node;\n        else {\n            node->left = minNode; node->right = minNode->right;\n            minNode->right->left = node; minNode->right = node;\n            if (node->key < minNode->key) minNode = node;\n        }\n        totalNodes++; return node;\n    }\n};",
+                                "javascript": "class FibNode {\n  constructor(key) {\n    this.key = key; this.degree = 0; this.marked = false;\n    this.parent = null; this.child = null;\n    this.left = this; this.right = this;\n  }\n}\n\nclass FibonacciHeap {\n  constructor() { this.minNode = null; this.totalNodes = 0; }\n\n  insert(key) {\n    const node = new FibNode(key);\n    if (!this.minNode) this.minNode = node;\n    else {\n      node.left = this.minNode; node.right = this.minNode.right;\n      this.minNode.right.left = node; this.minNode.right = node;\n      if (node.key < this.minNode.key) this.minNode = node;\n    }\n    this.totalNodes++; return node;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Fibonacci Heaps achieve amortized $O(1)$ time for insert, merge, and decrease-key using lazy root list consolidation, improving Dijkstra's algorithm bound to $O(E + V \\log V)$."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the amortized time complexity of the Decrease-Key operation in a Fibonacci Heap?",
+                        "options": [
+                            "O(log N)",
+                            "O(1)",
+                            "O(N)",
+                            "O(E)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Fibonacci Heap performs decrease-key in O(1) amortized time by cutting the modified node directly to the root list."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "When does tree consolidation take place in a Fibonacci Heap?",
+                        "options": [
+                            "During Insert",
+                            "During Decrease-Key",
+                            "Exclusively during Extract-Min",
+                            "Continuous background thread"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "Fibonacci Heap defers structural tree consolidation lazily until Extract-Min is called."
+                    }
+                ]
+            },
+            {
+                "id": "ds-van-emde-boas-tree",
+                "slug": "van-emde-boas-tree-veb",
+                "categorySlug": "ds",
+                "title": "Van Emde Boas Trees (vEB Tree)",
+                "subtitle": "Recursive universe sizing U = 2^(2^k), High/Low bit decomposition sqrt(U), and O(log log U) integer priority operations",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master Van Emde Boas (vEB) Trees. Learn how recursive square-root universe partitioning U = 2^(2^k) and bit decomposition achieve doubly-logarithmic O(log log U) time bounds for search, insert, delete, predecessor, and successor operations over integer keys.",
+                "overview": "A Van Emde Boas tree (vEB tree) is an associative array data structure for keys from a universe of size U = {0, 1, ..., U-1}. While standard comparison search trees require O(log N) time, vEB trees achieve O(log log U) time for insert, delete, lookup, predecessor, and successor operations. vEB trees achieve this by recursively partitioning the universe of size U into sqrt(U) clusters, each of size sqrt(U), reducing recurrence to T(U) = T(sqrt(U)) + O(1) = O(log log U).",
+                "keyConcepts": [
+                    "Universe Sizing: U = 2^(2^k) (power of 2 universe size)",
+                    "High & Low Bit Decomposition: high(x) = floor(x / sqrt(U)), low(x) = x mod sqrt(U)",
+                    "Min & Max Caching: Storing min and max keys directly without recursive descent",
+                    "Summary Tree: Tracking active clusters in O(1) extra check",
+                    "Doubly Logarithmic Bounds: T(U) = T(sqrt(U)) + O(1) => O(log log U)"
+                ],
+                "timeComplexity": {
+                    "access": "O(log log U)",
+                    "search": "O(log log U)",
+                    "insertion": "O(log log U)",
+                    "deletion": "O(log log U)",
+                    "best": "O(1) min/max",
+                    "average": "O(log log U)",
+                    "worst": "O(log log U)"
+                },
+                "spaceComplexity": "O(U)",
+                "sections": [
+                    {
+                        "heading": "1. Beating Logarithmic Comparison Bounds",
+                        "content": "Comparison-based search trees take $\\Omega(\\log N)$ time. \\n\\nFor bounded integer keys $x \\in [0, U-1]$, **Van Emde Boas Trees** achieve **$O(\\log \\log U)$ time** for ALL operations! \\n\\nFor universe size $U = 2^{32} = 4,294,967,296$, $\\log_2(\\log_2 U) = 5$ steps maximum!"
+                    },
+                    {
+                        "heading": "2. Bit Decomposition & Recursive Structure",
+                        "content": "For a universe of size $U$, define $K = \\sqrt{U}$: \\n- $\\text{high}(x) = \\lfloor x / \\sqrt{U} \\rfloor$: The cluster index containing key $x$. \\n- $\\text{low}(x) = x \\pmod{\\sqrt{U}}$: The offset position of key $x$ inside its cluster. \\n- **Summary Tree:** A vEB tree of size $\\sqrt{U}$ tracking which clusters are non-empty."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing vEB Tree Universe Partitioning for U = 16.",
+                        "diagram": "Universe U = 16 (sqrt(16) = 4)\n\nSummary vEB (Size 4): Tracks active clusters [0, 1, 2, 3]\n\nCluster 0 (0..3)   Cluster 1 (4..7)   Cluster 2 (8..11)   Cluster 3 (12..15)\n[0, 1, 2, 3]       [4, 5, 6, 7]       [8, 9, 10, 11]      [12, 13, 14, 15]\n\nEach level reduces problem size from U to sqrt(U) => O(log log U) depth!"
+                    },
+                    {
+                        "heading": "4. Code Example: Van Emde Boas Tree Engine",
+                        "content": "Complete vEB Tree implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Van Emde Boas (vEB) Tree",
+                            "code": {
+                                "python": "import math\n\nclass VEBTree:\n    def __init__(self, universe_size: int):\n        self.u = universe_size\n        self.min = None\n        self.max = None\n        \n        if self.u > 2:\n            self.sqrt_u = int(math.isqrt(self.u))\n            self.summary = None\n            self.cluster = [None] * self.sqrt_u\n\n    def _high(self, x: int) -> int: return x // self.sqrt_u\n    def _low(self, x: int) -> int: return x % self.sqrt_u\n    def _index(self, h: int, l: int) -> int: return h * self.sqrt_u + l\n\n    def contains(self, x: int) -> bool:\n        if x == self.min or x == self.max: return True\n        if self.u == 2: return False\n        h = self._high(x)\n        if not self.cluster[h]: return False\n        return self.cluster[h].contains(self._low(x))\n\n    def insert(self, x: int):\n        if self.min is None:\n            self.min = self.max = x\n            return\n        if x < self.min: x, self.min = self.min, x\n        if self.u > 2:\n            h = self._high(x)\n            l = self._low(x)\n            if not self.cluster[h]:\n                if not self.summary: self.summary = VEBTree(self.sqrt_u)\n                self.summary.insert(h)\n                self.cluster[h] = VEBTree(self.sqrt_u)\n            self.cluster[h].insert(l)\n        if x > self.max: self.max = x",
+                                "java": "public class VEBTree {\n    private int u, sqrtU;\n    private Integer min = null, max = null;\n    private VEBTree summary;\n    private VEBTree[] cluster;\n\n    public VEBTree(int u) {\n        this.u = u;\n        if (u > 2) {\n            this.sqrtU = (int) Math.sqrt(u);\n            this.cluster = new VEBTree[sqrtU];\n        }\n    }\n}",
+                                "cpp": "#include <vector>\n#include <cmath>\n\nclass VEBTree {\n    int u, sqrtU;\n    int minVal = -1, maxVal = -1;\n    VEBTree* summary = nullptr;\n    std::vector<VEBTree*> cluster;\npublic:\n    VEBTree(int universe) : u(universe) {\n        if (u > 2) {\n            sqrtU = (int)std::sqrt(u);\n            cluster.assign(sqrtU, nullptr);\n        }\n    }\n};",
+                                "javascript": "class VEBTree {\n  constructor(u) {\n    this.u = u;\n    this.min = null; this.max = null;\n    if (u > 2) {\n      this.sqrtU = Math.floor(Math.sqrt(u));\n      this.summary = null;\n      this.cluster = new Array(this.sqrtU).fill(null);\n    }\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Van Emde Boas Trees recursively decompose integer universes of size $U$ into $\\sqrt{U}$ clusters, achieving $O(\\log \\log U)$ time for all search, priority, and predecessor operations."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the time complexity of predecessor/successor queries in a Van Emde Boas Tree over universe size U?",
+                        "options": [
+                            "O(log N)",
+                            "O(log U)",
+                            "O(log log U)",
+                            "O(1)"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "vEB tree recurses on universe size sqrt(U), yielding recurrence T(U) = T(sqrt(U)) + O(1) which solves to O(log log U)."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "For a universe size U = 2^32, how many recursive steps maximum does a vEB tree require for lookup?",
+                        "options": [
+                            "32 steps",
+                            "16 steps",
+                            "5 steps",
+                            "100 steps"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "log2(log2(2^32)) = log2(32) = 5 steps maximum."
+                    }
+                ]
+            },
+            {
+                "id": "ds-r-tree",
+                "slug": "r-tree-spatial-indexing",
+                "categorySlug": "ds",
+                "title": "R-Trees & Spatial Indexing",
+                "subtitle": "Minimum Bounding Rectangles (MBR), spatial containment hierarchical tree bounding, and multidimensional GIS queries",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master R-Trees. Learn how Minimum Bounding Rectangles (MBR) group spatial geometric objects (points, lines, polygons) hierarchically, enabling spatial containment and intersection queries for GIS databases like PostGIS and SQLite Spatialite.",
+                "overview": "An R-Tree is a height-balanced tree data structure used for spatial access methods (indexing multi-dimensional spatial information such as geographical coordinates, bounding boxes, or 3D objects). R-Trees organize spatial objects into Minimum Bounding Rectangles (MBR). Leaf nodes contain actual geometric object boundaries, while internal nodes contain the MBR enclosing all child nodes. R-Trees handle overlapping spatial regions using split heuristics (Linear, Quadratic, or R*-tree split).",
+                "keyConcepts": [
+                    "Minimum Bounding Rectangle (MBR): Smallest axis-aligned rectangle enclosing geometric shapes",
+                    "Bounding Hierarchy: Parent MBR encloses all child MBRs",
+                    "Spatial Containment & Intersection Search Protocol",
+                    "Node Splitting Heuristics: Quadratic Split vs R*-tree Forced Re-insertion",
+                    "Applications: PostGIS, MySQL Spatial, SQLite R*Tree, Game Engine Collision Queries"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(log N) avg / O(N) worst",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Indexing Arbitrary Geometric Polygons",
+                        "content": "K-D Trees index points, but how do we index extended 2D/3D shapes (polygons, rivers, country boundaries, 3D meshes)? \\n\\n**R-Trees** wrap complex geometric shapes inside **Minimum Bounding Rectangles (MBR)** and organize them into a hierarchical search tree!"
+                    },
+                    {
+                        "heading": "2. MBR Overlap & R*-tree Optimization",
+                        "content": "- **Spatial Search:** Check if query region overlaps node's MBR. Descend ALL overlapping child branches! \\n- **Node Overflow Split:** When a node exceeds capacity $M$, split entries into two new MBR nodes minimizing total surface area expansion. \\n- **R*-tree Enhancement:** Uses forced re-insertions during overflow to reduce MBR overlap by up to 50%!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing R-Tree MBR Containment Hierarchy.",
+                        "diagram": "Spatial Layout:                          R-Tree Node Hierarchy:\n+-----------------------------------+               [Root MBR R1]\n|  MBR A                            |              /             \\\n|  +-------+    +-------+           |        [MBR A]             [MBR B]\n|  | Shape1|    | Shape2|   MBR B   |        /     \\             /     \\\n|  +-------+    +-------+  +-----+  |    Shape1   Shape2     Shape3   Shape4\n+--------------------------|Shape3| |\n                           +------+ |\n------------------------------------+"
+                    },
+                    {
+                        "heading": "4. Code Example: R-Tree Spatial Index",
+                        "content": "Complete 2D R-Tree MBR intersection search implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "R-Tree MBR Spatial Indexing",
+                            "code": {
+                                "python": "class MBR:\n    def __init__(self, min_x, min_y, max_x, max_y):\n        self.min_x, self.min_y = min_x, min_y\n        self.max_x, self.max_y = max_x, max_y\n\n    def intersects(self, other) -> bool:\n        return not (self.max_x < other.min_x or self.min_x > other.max_x or\n                    self.max_y < other.min_y or self.min_y > other.max_y)\n\nclass RTreeNode:\n    def __init__(self, is_leaf=True):\n        self.is_leaf = is_leaf\n        self.mbr = None\n        self.children = [] # List of (MBR, ChildNode or Item)\n\ndef search_r_tree(node: RTreeNode, query_mbr: MBR) -> list:\n    results = []\n    if node is None: return results\n    for mbr, child in node.children:\n        if query_mbr.intersects(mbr):\n            if node.is_leaf:\n                results.append(child)\n            else:\n                results.extend(search_r_tree(child, query_mbr))\n    return results",
+                                "java": "public class RTree {\n    static class MBR {\n        double minX, minY, maxX, maxY;\n        MBR(double minX, double minY, double maxX, double maxY) {\n            this.minX = minX; this.minY = minY; this.maxX = maxX; this.maxY = maxY;\n        }\n        boolean intersects(MBR o) {\n            return !(maxX < o.minX || minX > o.maxX || maxY < o.minY || minY > o.maxY);\n        }\n    }\n}",
+                                "cpp": "#include <vector>\n\nstruct MBR {\n    double minX, minY, maxX, maxY;\n    bool intersects(const MBR& o) const {\n        return !(maxX < o.minX || minX > o.maxX || maxY < o.minY || minY > o.maxY);\n    }\n};",
+                                "javascript": "class MBR {\n  constructor(minX, minY, maxX, maxY) {\n    this.minX = minX; this.minY = minY; this.maxX = maxX; this.maxY = maxY;\n  }\n  intersects(o) {\n    return !(this.maxX < o.minX || this.minX > o.maxX || this.maxY < o.minY || this.minY > o.maxY);\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "R-Trees group spatial shapes inside Minimum Bounding Rectangles (MBRs), providing efficient spatial containment and intersection queries for GIS databases and graphics engines."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What does MBR stand for in R-Tree spatial indexing?",
+                        "options": [
+                            "Minimum Bounding Rectangle",
+                            "Maximum Binary Region",
+                            "Memory Buffer Register",
+                            "Multi-Branch Root"
+                        ],
+                        "correctIndex": 0,
+                        "explanation": "MBR stands for Minimum Bounding Rectangle—the smallest axis-aligned bounding box that encloses a geometric shape."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "Unlike BSTs where search descends a single path, why can R-Tree spatial search descend multiple child branches?",
+                        "options": [
+                            "R-Trees are binary trees",
+                            "Child node MBRs can spatially overlap, requiring checking all overlapping MBR branches",
+                            "To increase space complexity",
+                            "Because of random hashing"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Overlapping MBR boundaries mean a query region can intersect multiple sibling child MBRs simultaneously."
+                    }
+                ]
+            },
+            {
+                "id": "ds-cuckoo-hashing",
+                "slug": "cuckoo-hashing",
+                "categorySlug": "ds",
+                "title": "Cuckoo Hashing & Deterministic O(1) Lookups",
+                "subtitle": "Dual hash functions h1(x) and h2(x), displacement kick-out loops, deterministic worst-case O(1) lookups, and router cache applications",
+                "difficulty": "Advanced",
+                "readTime": "35 min read",
+                "summary": "Master Cuckoo Hashing. Learn how dual hash tables and Cuckoo bird displacement loops achieve deterministic worst-case O(1) lookup and deletion time complexity, eliminating long hash collision chains.",
+                "overview": "Cuckoo Hashing (named after the Cuckoo bird which pushes other eggs out of the nest) is a hashing scheme that guarantees deterministic worst-case O(1) lookup and deletion times. Cuckoo hashing uses two hash functions $h_1(x)$ and $h_2(x)$ and two tables $T_1$ and $T_2$. Element $x$ is stored in either $T_1[h_1(x)]$ or $T_2[h_2(x)]$. If an insertion collides with an existing element $y$, $y$ is kicked out to its alternative location, triggering a chain of displacements. If a displacement loop occurs, the table is rehashed with new hash functions.",
+                "keyConcepts": [
+                    "Deterministic Worst-Case O(1) Lookup: Check exact 2 locations T1[h1(x)] and T2[h2(x)]",
+                    "Cuckoo Kick-Out Displacement Loop Protocol",
+                    "Displacement Cycle Detection: Threshold loop count triggers table rehashing",
+                    "Load Factor Bounds: Maximum ~50% capacity for 2 hash functions (up to ~90% with d-ary / bucketed cuckoo)",
+                    "Applications: Hardware Router Packet Inspection, High-Throughput Memory Caches"
+                ],
+                "timeComplexity": {
+                    "access": "O(1)",
+                    "search": "O(1) worst-case",
+                    "insertion": "O(1) amortized",
+                    "deletion": "O(1) worst-case",
+                    "best": "O(1)",
+                    "average": "O(1)",
+                    "worst": "O(1) search/delete"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Eliminating Hash Collision Chains",
+                        "content": "Standard Separate Chaining Hash Tables degrade to $O(N)$ worst-case lookup when collisions stack up. \\n\\n**Cuckoo Hashing** guarantees **exact $O(1)$ worst-case lookup time** by restricting element $x$ to exactly TWO candidate array slots: $T_1[h_1(x)]$ or $T_2[h_2(x)]$!"
+                    },
+                    {
+                        "heading": "2. The Cuckoo Kick-Out Insertion Algorithm",
+                        "content": "To insert key $x$: \\n1. Try placing $x$ at $T_1[h_1(x)]$. If empty, done! \\n2. If occupied by key $y$, **KICK OUT** $y$ and insert $x$. \\n3. Try inserting kicked-out key $y$ into its alternative slot $T_2[h_2(y)]$. \\n4. Repeat displacement loop! If loop count exceeds threshold (a cycle is detected), rehash the entire table with new hash functions!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Cuckoo Displacement Loop.",
+                        "diagram": "Insert Key X into T1:\nT1[h1(X)] is occupied by Y!\nStep 1: Place X at T1[h1(X)], Kick out Y!\nStep 2: Y moves to T2[h2(Y)]!\n        If T2[h2(Y)] is occupied by Z, Kick out Z to T1[h1(Z)]!"
+                    },
+                    {
+                        "heading": "4. Code Example: Cuckoo Hash Table Engine",
+                        "content": "Complete Cuckoo Hash Table implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Cuckoo Hash Table Engine",
+                            "code": {
+                                "python": "class CuckooHashTable:\n    def __init__(self, capacity=16):\n        self.cap = capacity\n        self.t1 = [None] * capacity\n        self.t2 = [None] * capacity\n\n    def _h1(self, key: int) -> int: return key % self.cap\n    def _h2(self, key: int) -> int: return (key // self.cap) % self.cap\n\n    def search(self, key: int) -> bool:\n        return self.t1[self._h1(key)] == key or self.t2[self._h2(key)] == key\n\n    def insert(self, key: int) -> bool:\n        if self.search(key): return True\n        curr = key\n        for _ in range(self.cap):\n            pos1 = self._h1(curr)\n            if self.t1[pos1] is None:\n                self.t1[pos1] = curr; return True\n            curr, self.t1[pos1] = self.t1[pos1], curr # Kick out!\n            \n            pos2 = self._h2(curr)\n            if self.t2[pos2] is None:\n                self.t2[pos2] = curr; return True\n            curr, self.t2[pos2] = self.t2[pos2], curr # Kick out!\n        \n        # Cycle detected -> Rehash table\n        self._rehash()\n        return self.insert(curr)\n\n    def _rehash(self):\n        old_keys = [k for k in self.t1 + self.t2 if k is not None]\n        self.cap *= 2\n        self.t1 = [None] * self.cap\n        self.t2 = [None] * self.cap\n        for k in old_keys: self.insert(k)",
+                                "java": "public class CuckooHashTable {\n    private int cap;\n    private Integer[] t1, t2;\n    public CuckooHashTable(int capacity) {\n        this.cap = capacity; t1 = new Integer[capacity]; t2 = new Integer[capacity];\n    }\n    private int h1(int key) { return Math.abs(key) % cap; }\n    private int h2(int key) { return Math.abs(key / cap) % cap; }\n\n    public boolean search(int key) {\n        return (t1[h1(key)] != null && t1[h1(key)] == key) || (t2[h2(key)] != null && t2[h2(key)] == key);\n    }\n}",
+                                "cpp": "#include <vector>\n#include <cmath>\n\nclass CuckooHashTable {\n    int cap;\n    std::vector<int> t1, t2;\n    std::vector<bool> v1, v2;\n    int h1(int k) { return std::abs(k) % cap; }\n    int h2(int k) { return std::abs(k / cap) % cap; }\npublic:\n    CuckooHashTable(int capacity = 16) : cap(capacity), t1(capacity), t2(capacity), v1(capacity, false), v2(capacity, false) {}\n    bool search(int k) {\n        return (v1[h1(k)] && t1[h1(k)] == k) || (v2[h2(k)] && t2[h2(k)] == k);\n    }\n};",
+                                "javascript": "class CuckooHashTable {\n  constructor(capacity = 16) {\n    this.cap = capacity;\n    this.t1 = new Array(capacity).fill(null);\n    this.t2 = new Array(capacity).fill(null);\n  }\n  h1(key) { return Math.abs(key) % this.cap; }\n  h2(key) { return Math.floor(Math.abs(key) / this.cap) % this.cap; }\n  search(key) {\n    return this.t1[this.h1(key)] === key || this.t2[this.h2(key)] === key;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Cuckoo Hashing guarantees strict $O(1)$ worst-case lookup and deletion bounds by checking exactly two candidate table locations and resolving collisions via displacement loops."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "Why does Cuckoo Hashing guarantee deterministic worst-case O(1) lookup time?",
+                        "options": [
+                            "It uses binary search",
+                            "An element can only exist in exactly two fixed table locations (T1[h1(x)] or T2[h2(x)])",
+                            "It uses linked lists",
+                            "It sorts keys"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Search only checks two exact array locations (h1(x) and h2(x)), taking constant 2 array accesses regardless of load factor."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What action is triggered during insertion if the displacement kick-out loop count exceeds the threshold?",
+                        "options": [
+                            "Ignore the key",
+                            "Rehash the table with expanded capacity and new hash functions",
+                            "Throw an error",
+                            "Delete the table"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "An infinite displacement loop indicates a cycle in the Cuckoo graph, triggering table expansion and rehashing."
+                    }
+                ]
+            },
+            {
+                "id": "ds-roaring-bitmaps",
+                "slug": "roaring-bitmaps-compressed-bitvectors",
+                "categorySlug": "ds",
+                "title": "Roaring Bitmaps & Compressed Bitvectors",
+                "subtitle": "2-level 16-bit key chunking, 3 container types (Array, Bitset, RLE), SIMD bitwise AND/OR operations, and production search engine indexing",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master Roaring Bitmaps. Learn how 2-level 16-bit chunking and dynamic container switching (Array Container, Bitset Container, Run-Length Encoded RLE) achieve high compression ratios and SIMD-accelerated set operations in production engines like Lucene and Spark.",
+                "overview": "Roaring Bitmaps are compressed bitsets that outperform uncompressed bitsets and alternative compressed formats (such as WAH or EWAH). A Roaring Bitmap partitions 32-bit integer keys into 2-level chunks: the upper 16 bits select a container chunk in a top-level directory, while the lower 16 bits are stored inside one of three dynamic container types: Array Container (for sparse data, < 4096 elements), Bitset Container (for dense data, > 4096 elements), or Run-Length Encoded (RLE) Container (for contiguous key runs).",
+                "keyConcepts": [
+                    "2-Level Chunking: Upper 16 bits = Chunk key, Lower 16 bits = Container data",
+                    "3 Container Types: Array Container (<4096 entries), Bitset Container (64KB fixed 1024 longs), RLE Container (pairs of start/length)",
+                    "Dynamic Container Conversion: Auto-switching based on cardinality thresholds",
+                    "SIMD Vectorization: Ultra-fast bitwise AND (&), OR (|), XOR (^) set operations",
+                    "Production Usage: Apache Lucene, ElasticSearch, Apache Spark, ClickHouse, Redis"
+                ],
+                "timeComplexity": {
+                    "access": "O(1)",
+                    "search": "O(log C) chunk lookup",
+                    "insertion": "O(1) avg",
+                    "deletion": "O(1) avg",
+                    "best": "O(1)",
+                    "average": "O(1)",
+                    "worst": "O(log C)"
+                },
+                "spaceComplexity": "O(N) highly compressed",
+                "sections": [
+                    {
+                        "heading": "1. The Bitset Memory Dilemma",
+                        "content": "An uncompressed bitset over 32-bit integers requires **512 MB of RAM** even if it stores only 1 element (`integer 2^31`)! \\n\\n**Roaring Bitmaps** partition integers into 16-bit chunks and dynamically select the most compact container format, achieving **multi-gigabyte memory savings with SIMD speed**!"
+                    },
+                    {
+                        "heading": "2. The 3 Container Types",
+                        "content": "1. **Array Container ($< 4096$ values):** Stores sorted 16-bit integers in a compact array ($2 \\times K$ bytes). \\n2. **Bitset Container ($> 4096$ values):** Stores 65,536 bits in a fixed 8 KB bitset array (1024 64-bit words). \\n3. **Run-Length Encoded (RLE) Container:** Stores contiguous runs of numbers as `[start, length]` pairs (e.g., $100 \\dots 50000$ stored in just 4 bytes!)."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing 2-Level Roaring Bitmap Architecture.",
+                        "diagram": "32-Bit Integer: [ Upper 16 Bits (Chunk Key) | Lower 16 Bits (Value) ]\n                                    |\nTop-Level Directory:      Chunk Key 0x0001           Chunk Key 0x0002\n                                    |                          |\nContainer Types:           Array Container            Bitset Container\n                       [12, 45, 99, 102] (Sparse)      [10001010101...] (Dense)"
+                    },
+                    {
+                        "heading": "4. Code Example: Roaring Bitmap Container Simulator",
+                        "content": "Complete Roaring Bitmap 2-level container implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Roaring Bitmap 2-Level Engine",
+                            "code": {
+                                "python": "class RoaringBitmap:\n    def __init__(self):\n        self.containers = {} # Upper 16 bits -> container (set or list)\n\n    def add(self, x: int):\n        hb = x >> 16 # High 16 bits\n        lb = x & 0xFFFF # Low 16 bits\n        if hb not in self.containers:\n            self.containers[hb] = set()\n        self.containers[hb].add(lb)\n\n    def contains(self, x: int) -> bool:\n        hb = x >> 16\n        lb = x & 0xFFFF\n        return hb in self.containers and lb in self.containers[hb]\n\n    def bitwise_and(self, other: 'RoaringBitmap') -> 'RoaringBitmap':\n        res = RoaringBitmap()\n        for hb in self.containers:\n            if hb in other.containers:\n                intersect = self.containers[hb] & other.containers[hb]\n                if intersect: res.containers[hb] = intersect\n        return res",
+                                "java": "import java.util.*;\n\npublic class RoaringBitmap {\n    private Map<Integer, Set<Integer>> containers = new HashMap<>();\n\n    public void add(int x) {\n        int hb = x >>> 16, lb = x & 0xFFFF;\n        containers.computeIfAbsent(hb, k -> new HashSet<>()).add(lb);\n    }\n\n    public boolean contains(int x) {\n        int hb = x >>> 16, lb = x & 0xFFFF;\n        return containers.containsKey(hb) && containers.get(hb).contains(lb);\n    }\n}",
+                                "cpp": "#include <unordered_map>\n#include <unordered_set>\n\nclass RoaringBitmap {\n    std::unordered_map<unsigned int, std::unordered_set<unsigned int>> containers;\npublic:\n    void add(unsigned int x) {\n        unsigned int hb = x >> 16, lb = x & 0xFFFF;\n        containers[hb].insert(lb);\n    }\n    bool contains(unsigned int x) const {\n        unsigned int hb = x >> 16, lb = x & 0xFFFF;\n        auto it = containers.find(hb);\n        return it != containers.end() && it->second.count(lb);\n    }\n};",
+                                "javascript": "class RoaringBitmap {\n  constructor() { this.containers = new Map(); }\n  add(x) {\n    const hb = x >>> 16, lb = x & 0xFFFF;\n    if (!this.containers.has(hb)) this.containers.set(hb, new Set());\n    this.containers.get(hb).add(lb);\n  }\n  contains(x) {\n    const hb = x >>> 16, lb = x & 0xFFFF;\n    return this.containers.has(hb) && this.containers.get(hb).has(lb);\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Roaring Bitmaps use 2-level 16-bit key chunking and 3 adaptive container types (Array, Bitset, RLE) to deliver high compression ratios and SIMD-speed set operations."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "When does a Roaring Bitmap switch a container from Array Container to Bitset Container?",
+                        "options": [
+                            "At 10 elements",
+                            "When cardinality exceeds 4096 elements",
+                            "At 65536 elements",
+                            "Never"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "At 4096 elements, 4096 * 2 bytes = 8192 bytes, which equals the fixed 8KB size of a 65,536-bit Bitset Container."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "How are 32-bit integers partitioned in a Roaring Bitmap?",
+                        "options": [
+                            "Randomly",
+                            "Upper 16 bits select the container chunk; Lower 16 bits store the value inside the container",
+                            "Even and odd numbers",
+                            "By floating point value"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Roaring Bitmaps use the upper 16 bits to index the container directory and lower 16 bits as container elements."
+                    }
+                ]
+            },
+            {
+                "id": "ds-dancing-links",
+                "slug": "dancing-links-knuth-algorithm-x",
+                "categorySlug": "ds",
+                "title": "Dancing Links & Knuth's Algorithm X (DLX)",
+                "subtitle": "Toroidal circular doubly-linked sparse matrix nodes, O(1) cover/uncover pointer manipulation, and Exact Cover problem solving",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master Dancing Links (DLX). Learn how Donald Knuth's 4-way circular doubly-linked sparse matrix nodes execute O(1) covering and uncovering operations, accelerating Algorithm X to solve NP-complete Exact Cover problems (Sudoku, Pentominoes, N-Queens).",
+                "overview": "Dancing Links (DLX) is a technique proposed by Donald Knuth to implement his Algorithm X for solving the Exact Cover problem. In an Exact Cover problem, given a binary matrix of 0s and 1s, find a subset of rows such that every column contains exactly one 1. DLX represents sparse matrices using 4-way circular doubly-linked nodes (Left, Right, Up, Down). The signature trick: removing a column and its rows ('covering') and later restoring them ('uncovering') takes exact $O(1)$ pointer operations without memory allocations.",
+                "keyConcepts": [
+                    "Exact Cover Problem Formulation: Matrix of rows and columns",
+                    "Toroidal 4-Way Doubly-Linked Sparse Matrix Nodes (L, R, U, D pointers)",
+                    "Cover Column Operation: Removing column header and all intersecting rows",
+                    "Uncover Column Operation: Pointer reversal dancing restoring matrix state in O(1)",
+                    "Applications: Sudoku Solvers, Polyomino Tiling, N-Queens, Exact Set Cover"
+                ],
+                "timeComplexity": {
+                    "access": "O(1)",
+                    "search": "Exponential backtracking search space pruning",
+                    "insertion": "O(1)",
+                    "deletion": "O(1) cover/uncover",
+                    "best": "O(1)",
+                    "average": "Extremely fast pruned search",
+                    "worst": "O(2^N)"
+                },
+                "spaceComplexity": "O(K) where K = count of 1s in matrix",
+                "sections": [
+                    {
+                        "heading": "1. The Exact Cover Problem & Pointer Dancing",
+                        "content": "Given a binary matrix, choose a subset of rows such that every column has **exactly one '1'**. \\n\\nNaive matrix copying during backtracking consumes massive RAM. \\n\\n**Dancing Links (DLX)** uses 4-way circular doubly-linked nodes. Covering and Uncovering matrix columns executes in **$O(1)$ pointer steps**: \\n```c\\nnode.left.right = node.right;\\nnode.right.left = node.left;\\n``` \\nReversing the exact same pointer operations restores the matrix instantly during backtracking!"
+                    },
+                    {
+                        "heading": "2. Knuth's Algorithm X Protocol",
+                        "content": "1. If matrix is empty (all columns covered), solution found! \\n2. Choose column $C$ with minimum 1s (Deterministic Heuristic). \\n3. **Cover** column $C$. \\n4. For each row $R$ in column $C$: \\n   - Add $R$ to solution list. \\n   - For each column $J$ in row $R$: **Cover** column $J$. \\n   - Recurse on remaining matrix! \\n   - **Uncover** column $J$ and backtrack."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing 4-Way Circular Doubly-Linked Node Pointer Unlinking.",
+                        "diagram": "Linked Column Headers:\n[Header A] <---> [Header B] <---> [Header C]\n    |                 |                 |\n  Node1             Node2             Node3\n\nCover Column B (Unlink B):\n[Header A] ---------------------> [Header C]\n[Header A] <--------------------- [Header C]\n(Header B is unlinked, but still retains pointers to restore itself in O(1)!)"
+                    },
+                    {
+                        "heading": "4. Code Example: Dancing Links (DLX) Engine",
+                        "content": "Complete Dancing Links (DLX) Exact Cover implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Dancing Links (DLX) Exact Cover Engine",
+                            "code": {
+                                "python": "class DLXNode:\n    def __init__(self, col=None):\n        self.left = self.right = self.up = self.down = self\n        self.col = col or self\n        self.size = 0\n\nclass DancingLinks:\n    def __init__(self, num_cols: int):\n        self.header = DLXNode()\n        self.cols = [DLXNode() for _ in range(num_cols)]\n        for i in range(num_cols):\n            self.cols[i].left = self.header if i == 0 else self.cols[i-1]\n            self.cols[i].right = self.header if i == num_cols - 1 else self.cols[i+1]\n            if i > 0: self.cols[i-1].right = self.cols[i]\n            if i == 0: self.header.right = self.cols[0]\n            if i == num_cols - 1: self.header.left = self.cols[i]\n\n    def cover(self, c: DLXNode):\n        c.right.left = c.left\n        c.left.right = c.right\n        i = c.down\n        while i != c:\n            j = i.right\n            while j != i:\n                j.down.up = j.up\n                j.up.down = j.down\n                j.col.size -= 1\n                j = j.right\n            i = i.down\n\n    def uncover(self, c: DLXNode):\n        i = c.up\n        while i != c:\n            j = i.left\n            while j != i:\n                j.col.size += 1\n                j.down.up = j\n                j.up.down = j\n                j = j.left\n            i = i.up\n        c.right.left = c\n        c.left.right = c",
+                                "java": "public class DancingLinks {\n    static class Node {\n        Node left = this, right = this, up = this, down = this, col = this;\n        int size = 0;\n    }\n    private Node header = new Node();\n\n    public void cover(Node c) {\n        c.right.left = c.left; c.left.right = c.right;\n        for (Node i = c.down; i != c; i = i.down) {\n            for (Node j = i.right; j != i; j = j.right) {\n                j.down.up = j.up; j.up.down = j.down; j.col.size--;\n            }\n        }\n    }\n    public void uncover(Node c) {\n        for (Node i = c.up; i != c; i = i.up) {\n            for (Node j = i.left; j != i; j = j.left) {\n                j.col.size++; j.down.up = j; j.up.down = j;\n            }\n        }\n        c.right.left = c; c.left.right = c;\n    }\n}",
+                                "cpp": "#include <vector>\n\nstruct Node {\n    Node *left = this, *right = this, *up = this, *down = this, *col = this;\n    int size = 0;\n};\n\nclass DancingLinks {\n    Node* header = new Node();\npublic:\n    void cover(Node* c) {\n        c->right->left = c->left; c->left->right = c->right;\n        for (Node* i = c->down; i != c; i = i->down) {\n            for (Node* j = i->right; j != i; j = j->right) {\n                j->down->up = j->up; j->up.down = j->down; j.col.size--;\n            }\n        }\n    }\n    void uncover(Node* c) {\n        for (Node* i = c->up; i != c; i = i.up) {\n            for (Node* j = i.left; j != i; j = j.left) {\n                j.col.size++; j.down.up = j; j.up.down = j;\n            }\n        }\n        c->right->left = c; c.left.right = c;\n    }\n};",
+                                "javascript": "class DLXNode {\n  constructor() {\n    this.left = this; this.right = this;\n    this.up = this; this.down = this;\n    this.col = this; this.size = 0;\n  }\n}\n\nclass DancingLinks {\n  cover(c) {\n    c.right.left = c.left; c.left.right = c.right;\n    for (let i = c.down; i !== c; i = i.down) {\n      for (let j = i.right; j !== i; j = j.right) {\n        j.down.up = j.up; j.up.down = j.down; j.col.size--;\n      }\n    }\n  }\n  uncover(c) {\n    for (let i = c.up; i !== c; i = i.up) {\n      for (let j = i.left; j !== i; j = j.left) {\n        j.col.size++; j.down.up = j; j.up.down = j;\n      }\n    }\n    c.right.left = c; c.left.right = c;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Dancing Links (DLX) uses 4-way circular doubly-linked nodes to execute $O(1)$ cover and uncover pointer operations, solving Exact Cover problems with unprecedented backtracking speed."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "Why is Knuth's technique called 'Dancing Links'?",
+                        "options": [
+                            "Because nodes animate on screen",
+                            "Because pointers link and unlink smoothly in O(1) time during cover/uncover backtracking like dancing partners",
+                            "Because it uses random jumps",
+                            "It was named after a dance move"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Knuth called it Dancing Links because pointers unhook and re-hook gracefully in O(1) time during cover and uncover operations."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What NP-complete problem class does Dancing Links (DLX) solve efficiently?",
+                        "options": [
+                            "Shortest Path",
+                            "Exact Cover Problem (Sudoku, Pentomino Tiling, N-Queens)",
+                            "Minimum Spanning Tree",
+                            "Binary Search"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "DLX implements Knuth's Algorithm X to solve Exact Cover problems like Sudoku, Pentominoes, and N-Queens."
+                    }
+                ]
             }
         ]
     },
@@ -7763,10 +8623,870 @@ function convexHull(points) {
                     { id: "q1", question: "What does a positive Cross Product (> 0) between vectors P1->P2 and P1->P3 indicate in 2D geometry?", options: ["The turn is Counter-Clockwise (Left turn).", "The turn is Clockwise (Right turn).", "The 3 points are collinear.", "The vectors are perpendicular."], correctIndex: 0, explanation: "A positive 2D cross product (val > 0) indicates a Counter-Clockwise (Left) turn from vector P1P2 to vector P1P3." },
                     { id: "q2", question: "What is the time complexity of the Graham Scan algorithm for computing a 2D Convex Hull of N points?", options: ["O(N^2)", "O(N log N)", "O(N)", "O(2^N)"], correctIndex: 1, explanation: "Sorting the N points by polar angle relative to the pivot takes O(N log N) time, while the stack processing pass takes linear O(N) time." }
                 ]
+            },
+{
+                "id": "algo-kmp-string-matching",
+                "slug": "knuth-morris-pratt-string-matching",
+                "categorySlug": "algorithms",
+                "title": "Knuth-Morris-Pratt (KMP) & Failure Automaton",
+                "subtitle": "Longest Prefix Suffix (LPS) pi-array construction, deterministic state transitions, and linear O(N+M) string searching",
+                "difficulty": "Intermediate",
+                "readTime": "35 min read",
+                "summary": "Master the Knuth-Morris-Pratt (KMP) string search algorithm. Learn how the Failure Function (LPS array) eliminates redundant character re-comparisons, enabling deterministic linear O(N + M) pattern matching without text pointer backtracking.",
+                "overview": "Naive string matching re-checks text characters upon mismatch, resulting in worst-case O(N * M) time complexity (e.g. matching 'AAAAAB' in 'AAAAAAAAAAAAAA'). KMP preprocesses the pattern P in O(M) time to build a Failure Function (LPS array pi[i]). When a mismatch occurs after matching k characters, KMP shifts the pattern so that the longest proper prefix matching a suffix of P[0..k-1] lines up automatically, never backtracking the text index i.",
+                "keyConcepts": [
+                    "Longest Proper Prefix which is also Suffix (LPS / pi-array)",
+                    "KMP Failure Automaton & State Transitions",
+                    "No Text Pointer Backtracking: Strict O(N) text scan",
+                    "Linear Time Bounds: O(M) pattern precomputation + O(N) matching",
+                    "Applications: DNA Gene Sequence Alignment, Text Editors, Packet Inspection"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(N + M)",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(N + M)",
+                    "average": "O(N + M)",
+                    "worst": "O(N + M)"
+                },
+                "spaceComplexity": "O(M)",
+                "sections": [
+                    {
+                        "heading": "1. The Backtracking Mismatch Problem",
+                        "content": "When searching for pattern $P$ of length $M$ in text $T$ of length $N$, naive comparison resets text index $i$ backward upon a mismatch. \n\nFor example, searching for `ABABC` inside `ABABABABC`: naive matching re-checks characters multiple times ($O(N \\cdot M)$). \n\nKMP observes that characters matching before the mismatch reveal information about the text itself! By computing the **Longest Proper Prefix which is also a Suffix (LPS)** array $\\pi[i]$ for pattern $P$, KMP advances pattern pointers without ever moving text pointer $i$ backward!"
+                    },
+                    {
+                        "heading": "2. The LPS Array (pi-table) & Failure Transitions",
+                        "content": "The LPS array `lps[i]` stores the length of the longest proper prefix of $P[0..i]$ that is also a suffix of $P[0..i]$. \n\n- Construction: Maintained with two pointers `prev_len` and `i`. If $P[i] == P[prev\\_len]$, `lps[i] = prev_len + 1`. If mismatch occurs, fall back `prev_len = lps[prev_len - 1]`. \n- Searching: When mismatch occurs at $P[j]$ against $T[i]$, set $j = lps[j-1]$ and keep text pointer $i$ unchanged."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing KMP LPS array and mismatch state transition.",
+                        "diagram": "Pattern P: A  B  A  B  C\nIndex i:   0  1  2  3  4\nLPS pi:    0  0  1  2  0\n\nText:      A  B  A  B  A  B  A  B  C\nPattern:   A  B  A  B  C\n                      ^ (Mismatch at j=4 'C' vs 'A')\n\nAction: j falls back to lps[3] = 2.\nPattern:         A  B  A  B  C\nText pointer i does NOT move backward!"
+                    },
+                    {
+                        "heading": "4. Code Example: KMP String Search",
+                        "content": "Complete linear $O(N + M)$ KMP string search implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "KMP String Matching Algorithm",
+                            "code": {
+                                "python": "def compute_lps(pattern: str) -> list:\n    m = len(pattern)\n    lps = [0] * m\n    prev_len = 0\n    i = 1\n    while i < m:\n        if pattern[i] == pattern[prev_len]:\n            prev_len += 1\n            lps[i] = prev_len\n            i += 1\n        elif prev_len != 0:\n            prev_len = lps[prev_len - 1]\n        else:\n            lps[i] = 0\n            i += 1\n    return lps\n\ndef kmp_search(text: str, pattern: str) -> list:\n    n, m = len(text), len(pattern)\n    if m == 0: return []\n    lps = compute_lps(pattern)\n    matches = []\n    i = j = 0 # i: text index, j: pattern index\n    while i < n:\n        if text[i] == pattern[j]:\n            i += 1\n            j += 1\n        if j == m:\n            matches.append(i - j)\n            j = lps[j - 1]\n        elif i < n and text[i] != pattern[j]:\n            if j != 0:\n                j = lps[j - 1]\n            else:\n                i += 1\n    return matches",
+                                "java": "import java.util.*;\n\npublic class KMP {\n    private static int[] computeLPS(String pattern) {\n        int m = pattern.length();\n        int[] lps = new int[m];\n        int prevLen = 0, i = 1;\n        while (i < m) {\n            if (pattern.charAt(i) == pattern.charAt(prevLen)) {\n                lps[i++] = ++prevLen;\n            } else if (prevLen != 0) {\n                prevLen = lps[prevLen - 1];\n            } else {\n                lps[i++] = 0;\n            }\n        }\n        return lps;\n    }\n\n    public static List<Integer> kmpSearch(String text, String pattern) {\n        List<Integer> matches = new ArrayList<>();\n        int n = text.length(), m = pattern.length();\n        if (m == 0) return matches;\n        int[] lps = computeLPS(pattern);\n        int i = 0, j = 0;\n        while (i < n) {\n            if (text.charAt(i) == pattern.charAt(j)) { i++; j++; }\n            if (j == m) {\n                matches.add(i - j);\n                j = lps[j - 1];\n            } else if (i < n && text.charAt(i) != pattern.charAt(j)) {\n                if (j != 0) j = lps[j - 1];\n                else i++;\n            }\n        }\n        return matches;\n    }\n}",
+                                "cpp": "#include <vector>\n#include <string>\n\nstd::vector<int> computeLPS(const std::string& pat) {\n    int m = pat.length();\n    std::vector<int> lps(m, 0);\n    int prevLen = 0, i = 1;\n    while (i < m) {\n        if (pat[i] == pat[prevLen]) {\n            lps[i++] = ++prevLen;\n        } else if (prevLen != 0) {\n            prevLen = lps[prevLen - 1];\n        } else {\n            lps[i++] = 0;\n        }\n    }\n    return lps;\n}\n\nstd::vector<int> kmpSearch(const std::string& text, const std::string& pat) {\n    std::vector<int> matches;\n    int n = text.length(), m = pat.length();\n    if (m == 0) return matches;\n    std::vector<int> lps = computeLPS(pat);\n    int i = 0, j = 0;\n    while (i < n) {\n        if (text[i] == pat[j]) { i++; j++; }\n        if (j == m) {\n            matches.push_back(i - j);\n            j = lps[j - 1];\n        } else if (i < n && text[i] != pat[j]) {\n            if (j != 0) j = lps[j - 1];\n            else i++;\n        }\n    }\n    return matches;\n}",
+                                "javascript": "function computeLPS(pattern) {\n  const m = pattern.length;\n  const lps = new Array(m).fill(0);\n  let prevLen = 0, i = 1;\n  while (i < m) {\n    if (pattern[i] === pattern[prevLen]) {\n      lps[i++] = ++prevLen;\n    } else if (prevLen !== 0) {\n      prevLen = lps[prevLen - 1];\n    } else {\n      lps[i++] = 0;\n    }\n  }\n  return lps;\n}\n\nfunction kmpSearch(text, pattern) {\n  const matches = [];\n  const n = text.length, m = pattern.length;\n  if (m === 0) return matches;\n  const lps = computeLPS(pattern);\n  let i = 0, j = 0;\n  while (i < n) {\n    if (text[i] === pattern[j]) { i++; j++; }\n    if (j === m) {\n      matches.push(i - j);\n      j = lps[j - 1];\n    } else if (i < n && text[i] !== pattern[j]) {\n      if (j !== 0) j = lps[j - 1];\n      else i++;\n    }\n  }\n  return matches;\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "KMP eliminates redundant text comparisons by precomputing the pattern's LPS failure table in $O(M)$ time, ensuring deterministic linear $O(N + M)$ time bounds without text index backtracking."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What does the LPS (Longest Proper Prefix Suffix) array lps[i] store in the KMP algorithm?",
+                        "options": [
+                            "The length of the longest proper prefix of pattern[0..i] that is also a suffix of pattern[0..i]",
+                            "The count of vowels up to index i",
+                            "The position of the next mismatch",
+                            "The total character matches in text"
+                        ],
+                        "correctIndex": 0,
+                        "explanation": "lps[i] stores the length of the longest proper prefix of pattern[0..i] that matches a suffix of pattern[0..i], enabling safe shifts without text backtracking."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What is the worst-case time complexity of the KMP algorithm when searching pattern of length M in text of length N?",
+                        "options": [
+                            "O(N * M)",
+                            "O(N + M)",
+                            "O(N log M)",
+                            "O(2^M)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Precomputing the LPS array takes O(M) time and scanning the text takes O(N) time without backtracking, giving total time O(N + M)."
+                    }
+                ]
+            },
+            {
+                "id": "algo-lca-binary-lifting",
+                "slug": "lowest-common-ancestor-binary-lifting",
+                "categorySlug": "algorithms",
+                "title": "Lowest Common Ancestor (LCA) & Binary Lifting",
+                "subtitle": "Tree depth jump tables up[u][j] = 2^j-th ancestor, logarithmic queries, and tree path aggregation",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master Lowest Common Ancestor (LCA) in trees using Binary Lifting. Learn how to construct 2^j ancestor table up[u][j] in O(N log N) time to resolve LCA queries and path aggregations (min, max, sum edge weights) in O(log N) time per query.",
+                "overview": "The Lowest Common Ancestor (LCA) of two tree nodes u and v is the deepest node that is an ancestor of both u and v. Naive linear climbing takes O(N) time per query. Binary Lifting computes jump table up[u][j] storing the 2^j-th ancestor of node u. By first bringing both nodes to the same depth using binary power jumps and then jumping upwards together, Binary Lifting resolves LCA queries in O(log N) time.",
+                "keyConcepts": [
+                    "2^j Ancestor Table: up[u][j] = up[up[u][j-1]][j-1]",
+                    "Node Depth Precomputation via DFS",
+                    "Logarithmic Jump Query Protocol: O(log N)",
+                    "Edge Weight Aggregations along Tree Paths (min/max weight on path(u, v))",
+                    "RMQ & Euler Tour Reduction Alternative (Tarjan's offline / Sparse Table)"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(log N)",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N log N)",
+                "sections": [
+                    {
+                        "heading": "1. The Tree Path Intersection Problem",
+                        "content": "Given a tree of $N$ nodes, find the lowest (deepest) node that is an ancestor of both node $u$ and node $v$. \n\nLinear pointer climbing steps upward 1 level at a time $\\rightarrow O(N)$ worst-case per query for skewed trees! \n\n**Binary Lifting** precomputes ancestors at powers of two ($1, 2, 4, 8, \\dots, 2^j$). This enables climbing up to the LCA in **$O(\\log N)$ jump steps**!"
+                    },
+                    {
+                        "heading": "2. Binary Lifting Table & Query Algorithm",
+                        "content": "Define $up[u][j]$ as the $2^j$-th ancestor of node $u$. \n\n- **Recurrence:** $up[u][j] = up[\\, up[u][j-1] \\,][j-1]$. \n- **Query Protocol:** \n  1. Swap $u, v$ so $depth[u] \\ge depth[v]$. \n  2. Lift $u$ upward by power-of-two jumps until $depth[u] == depth[v]$. \n  3. If $u == v$, return $u$. \n  4. Jump both $u$ and $v$ upward simultaneously for $j = \\lfloor \\log_2 N \\rfloor \\dots 0$: if $up[u][j] \\ne up[v][j]$, set $u = up[u][j]$ and $v = up[v][j]$. \n  5. Return $up[u][0]$ (the immediate parent of $u$)."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Binary Lifting jump table on a tree.",
+                        "diagram": "Tree Node u at depth 7, Node v at depth 3.\n\nStep 1: Equalize Depth\nu jumps up 4 levels (2^2) -> u is now at depth 3!\n\n           [ LCA (Depth 1) ]\n             /          \\\n         [up[u][0]]    [up[v][0]]\n           /              \\\n        (Depth 3: u)    (Depth 3: v)\n\nStep 2: Lift both simultaneously until up[u][0] == up[v][0]."
+                    },
+                    {
+                        "heading": "4. Code Example: LCA Binary Lifting",
+                        "content": "Complete $O(N \\log N)$ precomputation and $O(\\log N)$ LCA query implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "LCA Binary Lifting Tree Query Engine",
+                            "code": {
+                                "python": "import math\n\nclass TreeLCA:\n    def __init__(self, n: int, adj: list, root: int = 0):\n        self.n = n\n        self.log = math.ceil(math.log2(n)) + 1\n        self.depth = [0] * n\n        self.up = [[0] * self.log for _ in range(n)]\n        \n        # DFS to compute depth and 2^0 ancestors\n        def dfs(u, p, d):\n            self.depth[u] = d\n            self.up[u][0] = p\n            for j in range(1, self.log):\n                self.up[u][j] = self.up[self.up[u][j-1]][j-1]\n            for v in adj[u]:\n                if v != p:\n                    dfs(v, u, d + 1)\n        dfs(root, root, 0)\n\n    def get_lca(self, u: int, v: int) -> int:\n        if self.depth[u] < self.depth[v]:\n            u, v = v, u\n        # 1. Lift u to depth of v\n        for j in range(self.log - 1, -1, -1):\n            if self.depth[u] - (1 << j) >= self.depth[v]:\n                u = self.up[u][j]\n        if u == v:\n            return u\n        # 2. Lift u and v together\n        for j in range(self.log - 1, -1, -1):\n            if self.up[u][j] != self.up[v][j]:\n                u = self.up[u][j]\n                v = self.up[v][j]\n        return self.up[u][0]",
+                                "java": "import java.util.*;\n\npublic class TreeLCA {\n    private int n, log;\n    private int[] depth;\n    private int[][] up;\n\n    public TreeLCA(int n, List<List<Integer>> adj, int root) {\n        this.n = n;\n        this.log = (int) Math.ceil(Math.log(n) / Math.log(2)) + 1;\n        this.depth = new int[n];\n        this.up = new int[n][log];\n        dfs(root, root, 0, adj);\n    }\n\n    private void dfs(int u, int p, int d, List<List<Integer>> adj) {\n        depth[u] = d;\n        up[u][0] = p;\n        for (int j = 1; j < log; j++) {\n            up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n        for (int v : adj.get(u)) {\n            if (v != p) dfs(v, u, d + 1, adj);\n        }\n    }\n\n    public int getLCA(int u, int v) {\n        if (depth[u] < depth[v]) { int t = u; u = v; v = t; }\n        for (int j = log - 1; j >= 0; j--) {\n            if (depth[u] - (1 << j) >= depth[v]) u = up[u][j];\n        }\n        if (u == v) return u;\n        for (int j = log - 1; j >= 0; j--) {\n            if (up[u][j] != up[v][j]) {\n                u = up[u][j];\n                v = up[v][j];\n            }\n        }\n        return up[u][0];\n    }",
+                                "cpp": "#include <vector>\n#include <cmath>\n#include <algorithm>\n\nclass TreeLCA {\n    int n, log;\n    std::vector<int> depth;\n    std::vector<std::vector<int>> up;\n\n    void dfs(int u, int p, int d, const std::vector<std::vector<int>>& adj) {\n        depth[u] = d;\n        up[u][0] = p;\n        for (int j = 1; j < log; j++) {\n            up[u][j] = up[up[u][j - 1]][j - 1];\n        }\n        for (int v : adj[u]) {\n            if (v != p) dfs(v, u, d + 1, adj);\n        }\n    }\npublic:\n    TreeLCA(int n, const std::vector<std::vector<int>>& adj, int root = 0) : n(n) {\n        log = std::ceil(std::log2(n)) + 1;\n        depth.resize(n);\n        up.assign(n, std::vector<int>(log, 0));\n        dfs(root, root, 0, adj);\n    }\n\n    int getLCA(int u, int v) {\n        if (depth[u] < depth[v]) std::swap(u, v);\n        for (int j = log - 1; j >= 0; j--) {\n            if (depth[u] - (1 << j) >= depth[v]) u = up[u][j];\n        }\n        if (u == v) return u;\n        for (int j = log - 1; j >= 0; j--) {\n            if (up[u][j] != up[v][j]) {\n                u = up[u][j];\n                v = up[v][j];\n            }\n        }\n        return up[u][0];\n    }\n};",
+                                "javascript": "class TreeLCA {\n  constructor(n, adj, root = 0) {\n    this.n = n;\n    this.log = Math.ceil(Math.log2(n)) + 1;\n    this.depth = new Array(n).fill(0);\n    this.up = Array.from({ length: n }, () => new Array(this.log).fill(0));\n\n    const dfs = (u, p, d) => {\n      this.depth[u] = d;\n      this.up[u][0] = p;\n      for (let j = 1; j < this.log; j++) {\n        this.up[u][j] = this.up[this.up[u][j - 1]][j - 1];\n      }\n      for (const v of adj[u]) {\n        if (v !== p) dfs(v, u, d + 1);\n      }\n    };\n    dfs(root, root, 0);\n  }\n\n  getLCA(u, v) {\n    if (this.depth[u] < this.depth[v]) [u, v] = [v, u];\n    for (let j = this.log - 1; j >= 0; j--) {\n      if (this.depth[u] - (1 << j) >= this.depth[v]) u = this.up[u][j];\n    }\n    if (u === v) return u;\n    for (let j = this.log - 1; j >= 0; j--) {\n      if (this.up[u][j] !== this.up[v][j]) {\n        u = this.up[u][j];\n        v = this.up[v][j];\n      }\n    }\n    return this.up[u][0];\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Binary Lifting precomputes $2^j$-th tree ancestors in $O(N \\log N)$ time, resolving LCA queries and tree path range queries in $O(\\log N)$ power-of-two jump steps."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the space complexity of storing the Binary Lifting jump table up[u][j] for a tree of N nodes?",
+                        "options": [
+                            "O(N)",
+                            "O(N log N)",
+                            "O(N^2)",
+                            "O(2^N)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Each of the N nodes stores log2(N) ancestor pointers, resulting in O(N log N) total memory space."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "In Binary Lifting LCA query, what is the first step before jumping u and v upwards together?",
+                        "options": [
+                            "Sort all nodes by value",
+                            "Lift the deeper node u up so depth[u] == depth[v]",
+                            "Clear the tree root",
+                            "Compute the minimum edge weight"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Equalizing node depths ensures both nodes start at the exact same level before simultaneously jumping up towards the LCA."
+                    }
+                ]
+            },
+            {
+                "id": "algo-heavy-light-decomposition",
+                "slug": "heavy-light-decomposition",
+                "categorySlug": "algorithms",
+                "title": "Heavy-Light Decomposition (HLD)",
+                "subtitle": "Decomposing trees into O(log N) heavy chains, contiguous segment tree indexing, and dynamic path queries",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master Heavy-Light Decomposition (HLD) on trees. Learn how to partition tree edges into heavy edges and light chains to map tree paths to O(log N) contiguous sub-ranges in a Segment Tree, enabling logarithmic tree path updates and range queries.",
+                "overview": "Querying or modifying values along arbitrary tree paths path(u, v) is difficult because tree structures are non-linear. HLD classifies each tree edge as 'heavy' (pointing to the child with the largest subtree size) or 'light'. Any path from root to any leaf crosses at most O(log N) light edges. By assigning consecutive DFS entry times down heavy chains, tree paths decompose into at most O(log N) contiguous array intervals queryable in O(log^2 N) time using a Segment Tree.",
+                "keyConcepts": [
+                    "Heavy vs Light Edge Classification",
+                    "Heavy Chain Flattening via DFS Discovery Ordering",
+                    "At most O(log N) Light Edge Transitions per Tree Path",
+                    "Integration with Segment Trees for O(log^2 N) Path Sum / Max Queries",
+                    "Subtree Updates via Contiguous Euler Segment Ranges [tin[u], tout[u]]"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(log^2 N)",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(log^2 N)",
+                    "average": "O(log^2 N)",
+                    "worst": "O(log^2 N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Decomposing Unstructured Trees",
+                        "content": "Given a tree with values on vertices, how do we support: \n1. **Path Query:** Find max/sum on the unique simple path between node $u$ and $v$. \n2. **Path Update:** Add value $x$ to all vertices on path $(u, v)$. \n\nArrays support range queries via Segment Trees in $O(\\log N)$ time, but trees have branches! \n\n**Heavy-Light Decomposition (HLD)** breaks a tree into a set of disjoint paths called **Heavy Chains**. Traversing from any node to the root jumps across at most **$\\log_2 N$ light edges**, transforming tree path queries into $O(\\log N)$ Segment Tree interval queries!"
+                    },
+                    {
+                        "heading": "2. Heavy Edge Rules & Two-Pass DFS",
+                        "content": "- **Subtree Size $size[u]$:** Total nodes in $u$'s subtree. \n- **Heavy Child:** The child $v$ of $u$ with the largest $size[v]$. Edge $(u, v)$ is a **Heavy Edge**. All other child edges are **Light Edges**. \n- **Pass 1 DFS:** Calculate subtree sizes, depths, parents, and identify heavy children. \n- **Pass 2 DFS:** Assign continuous 1D positions `pos[u]` prioritizing heavy children first! This guarantees nodes on the same heavy chain have consecutive indices in the Segment Tree!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Heavy Chain Decomposition and Segment Tree Flattening.",
+                        "diagram": "Tree:                [1] (Size 7)\n                    /   \\\n        (Heavy)    /     \\ (Light)\n                 [2]     [3]\n                /   \\\n    (Heavy)    /     \\ (Light)\n             [4]     [5]\n\nHeavy Chain 1: 1 -> 2 -> 4 (Consecutive Segment Tree indices 0, 1, 2)\nLight Chain 2: 3           (Segment Tree index 3)\nLight Chain 3: 5           (Segment Tree index 4)"
+                    },
+                    {
+                        "heading": "4. Code Example: Heavy-Light Decomposition Engine",
+                        "content": "Complete HLD implementation with Segment Tree integration in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Heavy-Light Decomposition Path Query Engine",
+                            "code": {
+                                "python": "class HLD:\n    def __init__(self, n: int, adj: list, root: int = 0):\n        self.n = n\n        self.adj = adj\n        self.parent = [0] * n\n        self.depth = [0] * n\n        self.heavy = [-1] * n\n        self.head = [0] * n\n        self.pos = [0] * n\n        self.cur_pos = 0\n\n        # Pass 1: Subtree sizes & heavy edges\n        def dfs1(u, p, d):\n            self.parent[u] = p\n            self.depth[u] = d\n            size = 1\n            max_c_size = 0\n            for v in self.adj[u]:\n                if v != p:\n                    c_size = dfs1(v, u, d + 1)\n                    size += c_size\n                    if c_size > max_c_size:\n                        max_c_size = c_size\n                        self.heavy[u] = v\n            return size\n        dfs1(root, root, 0)\n\n        # Pass 2: Heavy chain decomposition & continuous indexing\n        def dfs2(u, h):\n            self.head[u] = h\n            self.pos[u] = self.cur_pos\n            self.cur_pos += 1\n            if self.heavy[u] != -1:\n                dfs2(self.heavy[u], h) # Keep same heavy chain head\n            for v in self.adj[u]:\n                if v != self.parent[u] and v != self.heavy[u]:\n                    dfs2(v, v) # Start new light chain head\n        dfs2(root, root)\n\n    def query_path(self, u: int, v: int, seg_tree_query_fn) -> int:\n        res = 0\n        while self.head[u] != self.head[v]:\n            if self.depth[self.head[u]] < self.depth[self.head[v]]:\n                u, v = v, u\n            res += seg_tree_query_fn(self.pos[self.head[u]], self.pos[u])\n            u = self.parent[self.head[u]]\n        if self.depth[u] > self.depth[v]:\n            u, v = v, u\n        res += seg_tree_query_fn(self.pos[u], self.pos[v])\n        return res",
+                                "java": "import java.util.*;\n\npublic class HLD {\n    private int n, curPos = 0;\n    private int[] parent, depth, heavy, head, pos;\n\n    public HLD(int n, List<List<Integer>> adj, int root) {\n        this.n = n;\n        parent = new int[n]; depth = new int[n];\n        heavy = new int[n]; Arrays.fill(heavy, -1);\n        head = new int[n]; pos = new int[n];\n\n        dfs1(root, root, 0, adj);\n        dfs2(root, root, adj);\n    }\n\n    private int dfs1(int u, int p, int d, List<List<Integer>> adj) {\n        parent[u] = p; depth[u] = d;\n        int size = 1, maxCSize = 0;\n        for (int v : adj.get(u)) {\n            if (v != p) {\n                int cSize = dfs1(v, u, d + 1, adj);\n                size += cSize;\n                if (cSize > maxCSize) { maxCSize = cSize; heavy[u] = v; }\n            }\n        }\n        return size;\n    }\n\n    private void dfs2(int u, int h, List<List<Integer>> adj) {\n        head[u] = h; pos[u] = curPos++;\n        if (heavy[u] != -1) dfs2(heavy[u], h, adj);\n        for (int v : adj.get(u)) {\n            if (v != parent[u] && v != heavy[u]) dfs2(v, v, adj);\n        }\n    }\n}",
+                                "cpp": "#include <vector>\n#include <algorithm>\n\nclass HLD {\n    int n, curPos = 0;\n    std::vector<int> parent, depth, heavy, head, pos;\n\n    int dfs1(int u, int p, int d, const std::vector<std::vector<int>>& adj) {\n        parent[u] = p; depth[u] = d;\n        int size = 1, maxCSize = 0;\n        for (int v : adj[u]) {\n            if (v != p) {\n                int cSize = dfs1(v, u, d + 1, adj);\n                size += cSize;\n                if (cSize > maxCSize) { maxCSize = cSize; heavy[u] = v; }\n            }\n        }\n        return size;\n    }\n\n    void dfs2(int u, int h, const std::vector<std::vector<int>>& adj) {\n        head[u] = h; pos[u] = curPos++;\n        if (heavy[u] != -1) dfs2(heavy[u], h, adj);\n        for (int v : adj[u]) {\n            if (v != parent[u] && v != heavy[u]) dfs2(v, v, adj);\n        }\n    }\npublic:\n    HLD(int n, const std::vector<std::vector<int>>& adj, int root = 0) : n(n) {\n        parent.resize(n); depth.resize(n);\n        heavy.assign(n, -1); head.resize(n); pos.resize(n);\n        dfs1(root, root, 0, adj);\n        dfs2(root, root, adj);\n    }\n};",
+                                "javascript": "class HLD {\n  constructor(n, adj, root = 0) {\n    this.n = n;\n    this.parent = new Array(n).fill(0);\n    this.depth = new Array(n).fill(0);\n    this.heavy = new Array(n).fill(-1);\n    this.head = new Array(n).fill(0);\n    this.pos = new Array(n).fill(0);\n    this.curPos = 0;\n\n    const dfs1 = (u, p, d) => {\n      this.parent[u] = p; this.depth[u] = d;\n      let size = 1, maxCSize = 0;\n      for (const v of adj[u]) {\n        if (v !== p) {\n          const cSize = dfs1(v, u, d + 1);\n          size += cSize;\n          if (cSize > maxCSize) { maxCSize = cSize; this.heavy[u] = v; }\n        }\n      }\n      return size;\n    };\n\n    const dfs2 = (u, h) => {\n      this.head[u] = h; this.pos[u] = this.curPos++;\n      if (this.heavy[u] !== -1) dfs2(this.heavy[u], h);\n      for (const v of adj[u]) {\n        if (v !== this.parent[u] && v !== this.heavy[u]) dfs2(v, v);\n      }\n    };\n\n    dfs1(root, root, 0);\n    dfs2(root, root);\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Heavy-Light Decomposition partitions tree edges into heavy chains and light transitions, enabling path range queries and dynamic tree updates in $O(\\log^2 N)$ time via Segment Trees."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "How many light edge transitions exist on any path from the root to any leaf in a Heavy-Light Decomposed tree?",
+                        "options": [
+                            "At most O(1)",
+                            "At most O(log N)",
+                            "At most O(sqrt(N))",
+                            "Exactly N"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Crossing a light edge cuts the subtree size by at least half, so any path contains at most log2(N) light edge transitions."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "Why does HLD assign contiguous segment tree indices to nodes along the same heavy chain?",
+                        "options": [
+                            "To maximize RAM storage usage",
+                            "To allow heavy chain path segments to be queried as single contiguous range operations in a Segment Tree",
+                            "To sort nodes by value",
+                            "To eliminate root nodes"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Continuous indexing maps heavy chain nodes to contiguous array segments, reducing tree path queries to O(log N) Segment Tree range queries."
+                    }
+                ]
+            },
+            {
+                "id": "algo-segment-tree-lazy",
+                "slug": "segment-tree-lazy-propagation",
+                "categorySlug": "algorithms",
+                "title": "Segment Tree & Lazy Propagation",
+                "subtitle": "Divide-and-conquer binary range trees, deferred range update lazy flags, and O(log N) point/range queries",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master Segment Trees with Lazy Propagation. Learn how to construct binary range trees over 1D arrays for O(log N) range queries (sum, min, max, gcd) and push deferred update tags down tree nodes to execute range modifications in O(log N) time.",
+                "overview": "A Segment Tree is a full binary tree built over an array where each node represents a range [L, R]. Range updates (e.g., add +v to all elements in range [L, R]) naively take O(N log N) time if applied to every leaf. Lazy Propagation defers range updates by tagging internal tree nodes with a 'lazy' value. The update is pushed down to child nodes ONLY when sub-trees are visited in subsequent queries, guaranteeing O(log N) time bounds for both range updates and range queries.",
+                "keyConcepts": [
+                    "Binary Range Split: Left child [L, Mid], Right child [Mid+1, R]",
+                    "Tree Array Storage: Node i -> Left 2*i, Right 2*i+1",
+                    "Lazy Tagging & Deferred Updates (pushDown function)",
+                    "Range Sum / Min / Max / GCD Operations",
+                    "Dynamic Segment Trees & Coordinate Compression"
+                ],
+                "timeComplexity": {
+                    "access": "O(log N)",
+                    "search": "O(log N)",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. The Dynamic Range Query Challenge",
+                        "content": "Given an array of $N$ numbers, perform $Q$ operations of two types: \n1. **Range Update:** Add $V$ to all array elements from index $L$ to $R$. \n2. **Range Sum Query:** Compute $\\sum_{i=L}^{R} A[i]$. \n\nNaive Array: Range Update $O(N)$, Range Query $O(N)$. \nPrefix Sum Array: Range Update $O(N)$, Range Query $O(1)$. \n\n**Segment Tree with Lazy Propagation** achieves **$O(\\log N)$ time for BOTH Range Updates and Range Queries**!"
+                    },
+                    {
+                        "heading": "2. Lazy Propagation Mechanism",
+                        "content": "When updating range $[L, R]$, if a Segment Tree node's range $[q_l, q_r]$ is completely inside $[L, R]$: \n1. Apply the update directly to `tree[node]`. \n2. Mark `lazy[node] += V` (deferring updates to child nodes). \n3. Return immediately without visiting child nodes! \n\nWhen a future query visits `node`, `push_down(node)` pushes the pending `lazy` value to left and right children before descending."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Segment Tree binary split and lazy tag deferral.",
+                        "diagram": "Range [0, 7] Node (Sum: 36, Lazy: 0)\n                 /                  \\\n     Range [0, 3] (Sum: 10)       Range [4, 7] (Sum: 26, Lazy: +5)\n        /          \\                    [UPDATED & LAZY TAGGED!]\n   [0, 1]          [2, 3]               Children NOT visited yet!"
+                    },
+                    {
+                        "heading": "4. Code Example: Segment Tree Lazy Propagation",
+                        "content": "Complete Segment Tree with Lazy Propagation range sum/update implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Segment Tree Lazy Propagation Engine",
+                            "code": {
+                                "python": "class SegmentTreeLazy:\n    def __init__(self, arr: list):\n        self.n = len(arr)\n        self.tree = [0] * (4 * self.n)\n        self.lazy = [0] * (4 * self.n)\n        self._build(arr, 1, 0, self.n - 1)\n\n    def _build(self, arr: list, node: int, start: int, end: int):\n        if start == end:\n            self.tree[node] = arr[start]\n            return\n        mid = (start + end) // 2\n        self._build(arr, 2 * node, start, mid)\n        self._build(arr, 2 * node + 1, mid + 1, end)\n        self.tree[node] = self.tree[2 * node] + self.tree[2 * node + 1]\n\n    def _push(self, node: int, start: int, end: int):\n        if self.lazy[node] != 0:\n            val = self.lazy[node]\n            mid = (start + end) // 2\n            # Apply lazy value to children\n            self.tree[2 * node] += val * (mid - start + 1)\n            self.lazy[2 * node] += val\n            self.tree[2 * node + 1] += val * (end - mid)\n            self.lazy[2 * node + 1] += val\n            self.lazy[node] = 0\n\n    def update_range(self, l: int, r: int, val: int, node: int = 1, start: int = 0, end: int = None):\n        if end is None: end = self.n - 1\n        if l <= start and end <= r:\n            self.tree[node] += val * (end - start + 1)\n            self.lazy[node] += val\n            return\n        self._push(node, start, end)\n        mid = (start + end) // 2\n        if l <= mid: self.update_range(l, r, val, 2 * node, start, mid)\n        if r > mid: self.update_range(l, r, val, 2 * node + 1, mid + 1, end)\n        self.tree[node] = self.tree[2 * node] + self.tree[2 * node + 1]\n\n    def query_range(self, l: int, r: int, node: int = 1, start: int = 0, end: int = None) -> int:\n        if end is None: end = self.n - 1\n        if l <= start and end <= r:\n            return self.tree[node]\n        self._push(node, start, end)\n        mid = (start + end) // 2\n        res = 0\n        if l <= mid: res += self.query_range(l, r, 2 * node, start, mid)\n        if r > mid: res += self.query_range(l, r, 2 * node + 1, mid + 1, end)\n        return res",
+                                "java": "public class SegmentTreeLazy {\n    private int n;\n    private long[] tree, lazy;\n\n    public SegmentTreeLazy(long[] arr) {\n        this.n = arr.length;\n        this.tree = new long[4 * n];\n        this.lazy = new long[4 * n];\n        build(arr, 1, 0, n - 1);\n    }\n\n    private void build(long[] arr, int node, int start, int end) {\n        if (start == end) { tree[node] = arr[start]; return; }\n        int mid = (start + end) / 2;\n        build(arr, 2 * node, start, mid);\n        build(arr, 2 * node + 1, mid + 1, end);\n        tree[node] = tree[2 * node] + tree[2 * node + 1];\n    }\n\n    private void push(int node, int start, int end) {\n        if (lazy[node] != 0) {\n            long val = lazy[node]; int mid = (start + end) / 2;\n            tree[2 * node] += val * (mid - start + 1); lazy[2 * node] += val;\n            tree[2 * node + 1] += val * (end - mid); lazy[2 * node + 1] += val;\n            lazy[node] = 0;\n        }\n    }\n\n    public void updateRange(int l, int r, long val, int node, int start, int end) {\n        if (l <= start && end <= r) {\n            tree[node] += val * (end - start + 1); lazy[node] += val; return;\n        }\n        push(node, start, end);\n        int mid = (start + end) / 2;\n        if (l <= mid) updateRange(l, r, val, 2 * node, start, mid);\n        if (r > mid) updateRange(l, r, val, 2 * node + 1, mid + 1, end);\n        tree[node] = tree[2 * node] + tree[2 * node + 1];\n    }\n\n    public long queryRange(int l, int r, int node, int start, int end) {\n        if (l <= start && end <= r) return tree[node];\n        push(node, start, end);\n        int mid = (start + end) / 2; long res = 0;\n        if (l <= mid) res += queryRange(l, r, 2 * node, start, mid);\n        if (r > mid) res += queryRange(l, r, 2 * node + 1, mid + 1, end);\n        return res;\n    }\n}",
+                                "cpp": "#include <vector>\n\nclass SegmentTreeLazy {\n    int n;\n    std::vector<long long> tree, lazy;\n\n    void build(const std::vector<long long>& arr, int node, int start, int end) {\n        if (start == end) { tree[node] = arr[start]; return; }\n        int mid = (start + end) / 2;\n        build(arr, 2 * node, start, mid);\n        build(arr, 2 * node + 1, mid + 1, end);\n        tree[node] = tree[2 * node] + tree[2 * node + 1];\n    }\n\n    void push(int node, int start, int end) {\n        if (lazy[node] != 0) {\n            long long val = lazy[node]; int mid = (start + end) / 2;\n            tree[2 * node] += val * (mid - start + 1); lazy[2 * node] += val;\n            tree[2 * node + 1] += val * (end - mid); lazy[2 * node + 1] += val;\n            lazy[node] = 0;\n        }\n    }\npublic:\n    SegmentTreeLazy(const std::vector<long long>& arr) {\n        n = arr.size();\n        tree.assign(4 * n, 0); lazy.assign(4 * n, 0);\n        build(arr, 1, 0, n - 1);\n    }\n\n    void updateRange(int l, int r, long long val, int node, int start, int end) {\n        if (l <= start && end <= r) {\n            tree[node] += val * (end - start + 1); lazy[node] += val; return;\n        }\n        push(node, start, end);\n        int mid = (start + end) / 2;\n        if (l <= mid) updateRange(l, r, val, 2 * node, start, mid);\n        if (r > mid) updateRange(l, r, val, 2 * node + 1, mid + 1, end);\n        tree[node] = tree[2 * node] + tree[2 * node + 1];\n    }\n\n    long long queryRange(int l, int r, int node, int start, int end) {\n        if (l <= start && end <= r) return tree[node];\n        push(node, start, end);\n        int mid = (start + end) / 2; long long res = 0;\n        if (l <= mid) res += queryRange(l, r, 2 * node, start, mid);\n        if (r > mid) res += queryRange(l, r, 2 * node + 1, mid + 1, end);\n        return res;\n    }\n};",
+                                "javascript": "class SegmentTreeLazy {\n  constructor(arr) {\n    this.n = arr.length;\n    this.tree = new Array(4 * this.n).fill(0);\n    this.lazy = new Array(4 * this.n).fill(0);\n    this.build(arr, 1, 0, this.n - 1);\n  }\n\n  build(arr, node, start, end) {\n    if (start === end) { this.tree[node] = arr[start]; return; }\n    const mid = Math.floor((start + end) / 2);\n    this.build(arr, 2 * node, start, mid);\n    this.build(arr, 2 * node + 1, mid + 1, end);\n    this.tree[node] = this.tree[2 * node] + this.tree[2 * node + 1];\n  }\n\n  push(node, start, end) {\n    if (this.lazy[node] !== 0) {\n      const val = this.lazy[node]; const mid = Math.floor((start + end) / 2);\n      this.tree[2 * node] += val * (mid - start + 1); this.lazy[2 * node] += val;\n      this.tree[2 * node + 1] += val * (end - mid); this.lazy[2 * node + 1] += val;\n      this.lazy[node] = 0;\n    }\n  }\n\n  updateRange(l, r, val, node = 1, start = 0, end = this.n - 1) {\n    if (l <= start && end <= r) {\n      this.tree[node] += val * (end - start + 1); this.lazy[node] += val; return;\n    }\n    this.push(node, start, end);\n    const mid = Math.floor((start + end) / 2);\n    if (l <= mid) this.updateRange(l, r, val, 2 * node, start, mid);\n    if (r > mid) this.updateRange(l, r, val, 2 * node + 1, mid + 1, end);\n    this.tree[node] = this.tree[2 * node] + this.tree[2 * node + 1];\n  }\n\n  queryRange(l, r, node = 1, start = 0, end = this.n - 1) {\n    if (l <= start && end <= r) return this.tree[node];\n    this.push(node, start, end);\n    const mid = Math.floor((start + end) / 2); let res = 0;\n    if (l <= mid) res += this.queryRange(l, r, 2 * node, start, mid);\n    if (r > mid) res += this.queryRange(l, r, 2 * node + 1, mid + 1, end);\n    return res;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Lazy Propagation defers range modifications in a Segment Tree by tagging internal nodes, enabling $O(\\log N)$ worst-case time complexity for both range updates and range queries."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the primary benefit of Lazy Propagation in a Segment Tree?",
+                        "options": [
+                            "It reduces array storage from O(N) to O(1)",
+                            "It allows range updates to execute in O(log N) time instead of O(N log N)",
+                            "It removes the need for building the tree",
+                            "It speeds up single element access to O(1)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Lazy propagation defers range modifications until necessary, avoiding visiting every leaf node during range updates."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "How large should the array representing a Segment Tree over N elements be sized?",
+                        "options": [
+                            "N elements",
+                            "2 * N elements",
+                            "4 * N elements",
+                            "N^2 elements"
+                        ],
+                        "correctIndex": 2,
+                        "explanation": "A standard 1-indexed binary segment tree over N elements requires up to 4 * N elements to accommodate all tree levels safely."
+                    }
+                ]
+            },
+            {
+                "id": "algo-fenwick-tree",
+                "slug": "fenwick-tree-binary-indexed-tree",
+                "categorySlug": "algorithms",
+                "title": "Fenwick Tree (Binary Indexed Tree - BIT)",
+                "subtitle": "Lowest set bit isolate (i & -i), 1-based implicit array layout, and O(log N) prefix sums with minimal memory overhead",
+                "difficulty": "Intermediate",
+                "readTime": "30 min read",
+                "summary": "Master the Fenwick Tree (Binary Indexed Tree). Learn how bitwise lowest set bit operations (i & -i) organize partial range sums inside a single 1D array, allowing O(log N) prefix sum queries and point updates with zero extra tree pointer overhead.",
+                "overview": "A Fenwick Tree (or Binary Indexed Tree) maintains dynamic cumulative prefix sums over an array of numbers. Unlike Segment Trees which require 4N space and explicit child pointers/recursion, a Fenwick Tree uses an implicit 1D array of size N+1. Using Two's Complement bit manipulation LSB(i) = i & (-i), index i stores the sum of a range of length LSB(i). Advancing to the parent or next update index takes just one bitwise operation.",
+                "keyConcepts": [
+                    "Lowest Set Bit Isolation: LSB(i) = i & (-i)",
+                    "Implicit Tree Mapping: Index i covers range (i - LSB(i), i]",
+                    "Point Update & Prefix Sum Query Loop Logic",
+                    "Range Update & Range Query BIT Variants",
+                    "Minimal O(N) Space & Hardware Cache Locality"
+                ],
+                "timeComplexity": {
+                    "access": "O(log N)",
+                    "search": "O(log N)",
+                    "insertion": "O(log N)",
+                    "deletion": "O(log N)",
+                    "best": "O(log N)",
+                    "average": "O(log N)",
+                    "worst": "O(log N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. Dynamic Prefix Sums Without Pointer Trees",
+                        "content": "Given an array, perform two dynamic operations: \n1. **Point Update:** Add $V$ to element $A[idx]$. \n2. **Prefix Sum Query:** Calculate sum $A[1 \\dots idx]$. \n\nStandard Array: Point Update $O(1)$, Prefix Sum $O(N)$. \nPrefix Sum Array: Point Update $O(N)$, Prefix Sum $O(1)$. \n\n**Fenwick Tree (BIT)** achieves **$O(\\log N)$ for BOTH operations** using zero extra tree overhead—just a single array of size $N+1$!"
+                    },
+                    {
+                        "heading": "2. Bitwise Lowest Set Bit (i & -i)",
+                        "content": "For a 1-based index $i$, the **Lowest Set Bit (LSB)** is isolated using Two's Complement arithmetic: \n$$\\text{LSB}(i) = i \\ \\& \\ (-i)$$ \n- **Prefix Query ($1 \\dots i$):** Accumulate `BIT[i]`, then step backward $i \\leftarrow i - (i \\ \\& \\ -i)$. \n- **Point Update (add $V$ at $i$):** Add $V$ to `BIT[i]`, then step forward $i \\leftarrow i + (i \\ \\& \\ -i)$ until $i > N$."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Fenwick Tree index range responsibilities.",
+                        "diagram": "Index (Binary)   LSB (i & -i)   Covered Range\n1 (0001_2)        1 (1)          (0, 1] -> A[1]\n2 (0010_2)        2 (2)          (0, 2] -> A[1] + A[2]\n3 (0011_2)        1 (1)          (2, 3] -> A[3]\n4 (0100_2)        4 (4)          (0, 4] -> A[1] + A[2] + A[3] + A[4]\n5 (0101_2)        1 (1)          (4, 5] -> A[5]\n6 (0110_2)        2 (2)          (4, 6] -> A[5] + A[6]"
+                    },
+                    {
+                        "heading": "4. Code Example: Fenwick Tree (BIT)",
+                        "content": "Complete Fenwick Tree implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Fenwick Tree (Binary Indexed Tree)",
+                            "code": {
+                                "python": "class FenwickTree:\n    def __init__(self, size: int):\n        self.n = size\n        self.tree = [0] * (size + 1)\n\n    def update(self, i: int, delta: int):\n        \"\"\"Add delta to 1-based index i.\"\"\"\n        while i <= self.n:\n            self.tree[i] += delta\n            i += i & (-i) # Move to next responsible index\n\n    def query(self, i: int) -> int:\n        \"\"\"Get prefix sum from 1 to i.\"\"\"\n        s = 0\n        while i > 0:\n            s += self.tree[i]\n            i -= i & (-i) # Move to parent range\n        return s\n\n    def range_query(self, l: int, r: int) -> int:\n        \"\"\"Get range sum from l to r inclusive.\"\"\"\n        return self.query(r) - self.query(l - 1)",
+                                "java": "public class FenwickTree {\n    private int n;\n    private long[] tree;\n\n    public FenwickTree(int size) {\n        this.n = size;\n        this.tree = new long[size + 1];\n    }\n\n    public void update(int i, long delta) {\n        while (i <= n) {\n            tree[i] += delta;\n            i += i & (-i);\n        }\n    }\n\n    public long query(int i) {\n        long sum = 0;\n        while (i > 0) {\n            sum += tree[i];\n            i -= i & (-i);\n        }\n        return sum;\n    }\n\n    public long rangeQuery(int l, int r) {\n        return query(r) - query(l - 1);\n    }\n}",
+                                "cpp": "#include <vector>\n\nclass FenwickTree {\n    int n;\n    std::vector<long long> tree;\npublic:\n    FenwickTree(int size) : n(size), tree(size + 1, 0) {}\n\n    void update(int i, long long delta) {\n        while (i <= n) {\n            tree[i] += delta;\n            i += i & (-i);\n        }\n    }\n\n    long long query(int i) {\n        long long sum = 0;\n        while (i > 0) {\n            sum += tree[i];\n            i -= i & (-i);\n        }\n        return sum;\n    }\n\n    long long rangeQuery(int l, int r) {\n        return query(r) - query(l - 1);\n    }\n};",
+                                "javascript": "class FenwickTree {\n  constructor(size) {\n    this.n = size;\n    this.tree = new Array(size + 1).fill(0);\n  }\n\n  update(i, delta) {\n    while (i <= this.n) {\n      this.tree[i] += delta;\n      i += i & (-i);\n    }\n  }\n\n  query(i) {\n    let sum = 0;\n    while (i > 0) {\n      sum += this.tree[i];\n      i -= i & (-i);\n    }\n    return sum;\n  }\n\n  rangeQuery(l, r) {\n    return this.query(r) - this.query(l - 1);\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "The Fenwick Tree utilizes bitwise lowest set bit operations (i & -i) to store dynamic prefix sums inside a 1D array, achieving $O(\\log N)$ updates and queries in linear space."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What bitwise expression isolates the lowest set bit (LSB) of integer i in Two's Complement arithmetic?",
+                        "options": [
+                            "i & (-i)",
+                            "i | (~i)",
+                            "i ^ (i - 1)",
+                            "i >> 1"
+                        ],
+                        "correctIndex": 0,
+                        "explanation": "In Two's Complement, -i is (~i + 1). Bitwise ANDing i & (-i) isolates the rightmost set bit."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "How does a Fenwick Tree compare to a Segment Tree in memory consumption and implementation complexity?",
+                        "options": [
+                            "Fenwick tree requires 4N space; Segment tree requires N space",
+                            "Fenwick tree requires exact N+1 space and zero tree recursion; Segment tree requires up to 4N space",
+                            "Segment trees cannot perform range queries",
+                            "Both require binary search tree pointers"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Fenwick tree uses a compact N+1 1D array with simple bitwise loops, consuming much less memory than a 4N Segment Tree."
+                    }
+                ]
+            },
+            {
+                "id": "algo-dinic-push-relabel",
+                "slug": "dinic-push-relabel-max-flow",
+                "categorySlug": "algorithms",
+                "title": "Dinic's & Push-Relabel Maximum Flow Algorithms",
+                "subtitle": "Level graphs via BFS, blocking flows via DFS in O(V^2 E), and excess flow preflow push-relabel in O(V^3)",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master advanced Maximum Flow algorithms: Dinic's Algorithm and Push-Relabel (Preflow-Push). Learn how Dinic's decomposes residual networks into level graphs via BFS to push blocking flows in O(V^2 E) time, and how Push-Relabel maintains localized node heights and excess flows in O(V^3) time.",
+                "overview": "While Edmonds-Karp computes max flow in O(V * E^2) time, large networks require faster flow algorithms. Dinic's algorithm constructs a Level Graph using BFS (assigning depth labels to vertices) and pushes multiple augmenting paths simultaneously using DFS until a Blocking Flow is reached. Dinic's runs in O(V^2 E) time (and O(E sqrt(V)) on unit networks). Push-Relabel abandons global augmenting paths, maintaining localized excess flows at nodes and pushing fluid downhill based on node height labels in O(V^3) time.",
+                "keyConcepts": [
+                    "Level Graph Construction via BFS",
+                    "Blocking Flow Execution via DFS & Dead-End Elimination",
+                    "Dinic's Time Complexity: O(V^2 E) General, O(E sqrt(V)) Bipartite Unit Networks",
+                    "Preflow-Push Relabel: Excess Flow e(u), Height Label h(u)",
+                    "Push Operation (h(u) == h(v) + 1) and Relabel Operation"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(V^2 E)",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(V^2 E)",
+                    "average": "O(V^2 E)",
+                    "worst": "O(V^2 E)"
+                },
+                "spaceComplexity": "O(V + E)",
+                "sections": [
+                    {
+                        "heading": "1. Beyond Augmenting Path Scaling Bottlenecks",
+                        "content": "Edmonds-Karp max flow finds one augmenting path per BFS pass ($O(V \\cdot E^2)$). \n\nFor dense networks or large bipartite graphs, this becomes slow. \n\n**Dinic's Algorithm** groups augmenting paths by BFS distance levels into a **Level Graph**, pushing a **Blocking Flow** in $O(E)$ per phase. Total runtime drops to **$O(V^2 E)$** (and **$O(E \\sqrt{V})$ on unit networks**)!"
+                    },
+                    {
+                        "heading": "2. Dinic's Algorithm Phase Steps",
+                        "content": "1. **BFS Level Graph Construction:** Run BFS from source $S$ to compute vertex level $level[u]$. If sink $T$ is unreachable, stop. \n2. **DFS Blocking Flow Push:** Run DFS from $S$ to $T$ using only edges $(u, v)$ where $level[v] == level[u] + 1$ and $residual\\_cap > 0$. \n3. **Dead-End Pruning:** Maintain pointer array `ptr[u]` to avoid re-examining saturated edges during DFS."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Dinic's BFS Level Graph partitioning.",
+                        "diagram": "Source [S] (Level 0)\n        /          \\\n    [v1] (Level 1)   [v2] (Level 1)\n        \\          /       \\\n    [v3] (Level 2)        [Sink T] (Level 3)\n\nEdges only allowed from Level k -> Level k+1!"
+                    },
+                    {
+                        "heading": "4. Code Example: Dinic's Max Flow Engine",
+                        "content": "Complete Dinic's algorithm implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Dinic's Max Flow Algorithm",
+                            "code": {
+                                "python": "from collections import deque\n\nclass Edge:\n    def __init__(self, to: int, rev: int, cap: int):\n        self.to = to\n        self.rev = rev\n        self.cap = cap\n        self.flow = 0\n\nclass DinicMaxFlow:\n    def __init__(self, n: int):\n        self.n = n\n        self.graph = [[] for _ in range(n)]\n        self.level = []\n        self.ptr = []\n\n    def add_edge(self, from_node: int, to_node: int, cap: int):\n        a = Edge(to_node, len(self.graph[to_node]), cap)\n        b = Edge(from_node, len(self.graph[from_node]), 0) # Residual reverse edge\n        self.graph[from_node].append(a)\n        self.graph[to_node].append(b)\n\n    def _bfs(self, s: int, t: int) -> bool:\n        self.level = [-1] * self.n\n        self.level[s] = 0\n        q = deque([s])\n        while q:\n            u = q.popleft()\n            for edge in self.graph[u]:\n                if edge.cap - edge.flow > 0 and self.level[edge.to] == -1:\n                    self.level[edge.to] = self.level[u] + 1\n                    q.append(edge.to)\n        return self.level[t] != -1\n\n    def _dfs(self, u: int, t: int, pushed: int) -> int:\n        if pushed == 0 or u == t: return pushed\n        for i in range(self.ptr[u], len(self.graph[u])):\n            self.ptr[u] = i\n            edge = self.graph[u][i]\n            tr = edge.to\n            if self.level[u] + 1 != self.level[tr] or edge.cap - edge.flow == 0:\n                continue\n            tr_pushed = self._dfs(tr, t, min(pushed, edge.cap - edge.flow))\n            if tr_pushed == 0: continue\n            edge.flow += tr_pushed\n            self.graph[tr][edge.rev].flow -= tr_pushed\n            return tr_pushed\n        return 0\n\n    def max_flow(self, s: int, t: int) -> int:\n        flow = 0\n        while self._bfs(s, t):\n            self.ptr = [0] * self.n\n            while True:\n                pushed = self._dfs(s, t, float('inf'))\n                if pushed == 0: break\n                flow += pushed\n        return flow",
+                                "java": "import java.util.*;\n\npublic class DinicMaxFlow {\n    static class Edge {\n        int to, rev, cap, flow;\n        Edge(int to, int rev, int cap) { this.to = to; this.rev = rev; this.cap = cap; }\n    }\n    private int n;\n    private List<List<Edge>> graph = new ArrayList<>();\n    private int[] level, ptr;\n\n    public DinicMaxFlow(int n) {\n        this.n = n;\n        for (int i = 0; i < n; i++) graph.add(new ArrayList<>());\n    }\n\n    public void addEdge(int from, int to, int cap) {\n        Edge a = new Edge(to, graph.get(to).size(), cap);\n        Edge b = new Edge(from, graph.get(from).size(), 0);\n        graph.get(from).add(a); graph.get(to).add(b);\n    }\n\n    private boolean bfs(int s, int t) {\n        level = new int[n]; Arrays.fill(level, -1);\n        level[s] = 0; Queue<Integer> q = new LinkedList<>(); q.add(s);\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            for (Edge e : graph.get(u)) {\n                if (e.cap - e.flow > 0 && level[e.to] == -1) {\n                    level[e.to] = level[u] + 1; q.add(e.to);\n                }\n            }\n        }\n        return level[t] != -1;\n    }\n\n    private int dfs(int u, int t, int pushed) {\n        if (pushed == 0 || u == t) return pushed;\n        for (; ptr[u] < graph.get(u).size(); ptr[u]++) {\n            Edge e = graph.get(u).get(ptr[u]);\n            if (level[u] + 1 != level[e.to] || e.cap - e.flow == 0) continue;\n            int trPushed = dfs(e.to, t, Math.min(pushed, e.cap - e.flow));\n            if (trPushed == 0) continue;\n            e.flow += trPushed; graph.get(e.to).get(e.rev).flow -= trPushed;\n            return trPushed;\n        }\n        return 0;\n    }\n\n    public int maxFlow(int s, int t) {\n        int flow = 0;\n        while (bfs(s, t)) {\n            ptr = new int[n];\n            while (true) {\n                int pushed = dfs(s, t, Integer.MAX_VALUE);\n                if (pushed == 0) break;\n                flow += pushed;\n            }\n        }\n        return flow;\n    }\n}",
+                                "cpp": "#include <vector>\n#include <queue>\n#include <algorithm>\n\nstruct Edge {\n    int to, rev, cap, flow;\n};\n\nclass DinicMaxFlow {\n    int n;\n    std::vector<std::vector<Edge>> graph;\n    std::vector<int> level, ptr;\n\n    bool bfs(int s, int t) {\n        level.assign(n, -1);\n        level[s] = 0;\n        std::queue<int> q; q.push(s);\n        while (!q.empty()) {\n            int u = q.front(); q.pop();\n            for (const auto& e : graph[u]) {\n                if (e.cap - e.flow > 0 && level[e.to] == -1) {\n                    level[e.to] = level[u] + 1;\n                    q.push(e.to);\n                }\n            }\n        }\n        return level[t] != -1;\n    }\n\n    int dfs(int u, int t, int pushed) {\n        if (pushed == 0 || u == t) return pushed;\n        for (int& i = ptr[u]; i < graph[u].size(); i++) {\n            auto& e = graph[u][i];\n            if (level[u] + 1 != level[e.to] || e.cap - e.flow == 0) continue;\n            int trPushed = dfs(e.to, t, std::min(pushed, e.cap - e.flow));\n            if (trPushed == 0) continue;\n            e.flow += trPushed;\n            graph[e.to][e.rev].flow -= trPushed;\n            return trPushed;\n        }\n        return 0;\n    }\npublic:\n    DinicMaxFlow(int n) : n(n), graph(n) {}\n\n    void addEdge(int from, int to, int cap) {\n        graph[from].push_back({to, (int)graph[to].size(), cap, 0});\n        graph[to].push_back({from, (int)graph[from].size() - 1, 0, 0});\n    }\n\n    int maxFlow(int s, int t) {\n        int flow = 0;\n        while (bfs(s, t)) {\n            ptr.assign(n, 0);\n            while (int pushed = dfs(s, t, 1e9)) {\n                flow += pushed;\n            }\n        }\n        return flow;\n    }\n};",
+                                "javascript": "class DinicMaxFlow {\n  constructor(n) {\n    this.n = n;\n    this.graph = Array.from({ length: n }, () => []);\n  }\n\n  addEdge(from, to, cap) {\n    const a = { to, rev: this.graph[to].length, cap, flow: 0 };\n    const b = { to: from, rev: this.graph[from].length, cap: 0, flow: 0 };\n    this.graph[from].push(a);\n    this.graph[to].push(b);\n  }\n\n  bfs(s, t) {\n    this.level = new Array(this.n).fill(-1);\n    this.level[s] = 0;\n    const q = [s];\n    while (q.length > 0) {\n      const u = q.shift();\n      for (const e of this.graph[u]) {\n        if (e.cap - e.flow > 0 && this.level[e.to] === -1) {\n          this.level[e.to] = this.level[u] + 1;\n          q.push(e.to);\n        }\n      }\n    }\n    return this.level[t] !== -1;\n  }\n\n  dfs(u, t, pushed) {\n    if (pushed === 0 || u === t) return pushed;\n    for (; this.ptr[u] < this.graph[u].length; this.ptr[u]++) {\n      const e = this.graph[u][this.ptr[u]];\n      if (this.level[u] + 1 !== this.level[e.to] || e.cap - e.flow === 0) continue;\n      const trPushed = this.dfs(e.to, t, Math.min(pushed, e.cap - e.flow));\n      if (trPushed === 0) continue;\n      e.flow += trPushed;\n      this.graph[e.to][e.rev].flow -= trPushed;\n      return trPushed;\n    }\n    return 0;\n  }\n\n  maxFlow(s, t) {\n    let flow = 0;\n    while (this.bfs(s, t)) {\n      this.ptr = new Array(this.n).fill(0);\n      while (true) {\n        const pushed = this.dfs(s, t, Infinity);\n        if (pushed === 0) break;\n        flow += pushed;\n      }\n    }\n    return flow;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Dinic's algorithm combines BFS level graphs with DFS blocking flows and dead-end pointers to compute maximum flow in $O(V^2 E)$ time."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the primary role of BFS in Dinic's maximum flow algorithm?",
+                        "options": [
+                            "To find negative weight cycles",
+                            "To build a Level Graph where edges only connect level k to level k+1",
+                            "To sort all edges by weight",
+                            "To find the shortest unweighted cycle"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "BFS constructs the Level Graph assigning depth distances from source S, ensuring DFS only explores shortest augmenting paths."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What is the time complexity of Dinic's algorithm on unit networks (where capacities are 1)?",
+                        "options": [
+                            "O(V^3)",
+                            "O(E sqrt(V))",
+                            "O(V * E^2)",
+                            "O(E log V)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "On unit networks (e.g. bipartite matching networks), Dinic's algorithm executes in O(E sqrt(V)) time."
+                    }
+                ]
+            },
+            {
+                "id": "algo-fast-fourier-transform",
+                "slug": "fast-fourier-transform-fft",
+                "categorySlug": "algorithms",
+                "title": "Fast Fourier Transform (FFT) & Polynomial Multiplication",
+                "subtitle": "Cooley-Tukey Radix-2 divide-and-conquer, complex roots of unity e^(2pi i / N), and O(N log N) polynomial convolution",
+                "difficulty": "Advanced",
+                "readTime": "50 min read",
+                "summary": "Master the Fast Fourier Transform (FFT). Learn how Cooley-Tukey Radix-2 divide-and-conquer uses complex roots of unity e^(2pi i / N) to convert polynomials between Coefficient Form and Point-Value Form in O(N log N) time, enabling fast polynomial and big integer multiplication.",
+                "overview": "Multiplying two N-degree polynomials naively takes O(N^2) time. The Fast Fourier Transform (FFT) reduces this to O(N log N). FFT relies on the property that evaluating an N-degree polynomial at N complex roots of unity can be decomposed recursively into two N/2-degree sub-polynomials (even and odd terms). By converting coefficient arrays into point-value evaluations, multiplying point values pairwise in O(N) time, and executing Inverse FFT (IFFT), polynomial multiplication completes in O(N log N) time.",
+                "keyConcepts": [
+                    "Coefficient Representation vs Point-Value Representation",
+                    "Complex N-th Roots of Unity: w_N = e^(2pi i / N) = cos(2pi/N) + i sin(2pi/N)",
+                    "Cooley-Tukey Radix-2 Divide & Conquer Butterfly Diagram",
+                    "Pointwise Multiplication in O(N) Frequency Domain",
+                    "Inverse FFT (IFFT) via Conjugate Roots of Unity"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(N log N)",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(N log N)",
+                    "average": "O(N log N)",
+                    "worst": "O(N log N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. The Quadratic Polynomial Multiplication Bottleneck",
+                        "content": "Given two polynomials $A(x) = a_0 + a_1 x + \\dots + a_n x^n$ and $B(x) = b_0 + b_1 x + \\dots + b_n x^n$. \n\nNaive multiplication multiplies every term pair $\\rightarrow O(N^2)$ time! \n\n**Fast Fourier Transform (FFT)** converts polynomials to **Point-Value Form** using **Complex Roots of Unity** in $O(N \\log N)$ time, multiplies point values in $O(N)$ time, and transforms back via Inverse FFT!"
+                    },
+                    {
+                        "heading": "2. Roots of Unity & Cooley-Tukey Radix-2 Recursion",
+                        "content": "The $N$-th roots of unity are $\\omega_N^k = e^{2\\pi i k / N} = \\cos(\\frac{2\\pi k}{N}) + i \\sin(\\frac{2\\pi k}{N})$. \n\nSeparate polynomial $A(x)$ into even and odd terms: \n$$A(x) = A_{\\text{even}}(x^2) + x \\cdot A_{\\text{odd}}(x^2)$$ \nEvaluating at $\\omega_N^k$ gives: \n- $A(\\omega_N^k) = A_{\\text{even}}(\\omega_{N/2}^k) + \\omega_N^k \\cdot A_{\\text{odd}}(\\omega_{N/2}^k)$ \n- $A(\\omega_N^{k + N/2}) = A_{\\text{even}}(\\omega_{N/2}^k) - \\omega_N^k \\cdot A_{\\text{odd}}(\\omega_{N/2}^k)$ \n\nThis symmetry allows solving size $N$ evaluation in $2 \\times T(N/2) + O(N) = O(N \\log N)$ time!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Butterfly operations in Cooley-Tukey Radix-2 FFT.",
+                        "diagram": "Polynomial Coefficients A -> [Split Even/Odd]\nA_even (Size N/2) --------> FFT ---------> A_even(w^(2k))\n                                           /          \\\n                                          +            - (Butterfly)\n                                         /              \\\nA_odd  (Size N/2) --------> FFT ---------> w^k * A_odd(w^(2k))"
+                    },
+                    {
+                        "heading": "4. Code Example: Fast Fourier Transform Engine",
+                        "content": "Complete FFT polynomial multiplication implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "FFT Polynomial Multiplication",
+                            "code": {
+                                "python": "import cmath\n\ndef fft(a: list, invert: bool = False):\n    n = len(a)\n    if n == 1: return\n    \n    a_even = a[0::2]\n    a_odd = a[1::2]\n    fft(a_even, invert)\n    fft(a_odd, invert)\n\n    angle = 2 * cmath.pi / n * (-1 if invert else 1)\n    w = 1\n    wn = cmath.rect(1, angle)\n    for i in range(n // 2):\n        u = a_even[i]\n        v = w * a_odd[i]\n        a[i] = u + v\n        a[i + n // 2] = u - v\n        if invert:\n            a[i] /= 2\n            a[i + n // 2] /= 2\n        w *= wn\n\ndef multiply_polynomials(a: list, b: list) -> list:\n    n = 1\n    while n < len(a) + len(b):\n        n <<= 1\n    fa = [complex(x, 0) for x in a] + [complex(0, 0)] * (n - len(a))\n    fb = [complex(x, 0) for x in b] + [complex(0, 0)] * (n - len(b))\n    \n    fft(fa, False)\n    fft(fb, False)\n    fc = [fa[i] * fb[i] for i in range(n)]\n    fft(fc, True)\n    \n    return [round(x.real) for x in fc]",
+                                "java": "import java.util.*;\n\npublic class FFT {\n    static class Complex {\n        double re, im;\n        Complex(double re, double im) { this.re = re; this.im = im; }\n        Complex add(Complex b) { return new Complex(re + b.re, im + b.im); }\n        Complex sub(Complex b) { return new Complex(re - b.re, im - b.im); }\n        Complex mul(Complex b) { return new Complex(re * b.re - im * b.im, re * b.im + im * b.re); }\n    }\n\n    public static void fft(Complex[] a, boolean invert) {\n        int n = a.length;\n        if (n == 1) return;\n        Complex[] aEven = new Complex[n / 2];\n        Complex[] aOdd = new Complex[n / 2];\n        for (int i = 0; i < n / 2; i++) {\n            aEven[i] = a[2 * i]; aOdd[i] = a[2 * i + 1];\n        }\n        fft(aEven, invert); fft(aOdd, invert);\n        double angle = 2 * Math.PI / n * (invert ? -1 : 1);\n        Complex w = new Complex(1, 0), wn = new Complex(Math.cos(angle), Math.sin(angle));\n        for (int i = 0; i < n / 2; i++) {\n            Complex u = aEven[i], v = w.mul(aOdd[i]);\n            a[i] = u.add(v); a[i + n / 2] = u.sub(v);\n            if (invert) {\n                a[i].re /= 2; a[i].im /= 2;\n                a[i + n / 2].re /= 2; a[i + n / 2].im /= 2;\n            }\n            w = w.mul(wn);\n        }\n    }\n}",
+                                "cpp": "#include <vector>\n#include <complex>\n#include <cmath>\n\nusing Complex = std::complex<double>;\nconst double PI = std::acos(-1);\n\nvoid fft(std::vector<Complex>& a, bool invert) {\n    int n = a.size();\n    if (n == 1) return;\n\n    std::vector<Complex> a_even(n / 2), a_odd(n / 2);\n    for (int i = 0; i < n / 2; i++) {\n        a_even[i] = a[2 * i];\n        a_odd[i] = a[2 * i + 1];\n    }\n    fft(a_even, invert);\n    fft(a_odd, invert);\n\n    double angle = 2 * PI / n * (invert ? -1 : 1);\n    Complex w(1), wn(std::cos(angle), std::sin(angle));\n    for (int i = 0; i < n / 2; i++) {\n        Complex u = a_even[i], v = w * a_odd[i];\n        a[i] = u + v;\n        a[i + n / 2] = u - v;\n        if (invert) {\n            a[i] /= 2;\n            a[i + n / 2] /= 2;\n        }\n        w *= wn;\n    }\n}",
+                                "javascript": "function fft(a, invert = false) {\n  const n = a.length;\n  if (n === 1) return;\n\n  const aEven = new Array(n / 2);\n  const aOdd = new Array(n / 2);\n  for (let i = 0; i < n / 2; i++) {\n    aEven[i] = a[2 * i]; aOdd[i] = a[2 * i + 1];\n  }\n  fft(aEven, invert); fft(aOdd, invert);\n\n  const angle = 2 * Math.PI / n * (invert ? -1 : 1);\n  let wRe = 1, wIm = 0;\n  const wnRe = Math.cos(angle), wnIm = Math.sin(angle);\n\n  for (let i = 0; i < n / 2; i++) {\n    const uRe = aEven[i].re, uIm = aEven[i].im;\n    const vRe = wRe * aOdd[i].re - wIm * aOdd[i].im;\n    const vIm = wRe * aOdd[i].im + wIm * aOdd[i].re;\n\n    a[i] = { re: uRe + vRe, im: uIm + vIm };\n    a[i + n / 2] = { re: uRe - vRe, im: uIm - vIm };\n    if (invert) {\n      a[i].re /= 2; a[i].im /= 2;\n      a[i + n / 2].re /= 2; a[i + n / 2].im /= 2;\n    }\n    const nextWRe = wRe * wnRe - wIm * wnIm;\n    const nextWIm = wRe * wnIm + wIm * wnRe;\n    wRe = nextWRe; wIm = nextWIm;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "The Fast Fourier Transform uses Cooley-Tukey Radix-2 recursion and complex roots of unity to execute polynomial and big integer multiplications in $O(N \\log N)$ time."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the time complexity of multiplying two N-degree polynomials using the Fast Fourier Transform (FFT)?",
+                        "options": [
+                            "O(N^2)",
+                            "O(N log N)",
+                            "O(N)",
+                            "O(2^N)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "FFT converts polynomials to point-value form in O(N log N), multiplies point values in O(N), and executes IFFT in O(N log N)."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What mathematical property allows Cooley-Tukey Radix-2 FFT to split an N-point evaluation into two N/2-point evaluations?",
+                        "options": [
+                            "Symmetry of Complex Roots of Unity w_N^(k + N/2) = -w_N^k",
+                            "Prime number factorization",
+                            "Matrix transposition",
+                            "Logarithmic base conversion"
+                        ],
+                        "correctIndex": 0,
+                        "explanation": "Squaring complex roots of unity maps N-th roots to (N/2)-th roots with sign symmetry w_N^(k + N/2) = -w_N^k."
+                    }
+                ]
+            },
+            {
+                "id": "algo-eulerian-hamiltonian",
+                "slug": "eulerian-hamiltonian-paths-circuits",
+                "categorySlug": "algorithms",
+                "title": "Eulerian & Hamiltonian Paths / Circuits",
+                "subtitle": "Euler's Degree Parity Theorem, Hierholzer's O(V+E) post-order stack algorithm, and NP-Complete Hamiltonian Bitmask DP",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master Eulerian and Hamiltonian paths in graph theory. Learn Euler's Theorem for graph traversability, Hierholzer's linear O(V + E) post-order stack algorithm for Eulerian circuits, and the NP-Complete Hamiltonian Path / TSP Bitmask DP solution running in O(N^2 2^N) time.",
+                "overview": "An Eulerian Path visits every EDGE in a graph exactly once, while a Hamiltonian Path visits every VERTEX in a graph exactly once. Though sounding similar, their computational complexities are worlds apart: Eulerian paths can be detected in O(V+E) time via node degree parity checks and constructed using Hierholzer's post-order stack algorithm. Hamiltonian paths are NP-Complete, requiring exponential Dynamic Programming with Bitmask states in O(N^2 2^N) time.",
+                "keyConcepts": [
+                    "Eulerian Path/Circuit Existence Conditions (Degree Parity, In-Degree == Out-Degree)",
+                    "Hierholzer's Algorithm: Post-Order Edge Traversal Stack in O(V + E)",
+                    "Hamiltonian Path & Circuit NP-Completeness Proof Overview",
+                    "Travelling Salesperson Problem (TSP) Bitmask DP State: dp[mask][u]",
+                    "Applications: DNA Sequence Assembly (De Bruijn Graphs), Network Routing"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(V + E) Eulerian / O(N^2 2^N) Hamiltonian",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(V + E)",
+                    "average": "O(V + E)",
+                    "worst": "O(N^2 2^N)"
+                },
+                "spaceComplexity": "O(V + E) Eulerian / O(N 2^N) Hamiltonian",
+                "sections": [
+                    {
+                        "heading": "1. Edges vs Vertices: The Seven Bridges of Konigsberg",
+                        "content": "In 1736, Leonhard Euler proved that traversing every **edge** of a graph once requires specific node degree parity. \n\n- **Eulerian Circuit (All edges once, start=end):** Every vertex has an EVEN degree. \n- **Eulerian Path (All edges once, start!=end):** Exactly 2 vertices have ODD degrees. \n- **Hierholzer's Algorithm** finds Eulerian circuits in linear **$O(V + E)$ time**. \n\nConversely, visiting every **vertex** once (**Hamiltonian Path**) is **NP-Complete**, requiring **$O(N^2 2^N)$ Bitmask DP**!"
+                    },
+                    {
+                        "heading": "2. Hierholzer's Algorithm (Eulerian) & Bitmask DP (Hamiltonian)",
+                        "content": "**Hierholzer's Algorithm ($O(V + E)$):** \n1. Start DFS from any valid vertex. \n2. As edges are traversed, remove them from the graph. \n3. When stuck (no outgoing unvisited edges), push current node to a stack. \n4. Reverse the stack to yield the Eulerian Circuit! \n\n**Hamiltonian Bitmask DP ($O(N^2 2^N)$):** \nDefine $dp[mask][u] = true$ if a valid path exists visiting exact subset `mask` ending at node $u$."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Hierholzer's Eulerian cycle splicing.",
+                        "diagram": "Graph Edges: (1-2), (2-3), (3-1), (2-4), (4-2)\n\nDFS Sub-cycle 1: 1 -> 2 -> 4 -> 2 -> 3 -> 1\nStuck at node 1 -> Push to Stack.\n\nPost-Order Stack result (Reversed):\n[1 -> 2 -> 4 -> 2 -> 3 -> 1]"
+                    },
+                    {
+                        "heading": "4. Code Example: Hierholzer's & Hamiltonian Bitmask DP",
+                        "content": "Complete implementation of Hierholzer's Eulerian Circuit and TSP Hamiltonian Bitmask DP in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Hierholzer's Eulerian Circuit & TSP Bitmask DP",
+                            "code": {
+                                "python": "def eulerian_circuit_hierholzer(v_count: int, edges: list) -> list:\n    adj = [set() for _ in range(v_count)]\n    for u, v in edges:\n        adj[u].add(v)\n        adj[v].add(u)\n\n    stack = [0]\n    circuit = []\n    curr_adj = [list(neighbors) for neighbors in adj]\n\n    while stack:\n        u = stack[-1]\n        if curr_adj[u]:\n            v = curr_adj[u].pop()\n            curr_adj[v].remove(u) # Remove undirected edge\n            stack.append(v)\n        else:\n            circuit.append(stack.pop())\n    return circuit[::-1]\n\ndef tsp_hamiltonian_dp(dist_matrix: list) -> int:\n    n = len(dist_matrix)\n    memo = {}\n    \n    def solve(mask, u):\n        if mask == (1 << n) - 1:\n            return dist_matrix[u][0] # Return to start\n        state = (mask, u)\n        if state in memo: return memo[state]\n        ans = float('inf')\n        for v in range(n):\n            if not (mask & (1 << v)):\n                ans = min(ans, dist_matrix[u][v] + solve(mask | (1 << v), v))\n        memo[state] = ans\n        return ans\n    return solve(1, 0)",
+                                "java": "import java.util.*;\n\npublic class EulerianHamiltonian {\n    public static List<Integer> eulerianCircuit(int n, int[][] edges) {\n        List<Set<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new HashSet<>());\n        for (int[] e : edges) { adj.get(e[0]).add(e[1]); adj.get(e[1]).add(e[0]); }\n\n        Deque<Integer> stack = new ArrayDeque<>();\n        List<Integer> circuit = new ArrayList<>();\n        stack.push(0);\n\n        while (!stack.isEmpty()) {\n            int u = stack.peek();\n            if (!adj.get(u).isEmpty()) {\n                int v = adj.get(u).iterator().next();\n                adj.get(u).remove(v); adj.get(v).remove(u);\n                stack.push(v);\n            } else {\n                circuit.add(stack.pop());\n            }\n        }\n        Collections.reverse(circuit);\n        return circuit;\n    }",
+                                "cpp": "#include <vector>\n#include <stack>\n#include <algorithm>\n#include <unordered_set>\n\nstd::vector<int> eulerianCircuit(int n, const std::vector<std::pair<int, int>>& edges) {\n    std::vector<std::unordered_set<int>> adj(n);\n    for (auto& e : edges) { adj[e.first].insert(e.second); adj[e.second].insert(e.first); }\n\n    std::stack<int> st;\n    std::vector<int> circuit;\n    st.push(0);\n\n    while (!st.empty()) {\n        int u = st.top();\n        if (!adj[u].empty()) {\n            int v = *adj[u].begin();\n            adj[u].erase(v); adj[v].erase(u);\n            st.push(v);\n        } else {\n            circuit.push_back(st.top());\n            st.pop();\n        }\n    }\n    std::reverse(circuit.begin(), circuit.end());\n    return circuit;}",
+                                "javascript": "function eulerianCircuit(n, edges) {\n  const adj = Array.from({ length: n }, () => new Set());\n  for (const [u, v] of edges) { adj[u].add(v); adj[v].add(u); }\n\n  const stack = [0];\n  const circuit = [];\n\n  while (stack.length > 0) {\n    const u = stack[stack.length - 1];\n    if (adj[u].size > 0) {\n      const v = adj[u].values().next().value;\n      adj[u].delete(v); adj[v].delete(u);\n      stack.push(v);\n    } else {\n      circuit.push(stack.pop());\n    }\n  }\n  return circuit.reverse();\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Eulerian paths visit every edge once in $O(V + E)$ time via Hierholzer's algorithm, whereas Hamiltonian paths visit every vertex once and are NP-Complete, solvable via $O(N^2 2^N)$ Bitmask DP."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What node degree condition must hold for an undirected connected graph to possess an Eulerian Circuit?",
+                        "options": [
+                            "Every vertex must have an even degree",
+                            "Exactly two vertices must have an odd degree",
+                            "All vertices must have degree 1",
+                            "The graph must be a binary tree"
+                        ],
+                        "correctIndex": 0,
+                        "explanation": "An Eulerian circuit enters and leaves every vertex, requiring an even degree for every single vertex in the graph."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "How does the computational complexity of finding an Eulerian path compare to a Hamiltonian path?",
+                        "options": [
+                            "Eulerian is NP-Hard; Hamiltonian is O(V+E)",
+                            "Eulerian is linear O(V+E); Hamiltonian is NP-Complete O(N^2 2^N)",
+                            "Both are solvable in linear time",
+                            "Both are NP-Complete"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Eulerian paths visit all edges in linear O(V+E) time, whereas Hamiltonian paths visit all vertices and are NP-Complete."
+                    }
+                ]
+            },
+            {
+                "id": "algo-hopcroft-karp-matching",
+                "slug": "hopcroft-karp-bipartite-matching",
+                "categorySlug": "algorithms",
+                "title": "Hopcroft-Karp Maximum Bipartite Matching",
+                "subtitle": "Bipartite graph matching, augmenting paths, layered BFS level graphs, and O(E sqrt(V)) multi-path DFS execution",
+                "difficulty": "Advanced",
+                "readTime": "40 min read",
+                "summary": "Master the Hopcroft-Karp algorithm for Maximum Bipartite Matching. Learn how to combine BFS layered level graphs with DFS shortest augmenting paths to find maximum cardinality matchings in bipartite graphs in fast O(E sqrt(V)) time.",
+                "overview": "A Bipartite Matching pairs vertices from set U with set V such that no two edges share a vertex. Standard Max Flow (Edmonds-Karp) solves bipartite matching in O(V * E) time. Hopcroft-Karp speeds this up to O(E sqrt(V)) by finding multiple disjoint vertex-shortest augmenting paths simultaneously. Each phase runs BFS to build a layered graph of shortest augmenting paths, followed by DFS to extract maximal sets of non-overlapping augmenting paths.",
+                "keyConcepts": [
+                    "Bipartite Matching & Matching Cardinality",
+                    "Augmenting Path Definition: Alternating matched and unmatched edges",
+                    "Berge's Lemma: A matching is maximum iff it contains no augmenting path",
+                    "Hopcroft-Karp Layered BFS Phase: Finding shortest augmenting path length dist[u]",
+                    "Hopcroft-Karp DFS Phase: Augmenting multiple vertex-disjoint paths in single pass"
+                ],
+                "timeComplexity": {
+                    "access": "N/A",
+                    "search": "O(E sqrt(V))",
+                    "insertion": "N/A",
+                    "deletion": "N/A",
+                    "best": "O(E sqrt(V))",
+                    "average": "O(E sqrt(V))",
+                    "worst": "O(E sqrt(V))"
+                },
+                "spaceComplexity": "O(V + E)",
+                "sections": [
+                    {
+                        "heading": "1. The Bipartite Pairing Problem",
+                        "content": "Given a bipartite graph $G = (U, V, E)$, find a matching of maximum cardinality. \n\n- Naive Augmenting Paths (Ford-Fulkerson): $O(V \\cdot E)$. \n- **Hopcroft-Karp Algorithm:** Finds multiple **vertex-disjoint shortest augmenting paths** per BFS phase, reducing execution time to **$O(E \\sqrt{V})$**!"
+                    },
+                    {
+                        "heading": "2. BFS Layered Graph & DFS Augmentation",
+                        "content": "Each phase of Hopcroft-Karp consists of two steps: \n1. **BFS Phase:** Starts from all unmatched vertices in set $U$. Builds a layered level graph of alternating unmatched and matched edges, finding shortest distance `dist[u]` to unmatched vertices in $V$. \n2. **DFS Phase:** Searches the layered graph to augment multiple vertex-disjoint paths in a single pass. When an augmenting path is found, flip matched/unmatched edge status!"
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Augmenting Path Edge Flipping in Hopcroft-Karp.",
+                        "diagram": "Set U          Set V\n [u1] ----(o)---- [v1]  (Unmatched edge)\n   |                |\n   | (Matched)      | (Matched)\n   v                v\n [u2] ----(o)---- [v2]\n\nAugmenting Path: u1 -> v1 -> u2 -> v2\nAction: Flip status! (u1-v1 becomes matched, v1-u2 unmatched, u2-v2 matched)"
+                    },
+                    {
+                        "heading": "4. Code Example: Hopcroft-Karp Matching Engine",
+                        "content": "Complete Hopcroft-Karp $O(E \\sqrt{V})$ algorithm implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Hopcroft-Karp Maximum Bipartite Matching",
+                            "code": {
+                                "python": "from collections import deque\n\nclass HopcroftKarp:\n    def __init__(self, u_size: int, v_size: int):\n        self.u_size = u_size\n        self.v_size = v_size\n        self.adj = [[] for _ in range(u_size + 1)]\n        self.pair_u = [0] * (u_size + 1)\n        self.pair_v = [0] * (v_size + 1)\n        self.dist = [0] * (u_size + 1)\n\n    def add_edge(self, u: int, v: int):\n        \"\"\"1-based indexing for u in U, v in V.\"\"\"\n        self.adj[u].append(v)\n\n    def _bfs(self) -> bool:\n        q = deque()\n        for u in range(1, self.u_size + 1):\n            if self.pair_u[u] == 0:\n                self.dist[u] = 0\n                q.append(u)\n            else:\n                self.dist[u] = float('inf')\n        self.dist[0] = float('inf')\n\n        while q:\n            u = q.popleft()\n            if self.dist[u] < self.dist[0]:\n                for v in self.adj[u]:\n                    if self.dist[self.pair_v[v]] == float('inf'):\n                        self.dist[self.pair_v[v]] = self.dist[u] + 1\n                        q.append(self.pair_v[v])\n        return self.dist[0] != float('inf')\n\n    def _dfs(self, u: int) -> bool:\n        if u != 0:\n            for v in self.adj[u]:\n                if self.dist[self.pair_v[v]] == self.dist[u] + 1:\n                    if self._dfs(self.pair_v[v]):\n                        self.pair_v[v] = u\n                        self.pair_u[u] = v\n                        return True\n            self.dist[u] = float('inf')\n            return False\n        return True\n\n    def max_matching(self) -> int:\n        matching = 0\n        while self._bfs():\n            for u in range(1, self.u_size + 1):\n                if self.pair_u[u] == 0 and self._dfs(u):\n                    matching += 1\n        return matching",
+                                "java": "import java.util.*;\n\npublic class HopcroftKarp {\n    private int uSize, vSize;\n    private List<List<Integer>> adj = new ArrayList<>();\n    private int[] pairU, pairV, dist;\n\n    public HopcroftKarp(int uSize, int vSize) {\n        this.uSize = uSize; this.vSize = vSize;\n        for (int i = 0; i <= uSize; i++) adj.add(new ArrayList<>());\n        pairU = new int[uSize + 1]; pairV = new int[vSize + 1];\n        dist = new int[uSize + 1];\n    }\n\n    public void addEdge(int u, int v) { adj.get(u).add(v); }\n\n    private boolean bfs() {\n        Queue<Integer> q = new LinkedList<>();\n        for (int u = 1; u <= uSize; u++) {\n            if (pairU[u] == 0) { dist[u] = 0; q.add(u); }\n            else dist[u] = Integer.MAX_VALUE;\n        }\n        dist[0] = Integer.MAX_VALUE;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            if (dist[u] < dist[0]) {\n                for (int v : adj.get(u)) {\n                    if (dist[pairV[v]] == Integer.MAX_VALUE) {\n                        dist[pairV[v]] = dist[u] + 1; q.add(pairV[v]);\n                    }\n                }\n            }\n        }\n        return dist[0] != Integer.MAX_VALUE;\n    }\n\n    private boolean dfs(int u) {\n        if (u != 0) {\n            for (int v : adj.get(u)) {\n                if (dist[pairV[v]] == dist[u] + 1 && dfs(pairV[v])) {\n                    pairV[v] = u; pairU[u] = v; return true;\n                }\n            }\n            dist[u] = Integer.MAX_VALUE; return false;\n        }\n        return true;\n    }\n\n    public int maxMatching() {\n        int matching = 0;\n        while (bfs()) {\n            for (int u = 1; u <= uSize; u++) {\n                if (pairU[u] == 0 && dfs(u)) matching++;\n            }\n        }\n        return matching;\n    }\n}",
+                                "cpp": "#include <vector>\n#include <queue>\n#include <algorithm>\n\nclass HopcroftKarp {\n    int uSize, vSize;\n    std::vector<std::vector<int>> adj;\n    std::vector<int> pairU, pairV, dist;\n\n    bool bfs() {\n        std::queue<int> q;\n        for (int u = 1; u <= uSize; u++) {\n            if (pairU[u] == 0) { dist[u] = 0; q.push(u); }\n            else dist[u] = 1e9;\n        }\n        dist[0] = 1e9;\n        while (!q.empty()) {\n            int u = q.front(); q.pop();\n            if (dist[u] < dist[0]) {\n                for (int v : adj[u]) {\n                    if (dist[pairV[v]] == 1e9) {\n                        dist[pairV[v]] = dist[u] + 1;\n                        q.push(pairV[v]);\n                    }\n                }\n            }\n        }\n        return dist[0] != 1e9;\n    }\n\n    bool dfs(int u) {\n        if (u != 0) {\n            for (int v : adj[u]) {\n                if (dist[pairV[v]] == dist[u] + 1 && dfs(pairV[v])) {\n                    pairV[v] = u; pairU[u] = v; return true;\n                }\n            }\n            dist[u] = 1e9; return false;\n        }\n        return true;\n    }\npublic:\n    HopcroftKarp(int uSize, int vSize) : uSize(uSize), vSize(vSize) {\n        adj.resize(uSize + 1);\n        pairU.assign(uSize + 1, 0); pairV.assign(vSize + 1, 0);\n        dist.assign(uSize + 1, 0);\n    }\n\n    void addEdge(int u, int v) { adj[u].push_back(v); }\n\n    int maxMatching() {\n        int matching = 0;\n        while (bfs()) {\n            for (int u = 1; u <= uSize; u++) {\n                if (pairU[u] == 0 && dfs(u)) matching++;\n            }\n        }\n        return matching;\n    }\n};",
+                                "javascript": "class HopcroftKarp {\n  constructor(uSize, vSize) {\n    this.uSize = uSize; this.vSize = vSize;\n    this.adj = Array.from({ length: uSize + 1 }, () => []);\n    this.pairU = new Array(uSize + 1).fill(0);\n    this.pairV = new Array(vSize + 1).fill(0);\n    this.dist = new Array(uSize + 1).fill(0);\n  }\n\n  addEdge(u, v) { this.adj[u].push(v); }\n\n  bfs() {\n    const q = [];\n    for (let u = 1; u <= this.uSize; u++) {\n      if (this.pairU[u] === 0) { this.dist[u] = 0; q.push(u); }\n      else this.dist[u] = Infinity;\n    }\n    this.dist[0] = Infinity;\n    while (q.length > 0) {\n      const u = q.shift();\n      if (this.dist[u] < this.dist[0]) {\n        for (const v of this.adj[u]) {\n          if (this.dist[this.pairV[v]] === Infinity) {\n            this.dist[this.pairV[v]] = this.dist[u] + 1; q.push(this.pairV[v]);\n          }\n        }\n      }\n    }\n    return this.dist[0] !== Infinity;\n  }\n\n  dfs(u) {\n    if (u !== 0) {\n      for (const v of this.adj[u]) {\n        if (this.dist[this.pairV[v]] === this.dist[u] + 1 && this.dfs(this.pairV[v])) {\n          this.pairV[v] = u; this.pairU[u] = v; return true;\n        }\n      }\n      this.dist[u] = Infinity; return false;\n    }\n    return true;\n  }\n\n  maxMatching() {\n    let matching = 0;\n    while (this.bfs()) {\n      for (let u = 1; u <= this.uSize; u++) {\n        if (this.pairU[u] === 0 && this.dfs(u)) matching++;\n      }\n    }\n    return matching;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "Hopcroft-Karp combines BFS layered shortest path search with DFS multi-path augmentation to achieve $O(E \\sqrt{V})$ maximum bipartite matching."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the time complexity of the Hopcroft-Karp algorithm for Maximum Bipartite Matching?",
+                        "options": [
+                            "O(V * E)",
+                            "O(E sqrt(V))",
+                            "O(V^3)",
+                            "O(E log V)"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "By processing all shortest augmenting paths simultaneously in phases, Hopcroft-Karp runs in O(E sqrt(V)) time."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What is an Augmenting Path in graph matching theory?",
+                        "options": [
+                            "A path of all matched edges",
+                            "An alternating path of unmatched and matched edges starting and ending at unmatched vertices",
+                            "A cycle of even length",
+                            "A minimum spanning tree edge"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "An augmenting path alternates between unmatched and matched edges, starting and ending at unmatched nodes. Flipping these edges increases matching size by +1."
+                    }
+                ]
+            },
+            {
+                "id": "algo-suffix-automaton-string",
+                "slug": "suffix-automaton-dawg",
+                "categorySlug": "algorithms",
+                "title": "Suffix Automaton & String Processing (DAWG)",
+                "subtitle": "Minimal Directed Acyclic Word Graph representing all substrings, right-sets, suffix links, and linear O(N) construction",
+                "difficulty": "Advanced",
+                "readTime": "45 min read",
+                "summary": "Master the Suffix Automaton (DAWG - Directed Acyclic Word Graph). Learn how this minimal state automaton represents all N*(N+1)/2 substrings of a string in linear O(N) space (at most 2N-1 states) and linear O(N) construction time, enabling instant substring pattern queries.",
+                "overview": "A Suffix Automaton is the most compact representation of all substrings of a text S. While a Suffix Tree takes O(N) space with heavy branching factors, a Suffix Automaton compresses equivalent endpos sets into minimal states, forming a Directed Acyclic Word Graph (DAWG) with at most 2N-1 states and 3N-4 transitions. Online construction processes characters one by one, updating suffix links in amortized O(N) total time.",
+                "keyConcepts": [
+                    "Endpos Equivalence Classes: Substrings sharing identical set of right-end positions",
+                    "Minimal State Bound: Maximum 2N - 1 states, 3N - 6 transitions",
+                    "Suffix Link Tree: Connecting endpos set inclusions",
+                    "Online O(N) Construction Step by Step",
+                    "Applications: Distinct Substring Counting, Longest Common Substring of Multiple Strings"
+                ],
+                "timeComplexity": {
+                    "access": "O(1)",
+                    "search": "O(M) pattern query",
+                    "insertion": "O(N) construction",
+                    "deletion": "N/A",
+                    "best": "O(N)",
+                    "average": "O(N)",
+                    "worst": "O(N)"
+                },
+                "spaceComplexity": "O(N)",
+                "sections": [
+                    {
+                        "heading": "1. The Ultimate Substring Automaton",
+                        "content": "Given a string $S$ of length $N$, it contains up to $\\frac{N(N+1)}{2}$ distinct substrings. \n\nHow do we query whether pattern $P$ of length $M$ is a substring in **$O(M)$ time** without building a huge Suffix Tree? \n\n**Suffix Automaton (DAWG)** compresses all substrings into a minimal state graph of **at most $2N - 1$ states and $3N - 6$ transitions**, built in **$O(N)$ linear time**!"
+                    },
+                    {
+                        "heading": "2. Endpos Classes & Suffix Links",
+                        "content": "- **Endpos Set $\\text{endpos}(w)$:** The set of all end positions in $S$ where substring $w$ occurs. \n- **State Equivalence:** Substrings with the exact same $\\text{endpos}$ set belong to the SAME state in the automaton! \n- **Suffix Link `link[st]`:** Points to the state containing the longest suffix of $st$ that belongs to a different (broader) endpos class."
+                    },
+                    {
+                        "heading": "3. Structural Visualization",
+                        "content": "Visualizing Suffix Automaton state transitions for 'ABB'.",
+                        "diagram": "State 0 (Root, len=0)\n  |--'A'--> State 1 (len=1, \"A\")\n  |           |--'B'--> State 2 (len=2, \"AB\")\n  |                       |--'B'--> State 3 (len=3, \"ABB\")\n  |--'B'--> State 4 (len=1, \"B\") ---'B'--> State 3\n\nSuffix Links:\nState 3 (\"ABB\") ---> State 4 (\"B\") ---> State 0 (Root)"
+                    },
+                    {
+                        "heading": "4. Code Example: Suffix Automaton Engine",
+                        "content": "Complete online $O(N)$ Suffix Automaton implementation in Python, Java, C++, and JavaScript.",
+                        "codeSnippet": {
+                            "title": "Suffix Automaton (DAWG)",
+                            "code": {
+                                "python": "class State:\n    def __init__(self, length=0, link=-1):\n        self.len = length\n        self.link = link\n        self.next = {}\n\nclass SuffixAutomaton:\n    def __init__(self):\n        self.st = [State(0, -1)]\n        self.last = 0\n\n    def extend(self, c: str):\n        cur = len(self.st)\n        self.st.append(State(self.st[self.last].len + 1))\n        p = self.last\n\n        while p != -1 and c not in self.st[p].next:\n            self.st[p].next[c] = cur\n            p = self.st[p].link\n\n        if p == -1:\n            self.st[cur].link = 0\n        else:\n            q = self.st[p].next[c]\n            if self.st[p].len + 1 == self.st[q].len:\n                self.st[cur].link = q\n            else:\n                clone = len(self.st)\n                clone_state = State(self.st[p].len + 1, self.st[q].link)\n                clone_state.next = self.st[q].next.copy()\n                self.st.append(clone_state)\n\n                while p != -1 and self.st[p].next.get(c) == q:\n                    self.st[p].next[c] = clone\n                    p = self.st[p].link\n\n                self.st[q].link = clone\n                self.st[cur].link = clone\n\n        self.last = cur\n\n    def contains(self, pattern: str) -> bool:\n        curr = 0\n        for c in pattern:\n            if c not in self.st[curr].next:\n                return False\n            curr = self.st[curr].next[c]\n        return True",
+                                "java": "import java.util.*;\n\npublic class SuffixAutomaton {\n    static class State {\n        int len, link;\n        Map<Character, Integer> next = new HashMap<>();\n        State(int len, int link) { this.len = len; this.link = link; }\n    }\n\n    private List<State> st = new ArrayList<>();\n    private int last = 0;\n\n    public SuffixAutomaton() { st.add(new State(0, -1)); }\n\n    public void extend(char c) {\n        int cur = st.size();\n        st.add(new State(st.get(last).len + 1, -1));\n        int p = last;\n\n        while (p != -1 && !st.get(p).next.containsKey(c)) {\n            st.get(p).next.put(c, cur);\n            p = st.get(p).link;\n        }\n\n        if (p == -1) {\n            st.get(cur).link = 0;\n        } else {\n            int q = st.get(p).next.get(c);\n            if (st.get(p).len + 1 == st.get(q).len) {\n                st.get(cur).link = q;\n            } else {\n                int clone = st.size();\n                State cloneState = new State(st.get(p).len + 1, st.get(q).link);\n                cloneState.next.putAll(st.get(q).next);\n                st.add(cloneState);\n\n                while (p != -1 && st.get(p).next.get(c) == q) {\n                    st.get(p).next.put(c, clone);\n                    p = st.get(p).link;\n                }\n                st.get(q).link = clone;\n                st.get(cur).link = clone;\n            }\n        }\n        last = cur;\n    }\n\n    public boolean contains(String pattern) {\n        int curr = 0;\n        for (char c : pattern.toCharArray()) {\n            if (!st.get(curr).next.containsKey(c)) return false;\n            curr = st.get(curr).next.get(c);\n        }\n        return true;\n    }\n}",
+                                "cpp": "#include <vector>\n#include <map>\n#include <string>\n\nstruct State {\n    int len, link;\n    std::map<char, int> next;\n};\n\nclass SuffixAutomaton {\n    std::vector<State> st;\n    int last;\npublic:\n    SuffixAutomaton() {\n        st.push_back({0, -1, {}});\n        last = 0;\n    }\n\n    void extend(char c) {\n        int cur = st.size();\n        st.push_back({st[last].len + 1, -1, {}});\n        int p = last;\n\n        while (p != -1 && !st[p].next.count(c)) {\n            st[p].next[c] = cur;\n            p = st[p].link;\n        }\n\n        if (p == -1) {\n            st[cur].link = 0;\n        } else {\n            int q = st[p].next[c];\n            if (st[p].len + 1 == st[q].len) {\n                st[cur].link = q;\n            } else {\n                int clone = st.size();\n                st.push_back({st[p].len + 1, st[q].link, st[q].next});\n                while (p != -1 && st[p].next[c] == q) {\n                    st[p].next[c] = clone;\n                    p = st[p].link;\n                }\n                st[q].link = clone;\n                st[cur].link = clone;\n            }\n        }\n        last = cur;\n    }\n\n    bool contains(const std::string& pattern) {\n        int curr = 0;\n        for (char c : pattern) {\n            if (!st[curr].next.count(c)) return false;\n            curr = st[curr].next[c];\n        }\n        return true;\n    }\n};",
+                                "javascript": "class State {\n  constructor(len = 0, link = -1) {\n    this.len = len;\n    this.link = link;\n    this.next = new Map();\n  }\n}\n\nclass SuffixAutomaton {\n  constructor() {\n    this.st = [new State(0, -1)];\n    this.last = 0;\n  }\n\n  extend(c) {\n    const cur = this.st.length;\n    this.st.push(new State(this.st[this.last].len + 1));\n    let p = this.last;\n\n    while (p !== -1 && !this.st[p].next.has(c)) {\n      this.st[p].next.set(c, cur);\n      p = this.st[p].link;\n    }\n\n    if (p === -1) {\n      this.st[cur].link = 0;\n    } else {\n      const q = this.st[p].next.get(c);\n      if (this.st[p].len + 1 === this.st[q].len) {\n        this.st[cur].link = q;\n      } else {\n        const clone = this.st.length;\n        const cloneState = new State(this.st[p].len + 1, this.st[q].link);\n        for (const [key, val] of this.st[q].next) {\n          cloneState.next.set(key, val);\n        }\n        this.st.push(cloneState);\n\n        while (p !== -1 && this.st[p].next.get(c) === q) {\n          this.st[p].next.set(c, clone);\n          p = this.st[p].link;\n        }\n        this.st[q].link = clone;\n        this.st[cur].link = clone;\n      }\n    }\n    this.last = cur;\n  }\n\n  contains(pattern) {\n    let curr = 0;\n    for (const c of pattern) {\n      if (!this.st[curr].next.has(c)) return false;\n      curr = this.st[curr].next[c];\n    }\n    return true;\n  }\n}"
+                            }
+                        }
+                    },
+                    {
+                        "heading": "5. Summary",
+                        "content": "The Suffix Automaton (DAWG) represents all substrings of text $S$ using a minimal state graph bounded by $2N-1$ states constructed in linear $O(N)$ time."
+                    }
+                ],
+                "quiz": [
+                    {
+                        "id": "q1",
+                        "question": "What is the maximum number of states in a Suffix Automaton for a string of length N?",
+                        "options": [
+                            "N states",
+                            "2N - 1 states",
+                            "N^2 states",
+                            "2^N states"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "A Suffix Automaton compresses equivalent endpos sets into at most 2N - 1 states."
+                    },
+                    {
+                        "id": "q2",
+                        "question": "What does a state in a Suffix Automaton represent?",
+                        "options": [
+                            "A single character",
+                            "An endpos equivalence class of substrings sharing identical right-end position sets",
+                            "A prefix of the text",
+                            "A leaf node in a binary tree"
+                        ],
+                        "correctIndex": 1,
+                        "explanation": "Each state in a Suffix Automaton represents an endpos equivalence class—a group of substrings that occur at the exact same set of end positions in S."
+                    }
+                ]
             }
         ]
     },
-        {
+    {
         id: "cs-core",
         slug: "cs-core",
         title: "Computer Science Core",
