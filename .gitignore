@@ -15,3 +15,5 @@ judge-frontend/frontend.log
 judge-frontend/out
 judge-frontend/.next
 judge-frontend/node_modules
+judge-backend/jbe
+/.vscode/
