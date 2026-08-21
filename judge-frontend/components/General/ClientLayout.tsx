@@ -40,7 +40,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
     const lobbyChannelRef = React.useRef<any>(null);
 
-    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard', '/community-guidelines', '/what-is-vlyxir', '/features', '/your-plan'];
+    const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard', '/community-guidelines', '/policies', '/what-is-vlyxir', '/features', '/your-plan'];
     const isNavExcluded = excludedPaths.includes(pathname) || pathname.startsWith('/forum') || pathname.startsWith('/user') || pathname.startsWith('/account');
     const NavComponent = useNewUi ? NewNavBar : NavBar;
 

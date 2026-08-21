@@ -25,7 +25,9 @@ export default function Footer() {
                     <Link href="/leaderboard" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>Leaderboard</Link>
                     <Link href="/code-ide" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>IDE</Link>
                     <Link href="/docs" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>Documentation</Link>
+                    <Link href="/policies" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>Policies</Link>
                     <Link href="/meet-developer" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>Meet Developer</Link>
+                    <Link href="/policies" className={`text-sm font-bold transition-colors ${isDark ? "text-slate-300 hover:text-indigo-400" : "text-slate-700 hover:text-indigo-600"}`}>Feedback</Link>
                 </div>
             </div>
         </footer>
