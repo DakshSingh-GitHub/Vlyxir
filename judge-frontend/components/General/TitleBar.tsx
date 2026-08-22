@@ -6,6 +6,7 @@ import Image from 'next/image';
 declare global {
   interface Window {
     electronAPI?: {
+      platform?: string;
       minimize: () => void;
       maximize: () => void;
       close: () => void;
@@ -18,16 +19,23 @@ declare global {
 
 export default function TitleBar() {
   const [isElectron, setIsElectron] = useState(false);
+  const [isMac, setIsMac] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
-      (window.electronAPI !== undefined || navigator.userAgent.toLowerCase().includes('electron'))
-    ) {
-      setIsElectron(true);
-      if (window.electronAPI) {
-        window.electronAPI.isMaximized().then(setIsMaximized).catch(() => {});
+    if (typeof window !== 'undefined') {
+      const hasElectronAPI = window.electronAPI !== undefined;
+      const hasElectronAgent = navigator.userAgent.toLowerCase().includes('electron');
+
+      if (hasElectronAPI || hasElectronAgent) {
+        setIsElectron(true);
+
+        const platform = window.electronAPI?.platform || (navigator.platform?.toLowerCase().includes('mac') ? 'darwin' : 'win32');
+        setIsMac(platform === 'darwin' || navigator.userAgent.toLowerCase().includes('mac'));
+
+        if (window.electronAPI) {
+          window.electronAPI.isMaximized().then(setIsMaximized).catch(() => {});
+        }
       }
     }
   }, []);
@@ -64,7 +72,9 @@ export default function TitleBar() {
   return (
     <header
       onDoubleClick={handleDoubleClick}
-      className="sticky top-0 z-[1000] h-[40px] w-full flex items-center justify-between pl-3.5 pr-0 text-xs select-none bg-[#0A0F1A]/95 backdrop-blur-2xl border-b border-white/[0.06] transition-colors duration-150 shrink-0"
+      className={`sticky top-0 z-[1000] h-[40px] w-full flex items-center justify-between pr-0 text-xs select-none bg-[#0A0F1A]/95 backdrop-blur-2xl border-b border-white/[0.06] transition-colors duration-150 shrink-0 ${
+        isMac ? 'pl-[78px]' : 'pl-3.5'
+      }`}
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       {/* LEFT SECTION: Logo & App Title Only */}
@@ -88,54 +98,57 @@ export default function TitleBar() {
         </span>
       </div>
 
-      {/* CENTER SECTION: Completely Empty for Minimal Desktop Aesthetic */}
+      {/* CENTER SECTION: Spacer */}
       <div className="flex-1 h-full" />
 
-      {/* RIGHT SECTION: Native Windows Desktop Control Buttons */}
-      <div
-        className="flex items-center h-full"
-        style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-      >
-        {/* Minimize */}
-        <button
-          onClick={handleMinimize}
-          className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-100 cursor-default"
-          title="Minimize"
+      {/* RIGHT SECTION: Native Windows Desktop Control Buttons (Hidden on macOS) */}
+      {!isMac && (
+        <div
+          className="flex items-center h-full"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
-          <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor">
-            <rect width="10" height="1" />
-          </svg>
-        </button>
-
-        {/* Maximize / Restore */}
-        <button
-          onClick={handleMaximize}
-          className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-100 cursor-default"
-          title={isMaximized ? "Restore" : "Maximize"}
-        >
-          {isMaximized ? (
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
-              <path d="M3 3v-2h6v6h-2" />
-              <rect x="1" y="3" width="6" height="6" fill="none" />
+          {/* Minimize */}
+          <button
+            onClick={handleMinimize}
+            className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-100 cursor-default"
+            title="Minimize"
+          >
+            <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor">
+              <rect width="10" height="1" />
             </svg>
-          ) : (
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
-              <rect x="1" y="1" width="8" height="8" />
-            </svg>
-          )}
-        </button>
+          </button>
 
-        {/* Close (Turns red ONLY on hover) */}
-        <button
-          onClick={handleClose}
-          className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#E81123] active:bg-[#C40A18] transition-colors duration-100 cursor-default"
-          title="Close"
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
-            <path d="M1 1l8 8M9 1L1 9" />
-          </svg>
-        </button>
-      </div>
+          {/* Maximize / Restore */}
+          <button
+            onClick={handleMaximize}
+            className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors duration-100 cursor-default"
+            title={isMaximized ? "Restore" : "Maximize"}
+          >
+            {isMaximized ? (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
+                <path d="M3 3v-2h6v6h-2" />
+                <rect x="1" y="3" width="6" height="6" fill="none" />
+              </svg>
+            ) : (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1">
+                <rect x="1" y="1" width="8" height="8" />
+              </svg>
+            )}
+          </button>
+
+          {/* Close (Turns red ONLY on hover) */}
+          <button
+            onClick={handleClose}
+            className="h-full w-[46px] flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#E81123] active:bg-[#C40A18] transition-colors duration-100 cursor-default"
+            title="Close"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path d="M1 1l8 8M9 1L1 9" />
+            </svg>
+          </button>
+        </div>
+      )}
     </header>
   );
 }
+

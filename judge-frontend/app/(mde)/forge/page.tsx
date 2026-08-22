@@ -4,8 +4,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { anime } from "../../lib/utils/anime";
 import { useAppContext } from "../../lib/auth/context";
-import { runCode } from "../../lib/api/api";
-import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History, Download, Folder, FolderOpen, FileCode } from "lucide-react";
+import { Play, Square, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2, History, Download, Folder, FolderOpen, FileCode, Zap } from "lucide-react";
+import { usePyodideWorker } from "../../../hooks/usePyodideWorker";
 
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import FileExplorer from "../../../components/Editor/FileExplorer";
@@ -53,6 +53,15 @@ export default function CodeTestPage() {
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
     const [showLimitFlash, setShowLimitFlash] = useState(false);
     const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
+    const {
+        runCode: runPyodideCode,
+        terminate: terminatePyodide,
+        isRunning: isPyodideRunning,
+        isLoading: isPyodideLoading,
+        isReady: isPyodideReady,
+        statusMessage: pyodideStatus,
+    } = usePyodideWorker();
 
     const [mainContentWidth, setMainContentWidth] = useState(65); // percentage for editor
     const [secondaryContentWidth, setSecondaryContentWidth] = useState(45); // percentage for input/output in wide
@@ -522,35 +531,39 @@ export default function CodeTestPage() {
             router.push(`/login?next=${encodeURIComponent(pathname)}`);
             return;
         }
-        if (isLoading) return;
+        if (isLoading || isPyodideRunning) return;
 
         setIsLoading(true);
 
         try {
-            // Check forge limits
-            const limitCheck = await checkForgeLimit(user.id);
-            if (!limitCheck.allowed) {
-                setShowLimitFlash(true);
-                setIsLoading(false);
-                return;
-            }
-
             if (isMobile) {
                 setMobileTab("output");
             }
             setOutput(null);
-            let res;
-            if (hasMultiFileAccess) {
-                const filesArray = Object.values(files)
+
+            const filesArray = hasMultiFileAccess
+                ? Object.values(files)
                     .filter(f => !f.isFolder)
-                    .map(f => ({ path: f.path, content: f.content }));
-                res = await runCode(filesArray, input, activeFilePath);
-            } else {
-                res = await runCode(code, input);
-            }
-            setOutput(res);
-            // Record successful run
-            await recordForgeRun(user.id);
+                    .map(f => ({ path: f.path, content: f.content }))
+                : [{ path: "main.py", content: code }];
+
+            const codeToRun = hasMultiFileAccess
+                ? (files[activeFilePath]?.content || code)
+                : code;
+
+            const res = await runPyodideCode(codeToRun, {
+                stdin: input,
+                files: filesArray,
+                timeoutMs: 20000,
+                autoLoadPackages: true,
+            });
+
+            setOutput({
+                stdout: res.stdout,
+                stderr: res.stderr || null,
+                status: res.status === "success" ? "Success" : res.status === "timeout" ? "Timeout" : "Runtime Error",
+                duration: res.executionTimeMs / 1000,
+            });
         } catch (error: unknown) {
             const err = error as Error;
             setOutput({
@@ -670,6 +683,15 @@ export default function CodeTestPage() {
                                 }`}
                         >
                             {showFileExplorer ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
+                        </button>
+                    )}
+                    {isPyodideRunning && (
+                        <button
+                            onClick={terminatePyodide}
+                            title="Force Stop Execution"
+                            className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-[0_4px_12px_rgba(225,29,72,0.3)] active:scale-95 transition animate-pulse"
+                        >
+                            <Square className="w-4 h-4 fill-current" />
                         </button>
                     )}
                     <button

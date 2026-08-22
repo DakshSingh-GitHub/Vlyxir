@@ -14,8 +14,9 @@
     "generate-problems": "node generate_problems.js",
     "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && cross-env ELECTRON_START_URL=http://localhost:3000 electron .\"",
     "build:exe": "next build && electron-builder --win",
-    "build:dmg": "next build && electron-builder --mac",
-    "electron:dist": "next build && electron-builder --win --mac"
+    "build:dmg": "next build && electron-builder --mac --arm64",
+    "build:dmg:universal": "next build && electron-builder --mac --universal",
+    "electron:dist": "next build && electron-builder --win --mac --arm64"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.6",
@@ -73,11 +74,43 @@
       "icon": "public/icons/icon-512x512.png"
     },
     "mac": {
+      "category": "public.app-category.developer-tools",
       "target": [
-        "dmg",
-        "zip"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
       ],
-      "icon": "public/icons/icon-512x512.png"
+      "icon": "public/icons/icon-512x512.png",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
     },
     "nsis": {
       "oneClick": false,

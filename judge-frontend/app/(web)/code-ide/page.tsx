@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { anime } from "../../lib/utils/anime";
 import { useAppContext } from "../../lib/auth/context";
-import { runCode } from "../../lib/api/api";
-import { Play, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2 } from "lucide-react";
+import { Play, Square, Terminal, Cpu, AlertCircle, Loader2, MessageSquare, RotateCcw, X, PanelTop, Code2 } from "lucide-react";
+import { usePyodideWorker } from "../../../hooks/usePyodideWorker";
 
 import CodeEditor from "../../../components/Editor/CodeEditor";
 import { ideLayoutOptions, IdeUiLayout } from "./layoutOptions";
@@ -42,6 +42,12 @@ export default function CodeTestPage() {
     const [selectedLayout, setSelectedLayout] = useState<IdeUiLayout>("classic");
     const [isLayoutModalOpen, setIsLayoutModalOpen] = useState(false);
     const [showLimitFlash, setShowLimitFlash] = useState(false);
+
+    const {
+        runCode: runPyodideCode,
+        terminate: terminatePyodide,
+        isRunning: isPyodideRunning,
+    } = usePyodideWorker();
 
     const mainContentRef = useRef<HTMLDivElement>(null);
     const outputRef = useRef<HTMLDivElement>(null);
@@ -217,27 +223,22 @@ export default function CodeTestPage() {
             router.push(`/login?next=${encodeURIComponent(pathname)}`);
             return;
         }
-        if (isLoading) return;
+        if (isLoading || isPyodideRunning) return;
 
         setIsLoading(true);
 
         try {
-            // Check forge limits
-            const limitCheck = await checkForgeLimit(user.id);
-            if (!limitCheck.allowed) {
-                setShowLimitFlash(true);
-                setIsLoading(false);
-                return;
-            }
-
             if (isMobile) {
                 setMobileTab("output");
             }
             setOutput(null);
-            const res = await runCode(code, input);
-            setOutput(res);
-            // Record successful run
-            await recordForgeRun(user.id);
+            const res = await runPyodideCode(code, { stdin: input, timeoutMs: 20000 });
+            setOutput({
+                stdout: res.stdout,
+                stderr: res.stderr || null,
+                status: res.status === "success" ? "Success" : res.status === "timeout" ? "Timeout" : "Runtime Error",
+                duration: res.executionTimeMs / 1000
+            });
         } catch (error: unknown) {
             const err = error as Error;
             setOutput({
@@ -293,6 +294,15 @@ export default function CodeTestPage() {
                     >
                         <RotateCcw className="w-4 h-4" />
                     </button>
+                    {isPyodideRunning && (
+                        <button
+                            onClick={terminatePyodide}
+                            title="Force Stop Execution"
+                            className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/30 active:scale-95 transition animate-pulse"
+                        >
+                            <Square className="w-4 h-4 fill-current" />
+                        </button>
+                    )}
                     <button
                         onClick={handleRun}
                         disabled={isLoading || isAuthLoading || !user}
