@@ -27,17 +27,18 @@ const TIERS = [
     {
         id: "free",
         name: "Free",
-        description: "Perfect for students and hobbyists getting started.",
-        forgeSubmissions: 10,
+        description: "Unlimited client-side Python execution powered by WebAssembly.",
+        forgeSubmissions: "Unlimited",
         aiInsights: null,
         features: [
-            "Standard Code Execution",
+            "Unlimited Forge Execution (WASM)",
+            "Auto Package Loading (numpy, pandas)",
+            "Sub-Millisecond Client Execution",
+            "Single-File Playground Workspace",
             "Problems on Arena",
             "Public Forums Access",
-            "Vlyxir Forge",
-            "Community Support",
-            "1v1 Duel",
-            "Join Interviews"
+            "1v1 Duel & Join Interviews",
+            "Community Support"
         ],
         icon: Terminal,
         color: "text-slate-400 dark:text-slate-350",
@@ -48,16 +49,17 @@ const TIERS = [
     {
         id: "tier1",
         name: "Pro Tier 1",
-        description: "Boost your productivity with higher limits.",
-        forgeSubmissions: 25,
+        description: "Boost your developer workflow with unlimited WASM and early features.",
+        forgeSubmissions: "Unlimited",
         aiInsights: null,
         features: [
-            "Increased Forge Quota",
-            "Private Leaderboard",
-            "Early Access Features",
-            "Early Access to new UIs",
-            "1v1 Duel",
-            "Join Interviews"
+            "Unlimited Forge Execution (WASM)",
+            "Auto Package Loading (numpy, pandas)",
+            "Extended Timeout Watchdog",
+            "Private Leaderboard & Stats",
+            "Early Access Features & New UIs",
+            "1v1 Duel & Join Interviews",
+            "Priority Community Badge"
         ],
         icon: Zap,
         color: "text-blue-500 dark:text-blue-400",
@@ -69,20 +71,17 @@ const TIERS = [
     {
         id: "tier2",
         name: "Pro Tier 2",
-        description: "Unleash the power of AI-assisted coding.",
-        forgeSubmissions: 40,
+        description: "Unleash the power of AI-assisted coding and multi-file projects.",
+        forgeSubmissions: "Unlimited",
         aiInsights: 10,
         features: [
-            "Higher Execution Quota",
+            "Unlimited Forge Execution (WASM)",
+            "Multi-File Project Workspace Tree",
             "10 Daily AI Insights",
-            "Static Findings",
-            "Code Complexity Analysis",
-            "Early Access Features",
-            "Early Access to new UIs",
-            "Multi-file access",
-            "1v1 Duel",
-            "Join Interviews",
-            "Host Interview"
+            "Static Findings & Complexity Analysis",
+            "Early Access Features & New UIs",
+            "Host & Conduct Technical Interviews",
+            "Priority Support"
         ],
         icon: BrainCircuit,
         color: "text-indigo-500 dark:text-indigo-400",
@@ -94,23 +93,19 @@ const TIERS = [
     {
         id: "tier3",
         name: "Pro Tier 3",
-        description: "The ultimate platform for professional developers.",
-        forgeSubmissions: 100,
+        description: "The ultimate platform for professional developers and power users.",
+        forgeSubmissions: "Unlimited",
         aiInsights: 20,
         features: [
-            "Maximum Forge Quota",
+            "Unlimited Forge Execution (WASM)",
+            "Multi-File Project Workspace Tree",
             "20 Daily AI Insights",
-            "Model Selection Choice",
-            "Direct Technical Support",
+            "Model Selection Choice & Priority AI",
             "Security Vulnerability Scans",
             "Logic Optimization Reports",
-            "Early Access Features",
-            "Improvement Roadmap",
-            "Recommended Reference Code",
-            "Priority Support",
-            "1v1 Duel",
-            "Join Interviews",
-            "Host Interview"
+            "Improvement Roadmap & Reference Code",
+            "Direct Technical Priority Support",
+            "Host & Conduct Technical Interviews"
         ],
         icon: Crown,
         color: "text-amber-500 dark:text-amber-400",
@@ -124,17 +119,19 @@ const COMPARISON_FEATURES = [
     { name: "Problems on Arena", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Test Cases on problems", free: true, tier1: true, tier2: true, tier3: true },  
     { name: "Test Cases / problem", free: "80-160", tier1: "80-160", tier2: "80-160", tier3: "80-160" }, 
-    { name: "Vlyxir Forge", free: true, tier1: true, tier2: true, tier3: true },
-    { name: "Forge Submissions / day", free: "10", tier1: "25", tier2: "40", tier3: "100" },
+    { name: "Vlyxir Forge Engine", free: "Client WASM", tier1: "Client WASM", tier2: "Client WASM", tier3: "Client WASM" },
+    { name: "Forge Python Executions", free: "Unlimited", tier1: "Unlimited", tier2: "Unlimited", tier3: "Unlimited" },
+    { name: "Zero-Latency Client Compute", free: true, tier1: true, tier2: true, tier3: true },
+    { name: "Auto Package Loading (numpy, etc.)", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Public Forums Access", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Community Support", free: true, tier1: true, tier2: true, tier3: true },
-    { name: "1v1 Duel", free:true, tier1:true, tier2:true, tier3:true },
-    { name: "Join Interviews", free:true, tier1:true, tier2:true, tier3:true },
+    { name: "1v1 Duel", free: true, tier1: true, tier2: true, tier3: true },
+    { name: "Join Interviews", free: true, tier1: true, tier2: true, tier3: true },
     { name: "Private Leaderboard", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access to new UIs", free: false, tier1: true, tier2: true, tier3: true },
     { name: "Early Access Features", free: false, tier1: true, tier2: true, tier3: true },
-    { name: "Host Interview", free:false, tier1:false, tier2:true, tier3:true },
-    { name: "Multi-File Access", free:false, tier1:false, tier2:true, tier3:true },
+    { name: "Multi-File Project Workspace", free: false, tier1: false, tier2: true, tier3: true },
+    { name: "Host Interview", free: false, tier1: false, tier2: true, tier3: true },
     { name: "Vlyxir Insights", free: false, tier1: false, tier2: true, tier3: true },
     { name: "AI Insights / day", free: "N/A", tier1: "N/A", tier2: "10", tier3: "20" },
     { name: "Complexity Analysis", free: false, tier1: false, tier2: true, tier3: true },
@@ -438,10 +435,10 @@ export default function UpgradeTiersPage() {
                         >
                             <h3 className="text-lg font-black mb-3 flex items-center gap-2">
                                 <Zap className="w-4.5 h-4.5" />
-                                How do Forge Submissions work?
+                                How does Vlyxir Forge execution work?
                             </h3>
                             <p className={`text-xs sm:text-sm leading-relaxed font-medium ${isDark ? "text-slate-400" : "text-slate-650"}`}>
-                                Forge submissions represent your daily quota for code execution on the Vlyxir cloud. Your quota resets every day at 00:00 UTC. Higher tiers allow for more intensive development sessions with priority runtime speeds and dedicated execution threads.
+                                Vlyxir Forge is powered by an in-browser WebAssembly Python runtime (Pyodide in dedicated Web Workers). All tiers, including Free, enjoy unlimited, zero-latency code execution without queueing or server roundtrips. Higher tiers unlock full multi-file project workspace trees, AI code intelligence, and collaborative interview hosting.
                             </p>
                         </motion.div>
 

@@ -1,9 +1,9 @@
 import { supabase } from "./supabase/client";
 
-export const FORGE_FREE_LIMIT = 10;
-export const FORGE_PRO_TIER1_LIMIT = 25;
-export const FORGE_PRO_TIER2_LIMIT = 40;
-export const FORGE_PRO_TIER3_LIMIT = 100;
+export const FORGE_FREE_LIMIT = Infinity;
+export const FORGE_PRO_TIER1_LIMIT = Infinity;
+export const FORGE_PRO_TIER2_LIMIT = Infinity;
+export const FORGE_PRO_TIER3_LIMIT = Infinity;
 
 export const AI_FREE_LIMIT = 0;
 export const AI_PRO_TIER1_LIMIT = 0;
@@ -96,7 +96,7 @@ export async function checkForgeLimit(userId: string) {
         }
 
         const runCount = count || 0;
-        if (runCount >= dailyLimit) {
+        if (dailyLimit !== Infinity && runCount >= dailyLimit) {
             return { allowed: false, count: runCount, role, plan, tier, limit: dailyLimit, aiLimit };
         }
 

@@ -318,8 +318,8 @@ export default function YourPlanPage() {
                                 <div className="space-y-3 mb-6">
                                     <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-500">
                                         <span>Submissions Quota</span>
-                                        <span className={isDark ? "text-indigo-400" : "text-indigo-650"}>
-                                            {Math.round(forgeUsagePercent)}% Consumed
+                                        <span className={isDark ? "text-emerald-400" : "text-emerald-600"}>
+                                            {planDetails?.limit === Infinity ? "Unlimited (WASM)" : `${Math.round(forgeUsagePercent)}% Consumed`}
                                         </span>
                                     </div>
                                     <div className={`h-3 w-full rounded-full overflow-hidden border p-0.5 ${
@@ -327,9 +327,9 @@ export default function YourPlanPage() {
                                     }`}>
                                         <motion.div 
                                             initial={{ width: 0 }}
-                                            animate={{ width: `${forgeUsagePercent}%` }}
+                                            animate={{ width: `${planDetails?.limit === Infinity ? 100 : forgeUsagePercent}%` }}
                                             transition={{ duration: 0.8, ease: "easeOut" }}
-                                            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 rounded-full shadow-lg shadow-indigo-500/20"
+                                            className="h-full bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-400 rounded-full shadow-lg shadow-emerald-500/20"
                                         />
                                     </div>
                                 </div>

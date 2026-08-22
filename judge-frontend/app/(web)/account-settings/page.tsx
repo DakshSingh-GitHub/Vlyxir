@@ -1076,12 +1076,12 @@ export default function AccountSettingsPage() {
                 </div>
                 
                 <span className="text-xs font-black">
-                  {userRole === 'super' ? 'Unlimited' : `${forgeUsage} / ${forgeLimit}`}
+                  {userRole === 'super' || forgeLimit === Infinity ? 'Unlimited (WASM)' : `${forgeUsage} / ${forgeLimit}`}
                 </span>
               </div>
 
               <div className="space-y-3.5">
-                {userRole !== 'super' ? (
+                {userRole !== 'super' && forgeLimit !== Infinity ? (
                   <div className={`h-2.5 w-full rounded-full overflow-hidden p-0.5 border ${
                     isDark ? "bg-slate-950/80 border-white/5" : "bg-slate-100 border-slate-200"
                   }`}>
@@ -1093,12 +1093,14 @@ export default function AccountSettingsPage() {
                     />
                   </div>
                 ) : (
-                  <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 shadow-[0_0_15px_rgba(245,158,11,0.45)] border border-amber-400/20 animate-pulse" />
+                  <div className="h-2.5 w-full rounded-full bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_15px_rgba(16,185,129,0.35)] border border-emerald-400/20" />
                 )}
                 
                 <p className={`text-[10px] font-bold leading-relaxed ${isDark ? "text-slate-500" : "text-slate-550"}`}>
                   {userRole === 'super' 
                     ? "Sovereign admin clearance detected. Unlimited cloud compiler cores allocated. Welcome back, Daksh." 
+                    : forgeLimit === Infinity
+                    ? "Unlimited client-side WebAssembly Python execution (Pyodide Web Worker engine)."
                     : `Your allocation of ${forgeLimit} daily forge compilations resets strictly at 00:00 UTC.`}
                 </p>
               </div>
