@@ -17,3 +17,4 @@ judge-frontend/.next
 judge-frontend/node_modules
 judge-backend/jbe
 /.vscode/
+judge-frontend/scripts

@@ -38,14 +38,14 @@ export default function DownloadPage() {
           <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-cyan-500/15 dark:bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
           {/* Badge */}
-          <motion.div 
+          {/* <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-widest backdrop-blur-xl shadow-lg"
           >
             <Sparkles className="h-4 w-4 text-cyan-400 animate-pulse" />
             <span>Vlyxir Desktop Engine v7.3.20</span>
-          </motion.div>
+          </motion.div> */}
 
           {/* Headline */}
           <motion.h1 

@@ -246,18 +246,23 @@ export async function saveSubmission(submission: {
     return mapSubmissionRow(data as SubmissionRow);
 }
 
-export async function getSubmissions(): Promise<Submission[]> {
+export async function getSubmissions(limit: number = 2000): Promise<Submission[]> {
     if (typeof window === "undefined") return [];
 
     const userId = await getCurrentUserId();
     if (!userId) return [];
 
-    const { data, error } = await supabase
+    let query = supabase
         .from("submissions")
         .select("*")
         .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(50);
+        .order("created_at", { ascending: false });
+
+    if (limit > 0) {
+        query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         console.error("Failed to load submissions", error);

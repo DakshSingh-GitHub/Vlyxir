@@ -192,14 +192,15 @@ const ProblemList = memo(function ProblemList({ onSelect, selectedId, setIsSideb
                 // At least one of the selected types
                 matchesStatus = (correct && hasCorrect) || (incorrect && hasIncorrect);
             } else {
-                // Strict check when only one is selected
                 if (correct && !incorrect) {
-                    matchesStatus = hasCorrect && !hasIncorrect;
+                    // Correct: has at least one accepted answer
+                    matchesStatus = hasCorrect;
                 } else if (!correct && incorrect) {
+                    // Incorrect: attempted but not yet solved
                     matchesStatus = hasIncorrect && !hasCorrect;
                 } else {
-                    // Both selected, hasOne false -> default behavior (all attempted)
-                    matchesStatus = isAttempted;
+                    // Both selected: problem is solved or attempted
+                    matchesStatus = hasCorrect || hasIncorrect || isAttempted;
                 }
             }
         }

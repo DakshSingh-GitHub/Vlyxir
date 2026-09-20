@@ -575,7 +575,8 @@ export default function YourProfilePage() {
 
     const { daySquares, monthLabels } = useMemo(() => {
         const today = new Date();
-        const startDate = new Date();
+        const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+        const startDate = new Date(today);
         startDate.setDate(today.getDate() - 230); // 36 weeks ago (252 days)
         // Align to start of week (Sunday)
         const dayOfWeek = startDate.getDay();
@@ -584,7 +585,7 @@ export default function YourProfilePage() {
         const daySquares: { date: Date; dateStr: string; dayIndex: number }[] = [];
         const tempDate = new Date(startDate);
 
-        while (tempDate <= today) {
+        while (tempDate <= endOfToday) {
             daySquares.push({
                 date: new Date(tempDate),
                 dateStr: tempDate.toISOString().split('T')[0],
