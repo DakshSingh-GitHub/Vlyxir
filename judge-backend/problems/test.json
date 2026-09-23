@@ -1,7 +1,22 @@
 {
     "id": "test",
-    "title": "Test",
+    "title": "Test Problem",
+    "description": "A simple test problem that reads an integer and prints its square.",
+    "difficulty": "easy",
     "tags": [
-        "General"
+        "General",
+        "Math"
+    ],
+    "sample_test_cases": [
+        {
+            "input": "4\n",
+            "output": "16\n"
+        }
+    ],
+    "hidden_test_cases": [
+        {
+            "input": "5\n",
+            "output": "25\n"
+        }
     ]
 }

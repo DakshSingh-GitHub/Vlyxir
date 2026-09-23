@@ -4,4 +4,5 @@ pydantic
 psutil
 python-multipart
 pyjwt
-# Keep any other necessary dependencies if they exist
+httpx
+

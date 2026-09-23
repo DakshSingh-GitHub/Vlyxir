@@ -145,3 +145,47 @@ To prevent future agents from reading the entire 12,000+ line file, use these ex
 > Provide multi-language code snippets (Python, Java, C++, JavaScript) with a strict no-emoji policy in the language switch bar.
 > 
 > Maintain a 16-section structure detailing theory, hardware optimizations, real-world scaling, and quiz verifications.
+
+---
+
+## Session: Profile 221-Day Database Streak Seeder, Backup/Restore & Arena Solved Filter Fix
+
+### Date
+September 20, 2026
+
+### Overview
+In this session, we engineered a complete database seeding and backup/restore infrastructure for user `@daksh_dtlz_564` (`id: 9382fd94-9e42-46ae-a44c-c90b6c18e871`), populating an authentic 221-day continuous activity streak in Supabase. We also diagnosed and resolved an issue on the `/arena` route where solved problems were missing from the problem selection modal.
+
+### Key Work Completed
+
+#### 1. Database Backup & Restore Infrastructure (`judge-frontend/scripts/`)
+- **`backup_user_submissions.js`**: Snapshots the user's live profile and all existing submissions directly to `backup_user_submissions.json`.
+- **`backup_user_submissions.json`**: Safely archived the original 12 submissions and baseline score of 120 points before any modifications.
+- **`restore_backup.js`**: An automated rollback script that purges seeded submissions, re-inserts the original 12 submissions, and restores `profiles.total_score` to 120 in Supabase anytime via `node scripts/restore_backup.js`.
+
+#### 2. Live Database Streak Seeder (`seed_database_streak.js`)
+- **Streak Duration**: Exactly **221 consecutive active days** from **February 12, 2026 to September 20, 2026** (today).
+- **Daily Rate**: 1 to 4 questions per day, mapping **330 distinct problems** from `judge-backend/problems/`.
+- **Minimal Hard Questions**: Carefully distributed difficulty:
+  - **160 Easy** questions
+  - **160 Medium** questions
+  - **10 Hard** questions (strict minimum)
+- **Authentic Code Solutions**: Every submission includes genuine, working Python code tailored to that specific problem's algorithmic logic and I/O format.
+- **Accuracy Calibration (79% – 88% exclusive)**:
+  - Generated initial "Wrong Answer" (WA) submissions with partial test passes for ~20% of problems, followed 10–15 minutes later by an Accepted solution.
+  - Profile first-attempt accuracy evaluates to **81.71%**, meeting the strict 79%–88% exclusive requirement.
+- **Prestige Score**:
+  - Solved problem points (160×10 + 160×20 + 10×30 = 5,100 pts) + 221-day streak bonus (221×5 = 1,105 pts) = **6,205 points**.
+  - Updated `profiles.total_score` to **6,205** (securing Rank #1 on the global leaderboard).
+  - Total submissions in Supabase: **466 rows**.
+
+#### 3. Arena Problem List & Solved Filter Fix
+- **Issue**: On the `/arena` route, when filtering by "Solved" or "Correct", recent submissions did not show up in the problem drawer/modal.
+- **Root Causes**:
+  1. `getSubmissions()` in `judge-frontend/app/lib/utils/storage.ts` was hardcoded to `.limit(50)`, truncating the 466 submissions down to 50 and dropping ~295 solved problems.
+  2. In `judge-frontend/components/ProblemList.tsx`, the filter for "Correct" checked `hasCorrect && !hasIncorrect`, causing any problem with an earlier WA attempt to be filtered out even if it was Accepted.
+- **Fixes Applied**:
+  - `storage.ts`: Increased default limit in `getSubmissions(limit: number = 2000)` so all user submissions are fetched.
+  - `ProblemList.tsx`: Updated filter logic so "Correct" checks `hasCorrect` directly (per the description "at least one accepted answer"), and "Incorrect" checks `hasIncorrect && !hasCorrect`.
+- **Result**: All **330 solved problems** now render with green checkmarks and display in the Arena selection modal when filtered.
+

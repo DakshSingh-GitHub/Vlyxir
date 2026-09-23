@@ -1,70 +1,16 @@
 import json
 import os
+import re
 from typing import List, Optional
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import jwt
 from runner import run_code_multiple, run_code_once, run_code_multi
 
-app = FastAPI(title="Judge Backend", description="FastAPI migration of the Code Judge backend")
-
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
-
-def get_current_user(authorization: Optional[str] = Header(None)):
-    if not SUPABASE_JWT_SECRET:
-        # If no secret is provided, we might be in dev mode,
-        # but for security, we should ideally require it.
-        # For now, let's just log a warning and allow if not set,
-        # OR enforce it. Given this is a security fix, let's enforce it if not in dev.
-        if os.getenv("ENV") == "production":
-            raise HTTPException(status_code=500, detail="JWT secret not configured")
-        return {"id": "dev-user"}
-
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-# Configure CORS
-allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
-if allowed_origins_env:
-    # Handle the case where someone might put "*" in the env var,
-    # but we want to encourage specific origins.
-    allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
-else:
-    # Default to localhost for development and the production domain
-    allowed_origins = [
-        "http://localhost:3000",
-        "https://vlyxir.vercel.app"
-    ]
-
-# If we are in production, we should definitely NOT allow "*"
-if os.getenv("ENV") == "production" and "*" in allowed_origins:
-    # Force a more restrictive policy or log a critical warning
-    # For now, let's just remove the wildcard if other origins are present
-    allowed_origins = [o for o in allowed_origins if o != "*"]
-    if not allowed_origins:
-         allowed_origins = ["https://vlyxir.vercel.app"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    # Allow Vercel preview deployments (supports both vlyxir- and code-judge- prefixes)
-    allow_origin_regex=r"https://(vlyxir|code-judge)-.*\.vercel\.app",
-    allow_credentials=True,
-    allow_methods=["POST", "GET"], # Restrict to necessary methods
-    allow_headers=["Content-Type", "Authorization"], # Restrict to necessary headers
-)
-
-PROBLEMS_DIR = "problems"
+PROBLEMS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "problems")
 
 TAG_RULES = {
     "Array": ["array", "list", "permutation", "duplicate", "intersect", "subarray", "subsequence", "rotate", "vector", "wealth", "sorted_array", "squares_of", "move_zeroes", "remove_duplicates"],
@@ -113,6 +59,101 @@ def get_problem_tags(problem: dict) -> List[str]:
 
     return sorted(list(tags))
 
+# In-Memory Cache
+PROBLEMS_CACHE: dict = {}
+PROBLEMS_LIST_CACHE: List[dict] = []
+
+def load_all_problems():
+    global PROBLEMS_CACHE, PROBLEMS_LIST_CACHE
+    PROBLEMS_CACHE.clear()
+    PROBLEMS_LIST_CACHE.clear()
+
+    if not os.path.exists(PROBLEMS_DIR):
+        return
+
+    for filename in sorted(os.listdir(PROBLEMS_DIR)):
+        if not filename.endswith(".json"):
+            continue
+        problem_path = os.path.join(PROBLEMS_DIR, filename)
+        try:
+            with open(problem_path, "r", encoding="utf-8") as f:
+                problem = json.load(f)
+            prob_id = problem.get("id") or filename[:-5]
+            problem["id"] = prob_id
+            tags = get_problem_tags(problem)
+            problem["tags"] = tags
+            PROBLEMS_CACHE[prob_id] = problem
+            PROBLEMS_LIST_CACHE.append({
+                "id": prob_id,
+                "title": problem.get("title", ""),
+                "description": problem.get("description", ""),
+                "difficulty": problem.get("difficulty", "medium"),
+                "tags": tags,
+                "sample_test_cases_count": len(problem.get("sample_test_cases", [])),
+                "hidden_test_cases_count": len(problem.get("hidden_test_cases", []))
+            })
+        except Exception as e:
+            print(f"Error preloading problem {filename}: {e}")
+
+# Preload problems on module load
+load_all_problems()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    load_all_problems()
+    yield
+
+app = FastAPI(
+    title="Judge Backend",
+    description="FastAPI Code Judge backend with sub-millisecond in-memory cache",
+    lifespan=lifespan
+)
+
+def get_current_user(authorization: Optional[str] = Header(None)):
+    if not SUPABASE_JWT_SECRET:
+        if os.getenv("ENV") == "production":
+            raise HTTPException(status_code=500, detail="JWT secret not configured")
+        return {"id": "dev-user"}
+
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+
+    token = authorization.strip()
+    if token.lower().startswith("bearer "):
+        token = token[7:].strip()
+
+    try:
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+# Configure CORS
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",")]
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "https://vlyxir.vercel.app"
+    ]
+
+if os.getenv("ENV") == "production" and "*" in allowed_origins:
+    allowed_origins = [o for o in allowed_origins if o != "*"]
+    if not allowed_origins:
+        allowed_origins = ["https://vlyxir.vercel.app"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://(vlyxir|code-judge)-.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["POST", "GET"],
+    allow_headers=["Content-Type", "Authorization"],
+)
+
 # Pydantic Models
 class TestCase(BaseModel):
     input: str
@@ -148,7 +189,6 @@ class RunRequest(BaseModel):
     entrypoint: Optional[str] = None
     input: Optional[str] = ""
 
-
 class RunResponse(BaseModel):
     stdout: str
     stderr: Optional[str] = None
@@ -169,7 +209,7 @@ class SubmitResponse(BaseModel):
     final_status: str
     total_duration: float
     summary: dict
-    test_case_results: List[dict] # Modified slightly to handle visible results logic
+    test_case_results: List[dict]
 
 class ProblemSummary(ProblemBase):
     sample_test_cases_count: Optional[int] = 0
@@ -179,13 +219,11 @@ class ProblemsListResponse(BaseModel):
     count: int
     problems: List[ProblemSummary]
 
-# Helper Functions
 def normalize_judge_mode(raw_mode: Optional[str]) -> str:
     mode = str(raw_mode or "").strip().upper()
     if mode in ["ALL", "FIRST_FAIL"]:
         return mode
     return "ALL"
-
 
 def validate_problem_data(problem: dict) -> List[str]:
     errors = []
@@ -216,53 +254,26 @@ def home():
 
 @app.get("/problems", response_model=ProblemsListResponse)
 def list_problems():
-    problems = []
-    if not os.path.exists(PROBLEMS_DIR):
-        return {"count": 0, "problems": []}
-
-    for filename in os.listdir(PROBLEMS_DIR):
-        if not filename.endswith(".json"):
-            continue
-        problem_path = os.path.join(PROBLEMS_DIR, filename)
-        try:
-            with open(problem_path, "r", encoding="utf-8") as f:
-                problem = json.load(f)
-            problems.append({
-                "id": problem.get("id"),
-                "title": problem.get("title"),
-                "description": problem.get("description"),
-                "difficulty": problem.get("difficulty", "medium"),
-                "tags": get_problem_tags(problem),
-                "sample_test_cases_count": len(problem.get("sample_test_cases", [])),
-                "hidden_test_cases_count": len(problem.get("hidden_test_cases", []))
-            })
-        except Exception as e:
-            print(f"Error loading problem {filename}: {e}")
-            continue
-
-    return {"count": len(problems), "problems": problems}
+    return {
+        "count": len(PROBLEMS_LIST_CACHE),
+        "problems": PROBLEMS_LIST_CACHE
+    }
 
 @app.get("/problems/{problem_id}")
 def get_problem(problem_id: str):
-    problem_path = os.path.join(PROBLEMS_DIR, f"{problem_id}.json")
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", problem_id):
+        raise HTTPException(status_code=400, detail="Invalid problem ID format")
 
-    if not os.path.exists(problem_path):
-        return {"error": "Problem not found"}
-        
-    try:
-        with open(problem_path, "r", encoding="utf-8") as f:
-            problem = json.load(f)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Invalid JSON format in problem file")
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to load problem")
+    problem = PROBLEMS_CACHE.get(problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail="Problem not found")
 
     response = {
         "id": problem.get("id"),
         "title": problem.get("title"),
         "description": problem.get("description"),
         "difficulty": problem.get("difficulty", "medium"),
-        "tags": get_problem_tags(problem),
+        "tags": problem.get("tags", []),
         "sample_test_cases_count": len(problem.get("sample_test_cases", [])),
         "hidden_test_cases_count": len(problem.get("hidden_test_cases", []))
     }
@@ -284,17 +295,12 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
     if not problem_id:
         raise HTTPException(status_code=400, detail="No problem provided")
 
-    problem_path = os.path.join(PROBLEMS_DIR, f"{problem_id}.json")
-    if not os.path.exists(problem_path):
-        return {"error": "Problem not found"}
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", problem_id):
+        raise HTTPException(status_code=400, detail="Invalid problem ID format")
 
-    try:
-        with open(problem_path, "r", encoding="utf-8") as f:
-            problem = json.load(f)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=500, detail="Invalid JSON format in problem file")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to load problem: {str(e)}")
+    problem = PROBLEMS_CACHE.get(problem_id)
+    if not problem:
+        raise HTTPException(status_code=404, detail="Problem not found")
 
     errors = validate_problem_data(problem)
     if errors:
@@ -306,7 +312,7 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
     
     if request_data.test_only:
         test_cases = sample_tcs
-        judge_mode = "ALL" # Force ALL mode for testing samples
+        judge_mode = "ALL"
     else:
         test_cases = sample_tcs + hidden_tcs
 
@@ -320,30 +326,24 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
     )
 
     visible_results = []
-    for idx, tc_result in enumerate(result["test_case_results"]):
-        if idx < len(sample_tcs):
+    sample_count = len(sample_tcs)
+    for tc_result in result["test_case_results"]:
+        tc_num = tc_result.get("test_case", 0)
+        # Use tc_num (1-indexed) rather than enumeration index to prevent revealing hidden test cases under FIRST_FAIL slicing
+        if tc_num <= sample_count:
             visible_results.append(tc_result)
         else:
-            # Hide input/output for hidden test cases, but keep status
-            # UNLESS it failed, per user request
             res = {
-                "test_case": tc_result["test_case"],
+                "test_case": tc_num,
                 "status": tc_result["status"],
                 "duration": tc_result.get("duration")
             }
             if tc_result["status"] != "Accepted":
                 res["input"] = tc_result.get("input")
-                # We might want to show error too if it crashed
                 if tc_result.get("error"):
                     res["error"] = tc_result.get("error")
-                # And actual output if it was a wrong answer
                 if tc_result.get("actual_output"):
                     res["actual_output"] = tc_result.get("actual_output")
-                
-                # We probably shouldn't show expected output for hidden cases?
-                # User said "the testcase which led to the breaking should also be visible"
-                # Input is definitely "the testcase".
-                # I'll stick to revealing input and actual output/error.
             
             visible_results.append(res)
 
@@ -357,28 +357,25 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
 
 @app.post("/run", response_model=RunResponse)
 def run_code_endpoint(request_data: RunRequest, user: dict = Depends(get_current_user)):
-    user_input = request_data.input
+    user_input = request_data.input or ""
 
-    if request_data.files and request_data.entrypoint:
+    if request_data.files:
+        entrypoint = request_data.entrypoint or "main.py"
         files_dict = [{"path": f.path, "content": f.content} for f in request_data.files]
-        result = run_code_multi(
+        return run_code_multi(
             files=files_dict,
-            entrypoint=request_data.entrypoint,
+            entrypoint=entrypoint,
             user_input=user_input
         )
-        return result
 
-    # Use run_code_once for direct execution
     code = request_data.code
     if not code:
         raise HTTPException(status_code=400, detail="No code provided")
 
-    result = run_code_once(
+    return run_code_once(
         code=code,
         user_input=user_input
     )
-
-    return result
 
 if __name__ == "__main__":
     import uvicorn

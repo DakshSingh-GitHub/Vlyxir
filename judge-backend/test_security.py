@@ -56,29 +56,60 @@ def test_security():
             "expected_violation": True
         },
         {
-            "name": "Attempt to use sys module",
+            "name": "Attempt to use sys.modules",
             "code": "import sys; print(sys.modules)",
             "expected_violation": True
+        },
+        {
+            "name": "Subclasses sandbox escape",
+            "code": "print(().__class__.__base__.__subclasses__())",
+            "expected_violation": True
+        },
+        {
+            "name": "Global introspection escape",
+            "code": "def f(): pass\nprint(f.__globals__)",
+            "expected_violation": True
+        },
+        {
+            "name": "Legitimate variable with 'getattr'",
+            "code": "target_attribute = 42\nreset_attribute = 10\nprint(target_attribute + reset_attribute)",
+            "expected_violation": False
+        },
+        {
+            "name": "Legitimate method named open",
+            "code": "class Door:\n    def open(self):\n        return 'opened'\nd = Door()\nprint(d.open())",
+            "expected_violation": False
+        },
+        {
+            "name": "Standard CP sys.stdin usage",
+            "code": "import sys\nline = sys.stdin.readline()\nprint('read:', line)",
+            "expected_violation": False
         }
     ]
 
-    print(f"{'Test Name':<30} | {'Status':<10} | {'Result'}")
-    print("-" * 60)
+    print(f"{'Test Name':<35} | {'Status':<10} | {'Result'}")
+    print("-" * 65)
 
+    all_passed = True
     for tc in test_cases:
-        result = run_code_once(tc["code"], "")
+        result = run_code_once(tc["code"], "test input\n")
         stderr = result.get("stderr", "") or ""
         status = result.get("status", "")
         
         # Check if violation was detected either by status or stderr message
-        violation_detected = bool("Security Violation" in status or (stderr and WARNING_MESSAGE in stderr))
+        violation_detected = bool("Security" in status or "Security" in stderr or WARNING_MESSAGE in stderr)
         
         if violation_detected == tc["expected_violation"]:
-            print(f"{tc['name']:<30} | PASSED  | (Violation: {str(violation_detected)})")
+            print(f"{tc['name']:<35} | PASSED  | (Violation: {str(violation_detected)})")
         else:
-            print(f"{tc['name']:<30} | FAILED  | Expected: {tc['expected_violation']}, Got: {violation_detected}")
+            all_passed = False
+            print(f"{tc['name']:<35} | FAILED  | Expected: {tc['expected_violation']}, Got: {violation_detected}")
             print(f"  Status: {status}")
             print(f"  Stderr: {stderr}")
+
+    if not all_passed:
+        sys.exit(1)
+    print("\nAll security tests passed successfully!")
 
 if __name__ == "__main__":
     test_security()
