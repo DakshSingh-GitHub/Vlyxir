@@ -23,6 +23,15 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     const { user, isLoading, signOut, savedAccounts, switchAccount, removeAccount, dbProfile } = useAuth();
     const { isDark, isDailyModalOpen, setIsDailyModalOpen, dailyProblemEnabled, dailyProblemSolved } = useAppContext();
     const [imageError, setImageError] = useState(false);
+    const [isElectronMac, setIsElectronMac] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const hasElectron = window.electronAPI !== undefined || navigator.userAgent.toLowerCase().includes('electron');
+            const isMac = (window.electronAPI?.platform === 'darwin') || (navigator.platform?.toLowerCase().includes('mac') || navigator.userAgent.toLowerCase().includes('mac'));
+            setIsElectronMac(hasElectron && isMac);
+        }
+    }, []);
 
     const [interviewState, setInterviewState] = useState({
         isHost: false,
@@ -105,13 +114,19 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="relative z-50 shrink-0 px-3 pt-3 pb-2 opacity-0 md:px-6 md:pt-4 md:pb-3"
+            className={`relative z-50 shrink-0 px-3 pt-3 pb-2 opacity-0 md:px-6 md:pt-4 md:pb-3 ${
+                isElectronMac ? 'pl-[76px] pr-4 md:pl-[84px] md:pr-6' : ''
+            }`}
+            style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
         >
             <div className="mx-auto flex max-w-400 justify-center">
-                <div className={`relative w-[92vw] max-w-[92vw] rounded-full px-5 py-3.5 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${isDark
+                <div 
+                    className={`relative w-[92vw] max-w-[92vw] rounded-full px-5 py-3.5 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${isDark
                     ? "bg-[#0A0F1A]/40 ring-1 ring-white/10 backdrop-blur-3xl hover:bg-[#0A0F1A]/60 hover:ring-white/20"
                     : "bg-white/60 ring-1 ring-slate-900/10 backdrop-blur-3xl hover:bg-white/80 hover:ring-slate-900/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)]"
-                    }`}>
+                    }`}
+                    style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+                >
                     {/* Inner highlight for 3D effect */}
                     <div className={`pointer-events-none absolute inset-0 rounded-full border-[0.5px] ${isDark ? 'border-white/10' : 'border-white/60'}`} />
                     

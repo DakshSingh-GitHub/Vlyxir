@@ -40,6 +40,28 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
     const lobbyChannelRef = React.useRef<any>(null);
 
+    // Sync route with Electron desktop menu and listen for menu-driven navigation
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && window.electronAPI) {
+            window.electronAPI.updateCurrentRoute?.(pathname);
+        }
+    }, [pathname]);
+
+    React.useEffect(() => {
+        if (typeof window !== 'undefined' && window.electronAPI?.onNavigate) {
+            window.electronAPI.onNavigate((navPath: string) => {
+                if (navPath) {
+                    router.push(navPath);
+                }
+            });
+        }
+        if (typeof window !== 'undefined' && window.electronAPI?.onMenuAction) {
+            window.electronAPI.onMenuAction((action: string) => {
+                window.dispatchEvent(new CustomEvent('vlyxir-menu-action', { detail: action }));
+            });
+        }
+    }, [router]);
+
     const excludedPaths = ['/docs', '/docs-int', '/admin', '/visuals', '/meet-developer', '/login', '/register', '/leaderboard', '/community-guidelines', '/policies', '/what-is-vlyxir', '/features', '/your-plan'];
     const isNavExcluded = excludedPaths.includes(pathname) || pathname.startsWith('/forum') || pathname.startsWith('/user') || pathname.startsWith('/account');
     const NavComponent = useNewUi ? NewNavBar : NavBar;
@@ -306,7 +328,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     return (
         <main className={`flex flex-col h-screen overflow-hidden transition-colors duration-500 ${mainBgClass}`}>
             <div className="shrink-0 z-[100] relative">
-                <TitleBar />
+                <TitleBar isNavExcluded={isNavExcluded} />
                 {!isNavExcluded && (
                     <NavComponent
                         isSidebarOpen={isSidebarOpen}

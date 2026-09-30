@@ -112,6 +112,25 @@ export default function CodeTestPage() {
         }
     };
 
+    useEffect(() => {
+        const handleMenuAction = (e: Event) => {
+            const customEvent = e as CustomEvent<string>;
+            const action = customEvent.detail;
+            if (action === 'new-file') {
+                let counter = 1;
+                while (files[`untitled_${counter}.py`]) counter++;
+                handleCreateFile(`untitled_${counter}.py`, false);
+            } else if (action === 'new-folder') {
+                let counter = 1;
+                while (files[`new_folder_${counter}`]) counter++;
+                handleCreateFile(`new_folder_${counter}`, true);
+            }
+        };
+
+        window.addEventListener('vlyxir-menu-action', handleMenuAction);
+        return () => window.removeEventListener('vlyxir-menu-action', handleMenuAction);
+    }, [files]);
+
     const handleRename = (oldPath: string, newPath: string) => {
         setFiles(prev => {
             const updated = { ...prev };

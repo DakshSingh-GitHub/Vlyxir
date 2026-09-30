@@ -23,6 +23,15 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     const { user, isLoading, signOut, savedAccounts, switchAccount, removeAccount, dbProfile } = useAuth();
     const { isDark, isDailyModalOpen, setIsDailyModalOpen, dailyProblemEnabled, dailyProblemSolved } = useAppContext();
     const [imageError, setImageError] = useState(false);
+    const [isElectronMac, setIsElectronMac] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const hasElectron = window.electronAPI !== undefined || navigator.userAgent.toLowerCase().includes('electron');
+            const isMac = (window.electronAPI?.platform === 'darwin') || (navigator.platform?.toLowerCase().includes('mac') || navigator.userAgent.toLowerCase().includes('mac'));
+            setIsElectronMac(hasElectron && isMac);
+        }
+    }, []);
 
     const displayName =
         dbProfile?.full_name ||
@@ -79,9 +88,15 @@ const NavBar: React.FC<NavBarProps> = memo(({ isSidebarOpen, setIsSidebarOpen, s
     return (
         <header
             ref={headerRef}
-            className="relative z-50 shrink-0 border-b border-white/5 bg-white/70 px-4 py-3 opacity-0 backdrop-blur-2xl transition-all duration-300 dark:border-gray-800/40 dark:bg-[#0B0C15]/80 md:px-8 md:py-4"
+            className={`relative z-50 shrink-0 border-b border-white/5 bg-white/70 px-4 py-3 opacity-0 backdrop-blur-2xl transition-all duration-300 dark:border-gray-800/40 dark:bg-[#0B0C15]/80 md:px-8 md:py-4 ${
+                isElectronMac ? 'pl-[76px] md:pl-[84px]' : ''
+            }`}
+            style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
         >
-            <div className="mx-auto flex max-w-450 items-center justify-between px-0 md:px-10">
+            <div 
+                className="mx-auto flex max-w-450 items-center justify-between px-0 md:px-10"
+                style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+            >
                 <div
                     ref={navItemsRef}
                     className="flex items-center gap-4 opacity-0"
