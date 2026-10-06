@@ -132,7 +132,6 @@ def run_code_multi(files: list, entrypoint: str, user_input: str, time_limit: in
     """Executes multi-file workspace code in isolation and returns stdout, stderr, status, and duration."""
     import tempfile
     
-    # Static analysis security checks on all Python files
     for file_info in files:
         path = file_info.get("path", "")
         content = file_info.get("content", "")
@@ -258,7 +257,7 @@ def read_line_with_timeout(stream, timeout: float) -> str:
         r, _, _ = select.select([stream], [], [], timeout)
         if r:
             return stream.readline()
-        return None
+        return None # type: ignore
     else:
         q = queue.Queue()
         def reader():
@@ -271,7 +270,7 @@ def read_line_with_timeout(stream, timeout: float) -> str:
         t.start()
         t.join(timeout)
         if t.is_alive():
-            return None
+            return None # type: ignore
         return q.get_nowait()
 
 class JudgeWorker:
@@ -295,6 +294,7 @@ class JudgeWorker:
         )
         init_msg = json.dumps({"type": "init", "code": self.code})
         try:
+            assert self.process.stdin is not None
             self.process.stdin.write(init_msg + "\n")
             self.process.stdin.flush()
         except Exception as e:
@@ -302,6 +302,7 @@ class JudgeWorker:
             raise RuntimeError(f"Failed to communicate with worker: {e}")
         
         try:
+            assert self.process.stdout is not None
             resp_line = self.process.stdout.readline()
             if not resp_line:
                 raise RuntimeError("Worker process terminated unexpectedly during initialization")
@@ -320,14 +321,19 @@ class JudgeWorker:
 
         msg = json.dumps({"type": "run", "id": case_id, "input": user_input})
         try:
+            assert self.process is not None
+            assert self.process.stdin is not None
             self.process.stdin.write(msg + "\n")
             self.process.stdin.flush()
         except (BrokenPipeError, OSError):
             self.start_worker()
+            assert self.process is not None
+            assert self.process.stdin is not None
             self.process.stdin.write(msg + "\n")
             self.process.stdin.flush()
 
         resp_line = read_line_with_timeout(self.process.stdout, timeout)
+        # TLE SPECICIFIED FOR 2 SECONDS
         
         if resp_line is None:
             # Timed out! Kill process immediately to eliminate hang
@@ -425,7 +431,7 @@ def run_code_multiple(code: str, test_cases: list, mode="ALL"):
                 w = JudgeWorker(worker_script, code)
                 return w, None, None
             except Exception as e:
-                err_type = getattr(w, "init_error_type", "Compilation Error") if 'w' in locals() else "Compilation Error"
+                err_type = getattr(w, "init_error_type", "Compilation Error") if 'w' in locals() else "Compilation Error" # type: ignore
                 return None, str(e), err_type
 
         with ThreadPoolExecutor(max_workers=num_workers) as starter:
@@ -521,15 +527,15 @@ def run_code_multiple(code: str, test_cases: list, mode="ALL"):
         end_time = time.time()
         total_duration = end_time - start_time
         
-        results.sort(key=lambda x: x["test_case"])
+        results.sort(key=lambda x: x["test_case"]) # type: ignore
         
-        passed_count = sum(1 for r in results if r["status"] == "Accepted")
+        passed_count = sum(1 for r in results if r["status"] == "Accepted") # type: ignore
         final_status = "Accepted"
         
         if results:
             for r in results:
-                if r["status"] != "Accepted":
-                    final_status = r["status"]
+                if r["status"] != "Accepted": # type: ignore
+                    final_status = r["status"] # type: ignore
                     break
 
         return {

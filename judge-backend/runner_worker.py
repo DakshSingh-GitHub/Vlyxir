@@ -88,7 +88,7 @@ def main():
                 input_line = sys.stdin.readline()
                 return input_line.rstrip('\n')
 
-            exec_globals["input"] = custom_input
+            exec_globals["input"] = custom_input # type: ignore
             
             try:
                 sys.stdin = input_stream
@@ -103,8 +103,10 @@ def main():
                 user_frames = [f for f in frames if "<submission>" in f.filename or "<string>" in f.filename]
                 if user_frames:
                     tb_str = "".join(traceback.format_list(user_frames)).strip()
+                    assert exc_type is not None
                     error_output = f"{tb_str}\n{exc_type.__name__}: {exc_value}"
                 else:
+                    assert exc_type is not None
                     error_output = f"{exc_type.__name__}: {exc_value}"
             finally:
                 sys.stdin = sys.__stdin__
