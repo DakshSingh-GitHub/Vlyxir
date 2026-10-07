@@ -223,6 +223,8 @@ def normalize_judge_mode(raw_mode: Optional[str]) -> str:
     mode = str(raw_mode or "").strip().upper()
     if mode in ["ALL", "FIRST_FAIL"]:
         return mode
+    if mode == "STR_COMPARE_STRIP":
+        return "ALL"
     return "ALL"
 
 def validate_problem_data(problem: dict) -> List[str]:
@@ -304,7 +306,7 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
 
     errors = validate_problem_data(problem)
     if errors:
-        raise HTTPException(status_code=500, detail={"error": "Invalid problem definition", "details": errors})
+        raise HTTPException(status_code=500, detail="Failed to load problem")
 
     judge_mode = normalize_judge_mode(problem.get("judge_mode"))
     sample_tcs = problem.get("sample_test_cases", [])
@@ -317,7 +319,7 @@ def submit(request_data: SubmitRequest, user: dict = Depends(get_current_user)):
         test_cases = sample_tcs + hidden_tcs
 
     if not test_cases:
-        raise HTTPException(status_code=500, detail={"error": "Invalid problem definition", "details": ["No test cases configured for this problem"]})
+        raise HTTPException(status_code=500, detail="Failed to load problem")
 
     result = run_code_multiple(
         code=code,

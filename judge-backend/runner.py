@@ -117,7 +117,7 @@ builtins.input = custom_input
     except Exception as e:
         return {
             "stdout": "",
-            "stderr": str(e),
+            "stderr": "Internal Error",
             "status": "Internal Error",
             "duration": time.time() - start_t
         }
@@ -157,7 +157,7 @@ def run_code_multi(files: list, entrypoint: str, user_input: str, time_limit: in
                 
                 # Prevent directory traversal
                 target_path = os.path.realpath(os.path.join(real_temp_dir, path))
-                if not target_path.startswith(real_temp_dir):
+                if os.path.commonpath([real_temp_dir, target_path]) != real_temp_dir:
                     return {
                         "stdout": "",
                         "stderr": "Security Error: Directory traversal detected.",
@@ -171,7 +171,7 @@ def run_code_multi(files: list, entrypoint: str, user_input: str, time_limit: in
             
             # Validate entrypoint exists
             target_entrypoint = os.path.realpath(os.path.join(real_temp_dir, entrypoint))
-            if not target_entrypoint.startswith(real_temp_dir) or not os.path.exists(target_entrypoint):
+            if os.path.commonpath([real_temp_dir, target_entrypoint]) != real_temp_dir or not os.path.exists(target_entrypoint):
                 return {
                     "stdout": "",
                     "stderr": f"Runtime Error: Entrypoint file '{entrypoint}' not found.",
@@ -246,7 +246,7 @@ spec.loader.exec_module(module)
     except Exception as e:
         return {
             "stdout": "",
-            "stderr": str(e),
+            "stderr": "Internal Error",
             "status": "Internal Error",
             "duration": time.time() - start_t
         }
@@ -299,7 +299,7 @@ class JudgeWorker:
             self.process.stdin.flush()
         except Exception as e:
             self.kill()
-            raise RuntimeError(f"Failed to communicate with worker: {e}")
+            raise RuntimeError("Internal Error")
         
         try:
             assert self.process.stdout is not None
@@ -504,7 +504,7 @@ def run_code_multiple(code: str, test_cases: list, mode="ALL"):
                 return {
                     "test_case": index,
                     "status": "Internal Error",
-                    "error": str(e),
+                    "error": "Internal Error",
                     "input": tc.get("input", "")
                 }
             finally:
