@@ -3,7 +3,7 @@ import { SubmitResponse, Problem } from "../types/types";
 import { supabase } from "./supabase/client";
 
 const LOCAL_URL = "http://localhost:5000";
-const REMOTE_URL = "https://code-judge-6fm6.vercel.app";
+const REMOTE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://vlyxir-backend-714140748879.us-central1.run.app";
 
 function errorToString(err: unknown): string {
 	const error = err as Record<string, unknown>;
@@ -21,7 +21,12 @@ function errorToString(err: unknown): string {
 let resolvedBaseUrl: string | null = null;
 
 async function getBaseUrl() {
-	if (resolvedBaseUrl) return resolvedBaseUrl;
+	if (resolvedBaseUrl !== null) return resolvedBaseUrl;
+
+	if (typeof window !== "undefined" && (window.location.hostname === "vlyxir.web.app" || window.location.hostname === "vlyxir.firebaseapp.com")) {
+		resolvedBaseUrl = "";
+		return resolvedBaseUrl;
+	}
 
 	try {
 		// Quick ping to check if local backend is alive

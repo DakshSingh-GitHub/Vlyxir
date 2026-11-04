@@ -137,13 +137,15 @@ if allowed_origins_env:
 else:
     allowed_origins = [
         "http://localhost:3000",
-        "https://vlyxir.vercel.app"
+        "https://vlyxir.vercel.app",
+        "https://vlyxir.web.app",
+        "https://vlyxir.firebaseapp.com"
     ]
 
 if os.getenv("ENV") == "production" and "*" in allowed_origins:
     allowed_origins = [o for o in allowed_origins if o != "*"]
     if not allowed_origins:
-        allowed_origins = ["https://vlyxir.vercel.app"]
+        allowed_origins = ["https://vlyxir.vercel.app", "https://vlyxir.web.app", "https://vlyxir.firebaseapp.com"]
 
 app.add_middleware(
     CORSMiddleware,

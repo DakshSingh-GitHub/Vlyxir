@@ -18,3 +18,12 @@ judge-frontend/node_modules
 judge-backend/jbe
 /.vscode/
 judge-frontend/scripts
+judge-backend/env.yaml
+.firebase/
+judge-frontend/.firebase/
+judge-frontend/.env.production
+judge-backend/.dockerignore
+judge-backend/Dockerfile
+judge-frontend/apphosting.yaml
+judge-frontend/.firebaserc
+judge-frontend/firebase.json
