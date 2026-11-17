@@ -4,14 +4,14 @@ import { analyzeCodeWithGemini } from "@/app/lib/api/gemini";
 import { createClient } from "@supabase/supabase-js";
 import { AIProvider } from "@/app/lib/api/ai-types";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
     try {
         // Extract Authorization header
         const authHeader = request.headers.get("Authorization");
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return NextResponse.json({ ok: false, error: "Unauthorized." }, { status: 401 });
+            return NextResponse.json({ ok: false, error: "Unauthorized: Missing authentication token. Please sign in." }, { status: 401 });
         }
         const authToken = authHeader.replace("Bearer ", "");
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         // Verify the session from the token
         const { data: { user }, error: userError } = await supabase.auth.getUser(authToken);
         if (userError || !user) {
-            return NextResponse.json({ ok: false, error: "Unauthorized." }, { status: 401 });
+            return NextResponse.json({ ok: false, error: `Unauthorized: ${userError?.message || "Invalid or expired session. Please log in again."}` }, { status: 401 });
         }
 
         // Check the user's plan directly from the DB

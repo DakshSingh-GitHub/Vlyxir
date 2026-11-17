@@ -94,7 +94,7 @@ export default function CodeAnalysisPage() {
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [recordIdToDelete, setRecordIdToDelete] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [provider, setProvider] = useState<"groq" | "gemini">("groq");
+    const [provider] = useState<"groq" | "gemini">("gemini");
     const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-flash");
     const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
     const modelDropdownRef = useRef<HTMLDivElement>(null);
@@ -284,7 +284,6 @@ export default function CodeAnalysisPage() {
         if (!userId) {
             setPlan(null);
             setTier(0);
-            setProvider("groq");
             setIsFetchingPlan(false);
             return;
         }
@@ -298,16 +297,12 @@ export default function CodeAnalysisPage() {
                 if (mounted) {
                     setPlan(details.plan);
                     setTier(details.tier);
-                    if (details.tier < 3) {
-                        setProvider("groq");
-                    }
                 }
             } catch (err) {
                 console.error("Error fetching plan:", err);
                 if (mounted) {
                     setPlan("free");
                     setTier(0);
-                    setProvider("groq");
                 }
             } finally {
                 if (mounted) setIsFetchingPlan(false);
@@ -320,12 +315,6 @@ export default function CodeAnalysisPage() {
             mounted = false;
         };
     }, [userId, authLoading]);
-
-    useEffect(() => {
-        if (tier < 3) {
-            setProvider("groq");
-        }
-    }, [tier]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -464,13 +453,21 @@ export default function CodeAnalysisPage() {
         }
 
         try {
+            // Retrieve fresh session to ensure valid access token (avoiding expired JWT)
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData?.session?.access_token || session?.access_token;
+
+            if (!token) {
+                throw new Error("You must be logged in to analyze code.");
+            }
+
             const response = await fetch("/api/code-analysis", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    ...(session?.access_token ? { "Authorization": `Bearer ${session.access_token}` } : {})
+                    "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ code, provider, model: provider === "gemini" ? selectedModel : undefined })
+                body: JSON.stringify({ code, provider: "gemini", model: selectedModel })
             });
 
             const payload = await response.json();
@@ -479,13 +476,11 @@ export default function CodeAnalysisPage() {
                 throw new Error(payload?.error || "Analysis failed.");
             }
 
-            const modelLabel = provider === "groq"
-                ? "Groq"
-                : (selectedModel === "gemini-2.5-flash"
-                    ? "Gemini 2.5"
-                    : selectedModel === "gemini-3-flash"
-                        ? "Gemini 3"
-                        : "Gemini 3.1 Flash Lite");
+            const modelLabel = selectedModel === "gemini-2.5-flash"
+                ? "Gemini 2.5"
+                : selectedModel === "gemini-3-flash"
+                    ? "Gemini 3"
+                    : "Gemini 3.1 Flash Lite";
 
             const nextResult: AnalysisResult = {
                 ...(payload.analysis as AnalysisResult),
@@ -655,34 +650,30 @@ export default function CodeAnalysisPage() {
                                             {/* Model Dropdown Selection */}
                                             <div ref={modelDropdownRef} className="relative flex items-center">
                                                 <div 
-                                                    onClick={() => provider !== "groq" && setIsModelDropdownOpen(!isModelDropdownOpen)}
+                                                    onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
                                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all duration-300 ${
-                                                        provider === "groq"
-                                                            ? isDark
-                                                                ? "bg-slate-950/20 border-slate-800/50 text-slate-500"
-                                                                : "bg-gray-50 border-gray-150 text-gray-400"
-                                                            : isDark 
-                                                                ? "bg-slate-950/40 border-slate-700/70 hover:border-slate-600/80 text-indigo-400 cursor-pointer select-none" 
-                                                                : "bg-white border-slate-200 hover:border-slate-300 text-indigo-600 cursor-pointer select-none"
+                                                        isDark 
+                                                            ? "bg-slate-950/40 border-slate-700/70 hover:border-slate-600/80 text-indigo-400 cursor-pointer select-none" 
+                                                            : "bg-white border-slate-200 hover:border-slate-300 text-indigo-600 cursor-pointer select-none"
                                                     }`}
                                                 >
                                                     <span className={`text-[9px] font-black uppercase tracking-widest ${isDark ? "text-slate-500" : "text-slate-400"}`}>
                                                         Model:
                                                     </span>
                                                     <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                                                        {provider === "groq" ? "None" : (selectedModel === "gemini-2.5-flash" ? "Gemini 2.5" : selectedModel === "gemini-3-flash" ? "Gemini 3" : "Gemini 3.1 Flash Lite")}
-                                                        {provider !== "groq" && <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isModelDropdownOpen ? "rotate-180" : ""}`} />}
+                                                        {selectedModel === "gemini-2.5-flash" ? "Gemini 2.5" : selectedModel === "gemini-3-flash" ? "Gemini 3" : "Gemini 3.1 Flash Lite"}
+                                                        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isModelDropdownOpen ? "rotate-180" : ""}`} />
                                                     </span>
                                                 </div>
 
                                                 <AnimatePresence>
-                                                    {isModelDropdownOpen && provider !== "groq" && (
+                                                    {isModelDropdownOpen && (
                                                         <motion.div
                                                             initial={{ opacity: 0, y: -10, scale: 0.95 }}
                                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                                             exit={{ opacity: 0, y: -10, scale: 0.95 }}
                                                             transition={{ duration: 0.15 }}
-                                                            className={`absolute top-full mt-2 left-0 z-[100] w-48 rounded-xl border shadow-xl backdrop-blur-2xl p-1 flex flex-col gap-0.5 ${
+                                                            className={`absolute top-full mt-2 right-0 lg:left-0 z-[100] w-48 rounded-xl border shadow-xl backdrop-blur-2xl p-1 flex flex-col gap-0.5 ${
                                                                 isDark 
                                                                     ? "bg-slate-900/95 border-slate-700/70 shadow-black/40 text-slate-100" 
                                                                     : "bg-white/95 border-slate-200 shadow-slate-200/50 text-slate-900"
@@ -716,34 +707,6 @@ export default function CodeAnalysisPage() {
                                                     )}
                                                 </AnimatePresence>
                                             </div>
-
-                                            {/* Groq | Gemini Toggle */}
-                                            <div className={`flex items-center gap-1 p-1 rounded-xl border ${isDark ? "bg-slate-900/60 border-slate-700/70" : "bg-slate-100 border-slate-200"}`}>
-                                                <button
-                                                    onClick={() => setProvider("groq")}
-                                                    className={`px-2 lg:px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "groq"
-                                                        ? isDark
-                                                            ? "bg-slate-800 text-indigo-400 shadow-sm"
-                                                            : "bg-white text-indigo-600 shadow-sm"
-                                                        : "text-slate-500 hover:text-slate-400"
-                                                        }`}
-                                                >
-                                                    Groq
-                                                </button>
-                                                <button
-                                                    onClick={() => setProvider("gemini")}
-                                                    className={`px-2 lg:px-4 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${provider === "gemini"
-                                                        ? isDark
-                                                            ? "bg-slate-800 text-indigo-400 shadow-sm"
-                                                            : "bg-white text-indigo-600 shadow-sm"
-                                                        : "text-slate-500 hover:text-slate-400"
-                                                        }`}
-                                                >
-                                                    Gemini
-                                                </button>
-                                            </div>
-
-                                            <div className={`h-4 w-px ${isDark ? "bg-slate-700/70" : "bg-slate-200"}`} />
                                         </div>
                                     )}
                                 </div>
