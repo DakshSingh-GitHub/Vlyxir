@@ -9,7 +9,12 @@ from pydantic import BaseModel # pyright: ignore[reportMissingImports]
 import jwt # pyright: ignore[reportMissingImports]
 from runner import run_code_multiple, run_code_once, run_code_multi
 
+import urllib.request
+import urllib.error
+
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+SUPABASE_URL = os.getenv("SUPABASE_URL") or os.getenv("NEXT_PUBLIC_SUPABASE_URL") or "https://vsnnpkxlsvaiseouiifr.supabase.co"
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY") or os.getenv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY") or "sb_publishable_AqQjf3yctnM_byaXWS_Apw_-9Ay7V5T"
 PROBLEMS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "problems")
 
 TAG_RULES = {
@@ -109,12 +114,27 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-def get_current_user(authorization: Optional[str] = Header(None)):
-    if not SUPABASE_JWT_SECRET:
-        if os.getenv("ENV") == "production":
-            raise HTTPException(status_code=500, detail="JWT secret not configured")
-        return {"id": "dev-user"}
+def verify_token_with_supabase(token: str) -> Optional[dict]:
+    if not SUPABASE_URL:
+        return None
+    url = f"{SUPABASE_URL.rstrip('/')}/auth/v1/user"
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
+    if SUPABASE_ANON_KEY:
+        headers["apikey"] = SUPABASE_ANON_KEY
+    req = urllib.request.Request(url, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                data = json.loads(response.read().decode("utf-8"))
+                if isinstance(data, dict) and "id" in data:
+                    return data
+    except Exception:
+        pass
+    return None
 
+def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization:
         raise HTTPException(status_code=401, detail="Authorization header missing")
 
@@ -122,13 +142,28 @@ def get_current_user(authorization: Optional[str] = Header(None)):
     if token.lower().startswith("bearer "):
         token = token[7:].strip()
 
-    try:
-        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    if SUPABASE_JWT_SECRET:
+        try:
+            try:
+                return jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
+            except jwt.InvalidAudienceError:
+                return jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], options={"verify_aud": False})
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail="Token expired")
+        except jwt.InvalidTokenError:
+            pass
+
+    # Fallback verification directly with Supabase Auth API
+    user_payload = verify_token_with_supabase(token)
+    if user_payload:
+        return user_payload
+
+    if not SUPABASE_JWT_SECRET:
+        if os.getenv("ENV") == "production":
+            raise HTTPException(status_code=500, detail="JWT secret not configured")
+        return {"id": "dev-user"}
+
+    raise HTTPException(status_code=401, detail="Invalid token. Please log out and log in again.")
 
 # Configure CORS
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS")

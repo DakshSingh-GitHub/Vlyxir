@@ -103,7 +103,7 @@ export async function submitCode(problemId: string, code: string, testOnly: bool
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
-	const res = await fetch(`${baseUrl}/submit`, {
+	let res = await fetch(`${baseUrl}/submit`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -115,6 +115,25 @@ export async function submitCode(problemId: string, code: string, testOnly: bool
 			test_only: testOnly,
 		})
 	});
+
+	if (res.status === 401 && token) {
+		const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+		const newToken = refreshData?.session?.access_token;
+		if (newToken && !refreshError) {
+			res = await fetch(`${baseUrl}/submit`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${newToken}`
+				},
+				body: JSON.stringify({
+					problem_id: problemId,
+					code: code,
+					test_only: testOnly,
+				})
+			});
+		}
+	}
 
 	if (!res.ok) {
 		const err = await res.json();
@@ -147,7 +166,7 @@ export async function runCode(
 		bodyPayload.code = codeOrFiles.find(f => f.path === (entrypoint || "main.py"))?.content || "";
 	}
 
-	const res = await fetch(`${baseUrl}/run`, {
+	let res = await fetch(`${baseUrl}/run`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -155,6 +174,21 @@ export async function runCode(
 		},
 		body: JSON.stringify(bodyPayload)
 	});
+
+	if (res.status === 401 && token) {
+		const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+		const newToken = refreshData?.session?.access_token;
+		if (newToken && !refreshError) {
+			res = await fetch(`${baseUrl}/run`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${newToken}`
+				},
+				body: JSON.stringify(bodyPayload)
+			});
+		}
+	}
 
 	if (!res.ok) {
 		const err = await res.json();
