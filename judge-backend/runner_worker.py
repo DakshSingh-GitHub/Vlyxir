@@ -7,7 +7,6 @@ import os
 from contextlib import redirect_stdout, redirect_stderr
 from security import validate_code, get_safe_globals, WARNING_MESSAGE
 
-# Resource limits (increased to 256MB to avoid premature 64-bit CPython address space crashes)
 MAX_MEMORY_MB = 256
 MAX_OUTPUT_CHARS = 100000 # ~100KB
 
@@ -15,7 +14,6 @@ def set_resource_limits():
     try:
         import resource
         mem_limit = MAX_MEMORY_MB * 1024 * 1024
-        # Set address space limit (memory) safely
         try:
             resource.setrlimit(resource.RLIMIT_AS, (mem_limit, mem_limit))
         except (ValueError, OSError):

@@ -3,10 +3,10 @@ import os
 import re
 from typing import List, Optional
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Depends, Header
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import jwt
+from fastapi import FastAPI, HTTPException, Depends, Header # pyright: ignore[reportMissingImports]
+from fastapi.middleware.cors import CORSMiddleware # pyright: ignore[reportMissingImports]
+from pydantic import BaseModel # pyright: ignore[reportMissingImports]
+import jwt # pyright: ignore[reportMissingImports]
 from runner import run_code_multiple, run_code_once, run_code_multi
 
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
@@ -380,5 +380,5 @@ def run_code_endpoint(request_data: RunRequest, user: dict = Depends(get_current
     )
 
 if __name__ == "__main__":
-    import uvicorn
+    import uvicorn # pyright: ignore[reportMissingImports]
     uvicorn.run(app, host="0.0.0.0", port=5000)

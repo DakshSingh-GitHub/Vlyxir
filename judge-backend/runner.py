@@ -11,7 +11,7 @@ import select
 from concurrent.futures import ThreadPoolExecutor
 
 try:
-    import psutil
+    import psutil # pyright: ignore[reportMissingModuleSource]
 except ImportError:
     psutil = None
 
